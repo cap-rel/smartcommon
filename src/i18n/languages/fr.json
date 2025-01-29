@@ -1,0 +1,39 @@
+{
+  "translation": {
+    "public": {
+      "loginTitle": "Connexion",
+      "registerTitle": "Créer un compte",
+      "forgotPasswordTitle": "Mot de passe oublié ?",
+      "newPasswordTitle": "Nouveau mot de passe",
+
+      "emailLabel": "Adresse email",
+      "passwordLabel": "Mot de passe",
+      "confirmedPasswordLabel": "Confirmer mot de passe",
+      "rememberMeLabel": "Rester connecté",
+
+      "loginSubmitButton": "Se connecter",
+      "registerSubmitButton": "Créer",
+      "forgotPasswordSubmitButton": "Envoyer",
+      "newPasswordSubmitButton": "Réinitialiser",
+
+      "loginLink": "Se connecter",
+      "registerLink": "Créer",
+      "forgotPasswordLink": "Mot de passe oublié ?",
+
+      "loginLinkLabel": "Déjà un compte ?",
+      "registerLinkLabel": "Pas de compte",
+
+      "forgotPasswordDescription": "Veuillez renseigner votre adresse email dans le champ ci-dessous. Un mail pour réinitialiser votre mot de passe vous sera envoyé.",
+      "newPasswordDescription": "",
+
+      "loginError": "Veuillez vérifier vos informations...",
+      "loginSuccess": "Bonjour {{user}}. Pensez à checker vos notifications.",
+      "registerError": "",
+      "registerSuccess": "",
+      "forgotPasswordError": "",
+      "forgotPasswordSuccess": "",
+      "newPasswordError": "",
+      "newPasswordSuccess": ""
+    }
+  }
+}
