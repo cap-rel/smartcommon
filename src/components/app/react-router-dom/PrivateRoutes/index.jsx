@@ -22,12 +22,6 @@ import { Navigate, Outlet } from "react-router-dom";
 
 const PrivateRoutes = () => {
   const user = useSelector((state) => state.auth.user);
-  // const isRehydrated = useSelector((state) => state._persist.rehydrated);
-
-  // if (!isRehydrated) {
-  //   return null;
-  // }
-
   return user ? <Outlet /> : <Navigate to="/login" />;
 };
 

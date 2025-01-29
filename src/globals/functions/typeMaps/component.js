@@ -1,4 +1,4 @@
-import { isUndefined } from "../../functions";
+import { isUndefined } from "../..";
 
 function setComponent(type) {
     const COMPONENTS_MAP = {

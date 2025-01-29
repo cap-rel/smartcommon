@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { setSessionJSON } from "../../globals/functions/storage";
+import { getLocalJSON, getSessionJSON, removeLocal, removeSession, setLocalJSON, setSessionJSON } from "../../globals/functions/storage";
 
 const initialState = {
-  user: localStorage.getItem("user") || sessionStorage.getItem("user") || null
+  user: getLocalJSON("user") || getSessionJSON("user") || null
 };
 
 const authSlice = createSlice({
@@ -12,15 +12,15 @@ const authSlice = createSlice({
     loginSuccess(state, action) {
       state.user = action.payload;
       if (action.payload.rememberMe) {
-        localStorage.set("user", action.payload);
+        setLocalJSON("user", action.payload);
       } else {
         setSessionJSON("user", action.payload);
       }
     },
     logoutSuccess(state) {
       state.user = null;
-      localStorage.removeItem("user");
-      sessionStorage.removeItem("user");
+      removeLocal("user");
+      removeSession("user");
     },
   },
 });

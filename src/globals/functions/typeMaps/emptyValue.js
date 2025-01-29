@@ -1,4 +1,4 @@
-import { isInvalid, isNumber, isUndefined } from "../../functions";
+import { isInvalid, isNumber, isUndefined } from "../..";
 
 function setEmptyValue(attribute) {
     const { type, default: defaultValue, min, max, ratingMax } = attribute;

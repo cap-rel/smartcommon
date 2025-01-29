@@ -3,24 +3,6 @@ import { hexToRgb } from "../src/globals/functions";
 import hexRgb from "hex-rgb";
 
 export const appColors = {
-    // "light"          : "var(--light-color)",
-    // "light-soft"     : "var(--light-soft-color)",
-    // "light-border"   : "var(--light-border-color)",
-    // "light-soft-text": "var(--light-soft-text-color)",
-    // "light-text"     : "var(--light-text-color)",
-
-    // "dark"           : "var(--dark-color)",
-    // "dark-soft"      : "var(--dark-soft-color)",
-    // "dark-border"    : "var(--dark-border-color)",
-    // "dark-soft-text" : "var(--dark-soft-text-color)",
-    // "dark-text"      : "var(--dark-text-color)",
-
-    // "primary"        : "var(--primary-color)",
-    // "secondary"      : "var(--secondary-color)",
-    // "success"        : "var(--success-color)",
-    // "error"          : "var(--error-color)",
-    // "warning"        : "var(--warning-color)",
-
     "light"          : "#fff",
     "light-soft"     : "#f1f5f9",
     "light-border"   : "#e2e8f0",
@@ -38,8 +20,6 @@ export const appColors = {
     "success"        : "#22c55e",
     "error"          : "#ef4444",
     "warning"        : "#eab308",
-
-    "note"           : "var(--note-color)"
 };
 
 let colors = appColors;

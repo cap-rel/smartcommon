@@ -1,11 +1,11 @@
 
 // ISO 8601
 
-import { getLocal, setLocal, removeLocal, getSession, setSession, removeSession, getDB, setDB, removeDB } from "./functions/storage";
-import { isArray, isArrayEmpty, isBoolean, isEmpty, isFunction, isFunctionEmpty, isInvalid, isNil, isNull, isNumber, isObject, isObjectEmpty, isString, isStringEmpty, isUndefined } from "./functions/type"
-import setEmptyValue from "./functions/typeMaps/emptyValue";
+import { getLocal, setLocal, removeLocal, getSession, setSession, removeSession, getDB, setDB, removeDB } from "./storage";
+import { isArray, isArrayEmpty, isBoolean, isEmpty, isFunction, isFunctionEmpty, isInvalid, isNil, isNull, isNumber, isObject, isObjectEmpty, isString, isStringEmpty, isUndefined } from "./type"
+import setEmptyValue from "./typeMaps/emptyValue";
 import setActionValues from "./functions/typeMaps/actionValues";
-import setComponent from "./functions/typeMaps/component";
+import setComponent from "./typeMaps/component";
 
 export const now = (format) => {
   const date = new Date();

@@ -1,8 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { getLocalJSON, setLocalJSON } from "../../globals/functions/storage";
 
 const initialState = {
-  language: localStorage.getItem("language") || navigator.languages[0],
-  isSidebarOpened: false,
+  language: getLocalJSON("language") || navigator.languages[0],
+  // devise
+  // système horraire
+  //
+  //
 };
 
 const settingsSlice = createSlice({
@@ -11,13 +15,10 @@ const settingsSlice = createSlice({
   reducers: {
     changeLanguage(state, action) {
       state.language = action.payload;
-      localStorage.setItem("language", action.payload);
+      setLocalJSON("language", action.payload);
     },
-    setIsSidebarOpened(state) {
-      state.isSidebarOpened = !state.isSidebarOpened;
-    }
   },
 });
 
 export default settingsSlice.reducer;
-export const { changeLanguage, setIsSidebarOpened } = settingsSlice.actions;
+export const { changeLanguage } = settingsSlice.actions;

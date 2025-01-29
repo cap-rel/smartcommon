@@ -8,7 +8,7 @@ const useFile = (props) => {
   };
   // await resizeFile(file).then(base64 => base64);
 
-    return { resizeImage };
+  return { resizeImage };
 };
 
 export default useFile;

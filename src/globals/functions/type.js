@@ -18,18 +18,6 @@ export function isString(value) {
     return typeof value === "string";
 }
 
-export function isStringEmpty(value) {
-    if (isInvalid(value)) {
-        return true;
-    }
-    
-    if (isString(value)) {
-        return value.length === 0;
-    }
-
-    return false;
-}
-
 // export function isString(value) {
 //     return isStringStrict(value) || isNumberStrict(value);
 // }
@@ -54,51 +42,31 @@ export function isArray(value) {
     return Array.isArray(value);
 }
 
-export function isArrayEmpty(value) {
-    if (isInvalid(value)) {
-        return true;
-    }
-    
-    if (isArray(value)) {
-        return value.length === 0;
-    }
-
-    return false;
-}
-
 export function isObject(value) {
     return typeof value === "object";
-}
-
-export function isObjectEmpty(value) {
-    if (isInvalid(value)) {
-        return true;
-    }
-    
-    if (isObject(value)) {
-        return Object.keys(value).length === 0;
-    }
-
-    return false;
 }
   
 export function isFunction(value) {
     return typeof value === "function";
 }
-
-export function isFunctionEmpty(value) {
+  
+export function isEmpty(value) {
     if (isInvalid(value)) {
         return true;
     }
     
+    if (isString(value) || isArray(value)) {
+        return value.length === 0;
+    }
+
+    if (isObject(value)) {
+        return Object.keys(value).length === 0;
+    }
+
     if (isFunction(value)) {
         const functionString = value.toString().replace(/\s/g, "");
         return functionString === `function${value}(){}` || functionString === "()=>{}";
     }
 
     return false;
-}
-  
-export function isEmpty(value) {
-    return isStringEmpty(value) || isArrayEmpty(value) || isObjectEmpty(value) || isFunctionEmpty(value);
 }
