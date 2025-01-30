@@ -1,10 +1,8 @@
 import { useEffect } from "react";
-import { useStates } from "../../../hooks";
-import { ColorPicker, Hue, Saturation, useColor } from "react-color-palette";
-import "react-color-palette/css";
-import { hexToRgb, isEmpty } from "../../../../globals/functions";
+import { useStates } from "../../../../hooks";
+import { hexToRgb, isEmpty } from "../../../../../globals/functions";
 import { HexColorPicker } from "react-colorful";
-import { Input, Icon, Select, Alert } from "../../../dol"
+import { Input, Icon, Select, Alert } from "../../../../dol"
 import hexToRgba from "hex-to-rgba";
 
 export const SettingsPage = (props) => {

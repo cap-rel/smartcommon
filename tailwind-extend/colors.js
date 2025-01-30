@@ -1,4 +1,3 @@
-import hexToRgba from "hex-to-rgba";
 import { hexToRgb } from "../src/globals/functions";
 import hexRgb from "hex-rgb";
 
