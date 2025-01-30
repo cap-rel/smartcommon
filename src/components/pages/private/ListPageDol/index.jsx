@@ -1,5 +1,5 @@
 /*
- * Router
+ * ListPage
  *
  * Copyright (c) 2024 Paolo Debaisieux <paolo.debaisieux@cap-rel.fr>
  *
@@ -17,29 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BrowserRouter, Route, Routes as BrowserRoutes, useLocation, matchPath } from "react-router-dom";
-import { PrivateRoutes } from "../PrivateRoutes";
-import { PublicRoutes } from "../PublicRoutes";
-import { Error404Page } from "../../../dol";
+import { useEffect } from "react";
+import DesktopListPage from "./DesktopListPage";
+import MobileListPage from "./MobileListPage";
+import { useNavigator } from "../../../hooks";
 
-
-export const Router = (props) => {
+export const ListPage = (props) => {
   const { config } = props;
 
-  const Routes = () => {    
-    return (
-      <BrowserRoutes>
-        <Route element={<PublicRoutes />}></Route>
-        <Route element={<PrivateRoutes />}></Route>
-        <Route path="*" element={<Error404Page />} />
-      </BrowserRoutes>
-    );
-  }
+  const { deviceType } = useNavigator();
 
   return (
-    <BrowserRouter>
-      <Routes />
-    </BrowserRouter>
+    deviceType === "desktop"
+      ? <DesktopListPage config={config} />
+      : <MobileListPage config={config} />
   );
- 
 };

@@ -1,5 +1,5 @@
 /*
- * Router
+ * PrivateLayout
  *
  * Copyright (c) 2024 Paolo Debaisieux <paolo.debaisieux@cap-rel.fr>
  *
@@ -17,29 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { BrowserRouter, Route, Routes as BrowserRoutes, useLocation, matchPath } from "react-router-dom";
-import { PrivateRoutes } from "../PrivateRoutes";
-import { PublicRoutes } from "../PublicRoutes";
-import { Error404Page } from "../../../dol";
+import { useEffect, useState } from "react";
+import { Outlet } from "react-router-dom";
+import MobilePrivateLayout from "./MobilePrivateLayout";
+import DesktopPrivateLayout from "./DesktopPrivateLayout";
+import { useNavigator } from "../../../hooks";
 
-
-export const Router = (props) => {
+export const PrivateLayout = (props) => {
   const { config } = props;
-
-  const Routes = () => {    
-    return (
-      <BrowserRoutes>
-        <Route element={<PublicRoutes />}></Route>
-        <Route element={<PrivateRoutes />}></Route>
-        <Route path="*" element={<Error404Page />} />
-      </BrowserRoutes>
-    );
-  }
+  
+  const { deviceType } = useNavigator();
 
   return (
-    <BrowserRouter>
-      <Routes />
-    </BrowserRouter>
+    deviceType === "desktop"
+      ? <DesktopPrivateLayout config={config} />
+      : <MobilePrivateLayout config={config} />
   );
- 
 };
