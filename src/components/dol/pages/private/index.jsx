@@ -29,7 +29,7 @@
 //     color: ${props => (props.item.aloneOnRow && props.item.bgColor && props.item.aloneOnRow !== "full") && props.item.bgColor};
 // `
 
-// const MenuPageDol = (props) => {
+// export const MenuPageDol = (props) => {
 //     const config = props.config;
 //     const tabbar = props.tabbar;
 //     const page   = props.page;
@@ -130,5 +130,3 @@
 //         </PrivateLayoutDol>
 //     );
 // };
-
-// export default MenuPageDol;

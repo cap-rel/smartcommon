@@ -4,7 +4,7 @@ import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../..
 import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 
-const AudiosDol = ({
+export const AudiosDol = ({
     label = null,
     id = null,
     help = null,
@@ -242,5 +242,3 @@ const AudiosDol = ({
 };
 
 AudiosDol.propTypes = propTypes;
-
-export default AudiosDol;

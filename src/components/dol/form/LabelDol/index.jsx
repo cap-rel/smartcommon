@@ -2,7 +2,7 @@ import { useNavigator } from "../../../hooks";
 import { IconDol, HelpDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const LabelDol = ({
+export const LabelDol = ({
     id = null, 
     label = null, 
     required = false,
@@ -34,5 +34,3 @@ const LabelDol = ({
 }
 
 LabelDol.propTypes = propTypes;
-
-export default LabelDol;

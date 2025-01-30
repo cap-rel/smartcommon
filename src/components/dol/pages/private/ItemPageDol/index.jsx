@@ -1,7 +1,7 @@
 import DesktopItemPageDol from "./DesktopItemPageDol";
 import MobileItemPageDol from "./MobileItemPageDol";
 
-const ItemPageDol = (props) => {
+export const ItemPageDol = (props) => {
     return (
         <>
             <MobileItemPageDol />
@@ -9,5 +9,3 @@ const ItemPageDol = (props) => {
         </>
     );
 };
-
-export default ItemPageDol;

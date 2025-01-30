@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import useStates from "../useStates";
 
-const useWindow = () => {
+export const useWindow = () => {
     const isWindowAvailable = typeof window !== "undefined";
 
    const getOrientation = () => {
@@ -53,5 +53,3 @@ const useWindow = () => {
 
     return states;
 };
-
-export default useWindow;

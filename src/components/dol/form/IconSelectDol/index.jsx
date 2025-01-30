@@ -9,7 +9,7 @@ import { useStates } from "../../../hooks";
 import { cleanForComparison, isUndefined } from "../../../../globals/functions";
 import { propTypes } from "./props";
 
-const IconSelectDol = ({
+export const IconSelectDol = ({
     label = null,
     id = null,
     help = null,
@@ -106,5 +106,3 @@ const IconSelectDol = ({
 };
 
 IconSelectDol.propTypes = propTypes;
-
-export default IconSelectDol;

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { AlertDol, IconDol, ImgDol, SelectDol, LazyLinkDol } from "../../../../dol";
 import { useStates, useWindow } from "../../../../hooks";
 
-const DesktopSidebarDol = (props) => {
+export const DesktopSidebarDol = (props) => {
   const { config } = props;
 
   const { darkMode } = useWindow();
@@ -356,5 +356,3 @@ const DesktopSidebarDol = (props) => {
         </>
   );
 };
-
-export default DesktopSidebarDol;

@@ -1,7 +1,7 @@
 import { isEmpty } from "../../../globals/functions";
 import useNavigator from "../useNavigator";
 
-const useIntl = () => {
+export const useIntl = () => {
     const DateTimeFormat = (timestamp, locales = null, options = null) => {
         const { language } = useNavigator();
         const defaultLocales = locales || language;
@@ -24,5 +24,3 @@ const useIntl = () => {
 
     return { DateTimeFormat };
 };
-
-export default useIntl;

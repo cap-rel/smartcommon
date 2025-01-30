@@ -3,7 +3,7 @@ import { useForm, useStates } from "../../../../../hooks";
 import { InputDol, IconDol } from "../../../../../dol"
 import { now } from "../../../../../../globals/functions";
 
-const DesktopItemPageDol = (props) => {
+export const DesktopItemPageDol = (props) => {
     const form = [
         {
             id: "0",
@@ -419,5 +419,3 @@ const DesktopItemPageDol = (props) => {
         </div>
     );
 };
-
-export default DesktopItemPageDol;

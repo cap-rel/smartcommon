@@ -23,7 +23,7 @@ import MobilePrivateLayoutDol from "./MobilePrivateLayoutDol";
 import DesktopPrivateLayoutDol from "./DesktopPrivateLayoutDol";
 import { useNavigator } from "../../../hooks";
 
-const PrivateLayoutDol = (props) => {
+export const PrivateLayoutDol = (props) => {
   const { config } = props;
   
   const { deviceType } = useNavigator();
@@ -34,5 +34,3 @@ const PrivateLayoutDol = (props) => {
       : <MobilePrivateLayoutDol config={config} />
   );
 };
-
-export default PrivateLayoutDol;

@@ -1,6 +1,6 @@
 import { Helmet } from "react-helmet";
 
-const Head = () => {
+export const Head = () => {
     return (
         <Helmet>
             <meta charset="UTF-8" />
@@ -14,5 +14,3 @@ const Head = () => {
         </Helmet>
     );
 };
-
-export default Head;

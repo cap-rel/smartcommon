@@ -1,7 +1,7 @@
 import { IconDol, LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const SelectDol = ({
+export const SelectDol = ({
   label = null,
   id = null,
   help = null,
@@ -55,5 +55,3 @@ const SelectDol = ({
 };
 
 SelectDol.propTypes = propTypes;
-
-export default SelectDol;

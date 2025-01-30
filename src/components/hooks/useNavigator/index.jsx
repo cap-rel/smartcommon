@@ -1,6 +1,6 @@
 import { useStates } from "../../hooks";
 
-const useNavigator = () => {
+export const useNavigator = () => {
   const isNavigatorAvailable = typeof navigator !== "undefined";
 
   const getDeviceType = () => {
@@ -27,5 +27,3 @@ const useNavigator = () => {
 
   return states;
 };
-
-export default useNavigator;

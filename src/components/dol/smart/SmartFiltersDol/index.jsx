@@ -3,7 +3,7 @@ import { BooleanDol, FormItemDol, IconDol, LabelDol, SelectDol, FilterTagItemDol
 import { useEffect, useMemo } from "react";
 import { isEmpty } from "../../../../globals/functions";
 
-const SmartFiltersDol = (props) => {
+export const SmartFiltersDol = (props) => {
     const { value, onChange, attributes } = props;
 
     const FILTER_EMPTY_VALUES_MAP = useMemo(()=> ({
@@ -187,5 +187,3 @@ const SmartFiltersDol = (props) => {
         );
 
 };
-
-export default SmartFiltersDol;

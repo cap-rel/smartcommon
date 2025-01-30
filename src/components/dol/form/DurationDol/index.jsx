@@ -3,7 +3,7 @@ import { secsToDuration } from "../../../../globals/functions";
 import { StepperDol, LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const DurationDol = ({
+export const DurationDol = ({
     label = null,
     id = null,
     help = null,
@@ -48,5 +48,3 @@ const DurationDol = ({
 };
 
 DurationDol.propTypes = propTypes;
-
-export default DurationDol;

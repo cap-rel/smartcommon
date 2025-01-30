@@ -1,6 +1,6 @@
 import Resizer from "react-image-file-resizer";
 
-const useFile = (props) => {
+export const useFile = (props) => {
   const resizeImage = (image) => {
     return new Promise((resolve) => 
       Resizer.imageFileResizer(image, 3840, 2160, "JPEG", 90, 0, (uri) => resolve(uri), "base64")
@@ -10,5 +10,3 @@ const useFile = (props) => {
 
   return { resizeImage };
 };
-
-export default useFile;

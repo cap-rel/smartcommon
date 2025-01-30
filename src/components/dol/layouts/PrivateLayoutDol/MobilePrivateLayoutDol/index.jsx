@@ -22,7 +22,7 @@ import { Outlet } from "react-router-dom";
 import { hexToRgb, isEmpty } from "../../../../../globals/functions";
 import { TabbarDol, SidebarDol } from "../../..";
 
-const MobilePrivateLayoutDol = (props) => {
+export const MobilePrivateLayoutDol = (props) => {
   const { config } = props;
 
   const darkMode = config.darkMode;
@@ -64,5 +64,3 @@ const MobilePrivateLayoutDol = (props) => {
     </div>
   );
 };
-
-export default MobilePrivateLayoutDol;

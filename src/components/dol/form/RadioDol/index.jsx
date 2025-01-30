@@ -1,7 +1,7 @@
 import { IconDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const RadioDol = ({
+export const RadioDol = ({
     label = null,
     id = null,
     help = null,
@@ -58,5 +58,3 @@ const RadioDol = ({
 };
 
 RadioDol.propTypes = propTypes;
-
-export default RadioDol;

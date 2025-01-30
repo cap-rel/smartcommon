@@ -3,7 +3,7 @@ import useStates from "../useStates";
 import { CheckboxDol, FormItemDol, InputDol, SelectDol } from "../../dol";
 import { isEmpty } from "../../../globals/functions";
 
-const useForm = (form) => {
+export const useForm = (form) => {
     const setInitialFormValues = (components) => {
         return components.reduce((acc, component) => {
             if (component.type !== "flex" && component.type !== "tabs") {
@@ -168,5 +168,3 @@ const useForm = (form) => {
 
     return { formValues: states.formValues, buildForm };
 };
-
-export default useForm; 

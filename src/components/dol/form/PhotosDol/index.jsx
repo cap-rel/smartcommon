@@ -4,7 +4,7 @@ import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../..
 import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 
-const PhotosDol = ({
+export const PhotosDol = ({
     label = null,
     id = null,
     help = null,
@@ -231,5 +231,3 @@ const PhotosDol = ({
 };
 
 PhotosDol.propTypes = propTypes;
-
-export default PhotosDol;

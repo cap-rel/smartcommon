@@ -24,7 +24,7 @@ import { useDispatch } from "react-redux";
 import { isEmpty, searchBarFilter } from "../../../../../../globals/functions";
 import { RadioDol, IconDol } from "../../../../../dol";
 
-const MobileListPageDol = (props) => {
+export const MobileListPageDol = (props) => {
   const { config } = props;
 
   const navigation = config.app.navigation.mobilePortrait;
@@ -483,5 +483,3 @@ const MobileListPageDol = (props) => {
     </>
   );
 };
-
-export default MobileListPageDol;

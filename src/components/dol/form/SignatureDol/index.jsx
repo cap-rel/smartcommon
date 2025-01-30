@@ -10,7 +10,7 @@ import { propTypes } from "./props";
 // TODO faire le required
 // TODO faire le disabled
 
-const SignatureDol = ({
+export const SignatureDol = ({
   label = null,
   id = null,
   help = null,
@@ -85,5 +85,3 @@ const { darkMode, windowDimension } = useWindow();
 };
 
 SignatureDol.propTypes = propTypes;
-
-export default SignatureDol;

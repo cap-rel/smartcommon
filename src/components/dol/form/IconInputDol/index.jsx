@@ -1,6 +1,6 @@
 import { SelectDol, InputDol, IconDol } from "../../../dol";
 
-const IconInputDol = (props) => {
+export const IconInputDol = (props) => {
     const {
         id,
         label,
@@ -54,5 +54,3 @@ const IconInputDol = (props) => {
         </div>
     );
 };
-
-export default IconInputDol;

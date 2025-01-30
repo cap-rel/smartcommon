@@ -7,7 +7,7 @@ import { isNumber } from "../../../../globals/functions";
 import { defaultColors } from "./data";
 import { propTypes } from "./props";
 
-const ColorDol = ({
+export const ColorDol = ({
     label = null,
     id = null,
     help = null,
@@ -163,5 +163,3 @@ const ColorDol = ({
 };
 
 ColorDol.propTypes = propTypes;
-
-export default ColorDol;

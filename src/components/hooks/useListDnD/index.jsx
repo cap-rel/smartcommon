@@ -1,4 +1,4 @@
-const useListDnD = (set) => {
+export const useListDnD = (set) => {
     const onDragStart = (e, indexLabel, parent) => {
         set(indexLabel, Number(e.currentTarget.dataset.index))
         
@@ -43,5 +43,3 @@ const useListDnD = (set) => {
 
     return { onDragStart, onDragOver, onDrop };
 };
-
-export default useListDnD;

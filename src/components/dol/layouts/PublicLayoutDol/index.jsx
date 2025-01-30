@@ -5,7 +5,7 @@ import { hexToRgb, isEmpty } from "../../../../globals/functions";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 
-const PublicLayoutDol = (props) => {
+export const PublicLayoutDol = (props) => {
   const { config } = props;
 
   const icon = config.app.icon;
@@ -106,5 +106,3 @@ const PublicLayoutDol = (props) => {
     </div>
   );
 };
-
-export default PublicLayoutDol;

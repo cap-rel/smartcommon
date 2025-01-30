@@ -22,7 +22,7 @@ export const appColors = {
     "warning"        : "#eab308",
 };
 
-let colors = appColors;
+export let colors = appColors;
 
 for (let i = 0; i < 10; i++) {
     colors = { 
@@ -47,5 +47,3 @@ for (let i = 0; i < 10; i++) {
 
     }
 }
-
-export default colors;

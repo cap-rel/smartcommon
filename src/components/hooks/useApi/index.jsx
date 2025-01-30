@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import useStates from "../useStates";
 
-const useApi = () => {
+export const useApi = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector(state => state.auth.user);
@@ -74,5 +74,3 @@ const useApi = () => {
 
   return { fetchApi, login, logout, states };
 };
-
-export default useApi;

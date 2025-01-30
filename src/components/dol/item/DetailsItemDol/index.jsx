@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { timestampToDate } from "../../../../globals/functions";
 import { BooleanDol, CheckboxDol, IconDol, ImgDol } from "../../../dol";
 
-const DetailsItemDol = () => {
+export const DetailsItemDol = () => {
 
     const {
       value,
@@ -228,5 +228,3 @@ const DetailsItemDol = () => {
     
   }
 };
-
-export default DetailsItemDol;

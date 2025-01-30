@@ -3,7 +3,7 @@ import { useStates } from "../../../../hooks";
 import IconSelectDol from "../../../form/IconSelectDol";
 import MultiNumberDol from "../../../form/MultiNumberDol";
 
-const TestPageDol = () => {
+export const TestPageDol = () => {
 
     const inputs = [
         // "boolean"      ,  
@@ -124,5 +124,3 @@ const TestPageDol = () => {
         </div>
     );
 };
-
-export default TestPageDol;

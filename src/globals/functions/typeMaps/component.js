@@ -1,6 +1,6 @@
 import { isUndefined } from "../..";
 
-function setComponent(type) {
+export function setComponent(type) {
     const COMPONENTS_MAP = {
         boolean      : "BooleanDol",
         checkbox     : "CheckboxDol",
@@ -50,5 +50,3 @@ function setComponent(type) {
 
     return COMPONENTS_MAP[type];
 };
-
-export default setComponent;

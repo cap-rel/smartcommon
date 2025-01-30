@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
-const LoginPageDol = (props) => {
+export const LoginPageDol = (props) => {
   const { config } = props;
   
   const { darkMode } = useWindow();
@@ -175,7 +175,5 @@ const LoginPageDol = (props) => {
     </div>
   );
 };
-
-export default LoginPageDol;
 
 

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { isEmpty } from "../../../globals/functions";
 import useStates from "../useStates";
 
-const useAnimation = (initialValues) => {
+export const useAnimation = (initialValues) => {
   const { values, set } = useStates(initialValues);
   const [animations, setAnimations] = useState(initialValues);
   const [start, setStart] = useState(false);
@@ -33,5 +33,3 @@ const useAnimation = (initialValues) => {
 
   return { start, animations, setAnimations };
 };
-
-export default useAnimation;

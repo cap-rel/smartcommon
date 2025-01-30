@@ -1,6 +1,6 @@
 import { cleanForComparison } from "../../../globals/functions";
 
-const useFilter = (attributes) => {
+export const useFilter = (attributes) => {
 
   const setFiltersForSearchBar = (listItem) => {
     const values = [];
@@ -114,5 +114,3 @@ const useFilter = (attributes) => {
       
   return { searchBarFilter, smartFilters, smartFiltersStates };
 }
-
-export default useFilter;

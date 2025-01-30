@@ -4,7 +4,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigator, useStates, useWindow } from "../../../../hooks";
 import { IconDol, ImgDol, AlertDol, SelectDol, LazyLinkDol } from "../../../../dol";
 
-const MobileSidebarDol = (props) => {
+export const MobileSidebarDol = (props) => {
   const { config } = props;
   const navigation = config.navigation;
 
@@ -121,5 +121,3 @@ const MobileSidebarDol = (props) => {
     </div>
   );
 };
-
-export default MobileSidebarDol;

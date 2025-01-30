@@ -4,7 +4,7 @@ import { useStates } from "../../../hooks";
 import { isNull, isUndefined } from "../../../../globals/functions";
 import { propTypes } from "./props";
 
-const StepperDol = ({
+export const StepperDol = ({
     label = null,
     id = null,
     help = null,
@@ -95,5 +95,3 @@ const StepperDol = ({
 };
 
 StepperDol.propTypes = propTypes
-
-export default StepperDol;

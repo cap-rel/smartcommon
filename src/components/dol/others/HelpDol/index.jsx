@@ -3,7 +3,7 @@ import { isEmpty } from "../../../../globals/functions";
 import IconDol from "../IconDol";
 import { useWindow } from "../../../hooks";
 
-const HelpDol = (props) => {
+export const HelpDol = (props) => {
     const title   = props.title;
     const content = props.content;
     const className = props.className;
@@ -128,5 +128,3 @@ const HelpDol = (props) => {
             } */}
     // );
 };
-
-export default HelpDol;

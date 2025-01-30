@@ -5,7 +5,7 @@ import { LabelDol } from '../../../dol';
 import { cleanForComparison, isEmpty, isUndefined } from '../../../../globals/functions';
 import { propTypes } from './props';
 
-const AddressDol = ({
+export const AddressDol = ({
   label = null, 
   id = null,
   help = null,
@@ -120,5 +120,3 @@ const AddressDol = ({
 };
 
 AddressDol.propTypes = propTypes;
-
-export default AddressDol;

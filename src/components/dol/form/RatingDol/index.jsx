@@ -3,7 +3,7 @@ import IconDol from "../../others/IconDol";
 import LabelDol from "../LabelDol";
 import { propTypes } from "./props";
 
-const RatingDol = ({
+export const RatingDol = ({
     label = null,
     id = null,
     help = null,
@@ -64,5 +64,3 @@ const RatingDol = ({
 };
 
 RatingDol.propTypes = propTypes;
-
-export default RatingDol;

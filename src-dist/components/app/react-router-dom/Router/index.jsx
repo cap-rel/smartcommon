@@ -23,7 +23,7 @@ import PublicRoutes from "../PublicRoutes";
 import { Error404PageDol } from "../../../dol";
 
 
-const Router = (props) => {
+export const Router = (props) => {
   const { config } = props;
 
   const Routes = () => {    
@@ -43,5 +43,3 @@ const Router = (props) => {
   );
  
 };
-
-export default Router;

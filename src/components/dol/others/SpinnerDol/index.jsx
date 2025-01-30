@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
  * @param {*} props
  * @param {string} centered (bool) Si true, le spinner est au milieu de la page
  */
-const SpinnerDol = (props) => {
+export const SpinnerDol = (props) => {
   const { type, size } = props;
 
   const finalSize = size || "8";
@@ -57,5 +57,3 @@ const SpinnerDol = (props) => {
     </>
   );
 };
-
-export default SpinnerDol;

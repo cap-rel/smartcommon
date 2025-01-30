@@ -1,7 +1,7 @@
 import { Toaster as ReactHotToaster } from "react-hot-toast";
 import { useWindow } from "../../../hooks";
 
-const Toaster = () => {
+export const Toaster = () => {
     const { darkMode } = useWindow();
 
     return (
@@ -16,5 +16,3 @@ const Toaster = () => {
         />
     );
 };
-
-export default Toaster;

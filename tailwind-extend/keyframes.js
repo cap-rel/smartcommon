@@ -1,4 +1,4 @@
-const keyframes = {
+export const keyframes = {
     // wiggle: {
     //   '0%, 100%': { transform: 'rotate(-2deg)' },
     //   '50%': { transform: 'rotate(2deg)' },
@@ -9,5 +9,3 @@ const keyframes = {
       '60%, 100%': { transform: 'rotate(0deg)' },
     },
 };
-
-export default keyframes;

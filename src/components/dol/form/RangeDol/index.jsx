@@ -4,7 +4,7 @@ import { useStates } from "../../../hooks";
 import { isUndefined } from "../../../../globals/functions";
 import { propTypes } from "./props";
 
-const RangeDol = ({
+export const RangeDol = ({
     label = null,
     id = null,
     help = null,
@@ -37,5 +37,3 @@ const RangeDol = ({
 };
 
 RangeDol.propTypes = propTypes;
-
-export default RangeDol;

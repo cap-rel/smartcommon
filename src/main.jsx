@@ -24,7 +24,7 @@ import { registerSW } from "virtual:pwa-register";
 registerSW({ immediate: true })
 
 import "./assets/index.css";
-import App from "./App";
+import { App } from "./App";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

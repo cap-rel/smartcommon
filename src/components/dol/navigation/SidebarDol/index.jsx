@@ -2,7 +2,7 @@ import { useNavigator } from "../../../hooks";
 import DesktopSidebarDol from "./DesktopSidebarDol";
 import MobileSidebarDol from "./MobileSidebarDol";
 
-const SidebarDol = (props) => {
+export const SidebarDol = (props) => {
   const { config } = props;
 
   const { deviceType } = useNavigator();
@@ -13,5 +13,3 @@ const SidebarDol = (props) => {
       : <MobileSidebarDol config={config} />
   );
 };
-
-export default SidebarDol;

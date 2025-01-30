@@ -38,7 +38,7 @@ const DEFAULT_PROPS_TYPE_MAP = {
   // month    :
 };
 
-const InputDol = ({
+export const InputDol = ({
     label = null,
     id = null,
     help = null,
@@ -192,5 +192,3 @@ const InputDol = ({
 };
 
 InputDol.propTypes = propTypes;
-
-export default InputDol;

@@ -3,7 +3,7 @@ import { isEmpty } from "../../../../globals/functions";
 import { IconDol, LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const FileDol = ({
+export const FileDol = ({
     label = null,
     id = null,
     help = null,
@@ -61,6 +61,4 @@ const FileDol = ({
   );
 };
 
-FileDol.propTypes = propTypes;
-
-export default FileDol;
+// FileDol.propTypes = propTypes;

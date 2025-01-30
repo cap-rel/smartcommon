@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
-const RegisterPageDol = (props) => {
+export const RegisterPageDol = (props) => {
     const { config } = props;
 
     const { darkMode } = useWindow();
@@ -197,5 +197,3 @@ const RegisterPageDol = (props) => {
     </div>
   );
 };
-
-export default RegisterPageDol;

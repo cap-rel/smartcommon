@@ -3,7 +3,7 @@ import { useWindow } from "../../../hooks";
 import IconDol from "../../others/IconDol";
 import { propTypes } from "./props";
 
-const BooleanDol = ({
+export const BooleanDol = ({
     label = null,
     id = null,
     help = null,
@@ -94,5 +94,3 @@ const BooleanDol = ({
 };
 
 BooleanDol.propTypes = propTypes;
-
-export default BooleanDol;

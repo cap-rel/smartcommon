@@ -6,7 +6,7 @@ import { propTypes } from "./props";
 
 // TODO Faire les pattern
 
-const TagsDol = ({
+export const TagsDol = ({
   label = null,
   id = null,
   help = null,
@@ -80,5 +80,3 @@ const TagsDol = ({
 };
 
 TagsDol.propTypes = propTypes;
-
-export default TagsDol;

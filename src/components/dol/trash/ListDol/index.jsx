@@ -17,7 +17,7 @@ import SearchBarDol from "../../others/SearchbarDol";
  * @param {*} searchBarOnChange (function) Ecoute le changement dans la barre de recherche
  * @param {*} searchBarPlaceholder (string) Placeholder de la barre de recherche
  */
-const ListDol = (props) => {
+export const ListDol = (props) => {
   const [list, setList] = useState(props.list);
   const [groups, setGroups] = useState({});
 
@@ -167,5 +167,3 @@ const ListDol = (props) => {
     </>
   );
 };
-
-export default ListDol;

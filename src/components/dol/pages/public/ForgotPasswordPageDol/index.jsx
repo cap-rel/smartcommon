@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 
-const ForgotPasswordPageDol = (props) => {
+export const ForgotPasswordPageDol = (props) => {
   const { config } = props;
 
   const { darkMode } = useWindow();
@@ -125,5 +125,3 @@ const handleEmailProvidingForm = (e) => {
     </div>
   );
 };
-
-export default ForgotPasswordPageDol;

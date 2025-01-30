@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const AlertDol = (props) => {
+export const AlertDol = (props) => {
     const isOpened    = props.isOpened;
     const setIsOpened = props.setIsOpened
     const className = props.className;
@@ -43,5 +43,3 @@ const AlertDol = (props) => {
         </div>
     );
 };
-
-export default AlertDol;

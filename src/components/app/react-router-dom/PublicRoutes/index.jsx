@@ -20,9 +20,7 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
-const PublicRoutes = () => {
+export const PublicRoutes = () => {
   const user = useSelector((state) => state.auth.user);
   return user ? <Navigate to="/" /> : <Outlet />;
 };
-
-export default PublicRoutes;

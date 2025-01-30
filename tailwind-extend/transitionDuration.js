@@ -1,4 +1,4 @@
-const transitionDuration = {};
+export const transitionDuration = {};
 
 const ranges = [
   { start: 0, end: 1000, step: 50 },
@@ -10,5 +10,3 @@ ranges.forEach(({ start, end, step }) => {
     transitionDuration[i] = `${i}ms`;
   }
 });
-
-export default transitionDuration;

@@ -3,7 +3,7 @@ import { isEmpty } from "../../../../globals/functions";
 import { LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const TextareaDol = ({
+export const TextareaDol = ({
   label = null,
   id = null,
   help = null,
@@ -55,5 +55,3 @@ const TextareaDol = ({
 };
 
 TextareaDol.propTypes = propTypes;
-
-export default TextareaDol;

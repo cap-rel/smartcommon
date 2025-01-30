@@ -1,4 +1,4 @@
-const spacing = {};
+export const spacing = {};
 
 const ranges = [
   { start: 0, end: 20, step: 1 },
@@ -11,5 +11,3 @@ ranges.forEach(({ start, end, step }) => {
     spacing[i] = `${i / 4}rem`;
   }
 });
-
-export default spacing;

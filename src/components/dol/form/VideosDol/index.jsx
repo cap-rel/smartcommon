@@ -4,7 +4,7 @@ import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../..
 import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 
-const VideosDol = ({
+export const VideosDol = ({
     label = null,
     id = null,
     help = null,
@@ -253,5 +253,3 @@ const VideosDol = ({
 };
 
 VideosDol.propTypes = propTypes;
-
-export default VideosDol;

@@ -11,7 +11,7 @@ import {
 import SmartDashboardPageDol from "../../pages/private/SmartDashboardPageDol"
 import TestPageDol from "../../pages/private/TestPageDol";
 
-const PageDol = (props) => {
+export const PageDol = (props) => {
   const { config, type, page,} = props;
 
   const typeOfPage = {
@@ -33,5 +33,3 @@ const PageDol = (props) => {
 
   return (<Page config={config} page={page} />);
 };
-
-export default PageDol;

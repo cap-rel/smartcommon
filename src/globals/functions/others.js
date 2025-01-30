@@ -1,0 +1,213 @@
+export const now = (format) => {
+    const date = new Date();
+  
+    const year      =         date.getFullYear()             ;
+    const month     = ("0" + (date.getMonth() + 1)).slice(-2);
+    const dayNumber = ("0" +  date.getDate()      ).slice(-2);
+    const day       =         date.getDay()                  ;
+    const hours     = ("0" +  date.getHours()     ).slice(-2);
+    const minutes   = ("0" +  date.getMinutes()   ).slice(-2);
+    const seconds   = ("0" +  date.getSeconds()   ).slice(-2);
+    
+    const time      =         date.getTime();
+  
+    if (format.toLowerCase() === "timestamp") {
+      return time;
+    }
+  
+    const formatted = format
+      .replace("YYYY", year)
+      .replace("YY"  , year.toString().slice(2, 4))
+      .replace("MM"  , month)
+      .replace("DD"  , dayNumber)
+      .replace("HH"  , hours)
+      .replace("hh"  , hours > 12 ? ("0" + (hours - 12)).slice(-2) : hours)
+      .replace("mm"  , minutes)
+      .replace("ss"  , seconds);
+  
+    return formatted;
+  };
+  
+  export const secondsToTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = Math.floor(seconds % 60);
+  
+    return `${m}:${`0${s}`.slice(-2)}`;
+  };
+  
+  export const timestampToDate = (timestamp) => {
+    if (isEmpty(timestamp)) {
+      return;
+    }
+    const date = new Date(timestamp * 1000);
+    const day = ("0" + date.getDate()).slice(-2);
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+    return formattedDate;
+  };
+  
+  export const timestampToDateTime = (timestamp) => {
+    if (isEmpty(timestamp)) {
+      return;
+    }
+    const date = new Date(timestamp * 1000);
+    const day = ("0" + date.getDate()).slice(-2);
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+    const hours = ("0" + date.getHours()).slice(-2);
+    const minutes = ("0" + date.getMinutes()).slice(-2);
+    // const seconds = ("0" + date.getSeconds()).slice(-2);
+    const formattedDateTime = `${day}/${month}/${year} ${hours}:${minutes}`;
+    return formattedDateTime;
+  };
+  
+  export const dateToTimestamp = (date) => {
+    const dateObject = new Date(date);
+    return dateObject.getTime() / 1000;
+  };
+  
+  export const compareDateToNow = (timestamp) => {
+    const interval = timestamp - Date.now() / 1000;
+    const days = interval / (60 * 60 * 24);
+    return days;
+  };
+  
+  export const searchBarFilter = (label, value) => {
+    return label 
+    ? label
+    .toString()
+    .replace(/\s/g, "")
+    .toUpperCase()
+    .includes(value.replace(/\s/g, "").toUpperCase())
+    : false;
+  };
+  
+  export const unsetObject = (obj) => {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        obj[key] = "";
+      }
+    }
+  };
+  
+  export const sortArray = (array, input, sort = "ascending") => {
+    const compare = (a, b) => {
+      return  sort === "ascending" ? a[input] - b[input] : b[input] - a[input];
+    };
+  
+    array.sort(compare);
+    return array;
+  };
+  
+  export const isArrayOfObjects = (array) => {
+    if (!Array.isArray(array)) {
+        return false;
+    }
+  
+    array.forEach(item => {
+      if (typeof item !== 'object' || item === null) {
+        return false;
+      }
+    })
+  
+    return true;
+  }
+  
+  export const secsToTime = (secs) => {
+    const decH = secs / 60 / 60;
+    const h = ("0" + Math.floor(decH)).slice(-2);
+    const m = ("0" + Math.floor(("0." + decH.toString().split(".")[1]) * 60)).slice(-2);
+    return h != "00" ? h + " h " + m : m != "00" ? m + " min" : "moins d'une minute";
+  }
+  
+  export const mToKm = (meters) => {
+    const decKm = meters / 1000;
+    const km = Math.floor(decKm);
+    const m = Math.floor(("0." + decKm.toString().split(".")[1]) * 1000);
+    return km ? km + "," + m.toString().substring(0, 1) + " km" : m + " m"; 
+  }
+  
+  export function getUserLocation() {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) navigator.geolocation.getCurrentPosition(
+        e => resolve([e.coords.latitude, e.coords.longitude]),
+        error => reject(error.message)
+      );
+      else reject("Impossible de Géolocaliser l'appareil.");
+    });
+  };
+  
+  export const hexToRgb = (hex) => {
+    let cleanedHex = hex.replace('#', '');
+  
+    // If the hex code is in shorthand form (#123), expand it to full form (#112233)
+    if (cleanedHex.length === 3) {
+      cleanedHex = cleanedHex.split('').map(char => char + char).join('');
+    }
+  
+    // Extract the red, green, and blue values
+    const r = parseInt(cleanedHex.substring(0, 2), 16) || "?";
+    const g = parseInt(cleanedHex.substring(2, 4), 16) || "?";
+    const b = parseInt(cleanedHex.substring(4, 6), 16) || "?";
+  
+    // return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+    return `${r}, ${g}, ${b}`;
+  }
+  
+  export function secsToDuration(secs) {
+    const seconds = secs % 60;
+    const minutes = Math.floor((secs % 3600) / 60);
+    const hours = Math.floor((secs % 86400) / 3600);
+    const days = Math.floor(secs / 86400);
+  
+    return { seconds, minutes, hours, days };
+  }
+  
+  export function cleanForComparison(value) {
+    return value.toString().toUpperCase().replace(/\s+/g, "");
+  } 
+  
+  export function generateRandomString(length, options) {
+    const characterSets = {
+      lowercase: 'abcdefghijklmnopqrstuvwxyz',
+      uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+      digits: '0123456789',
+      specials: '!@#$%^&*()-_=+[]{}|;:,.?/`~', // On ne met pas < et >
+    };
+  
+    let characters = '';
+    if (options.lowercase) characters += characterSets.lowercase;
+    if (options.uppercase) characters += characterSets.uppercase;
+    if (options.digits) characters += characterSets.digits;
+    if (options.specials) characters += characterSets.specials;
+  
+    if (!characters) {
+      throw new Error('Au moins une famille de caractères doit être sélectionnée.');
+    }
+  
+    let randomString = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      randomString += characters[randomIndex];
+    }
+  
+    return randomString;
+  }
+  
+  export function removeFileExtension(fileName) {
+    const firstDotIndex = fileName.indexOf('.');
+    if (firstDotIndex === -1) {
+      return fileName.replaceAll("_", " ");
+    }
+    return fileName.substring(0, firstDotIndex).replaceAll("_", " ");
+  }
+  
+  export function isLast(array, index) {
+    return array.length - 1 == index ? true : false;
+  } 
+  
+  export function print(value) {
+      const formatted = JSON.stringify(value, null, 2);
+      document.write("<pre>" + formatted + "</pre>");
+  }

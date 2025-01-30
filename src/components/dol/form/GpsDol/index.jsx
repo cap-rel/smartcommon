@@ -4,7 +4,7 @@ import IconDol from "../../others/IconDol";
 import LabelDol from "../LabelDol";
 import { propTypes } from "./props";
 
-const GpsDol = ({
+export const GpsDol = ({
   label = null,
   id = null,
   help = null,
@@ -43,5 +43,3 @@ const GpsDol = ({
 };
 
 GpsDol.propTypes = propTypes;
-
-export default GpsDol;

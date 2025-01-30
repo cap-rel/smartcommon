@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { MapDol } from "../../../../dol";
 
-const MapPageDol = () => {
+export const MapPageDol = () => {
   const type = useLocation().state || "search";
   const [center, setCenter] = useState(null);
 
@@ -13,5 +13,3 @@ const MapPageDol = () => {
     />
   );
 };
-
-export default MapPageDol;

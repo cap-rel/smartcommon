@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { timestampToDate, timestampToDateTime } from "../../../../globals/functions";
 
-  const FilterTagItemDol = (props) => {
+export const FilterTagItemDol = (props) => {
     const { type, value } = props;
 
     switch (type) {
@@ -47,5 +47,3 @@ import { timestampToDate, timestampToDateTime } from "../../../../globals/functi
 
     return FILTER_TAG_MAP[type];
   };
-
-export default FilterTagItemDol;

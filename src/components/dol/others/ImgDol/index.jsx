@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const ImgDol = (props) => {
+export const ImgDol = (props) => {
   const [zoom, setZoom] = useState(false);
 
   const position = () => { 
@@ -27,5 +27,3 @@ const ImgDol = (props) => {
     </div>
   );
 };
-
-export default ImgDol;

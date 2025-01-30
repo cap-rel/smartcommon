@@ -3,7 +3,7 @@ import { isEmpty, isUndefined } from "../../../../globals/functions";
 import { IconDol, LabelDol } from "../../../dol";
 import { useWindow } from "../../../hooks";
 
-const RadioImgDol = (props) => {
+export const RadioImgDol = (props) => {
   const {
     label, 
     id,
@@ -106,5 +106,3 @@ const RadioImgDol = (props) => {
     </LabelDol>
   );
 };
-
-export default RadioImgDol;

@@ -22,7 +22,7 @@ import DesktopListPageDol from "./DesktopListPageDol";
 import MobileListPageDol from "./MobileListPageDol";
 import { useNavigator } from "../../../../hooks";
 
-const ListPageDol = (props) => {
+export const ListPageDol = (props) => {
   const { config } = props;
 
   const { deviceType } = useNavigator();
@@ -33,5 +33,3 @@ const ListPageDol = (props) => {
       : <MobileListPageDol config={config} />
   );
 };
-
-export default ListPageDol;

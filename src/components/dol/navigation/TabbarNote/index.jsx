@@ -3,7 +3,7 @@ import { IconDol } from "../../../dol";
 import { useNavigator } from "../../../hooks";
 import { isEmpty } from "../../../../globals/functions";
 
-const TabbarNote = () => {
+export const TabbarNote = () => {
     const location = useLocation();
     const { deviceType, darkMode } = useNavigator();
 
@@ -66,5 +66,3 @@ const TabbarNote = () => {
         </div>
     );
 };
-
-export default TabbarNote;

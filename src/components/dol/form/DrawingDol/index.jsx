@@ -6,7 +6,7 @@ import { propTypes } from "./props";
 // TODO faire le required
 // TODO faire le disabled
 
-const DrawingDol = ({
+export const DrawingDol = ({
   label = null,
   id = null,
   help = null,
@@ -79,5 +79,3 @@ const [isSignatureValidated, setIsSignatureValidated] = useState(false);
 };
 
 DrawingDol.propTypes = propTypes;
-
-export default DrawingDol;

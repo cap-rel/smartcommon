@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 
-const LazyLinkDol = (props) => {
+export const LazyLinkDol = (props) => {
   const { onClick, lazyTo, lazyState, duration, children } = props;
   const navigate = useNavigate();
 
@@ -20,5 +20,3 @@ const LazyLinkDol = (props) => {
     </Link>
   );
 };
-
-export default LazyLinkDol;

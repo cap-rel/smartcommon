@@ -25,7 +25,7 @@ import { useDispatch } from "react-redux";
 import { hexToRgb, isEmpty, searchBarFilter } from "../../../../../../globals/functions";
 import hexToRgba from "hex-to-rgba";
 
-const DesktopListPageDol = (props) => {
+export const DesktopListPageDol = (props) => {
   const { config } = props;
 
   const primaryColor = config.app.colors.primary;
@@ -921,5 +921,3 @@ const DesktopListPageDol = (props) => {
     </>
   );
 };
-
-export default DesktopListPageDol;

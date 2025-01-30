@@ -1,4 +1,4 @@
-const ErrorOnGoingPageDol = () => {
+export const ErrorOnGoingPageDol = () => {
   return (
     <div className="col-full-center h-screen p-40">
       <span className="text-4xl font-bold text-center">
@@ -7,5 +7,3 @@ const ErrorOnGoingPageDol = () => {
     </div>
   );
 };
-
-export default ErrorOnGoingPageDol;

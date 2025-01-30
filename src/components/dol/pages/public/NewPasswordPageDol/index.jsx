@@ -1,5 +1,3 @@
-const NewPasswordPageDol = (props) => {
+export const NewPasswordPageDol = (props) => {
     return <div>NewPasswordPageDol</div>;
 };
-
-export default NewPasswordPageDol;

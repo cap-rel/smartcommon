@@ -23,7 +23,7 @@ import { isEmpty } from "../../../globals/functions";
 
 // TODO Fixer le bug quand deux même string se suivent (ex: "test.test")
 
-const useStates = (initialValues, handleSubmitAction) => {
+export const useStates = (initialValues, handleSubmitAction) => {
   const [states, setStates] = useState(initialValues);
 
   // let match = keys[i].match(/(\w+)\[(\d+)\]$/);
@@ -122,5 +122,3 @@ const useStates = (initialValues, handleSubmitAction) => {
     handleSubmit,
   };
 };
-
-export default useStates;

@@ -1,6 +1,6 @@
 import { isUndefined } from "../../functions";
 
-function setComponent(type) {
+export function setComponent(type) {
     const COMPONENTS_MAP = {
         boolean      : { type: "boolean", variant: "switch" },          // return(boolean:boolean)
         checkbox     : { type: "multiSelection", variant: "checkbox" }, // return([option1, ...])
@@ -53,5 +53,3 @@ function setComponent(type) {
 
     return COMPONENTS_MAP[type];
 };
-
-export default setComponent;

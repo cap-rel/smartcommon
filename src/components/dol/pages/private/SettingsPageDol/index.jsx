@@ -7,7 +7,7 @@ import { HexColorPicker } from "react-colorful";
 import { InputDol, IconDol, SelectDol, AlertDol } from "../../../../dol"
 import hexToRgba from "hex-to-rgba";
 
-const SettingsPageDol = (props) => {
+export const SettingsPageDol = (props) => {
     const { states, set } = useStates(
         {
             selectedSetting   : 1, 
@@ -372,5 +372,3 @@ const SettingsPageDol = (props) => {
   </div></div>
       </div>);
 };
-
-export default SettingsPageDol;

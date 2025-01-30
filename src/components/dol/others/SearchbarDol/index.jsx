@@ -6,7 +6,7 @@ import { isEmpty } from "../../../../globals/functions";
 const BadgeSty = styled.div`
   background-color: ${props => props.primaryColor};
 `
-const SearchBarDol = (props) => {
+export const SearchBarDol = (props) => {
   const primaryColor = props.primaryColor;
   const badge        = props.badge;
   const setIsOpened  = props.setIsOpened;
@@ -83,5 +83,3 @@ const SearchBarDol = (props) => {
     </div>
   );
 };
-
-export default SearchBarDol;

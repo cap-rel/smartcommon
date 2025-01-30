@@ -4,7 +4,7 @@ import { useNavigator } from "../../../hooks";
 import { isEmpty, sortArray } from "../../../../globals/functions";
 import { useEffect } from "react";
 
-const TabbarDol = (props) => {
+export const TabbarDol = (props) => {
   const { config } = props;
 
   const navigation = config.navigation;
@@ -100,5 +100,3 @@ const TabbarDol = (props) => {
     </div>
   );
 };
-
-export default TabbarDol;

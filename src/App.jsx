@@ -1,7 +1,7 @@
 import { Head, I18nextProvider, ReduxProvider, Router, Toaster } from "./components/app";
 import colors from "../tailwind-extend/colors";
 
-const App = () => {
+export const App = () => {
   return (
     <ReduxProvider>
       <I18nextProvider>
@@ -23,5 +23,3 @@ const App = () => {
     </ReduxProvider>
   );
 };
-
-export default App;

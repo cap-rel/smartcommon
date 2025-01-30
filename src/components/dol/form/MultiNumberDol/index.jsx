@@ -1,7 +1,7 @@
 import { StepperDol, LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const MultiNumberDol = ({
+export const MultiNumberDol = ({
     label = null,
     id = null,
     help = null,
@@ -41,5 +41,3 @@ const MultiNumberDol = ({
 };
 
 MultiNumberDol.propTypes = propTypes;
-
-export default MultiNumberDol;

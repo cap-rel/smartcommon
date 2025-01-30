@@ -18,12 +18,12 @@
  */
 
 import { BrowserRouter, Route, Routes as BrowserRoutes, useLocation, matchPath } from "react-router-dom";
-import PrivateRoutes from "../PrivateRoutes";
-import PublicRoutes from "../PublicRoutes";
+import { PrivateRoutes } from "../PrivateRoutes";
+import { PublicRoutes } from "../PublicRoutes";
 import { Error404PageDol } from "../../../dol";
 
 
-const Router = (props) => {
+export const Router = (props) => {
   const { config } = props;
 
   const Routes = () => {    
@@ -43,5 +43,3 @@ const Router = (props) => {
   );
  
 };
-
-export default Router;

@@ -24,7 +24,7 @@ import { useSelector } from "react-redux";
 import { SidebarDol } from "../../..";
 import { useNavigator, useWindow } from "../../../../hooks";
 
-const DesktopPrivateLayoutDol = (props) => {
+export const DesktopPrivateLayoutDol = (props) => {
     const { config } = props;
 
     const { darkMode, orientation } = useWindow();
@@ -69,5 +69,3 @@ const DesktopPrivateLayoutDol = (props) => {
         </div>
     );
 };
-
-export default DesktopPrivateLayoutDol;

@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 import { logoutSuccess } from "../../../../../reduxStore/reducers/authSlice";
 import { useApi } from "../../../../hooks";
 
-const SmartDashboardPageDol = (props) => {
+export const SmartDashboardPageDol = (props) => {
     const dispatch = useDispatch();
     const { logout } = useApi();
 
@@ -23,5 +23,3 @@ const SmartDashboardPageDol = (props) => {
         </div>
     );
 };
-
-export default SmartDashboardPageDol;

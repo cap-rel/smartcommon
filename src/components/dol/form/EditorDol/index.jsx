@@ -8,7 +8,7 @@ import { propTypes } from "./props";
 // TODO Faire le required
 // TODO Faire le disabled (géré par mdeditor directement => à regarder)
 
-const EditorDol = ({
+export const EditorDol = ({
   label = null,
   id = null,
   help = null,
@@ -93,5 +93,3 @@ return (
 };
 
 EditorDol.propTypes = propTypes;
-
-export default EditorDol;

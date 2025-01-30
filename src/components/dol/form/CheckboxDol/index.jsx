@@ -2,7 +2,7 @@ import { isEmpty } from "../../../../globals/functions";
 import { IconDol, LabelDol } from "../../../dol";
 import { propTypes } from "./props";
 
-const CheckboxDol = ({
+export const CheckboxDol = ({
   label = null,
   id = null,
   help = null,
@@ -69,5 +69,3 @@ const CheckboxDol = ({
 };
 
 CheckboxDol.propTypes = propTypes;
-
-export default CheckboxDol;

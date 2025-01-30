@@ -1,19 +1,3 @@
-export function isUndefined(value) {
-    return value === undefined;
-}
-  
-export function isNull(value) {
-    return value === null;
-}
-  
-export function isNil(value) { 
-    return isUndefined(value) || isNull(value);
-}
-  
-export function isInvalid(value) {
-    return isNil(value) || Number.isNaN(value);
-}
-  
 export function isString(value) {
     return typeof value === "string";
 }
@@ -49,6 +33,23 @@ export function isObject(value) {
 export function isFunction(value) {
     return typeof value === "function";
 }
+
+export function isUndefined(value) {
+    return value === undefined;
+}
+  
+export function isNull(value) {
+    return value === null;
+}
+  
+export function isNil(value) { 
+    return isUndefined(value) || isNull(value);
+}
+  
+export function isInvalid(value) {
+    return isNil(value) || Number.isNaN(value);
+}
+  
   
 export function isEmpty(value) {
     if (isInvalid(value)) {

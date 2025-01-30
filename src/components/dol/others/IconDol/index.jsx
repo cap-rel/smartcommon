@@ -31,7 +31,7 @@ import * as md from "react-icons/md";
 // import * as vsc from "react-icons/vsc";
 // import * as wi from "react-icons/wi";
 
-const IconDol = (props) => {
+export const IconDol = (props) => {
     const { library, icon } = props;
     
     const libraries = { 
@@ -55,5 +55,3 @@ const IconDol = (props) => {
         <Icon { ...props} />
     );
 };
-
-export default IconDol;

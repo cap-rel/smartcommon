@@ -1,6 +1,6 @@
 import { isInvalid, isNumber, isUndefined } from "../..";
 
-function setEmptyValue(attribute) {
+export function setEmptyValue(attribute) {
     const { type, default: defaultValue, min, max, ratingMax } = attribute;
     const filteredMin = isInvalid(min) ? 0 : min;
     const filteredMax = isInvalid(max) ? 100 : max
@@ -55,5 +55,3 @@ function setEmptyValue(attribute) {
 
     return EMPTY_VALUES_MAP[type];
 }
-
-export default setEmptyValue;
