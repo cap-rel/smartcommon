@@ -1,6 +1,6 @@
 import { useWindow } from "../../../hooks";
-import Icon from "../../others/Icon";
-import Label from "../Label";
+import { Label } from "../Label";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const Rating = ({

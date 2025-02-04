@@ -1,5 +1,6 @@
-import { isEmpty } from "../../../../globals/functions";
-import { Help, Icon, Label } from "../..";
+import { isEmpty } from "../../../globals/functions";
+import { Help, Icon } from "../../others";
+import { Label } from "../Label";
 import { useEffect, useRef, useState } from "react";
 // import SignaturePad from 'react-signature-pad-wrapper';
 // import { SignaturePad } from "signature-pad-package";

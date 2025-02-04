@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { isArrayOfObjects, isEmpty, isObject, isUndefined } from "../../../../globals/functions";
-import { Help, Icon, Label, Select } from "../../../dol";
+import { isArrayOfObjects, isEmpty, isObject, isUndefined } from "../../../globals/functions";
+import { Label } from "../../form";
+import { Help, Icon } from "../../others";
 import { useStates, useWindow } from "../../../hooks";
 import { propTypes } from "./props";
 

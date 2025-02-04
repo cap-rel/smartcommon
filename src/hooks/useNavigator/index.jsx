@@ -1,4 +1,4 @@
-import { useStates } from "..";
+import { useStates } from "../../hooks";
 
 export const useNavigator = () => {
   const isNavigatorAvailable = typeof navigator !== "undefined";

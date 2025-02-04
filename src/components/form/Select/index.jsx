@@ -1,4 +1,5 @@
-import { Icon, Label } from "../../../dol";
+import { Icon } from "../../others";
+import { Label } from "../../form";
 import { propTypes } from "./props";
 
 export const Select = ({

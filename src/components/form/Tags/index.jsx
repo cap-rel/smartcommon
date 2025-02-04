@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { isEmpty } from "../../../../globals/functions";
-import { Help, Icon } from "../../../dol";
-import { RxCross2 } from "react-icons/rx";
+import { isEmpty } from "../../../globals/functions";
+import { Help, Icon } from "../../others";
 import { propTypes } from "./props";
 
 // TODO Faire les pattern

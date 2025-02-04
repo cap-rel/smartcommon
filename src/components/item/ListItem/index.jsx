@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { timestampToDate } from "../../../globals/functions";
-import { Boolean, Checkbox, Icon, Img } from "../../dol";
+import { Icon, Img } from "../../others";
+import { Boolean, Checkbox } from "../../form";
 
 export const ListItem = () => {
 

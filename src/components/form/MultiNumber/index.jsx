@@ -1,4 +1,4 @@
-import { Stepper, Label } from "../../dol";
+import { Stepper, Label } from "../../form";
 import { propTypes } from "./props";
 
 export const MultiNumber = ({

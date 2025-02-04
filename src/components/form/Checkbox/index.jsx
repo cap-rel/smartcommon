@@ -1,5 +1,6 @@
-import { isEmpty } from "../../../../globals/functions";
-import { Icon, Label } from "../../../dol";
+import { isEmpty } from "../../../globals/functions";
+import { Label } from "../../form";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const Checkbox = ({

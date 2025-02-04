@@ -1,7 +1,7 @@
-import { Icon, Img } from "../..";
+import { Icon, Img } from "../../others";
 import { useNavigator, useWindow } from "../../../hooks";
 import { title } from "@uiw/react-md-editor";
-import { hexToRgb, isEmpty } from "../../../../globals/functions";
+import { hexToRgb, isEmpty } from "../../../globals/functions";
 import { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 

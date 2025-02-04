@@ -1,5 +1,5 @@
 import { useNavigator } from "../../../hooks";
-import { Icon, Help } from "../../../dol";
+import { Icon, Help } from "../../others";
 import { propTypes } from "./props";
 
 export const Label = ({

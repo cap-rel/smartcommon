@@ -1,6 +1,5 @@
-import hexToRgba from "hex-to-rgba";
 import { useWindow } from "../../../hooks";
-import Icon from "../../others/Icon";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const Boolean = ({
@@ -75,7 +74,7 @@ export const Boolean = ({
                         ${value ? `${!color && "bg-primary dark:bg-primary-10 border-primary"}` : "border-dol bg-light-soft dark:bg-transparent"}
                     `}
                     style={{ 
-                        backgroundColor: (value && color) && (darkMode ? hexToRgba(color, 0.2) : color),
+                        backgroundColor: (value && color) && (darkMode ? color : color), // opacity 2
                         borderColor: (value && color) && color
                     }}
                 >

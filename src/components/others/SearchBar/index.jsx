@@ -1,11 +1,7 @@
-import styled from "styled-components";
 import { Icon } from "../..";
 import { useEffect, useRef, useState } from "react";
-import { isEmpty } from "../../../../globals/functions";
+import { isEmpty } from "../../../globals/functions";
 
-const BadgeSty = styled.div`
-  background-color: ${props => props.primaryColor};
-`
 export const SearchBar = (props) => {
   const primaryColor = props.primaryColor;
   const badge        = props.badge;

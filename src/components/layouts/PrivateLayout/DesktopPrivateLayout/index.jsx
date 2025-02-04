@@ -19,9 +19,9 @@
 
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { hexToRgb, isEmpty } from "../../../../../globals/functions";
+import { hexToRgb, isEmpty } from "../../../../globals/functions";
 import { useSelector } from "react-redux";
-import { Sidebar } from "../../..";
+import { Sidebar } from "../../../navigation";
 import { useNavigator, useWindow } from "../../../../hooks";
 
 export const DesktopPrivateLayout = (props) => {

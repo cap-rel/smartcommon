@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import useStates from "../useStates";
+import { useStates } from "../../hooks";
 
 export const useWindow = () => {
     const isWindowAvailable = typeof window !== "undefined";

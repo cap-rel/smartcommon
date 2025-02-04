@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { Icon, Label, Select } from "../../../dol";
+import { Icon } from "../../others";
+import { Label, Select } from "../../form";
 import { useStates } from "../../../hooks";
-import { isNull, isUndefined } from "../../../../globals/functions";
+import { isNull, isUndefined } from "../../../globals/functions";
 import { propTypes } from "./props";
 
 export const Stepper = ({

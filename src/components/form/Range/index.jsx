@@ -1,7 +1,8 @@
 import { useMemo } from "react";
-import { Icon, Label, Select } from "../../../dol";
+import { Label, Select } from "../../form";
+import { Icon } from "../../others";
 import { useStates } from "../../../hooks";
-import { isUndefined } from "../../../../globals/functions";
+import { isUndefined } from "../../../globals/functions";
 import { propTypes } from "./props";
 
 export const Range = ({

@@ -1,5 +1,5 @@
 /*
- * PrivateRoutes/index.jsx
+ * ProtectedRoutes/index.jsx
  *
  * Copyright (c) 2024 Paolo Debaisieux <paolo.debaisieux@cap-rel.fr>
  *
@@ -20,7 +20,7 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
 
-export const PrivateRoutes = () => {
+export const ProtectedRoutes = () => {
   const user = useSelector((state) => state.auth.user);
   return user ? <Outlet /> : <Navigate to="/login" />;
 };

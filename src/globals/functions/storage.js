@@ -49,7 +49,7 @@ export function getIndexedDBJSON(key) {
 export function setIndexedDB(key, value) {
     return indexedDB.setItem(key, value);
 }
-s
+
 export function setIndexedDBJSON(key, value) {
     return indexedDB.setItem(key, JSON.stringify(value));
 }

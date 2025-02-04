@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import useStates from "../useStates";
-import { Checkbox, FormItem, Input, Select } from "../../dol";
+import { useStates } from "../../hooks";
+import { FormItem } from "../../components";
 import { isEmpty } from "../../globals/functions";
 
 export const useForm = (form) => {

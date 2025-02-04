@@ -1,13 +1,14 @@
 import { HexColorPicker } from "react-colorful";
 import { useStates } from "../../../hooks";
-import { Icon, Input, Label } from '../..'; 
+import { Input, Label } from '../../form';
+import { Icon } from "../../others"; 
 import rgbHex from 'rgb-hex';
 import hexRgb from 'hex-rgb';
-import { isNumber } from "../../../../globals/functions";
+import { isNumber } from "../../../globals/functions";
 import { defaultColors } from "./data";
 import { propTypes } from "./props";
 
-export const Checkbox = ({
+export const Color = ({
     label = null,
     id = null,
     help = null,
@@ -162,4 +163,4 @@ export const Checkbox = ({
     );
 };
 
-Checkbox.propTypes = propTypes;
+Color.propTypes = propTypes;

@@ -1,8 +1,5 @@
 import { useEffect } from "react";
-import { IoGrid, IoGridOutline } from "react-icons/io5";
-import { TiThList, TiThListOutline } from "react-icons/ti";
-import { RiUserSettingsFill, RiUserSettingsLine } from "react-icons/ri";
-import { mToKm, secsToTime } from "../../../../globals/functions";
+import { mToKm, secsToTime } from "../../../globals/functions";
 
 /**
  * @param {*} props

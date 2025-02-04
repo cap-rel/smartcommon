@@ -18,10 +18,10 @@
  */
 
 import { BrowserRouter, Route, Routes as BrowserRoutes, useLocation, matchPath } from "react-router-dom";
-import { PrivateRoutes } from "../PrivateRoutes";
+import { ProtectedRoutes } from "../ProtectedRoutes";
 import { PublicRoutes } from "../PublicRoutes";
-import { Error404Page } from "../../../dol";
 
+import { Error404Page } from "../../../pages/errors/Error404PageDol"
 
 export const Router = (props) => {
   const { config } = props;
@@ -29,12 +29,15 @@ export const Router = (props) => {
   const Routes = () => {    
     return (
       <BrowserRoutes>
-        <Route element={<PublicRoutes />}></Route>
-        <Route element={<PrivateRoutes />}></Route>
-        <Route path="*" element={<Error404Page />} />
+        {/* <Route element={<PublicRoutes />}></Route> */}
+        {/* <Route element={<ProtectedRoutes />}></Route> */}
+        {/* <Route path={`/login`} element={<LoginPage />} />
+        <Route path={`/`} element={<HomePage />} />*/}
+        <Route path={`*`} element={<Error404Page />} /> 
+        
       </BrowserRoutes>
     );
-  }
+  };
 
   return (
     <BrowserRouter>

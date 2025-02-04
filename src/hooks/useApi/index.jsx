@@ -1,10 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, logoutSuccess } from "../../reduxStore/reducers/authSlice";
 import { API_URL } from "../../globals/constants";
-import { toast } from "../../../reduxStore/reducers/toastsSlice";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import useStates from "../useStates";
+import { useStates } from "../../hooks";
 
 export const useApi = () => {
   const dispatch = useDispatch();

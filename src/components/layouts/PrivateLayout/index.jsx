@@ -19,8 +19,8 @@
 
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import MobilePrivateLayout from "./MobilePrivateLayout";
-import DesktopPrivateLayout from "./DesktopPrivateLayout";
+import { MobilePrivateLayout } from "./MobilePrivateLayout";
+import { DesktopPrivateLayout } from "./DesktopPrivateLayout";
 import { useNavigator } from "../../../hooks";
 
 export const PrivateLayout = (props) => {

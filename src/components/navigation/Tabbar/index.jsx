@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
-import { Icon } from "../../dol";
-import { useNavigator } from "../../hooks";
+import { Icon } from "../../others";
+import { useNavigator } from "../../../hooks";
 import { isEmpty, sortArray } from "../../../globals/functions";
 import { useEffect } from "react";
 

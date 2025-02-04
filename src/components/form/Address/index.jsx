@@ -1,7 +1,7 @@
 import { useRef } from 'react';
-import { useStates } from '../../hooks';
-import Spinner from '../../others/Spinner';
-import { Label } from '../../dol';
+import { useStates } from '../../../hooks';
+import { Spinner } from '../../others';
+import { Label } from '../../form';
 import { cleanForComparison, isEmpty, isUndefined } from '../../../globals/functions';
 import { propTypes } from './props';
 

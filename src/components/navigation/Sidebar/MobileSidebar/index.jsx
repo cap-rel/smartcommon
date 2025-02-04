@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { isEmpty, sortArray } from "../../../../../globals/functions";
+import { isEmpty, sortArray } from "../../../../globals/functions";
 import { useLocation } from "react-router-dom";
 import { useNavigator, useStates, useWindow } from "../../../../hooks";
-import { Icon, Img, Alert, Select, LazyLink } from "../../..";
+import { Icon, Img, LazyLink } from "../../../others";
+import { Select } from "../../../form";
 
 export const MobileSidebar = (props) => {
   const { config } = props;

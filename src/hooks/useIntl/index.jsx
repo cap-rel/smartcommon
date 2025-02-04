@@ -1,5 +1,5 @@
 import { isEmpty } from "../../globals/functions";
-import useNavigator from "../useNavigator";
+import { useNavigator } from "../../hooks";
 
 export const useIntl = () => {
     const DateTimeFormat = (timestamp, locales = null, options = null) => {

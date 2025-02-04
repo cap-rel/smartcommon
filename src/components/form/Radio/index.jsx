@@ -1,4 +1,4 @@
-import { Icon } from "../../../dol";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const Radio = ({

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { isEmpty } from "../../../../globals/functions";
-import Icon from "../Icon";
+import { isEmpty } from "../../../globals/functions";
+import { Icon } from "../Icon";
 import { useWindow } from "../../../hooks";
 
 export const Help = (props) => {

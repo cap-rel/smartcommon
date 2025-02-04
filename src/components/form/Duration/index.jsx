@@ -1,6 +1,6 @@
 import { useEffect } from "react";
-import { secsToDuration } from "../../../../globals/functions";
-import { Stepper, Label } from "../../../dol";
+import { secsToDuration } from "../../../globals/functions";
+import { Stepper, Label } from "../../form";
 import { propTypes } from "./props";
 
 export const Duration = ({

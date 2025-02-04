@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
-import { Icon, Input, Label, Textarea } from "../../../dol";
-import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../../globals/functions";
+import { Input, Label, Textarea } from "../../form";
+import { Icon } from "../../others";
+import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../globals/functions";
 import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 

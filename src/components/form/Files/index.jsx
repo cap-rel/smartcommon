@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { isEmpty } from "../../../globals/functions";
-import { Icon, Label } from "../../dol";
+import { Label } from "../../form";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const Files = ({

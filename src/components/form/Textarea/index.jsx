@@ -1,6 +1,6 @@
 import { useRef } from "react";
-import { isEmpty } from "../../../../globals/functions";
-import { Label } from "../../../dol";
+import { isEmpty } from "../../../globals/functions";
+import { Label } from "../../form";
 import { propTypes } from "./props";
 
 export const Textarea = ({

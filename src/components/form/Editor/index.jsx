@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { isEmpty } from "../../../../globals/functions";
-import { Help, Icon, Label } from "../../../dol";
+import { isEmpty } from "../../../globals/functions";
+import { Label } from "../../form";
 import MDEditor, { commands } from '@uiw/react-md-editor';
 import { propTypes } from "./props";
 

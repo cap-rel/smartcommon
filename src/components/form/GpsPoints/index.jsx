@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
-import { getUserLocation } from "../../../../globals/functions";
-import Icon from "../../others/Icon";
-import Label from "../Label";
+import { getUserLocation } from "../../../globals/functions";
+import { Label } from "../Label";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
 
 export const GpsPoints = ({

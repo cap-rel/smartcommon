@@ -1,5 +1,6 @@
-import { isEmpty } from "../../../../globals/functions";
-import { Help, Icon, Label } from "../..";
+import { isEmpty } from "../../../globals/functions";
+import { Label } from "../../form";
+import { Icon } from "../../others";
 import { useRef, useState } from "react";
 import { propTypes } from "./props";
 

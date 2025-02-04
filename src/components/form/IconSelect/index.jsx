@@ -4,8 +4,9 @@ import * as fa6 from "react-icons/fa6";
 import * as io from "react-icons/io";
 import * as io5 from "react-icons/io5";
 import * as md from "react-icons/md";
-import { Icon, Label } from "../../dol";
-import { useStates } from "../../hooks";
+import { Label } from "../../form";
+import { Icon } from "../../others";
+import { useStates } from "../../../hooks";
 import { cleanForComparison, isUndefined } from "../../../globals/functions";
 import { propTypes } from "./props";
 

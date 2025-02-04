@@ -1,9 +1,10 @@
 import { useEffect } from "react";
-import { isEmpty, sortArray } from "../../../../../globals/functions";
+import { isEmpty, sortArray } from "../../../../globals/functions";
 import { useLocation } from "react-router-dom";
-import { setIsSidebarOpened } from "../../../../../reduxStore/reducers/settingsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { Alert, Icon, Img, Select, LazyLink } from "../../..";
+import { Icon, Img, LazyLink } from "../../../others";
+import { Select } from "../../../form";
+
 import { useStates, useWindow } from "../../../../hooks";
 
 export const DesktopSidebar = (props) => {

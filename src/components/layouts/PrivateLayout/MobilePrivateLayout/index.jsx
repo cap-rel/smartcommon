@@ -19,8 +19,8 @@
 
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import { hexToRgb, isEmpty } from "../../../../../globals/functions";
-import { Tabbar, Sidebar } from "../../..";
+import { hexToRgb, isEmpty } from "../../../../globals/functions";
+import { Tabbar, Sidebar } from "../../../navigation";
 
 export const MobilePrivateLayout = (props) => {
   const { config } = props;
