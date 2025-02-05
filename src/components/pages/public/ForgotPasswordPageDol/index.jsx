@@ -32,7 +32,7 @@ const handleEmailProvidingForm = (e) => {
         toast(
           "Si votre compte existe, un email a de réinitialisation de mot de passe vous a été envoyé...",
           { 
-            icon: <Icon library="io5" icon="IoMailUnreadSharp" className="text-5xl text-primary" />, 
+            icon: <Icon library="io5" name="IoMailUnreadSharp" className="text-5xl text-primary" />, 
             duration: 10000
           }
         );
@@ -44,14 +44,14 @@ const handleEmailProvidingForm = (e) => {
   return (
     <div className={`col gap-3`}>
       {states.isProvidingEmail &&
-        <div className={`bg-alert-dol z-50`}>
+        <div className={`bg-alert-smt z-50`}>
             <Spinner type={`dots`} />
         </div>
       }
-      <p className={`text-dol font-bold uppercase text-2xl`}>
+      <p className={`text-smt font-bold uppercase text-2xl`}>
         {t("public.forgotPasswordTitle")}
       </p>
-      <p className={`text-sm text-soft-dol`}>
+      <p className={`text-sm text-soft-smt`}>
         {t("public.forgotPasswordDescription")}
       </p>
       <form 
@@ -73,10 +73,10 @@ const handleEmailProvidingForm = (e) => {
             >
                 {t("public.emailLabel")}
             </label>
-            <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-dol`}>
+            <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-smt`}>
               <Icon
                 library={`fa`}
-                icon={`FaUser`}
+                name={`FaUser`}
                 className={`text-2xl text-primary`}
                 style={{ fill: darkMode && `url(#gradientSvg)` }}
               />
@@ -89,7 +89,7 @@ const handleEmailProvidingForm = (e) => {
                   e.preventDefault();
                   set("email.root", e.target.value);
                 }}
-                className={`min-w-0 flex-grow outline-none bg-transparent placeholder-dol`}
+                className={`min-w-0 flex-grow outline-none bg-transparent placeholder-smt`}
                 required={false}
               />
             </div>
@@ -99,23 +99,23 @@ const handleEmailProvidingForm = (e) => {
           col gap-3 text-sm 
           sm:gap-4
         `}>
-          <button className={`bg-gradient-to-r from-primary to-secondary button-dol text-white p-4 rounded-md w-full text-lg uppercase tracking-wide font-semibold`}>
+          <button className={`bg-gradient-to-r from-primary to-secondary button-smt text-white p-4 rounded-md w-full text-lg uppercase tracking-wide font-semibold`}>
             {t("public.forgotPasswordSubmitButton")}
           </button>
           <p className={`ml-2 row-v-center gap-2`}>
-            <span className={`text-soft-dol`}>{t("public.loginLinkLabel")}</span>
+            <span className={`text-soft-smt`}>{t("public.loginLinkLabel")}</span>
             <Link 
               to={`/login`} 
-              className={`link-dol text-primary`}
+              className={`link-smt text-primary`}
             >
               {t("public.loginLink")}
             </Link>
           </p>
           <p className="ml-2 row-v-center gap-2">
-            <span className={`text-soft-dol`}>{t("public.registerLinkLabel")}</span>
+            <span className={`text-soft-smt`}>{t("public.registerLinkLabel")}</span>
             <Link 
               to={`/register`} 
-              className={`link-dol text-primary`}
+              className={`link-smt text-primary`}
             >
               {t("public.registerLink")}
             </Link>

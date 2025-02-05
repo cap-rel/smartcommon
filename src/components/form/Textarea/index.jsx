@@ -43,8 +43,8 @@ export const Textarea = ({
         value={value}
         onChange={(e) => onChange(e.target.value)} 
         className={`
-          p-2 text-dol bg-light dark:bg-dark-soft outline-none bg-dol
-          ${note ? "overflow-hidden resize-none pl-4" : "focus:ring-1 ring-primary focus:border-primary border-dol border rounded-md"}
+          p-2 text-smt bg-light dark:bg-dark-soft outline-none bg-smt
+          ${note ? "overflow-hidden resize-none pl-4" : "focus:ring-1 ring-primary focus:border-primary border-smt border rounded-md"}
         `}
 
         { ...textareaProps}

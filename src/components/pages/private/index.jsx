@@ -61,7 +61,7 @@
 //                     >
 //                         <Icon
 //                             library={item.icon.library}
-//                             icon={item.icon.icon}
+//                             name={item.icon.icon}
 //                             className={`
 //                                 ${fontSize[
 //                                     item.icon.fontSize

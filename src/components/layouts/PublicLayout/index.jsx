@@ -49,10 +49,10 @@ export const PublicLayout = (props) => {
                   typeof icon === "object"
                     ? <Icon
                         library={darkMode ? (darkIcon.library || icon.library) : icon.library}
-                        icon={darkMode ? (darkIcon.icon || icon.icon) : icon.icon}
+                        name={darkMode ? (darkIcon.icon || icon.icon) : icon.icon}
                         className={`text-primary`}
                       />
-                    : <div className={`bg-dol lg:bg-light rounded-full p-2 self-start`}>
+                    : <div className={`bg-smt lg:bg-light rounded-full p-2 self-start`}>
                         <Img
                           src={darkMode ? (darkIcon || icon) : icon}
                           className={`w-14 lg:w-20`}
@@ -93,7 +93,7 @@ export const PublicLayout = (props) => {
               `}>
                 {config.app.name}
               </p>
-              <p className={`text-soft-dol`}>
+              <p className={`text-soft-smt`}>
                 {config.app.description}
               </p>
             </div>

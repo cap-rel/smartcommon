@@ -93,7 +93,7 @@ export const useStates = (initialValues, handleSubmitAction) => {
     });
   };
 
-  const set = (input, value) => { HIOC(input, value); }
+  const set = (input, value, condition = true) => { condition && HIOC(input, value); }
 
   const finalizeValues = () => {
     const finalizedValues = { ...states };

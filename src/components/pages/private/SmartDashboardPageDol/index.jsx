@@ -16,7 +16,7 @@ export const SmartDashboardPage = (props) => {
             Tableau de bord
             <button 
                 onClick={() => logout()}
-                className={`p-3 font-semibold text-white bg-red-500 button-dol`}
+                className={`p-3 font-semibold text-white bg-red-500 button-smt`}
             >
                 Deconnexion
             </button>

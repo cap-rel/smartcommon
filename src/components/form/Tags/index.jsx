@@ -28,10 +28,10 @@ export const Tags = ({
 
   return (
     <div className={`col gap-2`}>
-        {label && <label htmlFor={id} className={`text-soft-dol font-semibold`}>{label}</label>}     
+        {label && <label htmlFor={id} className={`text-soft-smt font-semibold`}>{label}</label>}     
         <div 
           className={`
-            bg-dol row-v-center border dark:border-gray-600 
+            bg-smt row-v-center border dark:border-gray-600 
             rounded-md flex-grow ${disabled && "brightness-75 cursor-not-allowed"} p-2
           `}
         >
@@ -44,7 +44,7 @@ export const Tags = ({
                 <p className="text-primary font-semibold">{tag}</p>
                 <Icon 
                   library={`rx`}
-                  icon={`RxCross2`}
+                  name={`RxCross2`}
                   className="text-primary"
                   onClick={(e) => {
                     e.preventDefault();
@@ -68,7 +68,7 @@ export const Tags = ({
                   setNewTag("");
                 }
               }}
-              className={`flex-grow border focus:ring-1 ring-primary outline-none bg-soft-dol border-dol rounded-md p-2 placeholder-dol`}
+              className={`flex-grow border focus:ring-1 ring-primary outline-none bg-soft-smt border-smt rounded-md p-2 placeholder-smt`}
             />
           </div>
 

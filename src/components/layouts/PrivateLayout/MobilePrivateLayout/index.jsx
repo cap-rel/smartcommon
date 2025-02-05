@@ -37,7 +37,7 @@ export const MobilePrivateLayout = (props) => {
 
   return (
     <div className={`
-        fixed overflow-auto top-0 right-0 left-0 bg-soft-dol
+        fixed overflow-auto top-0 right-0 left-0 bg-soft-smt
         ${navigation === "tabbar" ? "bottom-18" : "bottom-0"}
       `}
       // style={{ backgroundImage: `linear-gradient(to right, rgb(${hexToRgb(!darkMode ? secondaryColor : "#000000")}, 0.7), rgb(${hexToRgb(primaryColor)}, 0.7), rgb(${hexToRgb(!darkMode ? secondaryColor : "#000000")}, 0.7))` }}

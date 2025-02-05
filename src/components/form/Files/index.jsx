@@ -29,18 +29,18 @@ export const Files = ({
     <Label { ...labelProps}>
         <div 
             onClick={() => inputRef.current.click()}
-            className={`col-full-center gap-2 p-6 rounded-md border border-dol bg-light dark:bg-dark-soft cursor-pointer`}
+            className={`col-full-center gap-2 p-6 rounded-md border border-smt bg-light dark:bg-dark-soft cursor-pointer`}
         >
             <Icon
                 library={`fa6`}
-                icon={`FaFolderOpen`}
+                name={`FaFolderOpen`}
                 className={`text-4xl text-primary`}
             />
-            <div className={`row-v-center gap-2 text-soft-dol`}>
+            <div className={`row-v-center gap-2 text-soft-smt`}>
                 <input
                     ref={inputRef}
                     onChange={e => !disabled && onChange(e.target.files[0])}
-                    className={`appearance-none bg-transparent w-full file:hidden border-dol cursor-pointer`}
+                    className={`appearance-none bg-transparent w-full file:hidden border-smt cursor-pointer`}
                     { ...inputProps}
                 />
                 <button 
@@ -53,7 +53,7 @@ export const Files = ({
                 >
                     <Icon
                         library={`io5`}
-                        icon={`IoClose`}
+                        name={`IoClose`}
                     />
                 </button>
             </div>

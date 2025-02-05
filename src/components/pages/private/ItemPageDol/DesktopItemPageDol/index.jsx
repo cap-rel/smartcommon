@@ -261,7 +261,7 @@ export const DesktopItemPage = (props) => {
                     `}>
                         <Icon 
                             library="md" 
-                            icon="MdSell" 
+                            name="MdSell" 
                             className="text-3xl md:text-8xl text-[#3f51b5]"
                         />
                         <p className="text-xl">Vente <span className="font-semibold text-[#3f51b5]">#349812F5</span></p>
@@ -321,18 +321,18 @@ export const DesktopItemPage = (props) => {
                         <div className="col gap-4">
                             <p className="font-bold">Actions classiques</p>
                             <div className="wrap-v-center gap-4">
-                                <button className="button-dol row-full-center gap-2 shadow-md flex-grow bg-yellow-400 text-base px-4 py-2 rounded-md text-white">
+                                <button className="button-smt row-full-center gap-2 shadow-md flex-grow bg-yellow-400 text-base px-4 py-2 rounded-md text-white">
                                     <Icon
                                         library="md"
-                                        icon="MdEdit"
+                                        name="MdEdit"
                                         // className="text-2xl"
                                     />
                                     <p>Modifier</p>
                                 </button>
-                                <button className="button-dol row-full-center gap-2 shadow-md flex-grow bg-red-500 text-base px-4 py-2 rounded-md text-white">
+                                <button className="button-smt row-full-center gap-2 shadow-md flex-grow bg-red-500 text-base px-4 py-2 rounded-md text-white">
                                     <Icon
                                         library="fa6"
-                                        icon="FaTrashCan"
+                                        name="FaTrashCan"
                                         // className="text-2xl"
                                     />
                                     <p>Supprimer</p>
@@ -342,18 +342,18 @@ export const DesktopItemPage = (props) => {
                         {/* <div className="col gap-4">
                             <p>Actions classiques page modifier</p>
                             <div className="wrap-v-center gap-2">
-                                <button className="button-dol row-full-center gap-3 shadow-md flex-grow uppercase bg-green-400 p-3 rounded-md tracking-wide text-white">
+                                <button className="button-smt row-full-center gap-3 shadow-md flex-grow uppercase bg-green-400 p-3 rounded-md tracking-wide text-white">
                                     <Icon
                                         library="md"
-                                        icon="MdOutlineSaveAlt"
+                                        name="MdOutlineSaveAlt"
                                         className="text-2xl"
                                     />
                                     <p>Sauvegarder</p>
                                 </button>
-                                <button className="button-dol row-full-center gap-3 shadow-md flex-grow uppercase bg-gray-400 p-3 rounded-md tracking-wide text-white">
+                                <button className="button-smt row-full-center gap-3 shadow-md flex-grow uppercase bg-gray-400 p-3 rounded-md tracking-wide text-white">
                                     <Icon
                                         library="io5"
-                                        icon="IoCloseSharp"
+                                        name="IoCloseSharp"
                                         className="text-2xl"
                                     />
                                     <p>Annuler</p>
@@ -363,16 +363,16 @@ export const DesktopItemPage = (props) => {
                         <div className="col gap-4 font-bold">
                             <p>Actions rapides</p>
                             <div className="wrap-v-center gap-4">
-                                <button className="button-dol shadow-md flex-grow bg-red-200 text-red-800 tracking-wide uppercase px-4 py-2 rounded-full">
+                                <button className="button-smt shadow-md flex-grow bg-red-200 text-red-800 tracking-wide uppercase px-4 py-2 rounded-full">
                                     Refuser
                                 </button>
-                                <button className="button-dol shadow-md flex-grow bg-gray-200 text-gray-600 tracking-wide uppercase px-4 py-2 rounded-full">
+                                <button className="button-smt shadow-md flex-grow bg-gray-200 text-gray-600 tracking-wide uppercase px-4 py-2 rounded-full">
                                     Annuler
                                 </button>
-                                <button className="button-dol shadow-md flex-grow bg-green-200 text-green-800 tracking-wide uppercase px-4 py-2 rounded-full">
+                                <button className="button-smt shadow-md flex-grow bg-green-200 text-green-800 tracking-wide uppercase px-4 py-2 rounded-full">
                                     Ouvrir
                                 </button>
-                                <button className="button-dol shadow-md flex-grow bg-red-200 text-red-800 tracking-wide uppercase px-4 py-2 rounded-full">
+                                <button className="button-smt shadow-md flex-grow bg-red-200 text-red-800 tracking-wide uppercase px-4 py-2 rounded-full">
                                     Jeter
                                 </button>
                             </div>

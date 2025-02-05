@@ -85,7 +85,7 @@ export const Address = ({
             onBlur={() => set("isInputFocused", false)}
             value={value}
             onChange={handleInputOnChange}
-            className={`focus:ring-1 ring-primary w-full py-2 pl-2 pr-7 truncate border border-dol bg-transparent outline-none focus:border-primary rounded-md`}
+            className={`focus:ring-1 ring-primary w-full py-2 pl-2 pr-7 truncate border border-smt bg-transparent outline-none focus:border-primary rounded-md`}
             { ...inputProps}
           />
           {isSearching && 
@@ -95,7 +95,7 @@ export const Address = ({
           }
         </div>
         {(!isEmpty(suggestions) && isInputFocused) && (
-          <ul className={`absolute z-10 top-[calc(100%+4px)] max-h-80 left-0 right-0 bg-dol col border border-dol rounded-md overflow-y-auto`}>
+          <ul className={`absolute z-10 top-[calc(100%+4px)] max-h-80 left-0 right-0 bg-smt col border border-smt rounded-md overflow-y-auto`}>
             {states.suggestions.map((suggestion, index) => {
               // if (cleanForComparison(suggestion).includes(cleanForComparison(states.searchBarValue))) {
                 return (
@@ -105,7 +105,7 @@ export const Address = ({
                       onChange(suggestion);
                       set("suggestions", []);
                     }}
-                    className={`p-2 button-dol bg-soft-dol cursor-pointer`}
+                    className={`p-2 button-smt bg-soft-smt cursor-pointer`}
                   >
                     {suggestion}
                   </li>

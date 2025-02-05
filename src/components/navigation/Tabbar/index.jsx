@@ -15,25 +15,25 @@ export const Tabbar = (props) => {
   const linkGroups = [
     {
       title: "Général",
-      icon: { library: "lu", icon: "LuHome" },
+      icon: { library: "lu", name: "LuHome" },
       links: [
         {
           label: "Tableau de bord",
           toPath: "/",
-          icon: { library: "fa6", icon: "FaRegCalendar" },
-          activeIcon: { library: "fa6", icon: "FaRegCalendar" },
+          icon: { library: "fa6", name: "FaRegCalendar" },
+          activeIcon: { library: "fa6", name: "FaRegCalendar" },
         }, 
         {
           label: "Agenda",
           toPath: "/agenda",
-          icon: { library: "fa6", icon: "FaRegCalendar" },
-          activeIcon: { library: "fa6", icon: "FaCalendarDays" },
+          icon: { library: "fa6", name: "FaRegCalendar" },
+          activeIcon: { library: "fa6", name: "FaCalendarDays" },
         }
       ]
     },
     {
       title: "Objets",
-      icon: { library: "fa", icon: "FaList" },
+      icon: { library: "fa", name: "FaList" },
       links: sortArray(config.objects, "position").map(object => {
         if ((deviceType === "mobile" && object.visibilityOnDevices.mobile) || (deviceType === "tablet" && object.visibilityOnDevices.tablet)) {
           return ({
@@ -65,14 +65,14 @@ export const Tabbar = (props) => {
 
 
   return (
-    <div className={`fixed z-10 bg-dol gap-4 px-2 border-dol left-0 right-0 bottom-0 h-18 row-between-center border-t`}>
+    <div className={`fixed z-10 bg-smt gap-4 px-2 border-smt left-0 right-0 bottom-0 h-18 row-between-center border-t`}>
       {linkGroups.map((linkGroup, LGI) =>
         linkGroup.links.map((link, LI) => !isEmpty(link) && (
           <Link
             key={LI}
             to={link.toPath}
             className={`
-              text-dol col-full-center gap-1 flex-grow active:brightness-90 dark:active:brightness-125
+              text-smt col-full-center gap-1 flex-grow active:brightness-90 dark:active:brightness-125
             `}
           >
             <div className={`
@@ -81,16 +81,16 @@ export const Tabbar = (props) => {
             `}>
               <Icon
                 library={(location.pathname === link.toPath) ? (!isEmpty(link.activeIcon) ? link.activeIcon.library : link.icon.library): link.icon.library}
-                icon={(location.pathname === link.toPath) ? (!isEmpty(link.activeIcon) ? link.activeIcon.icon : link.icon.icon) : link.icon.icon}
+                name={(location.pathname === link.toPath) ? (!isEmpty(link.activeIcon) ? link.activeIcon.icon : link.icon.icon) : link.icon.icon}
                 className={`
                   text-2xl mx-auto
-                  ${location.pathname === link.toPath ? "text-primary" : "text-soft-dol"}
+                  ${location.pathname === link.toPath ? "text-primary" : "text-soft-smt"}
                 `}
               />
             </div>
             <p className={`
               truncate text-sm 
-              ${location.pathname === link.toPath ? "text-dol" : "text-soft-dol"}
+              ${location.pathname === link.toPath ? "text-smt" : "text-soft-smt"}
             `}>
               {link.label}
             </p>

@@ -14,7 +14,7 @@ export const Img = (props) => {
 
   return (
     <div
-      className={`${zoom ? "alert-dol" : ""} duration-300`}
+      className={`${zoom ? "alert-smt" : ""} duration-300`}
       onClick={() => setZoom((prevState) => props.zoomable && !prevState)}
     >
       <div className={`${zoom ? "w-2/3" : props.className}`}>

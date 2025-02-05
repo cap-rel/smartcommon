@@ -59,7 +59,7 @@ const { darkMode, windowDimension } = useWindow();
         </div>
         <div className={`row-between-center`}>
           <button
-            className={`bg-error p-2 rounded-md text-white button-dol`}
+            className={`bg-error p-2 rounded-md text-white button-smt`}
             onClick={e => {
               e.preventDefault();
               set("isSignatureValidated", false);
@@ -70,7 +70,7 @@ const { darkMode, windowDimension } = useWindow();
           </button>
           <button
             disabled={isSignatureValidated}
-            className={`bg-success p-2 rounded-md text-white ${isSignatureValidated ? "brightness-50 cursor-not-allowed" : "button-dol"}`}
+            className={`bg-success p-2 rounded-md text-white ${isSignatureValidated ? "brightness-50 cursor-not-allowed" : "button-smt"}`}
             onClick={e => {
               e.preventDefault();
               set("isSignatureValidated", true);

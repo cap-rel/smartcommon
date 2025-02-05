@@ -89,7 +89,7 @@ export const TestPage = () => {
     });
 
     return (
-        <div className="bg-dol p-12 col items-start">
+        <div className="bg-smt p-12 col items-start">
             <div className={`col gap-6`}>
                 {/* {inputs.map(input =>
                     <Input label={input} type={input} value={states.inputs[input]} onChange={value => set(`inputs.${input}`, value)} />

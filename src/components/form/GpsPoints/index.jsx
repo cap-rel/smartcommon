@@ -34,9 +34,9 @@ export const GpsPoints = ({
               toast.error("Erreur lors de la géolocalisation\n" + error);
             })
         }
-        className={`p-4 border border-primary rounded-full bg-primary dark:bg-primary-20 text-white dark:text-primary text-2xl button-dol`}
+        className={`p-4 border border-primary rounded-full bg-primary dark:bg-primary-20 text-white dark:text-primary text-2xl button-smt`}
       >
-        <Icon library={`fa6`} icon={`FaLocationDot`} />
+        <Icon library={`fa6`} name={`FaLocationDot`} />
       </button>
     </Label>
   );

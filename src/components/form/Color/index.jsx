@@ -46,19 +46,19 @@ export const Color = ({
                     style={{ backgroundColor: value, borderColor: value }}
                     className={`
                         cursor-pointer rounded-full h-6 w-6 border-2
-                        ${!value && "border-dol"}
+                        ${!value && "border-smt"}
                     `}
                 />
                 {label && <span>{label}</span>}
             </div>
-            <div className={`${isColorPickerOpened ? "alert-dol opacity-100 duration-300" : "fixed opacity-0"}`}>
+            <div className={`${isColorPickerOpened ? "alert-smt opacity-100 duration-300" : "fixed opacity-0"}`}>
                 <div className={`${isColorPickerOpened ? "col-full-center" : "hidden"}`} onClick={(e) => e.stopPropagation()}> 
-                    <div className={`rounded-md bg-dol p-12 relative`}>
+                    <div className={`rounded-md bg-smt p-12 relative`}>
                         <button 
                             onClick={() => set("isColorPickerOpened", false)}
-                            className={`bg-dol p-1 rounded-full button-dol text-soft-dol text-2xl absolute right-2 top-2`}
+                            className={`bg-smt p-1 rounded-full button-smt text-soft-smt text-2xl absolute right-2 top-2`}
                         >
-                            <Icon library={`io5`} icon={`IoClose`}/>
+                            <Icon library={`io5`} name={`IoClose`}/>
                         </button>
                         <div className={`col gap-6`}>
                         <Label label={alertLabel || label}>
@@ -68,7 +68,7 @@ export const Color = ({
                                             key={DCI}
                                             className={`
                                                 relative rounded-full w-8 h-8 duration-100 border-2
-                                                ${!defaultColor && "border-dol"}
+                                                ${!defaultColor && "border-smt"}
                                             `}
                                                 // ${value === defaultColor && "border-dark dark:border-light"}
                                             style={{ 
@@ -79,7 +79,7 @@ export const Color = ({
                                             onClick={() => onChange(!defaultColor ? null : defaultColor)}
                                         >
                                             <Icon 
-                                                library={`fa6`} icon={`FaCheck`}
+                                                library={`fa6`} name={`FaCheck`}
                                                 className={`${defaultColor ? "text-white" : "text-light-text"} dark:text-white text-lg absolute-full-center ${value !== defaultColor && "hidden"}`}
                                             />
                                         </button>
@@ -94,7 +94,7 @@ export const Color = ({
                                             onChange={value => !disabled && onChange(value)}
                                         />
                                     </div>
-                                    <div className="col gap-6 text-dol">
+                                    <div className="col gap-6 text-smt">
                                         {/* {alertLabel || label && <span className="font-semibold text-base">{alertLabel || label}</span>} */}
                                         <Label label={`HEX`}>
                                             <div className={`row-v-center gap-2`}>
@@ -105,7 +105,7 @@ export const Color = ({
                                                     className={`flex-grow`}
                                                 />
                                                 <button
-                                                    className={`font-semibold button-dol rounded-md p-2 text-white dark:text-primary border border-primary bg-primary dark:bg-primary-10`}
+                                                    className={`font-semibold button-smt rounded-md p-2 text-white dark:text-primary border border-primary bg-primary dark:bg-primary-10`}
                                                     onClick={() => (!disabled && hexInput) && onChange(hexInput)}
                                                 >
                                                     OK
@@ -133,7 +133,7 @@ export const Color = ({
                                                     className={`w-16`}
                                                 />
                                                 <button
-                                                    className={`button-dol font-semibold rounded-md p-2 text-white dark:text-primary border border-primary bg-primary dark:bg-primary-10`}
+                                                    className={`button-smt font-semibold rounded-md p-2 text-white dark:text-primary border border-primary bg-primary dark:bg-primary-10`}
                                                     onClick={() => {
                                                         if (!disabled && (redInput || greenInput || blueInput)) {
                                                             const isNumberInvalid = (number) => (!number || !isNumber(number) || number < 0 || number > 255);                                                        

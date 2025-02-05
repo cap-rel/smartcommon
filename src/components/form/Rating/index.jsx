@@ -40,7 +40,7 @@ export const Rating = ({
                 {Array(max || 5).fill("").map((step, SI) =>
                     <Icon
                         library={variantIcons.library}
-                        icon={
+                        name={
                               intValue >= SI + 1
                             ? variantIcons.full
                             // : (isDivided && value < SI + 1) 

@@ -18,25 +18,25 @@ export const DesktopSidebar = (props) => {
   const linkGroups = [
     {
       title: "Général",
-      icon: { library: "lu", icon: "LuHome" },
+      icon: { library: "lu", name: "LuHome" },
       links: [
         {
           label: "Tableau de bord",
           toPath: "/",
-          icon: { library: "fa6", icon: "FaRegCalendar" },
-          activeIcon: { library: "fa6", icon: "FaRegCalendar" },
+          icon: { library: "fa6", name: "FaRegCalendar" },
+          activeIcon: { library: "fa6", name: "FaRegCalendar" },
         }, 
         {
           label: "Agenda",
           toPath: "/agenda",
-          icon: { library: "fa6", icon: "FaRegCalendar" },
-          activeIcon: { library: "fa6", icon: "FaCalendarDays" },
+          icon: { library: "fa6", name: "FaRegCalendar" },
+          activeIcon: { library: "fa6", name: "FaCalendarDays" },
         }
       ]
     },
     {
       title: "Objets",
-      icon: { library: "fa", icon: "FaList" },
+      icon: { library: "fa", name: "FaList" },
       links: sortArray(config.objects, "position").map(object => object.visibilityOnDevices.desktop && ({
         label: object.pluralLabel,
         toPath: `/${object.slug}`,
@@ -80,7 +80,7 @@ export const DesktopSidebar = (props) => {
           <div className={`col h-full`}>
             <div className={`row-between-center gap-2 p-4 text-dark-text`}>
             <button 
-                className={`relative text-2xl p-2 rounded-md bg-dark button-dark-dol`}
+                className={`relative text-2xl p-2 rounded-md bg-dark button-dark-smt`}
                 onMouseOver={() => set("isOnSidebar", false)}
                 onClick={() => {
                   if (isSidebarOpened) {
@@ -92,7 +92,7 @@ export const DesktopSidebar = (props) => {
               >
                 <Icon
                   library={isSidebarOpened ? "io5" : "io5"}
-                  icon={isSidebarOpened ? "IoCloseSharp" : "IoMenuSharp"}
+                  name={isSidebarOpened ? "IoCloseSharp" : "IoMenuSharp"}
                   className={`duration-300 ${(states.isOnSidebar || isSidebarOpened) ? "text-primary" : "text-dark-text"}`}
                 />
               </button>
@@ -139,7 +139,7 @@ export const DesktopSidebar = (props) => {
                   `}>
                     <Icon
                       library={linkGroup.icon.library}
-                      icon={linkGroup.icon.icon}
+                      name={linkGroup.icon.icon}
                       className={`
                         duration-200
                         ${(states.isOnSidebar || isSidebarOpened)
@@ -178,14 +178,14 @@ export const DesktopSidebar = (props) => {
                           ${(states.isOnSidebar || isSidebarOpened) && "gap-2"}
                           ${(location.pathname === link.toPath && !states.isProfileOpened) 
                             ? "text-white bg-gradient-to-r from-primary to-secondary" 
-                            : "bg-dark text-dark-soft-text button-dark-dol"
+                            : "bg-dark text-dark-soft-text button-dark-smt"
                           }
                         `}
                       >
                         <div className="row-v-center gap-2 relative">
                           <Icon
                             library={(location.pathname === link.toPath && !states.isProfileOpened) ? (!isEmpty(link.activeIcon) ? link.activeIcon.library : link.icon.library): link.icon.library}
-                            icon={(location.pathname === link.toPath && !states.isProfileOpened) ? (!isEmpty(link.activeIcon) ? link.activeIcon.icon : link.icon.icon) : link.icon.icon}
+                            name={(location.pathname === link.toPath && !states.isProfileOpened) ? (!isEmpty(link.activeIcon) ? link.activeIcon.icon : link.icon.icon) : link.icon.icon}
                             className={`text-2xl ${location.pathname !== link.toPath && "text-primary"}`}
                             // style={{ fill: location.pathname !== link.toPath && "url(#gradientSvg)" }}                    
                           />
@@ -225,7 +225,7 @@ export const DesktopSidebar = (props) => {
             >
             <button 
               className={`
-                text-2xl p-2 rounded-md bg-dark button-dark-dol row-v-center
+                text-2xl p-2 rounded-md bg-dark button-dark-smt row-v-center
                 ${(states.isOnSidebar || isSidebarOpened) ? "gap-2" : "gap-0"}
               `}
               onClick={() => {
@@ -238,7 +238,7 @@ export const DesktopSidebar = (props) => {
             >
                 {/* <Icon
                   library={`fa6`}
-                  icon={`FaRegUser`}
+                  name={`FaRegUser`}
                   className={`relative`}
                 /> */}
                 <Img
@@ -257,7 +257,7 @@ export const DesktopSidebar = (props) => {
               </button>
               <button 
               className={`
-                text-dark-text rounded-md bg-dark button-dark-dol
+                text-dark-text rounded-md bg-dark button-dark-smt
                 ${(states.isOnSidebar || isSidebarOpened) ? "p-2 bg-dark" : "p-0 bg-dark-0"}
               `}
               style={{ transition: "background-color 300ms"}}
@@ -265,7 +265,7 @@ export const DesktopSidebar = (props) => {
                 {/* // TODO Régler le problème du padding (pas de duration donc une petite bnourl) */}
                   <Icon
                     library={`fa6`}
-                    icon={`FaGear`}
+                    name={`FaGear`}
                     className={`
                       duration-300
                       ${(states.isOnSidebar || isSidebarOpened) ? "text-secondary size-6 opacity-100" : "text-dark-text size-0 opacity-0"}
@@ -278,17 +278,17 @@ export const DesktopSidebar = (props) => {
         <Alert
           isOpened={states.isProfileOpened}
           setIsOpened={(newState) => set("isProfileOpened", newState)}
-          className={`col-h-center gap-4 p-4 text-base bg-dol rounded-md`}
+          className={`col-h-center gap-4 p-4 text-base bg-smt rounded-md`}
         >
           <button 
             className={`
-               absolute right-2 top-2 text-2xl p-2 bg-dol text-soft-dol button-dol rounded-full
+               absolute right-2 top-2 text-2xl p-2 bg-smt text-soft-smt button-smt rounded-full
             `}
             onClick={() => set("isProfileOpened", false)}
           >
             <Icon
               library={"io5"}
-              icon={"IoCloseSharp"}
+              name={"IoCloseSharp"}
             />
           </button>
           <div className="col-h-center gap-2">
@@ -297,36 +297,36 @@ export const DesktopSidebar = (props) => {
               round={true}
               className={`h-24 w-24`}
             />
-            <p className={`uppercase text-dol font-bold text-2xl`}>Paolo Debaisieux</p>
-            <p className="italic -mt-2 underline text-soft-dol text-lg">paolo.debaisieux@cap-rel.fr</p>
+            <p className={`uppercase text-smt font-bold text-2xl`}>Paolo Debaisieux</p>
+            <p className="italic -mt-2 underline text-soft-smt text-lg">paolo.debaisieux@cap-rel.fr</p>
           </div>
           <div className="col gap-2">
-            <div className="col gap-2 border border-dol w-full text-gray-800 rounded-md">
+            <div className="col gap-2 border border-smt w-full text-gray-800 rounded-md">
             <p 
               className="
-                text-xl text-center py-2 text-dol rounded-t-lg
-                border-b border-dol bg-soft-dol font-semibold"
+                text-xl text-center py-2 text-smt rounded-t-lg
+                border-b border-smt bg-soft-smt font-semibold"
             >
               Session (SmartAuth)
             </p>
-              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-dol">
-                  <span className="basis-1/2 text-soft-dol pr-4">Durée de la connexion</span>
-                  <span className="basis-1/2 text-dol pl-4">1 h 35 min</span>
+              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-smt">
+                  <span className="basis-1/2 text-soft-smt pr-4">Durée de la connexion</span>
+                  <span className="basis-1/2 text-smt pl-4">1 h 35 min</span>
               </div>
-              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-dol bg-soft-dol">
-                  <span className="basis-1/2 text-soft-dol pr-4">Connecté depuis</span>
-                  <span className="basis-1/2 text-dol pl-4">10/08/2019 18:57</span>
+              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-smt bg-soft-smt">
+                  <span className="basis-1/2 text-soft-smt pr-4">Connecté depuis</span>
+                  <span className="basis-1/2 text-smt pl-4">10/08/2019 18:57</span>
               </div>
-              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-dol">
-                  <span className="basis-1/2 text-soft-dol pr-4">Connexion précédente</span>
-                  <span className="basis-1/2 text-dol pl-4">10/06/2024 12:35</span>
+              <div className="row-v-center h-full px-4 py-2 w-full divide-x divide-smt">
+                  <span className="basis-1/2 text-soft-smt pr-4">Connexion précédente</span>
+                  <span className="basis-1/2 text-smt pl-4">10/06/2024 12:35</span>
               </div>
             </div>
           </div>
           <div className="row-between-center gap-4 w-full">
             <button 
               className={`
-                row-v-center py-2 gap-2 px-4 text-white button-dark-dol 
+                row-v-center py-2 gap-2 px-4 text-white button-dark-smt 
                 rounded-md bg-[#253c5c] border-[#253c5c] font-semibold
               `}
               onClick={() => set("isProfileOpened", false)}
@@ -340,14 +340,14 @@ export const DesktopSidebar = (props) => {
             </button>
             <button 
               className={`
-                row-v-center gap-2 py-2 px-4 bg-red-500 button-dark-dol 
+                row-v-center gap-2 py-2 px-4 bg-red-500 button-dark-smt 
                 rounded-md text-white font-semibold
               `}
               onClick={() => set("isProfileOpened", false)}
             >
               <Icon
                 library={"io5"}
-                icon={"IoLogOut"}
+                name={"IoLogOut"}
                 className={`text-xl`}
               />
               <p>Déconnexion</p>

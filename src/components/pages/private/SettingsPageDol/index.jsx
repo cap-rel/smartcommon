@@ -59,27 +59,27 @@ export const SettingsPage = (props) => {
     ];
 
     const settings = [
-        { label: "Paramètres généraux"  , icon: { library: "bs" , icon: "BsFillGearFill"     }, description: "Définissez la langue, la devise, ... de votre DoliMobile"    },
-        { label: "Thèmes et couleurs"   , icon: { library: "io5", icon: "IoColorFilterSharp" }, description: "Définissez le thème et les couleurs de votre DoliMobile"     },
-        { label: "Accessibilité"        , icon: { library: "io5", icon: "IoAccessibility"    }, description: "Gérer tous vos paramètres d'accessissibilité"                },
-        { label: "SmartAuth"            , icon: { library: "si" , icon: "SiAuthelia"         }, description: "Accéder et personnalisez vos sessions comme bon vous semble" },
-        { label: "Affichage des entités", icon: { library: "md" , icon: "MdDisplaySettings"  }, description: "Personnalisez l'affichage pour chaque entité"                },
-        { label: "Filtres des entités"  , icon: { library: "io5", icon: "IoFilter"           }, description: "Définissez les filtres par défaut pour chaque entité"        }
+        { label: "Paramètres généraux"  , icon: { library: "bs" , name: "BsFillGearFill"     }, description: "Définissez la langue, la devise, ... de votre DoliMobile"    },
+        { label: "Thèmes et couleurs"   , icon: { library: "io5", name: "IoColorFilterSharp" }, description: "Définissez le thème et les couleurs de votre DoliMobile"     },
+        { label: "Accessibilité"        , icon: { library: "io5", name: "IoAccessibility"    }, description: "Gérer tous vos paramètres d'accessissibilité"                },
+        { label: "SmartAuth"            , icon: { library: "si" , name: "SiAuthelia"         }, description: "Accéder et personnalisez vos sessions comme bon vous semble" },
+        { label: "Affichage des entités", icon: { library: "md" , name: "MdDisplaySettings"  }, description: "Personnalisez l'affichage pour chaque entité"                },
+        { label: "Filtres des entités"  , icon: { library: "io5", name: "IoFilter"           }, description: "Définissez les filtres par défaut pour chaque entité"        }
     ];
 
     const entities = [
-        { name: "tiers", label: "Tiers", color: "#fe9e21", icon: { library: "fa6", icon: "FaUser" } },
-        { name: "tiers", label: "Produits", color: "#2fa3e9", icon: { library: "ai", icon: "AiFillProduct" } },
-        { name: "tiers", label: "Ventes", color: "#4caf50", icon: { library: "md", icon: "MdSell" } },
-        { name: "tiers", label: "Site de stock", color: "#8a4af3", icon: { library: "fa6", icon: "FaBox" } },
-        { name: "tiers", label: "Projets", color: "#ed1b66", icon: { library: "fa", icon: "FaProjectDiagram" } },
-        { name: "tiers", label: "Factures | Paiements sqddqsd ", color: "#0e0e0e", icon: { library: "ri", icon: "RiFilePaper2Fill" } },
-        { name: "tiers", label: "Tiers", color: "#fe9e21", icon: { library: "fa6", icon: "FaUser" } },
-        { name: "tiers", label: "Produits", color: "#2fa3e9", icon: { library: "ai", icon: "AiFillProduct" } },
-        { name: "tiers", label: "Ventes", color: "#4caf50", icon: { library: "md", icon: "MdSell" } },
-        { name: "tiers", label: "Site de stock", color: "#8a4af3", icon: { library: "fa6", icon: "FaBox" } },
-        { name: "tiers", label: "Projets", color: "#ed1b66", icon: { library: "fa", icon: "FaProjectDiagram" } },
-        { name: "tiers", label: "Factures | Paiements", color: "#0e0e0e", icon: { library: "ri", icon: "RiFilePaper2Fill" } },
+        { name: "tiers", label: "Tiers", color: "#fe9e21", icon: { library: "fa6", name: "FaUser" } },
+        { name: "tiers", label: "Produits", color: "#2fa3e9", icon: { library: "ai", name: "AiFillProduct" } },
+        { name: "tiers", label: "Ventes", color: "#4caf50", icon: { library: "md", name: "MdSell" } },
+        { name: "tiers", label: "Site de stock", color: "#8a4af3", icon: { library: "fa6", name: "FaBox" } },
+        { name: "tiers", label: "Projets", color: "#ed1b66", icon: { library: "fa", name: "FaProjectDiagram" } },
+        { name: "tiers", label: "Factures | Paiements sqddqsd ", color: "#0e0e0e", icon: { library: "ri", name: "RiFilePaper2Fill" } },
+        { name: "tiers", label: "Tiers", color: "#fe9e21", icon: { library: "fa6", name: "FaUser" } },
+        { name: "tiers", label: "Produits", color: "#2fa3e9", icon: { library: "ai", name: "AiFillProduct" } },
+        { name: "tiers", label: "Ventes", color: "#4caf50", icon: { library: "md", name: "MdSell" } },
+        { name: "tiers", label: "Site de stock", color: "#8a4af3", icon: { library: "fa6", name: "FaBox" } },
+        { name: "tiers", label: "Projets", color: "#ed1b66", icon: { library: "fa", name: "FaProjectDiagram" } },
+        { name: "tiers", label: "Factures | Paiements", color: "#0e0e0e", icon: { library: "ri", name: "RiFilePaper2Fill" } },
     ]
 
     // const [primaryColor, setPrimaryColor] = useColor("#3f51b5");
@@ -190,21 +190,21 @@ export const SettingsPage = (props) => {
                                         key={EI}
                                         className={`
                                             p-4 row-between-center gap-4 rounded-md
-                                            button-dol shadow-md duration-200
+                                            button-smt shadow-md duration-200
                                         `}
                                         style={{ backgroundColor: `rgb(${hexToRgb(entity.color)}, 0.1)` }}
                                     >
                                         <div className="row-v-center gap-4 truncate">
                                             <Icon
                                                 className={`w-8 h-auto flex-shrink-0`}
-                                                icon={entity.icon.icon}
+                                                name={entity.icon.icon}
                                                 library={entity.icon.library}
                                                 style={{ color: entity.color }}
                                             />
                                             <p className="text-gray-800 font-semibold truncate">{entity.label}</p>
                                         </div>
                                         <Icon
-                                            icon={`IoIosArrowForward`}
+                                            name={`IoIosArrowForward`}
                                             library={`io`}
                                         />
                                     </button>
@@ -250,7 +250,7 @@ export const SettingsPage = (props) => {
                                     />
                                 </div>
                                 {/* <button 
-                                    className={`button-dol bg-gray-500 px-4 py-2 font-semibold rounded-md text-white`}
+                                    className={`button-smt bg-gray-500 px-4 py-2 font-semibold rounded-md text-white`}
                                     onClick={() => set("selectedColor", null)}
                                 >
                                     Revenir à la couleur par défaut
@@ -308,7 +308,7 @@ export const SettingsPage = (props) => {
                     >
                         <Icon
                             className={`w-10 h-auto flex-shrink-0 ${states.selectedSetting == SI && "text-[#3f51b5]"}`}
-                            icon={setting.icon.icon}
+                            name={setting.icon.icon}
                             library={setting.icon.library}
                         />
                         <div className={`col gap-2 text-start`}>
@@ -326,7 +326,7 @@ export const SettingsPage = (props) => {
                             <div className=" p-2 rounded-md bg-[#3f51b5]">
                                 <Icon
                                     className={`text-3xl text-white`}
-                                    icon={setting.icon.icon}
+                                    name={setting.icon.icon}
                                     library={setting.icon.library}
                                 />
                             </div>
@@ -342,26 +342,26 @@ export const SettingsPage = (props) => {
   <div className="row-between-center gap-4 w-full">
   <button 
       className={`
-        row-v-center gap-2 py-2 px-4 bg-gray-500 button-dol 
+        row-v-center gap-2 py-2 px-4 bg-gray-500 button-smt 
         rounded-md text-white font-semibold
       `}
     >
       <Icon
         library={"md"}
-        icon={"MdCancel"}
+        name={"MdCancel"}
         className={`text-xl`}
       />
       <p>Annuler</p>
     </button>
     <button 
       className={`
-        row-v-center gap-2 py-2 px-4 bg-green-500 button-dol 
+        row-v-center gap-2 py-2 px-4 bg-green-500 button-smt 
         rounded-md text-white font-semibold
       `}
     >
       <Icon
         library={"md"}
-        icon={"MdCheckCircle"}
+        name={"MdCheckCircle"}
         className={`text-xl`}
       />
       <p>Sauvegarder</p>

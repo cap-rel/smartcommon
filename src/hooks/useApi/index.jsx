@@ -48,7 +48,7 @@ export const useApi = () => {
     .then((json) => {
       set("isLoggingIn", false);
       dispatch(loginSuccess(json.data));
-      toast.success(t("public.loginSuccess", { user: json.data.user }), { duration: 8000, icon: "👋" });
+      toast.success(t("public.loginSuccess", { user: json.data.user }), { duration: 8000, name: "👋" });
     })
     .catch((error) => {
       set("isLoggingIn", false);

@@ -68,9 +68,9 @@ export const IconSelect = ({
                     name={name}
                     onChange={e => set("input", e.target.value)}
                     placeholder={placeholder || "Nom de l'icône ..."}
-                    className={`${value && "hidden"} outline-none focus:border-primary rounded-md bg-light dark:bg-dark-soft w-full border focus:ring-1 ring-primary border-dol py-2 pl-2 pr-8 placeholder-dol`}
+                    className={`${value && "hidden"} outline-none focus:border-primary rounded-md bg-light dark:bg-dark-soft w-full border focus:ring-1 ring-primary border-smt py-2 pl-2 pr-8 placeholder-smt`}
                 />
-                <div className={`${!value && "hidden"} row-v-center gap-2 rounded-md w-full bg-light dark:bg-dark-soft border border-dol pl-2 py-2 pr-7`}>
+                <div className={`${!value && "hidden"} row-v-center gap-2 rounded-md w-full bg-light dark:bg-dark-soft border border-smt pl-2 py-2 pr-7`}>
                     <Icon { ...value} className={`text-primary text-xl`}/>
                     <p className={`truncate text-left`}>{value?.icon}</p>
                     <p>({value?.library})</p>
@@ -81,18 +81,18 @@ export const IconSelect = ({
                         // inputRef.current.focus();
                         onChange(null);
                     }}
-                    className={`absolute-v-center text-soft-dol text-xl right-2 z-10 ${!value && "pointer-events-none"} flex-shrink-0`}
+                    className={`absolute-v-center text-soft-smt text-xl right-2 z-10 ${!value && "pointer-events-none"} flex-shrink-0`}
                 >
-                    <Icon library={value ? "io5" : "io"} icon={value ? "IoClose" : "IoIosArrowDown"} />
+                    <Icon library={value ? "io5" : "io"} name={value ? "IoClose" : "IoIosArrowDown"} />
                 </button>
                 {(!value && isInputFocused && input.length >= 3) &&
-                    <ul className={`absolute top-[calc(100%+8px)] z-20 right-0 left-0 col rounded-md border border-dol bg-dol max-h-80 overflow-y-auto`}>
+                    <ul className={`absolute top-[calc(100%+8px)] z-20 right-0 left-0 col rounded-md border border-smt bg-smt max-h-80 overflow-y-auto`}>
                         {icons.filter(icon => cleanForComparison(icon.icon).includes(cleanForComparison(input))).map(icon => 
                             <li
                                 onMouseDown={() => {
                                     onChange(icon);
                                 }}
-                                className={`px-2 py-1 row-v-center gap-2 button-dol bg-soft-dol cursor-pointer`}
+                                className={`px-2 py-1 row-v-center gap-2 button-smt bg-soft-smt cursor-pointer`}
                             >
                                 <Icon { ...icon} className={`text-primary`}/>
                                 <p className={`truncate flex-grow text-left`}>{icon.icon}</p>

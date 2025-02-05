@@ -32,7 +32,7 @@ import * as md from "react-icons/md";
 // import * as wi from "react-icons/wi";
 
 export const Icon = (props) => {
-    const { library, icon } = props;
+    const { library, name } = props;
     
     const libraries = { 
         fa, fa6, io, io5, md
@@ -44,7 +44,7 @@ export const Icon = (props) => {
         return <span { ...props} />;
     }
     
-    const Icon = libraries[library][icon];
+    const Icon = libraries[library][name];
 
     if (!Icon) {
         // console.warn(`Icon ${icon} not found in ${library} library`);

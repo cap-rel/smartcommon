@@ -24,7 +24,7 @@ export const Checkbox = ({
   const labelProps = { label, id, help, required, className };
 
     const renderCheckbox = (option, OI, isChecked) => (
-      <label htmlFor={OI} className={`row-v-center bg-soft-dol button-dol gap-2 p-3 ${className}`} key={OI}>
+      <label htmlFor={OI} className={`row-v-center bg-soft-smt button-smt gap-2 p-3 ${className}`} key={OI}>
         <input
           id={OI}
           type="checkbox"
@@ -38,7 +38,7 @@ export const Checkbox = ({
         <div
           className={`
             relative border-2 duration-100 w-6 h-6 rounded-md flex-shrink-0
-            ${isChecked ? "bg-primary border-primary" : "border-dol bg-dol"}
+            ${isChecked ? "bg-primary border-primary" : "border-smt bg-smt"}
           `}
           style={{ 
             backgroundColor: isChecked && option.color,
@@ -47,14 +47,14 @@ export const Checkbox = ({
         >
           <Icon
             library="fa"
-            icon="FaCheck"
+            name="FaCheck"
             className={`
               w-3 h-3 text-white
               ${isChecked ? "absolute-full-center opacity-100 duration-100" : "opacity-0 absolute-h-center bottom-0"}
             `}
           />
         </div>
-        <span className={`${isChecked ? "text-dol" : "text-soft-dol"} duration-100`}>
+        <span className={`${isChecked ? "text-smt" : "text-soft-smt"} duration-100`}>
           {option.label}
         </span>
       </label>
@@ -62,7 +62,7 @@ export const Checkbox = ({
 
     return (
       <Label { ...labelProps}>
-        <div className={`col border border-dol rounded-md divide-y divide-dol`}>
+        <div className={`col border border-smt rounded-md divide-y divide-smt`}>
           {!isEmpty(options) && options.map((option, OI) => renderCheckbox(option, `${name}${OI}`, value.includes(option.value)))}
         </div>
       </Label>

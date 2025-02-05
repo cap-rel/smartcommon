@@ -27,7 +27,7 @@ export const Select = ({
       <div className={`relative rounded-md`}>
         <select 
           id={id}
-          className={`py-2 pl-2 pr-7 appearance-none border-dol border-2 outline-none button-dol bg-soft-dol w-full rounded-md`}
+          className={`py-2 pl-2 pr-7 appearance-none border-smt border-2 outline-none button-smt bg-soft-smt w-full rounded-md`}
           multiple={multiple}
           value={value}
           disabled={disabled}
@@ -48,7 +48,7 @@ export const Select = ({
           )}
         </select>
         <span className={`absolute-v-center right-2 z-10 pointer-events-none`}>
-          <Icon library={`io`} icon={`IoIosArrowDown`} />
+          <Icon library={`io`} name={`IoIosArrowDown`} />
         </span>
       </div>
     </Label>

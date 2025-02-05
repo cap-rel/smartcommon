@@ -136,9 +136,9 @@ export const MobileListPage = (props) => {
       label: "Configuration recherche",
       icon : {
         library: "io5",
-        icon: "IoSearchSharp"
+        name: "IoSearchSharp"
         // library: "md",
-        // icon: "MdManageSearch"
+        // name: "MdManageSearch"
       }
     },
     {
@@ -146,7 +146,7 @@ export const MobileListPage = (props) => {
       label: "Configuration filtration données",
       icon : {
         library: "io5",
-        icon: "IoFilter"
+        name: "IoFilter"
       }
     },
     {
@@ -154,7 +154,7 @@ export const MobileListPage = (props) => {
       label: "Configuration affichage",
       icon : {
         library: "md",
-        icon: "MdOutlineRemoveRedEye"
+        name: "MdOutlineRemoveRedEye"
       }
     }
   ];
@@ -211,7 +211,7 @@ export const MobileListPage = (props) => {
 
       <navbar className={`bg-primary dark:bg-dark text-white dark:text-dark-text row-between-center py-4 pl-4 pr-2 gap-4 font-semibold`}>
             <p className={`text-2xl flex-shrink-0`}>
-              <Icon library={`fa6`} icon={`FaBoxesStacked`} />
+              <Icon library={`fa6`} name={`FaBoxesStacked`} />
             </p>
             <p className={`text-xl uppercase tracking-wide truncate flex-grow`}>
               Produits | Paiements
@@ -223,18 +223,18 @@ export const MobileListPage = (props) => {
                       value={states.searchBarValue}
                       onChange={(e) => set("searchBarValue", e.target.value)}
                       placeholder={`Recherchez...`}
-                      className={`min-w-0 flex-grow font-normal text-dol p-1 bg-transparent placeholder-dol outline-none`}
+                      className={`min-w-0 flex-grow font-normal text-smt p-1 bg-transparent placeholder-smt outline-none`}
                     />
-                    <button className={`text-2xl text-primary flex-shrink-0 p-1 button-dol bg-white dark:bg-dark-soft rounded-full`}>
-                      <Icon library={`io5`} icon={`IoClose`} />
+                    <button className={`text-2xl text-primary flex-shrink-0 p-1 button-smt bg-white dark:bg-dark-soft rounded-full`}>
+                      <Icon library={`io5`} name={`IoClose`} />
                     </button>
                   </div>
-                <button className={`md:hidden text-2xl flex-shrink-0 button-dol p-2 bg-primary dark:bg-dark rounded-full`}>
-                    <Icon library={`io`} icon={`IoMdSearch`} />
+                <button className={`md:hidden text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}>
+                    <Icon library={`io`} name={`IoMdSearch`} />
                 </button>
                 <div className={`row-v-center flex-shrink-0`}>
                   <button 
-                      className={`text-2xl flex-shrink-0 button-dol p-2 bg-primary dark:bg-dark rounded-full`}
+                      className={`text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}
                       onClick={() => { switch (states.listMode) {
                           case "column": return set("listMode", "grid-2");
                           case "grid-2": return set("listMode", "grid-3");
@@ -244,7 +244,7 @@ export const MobileListPage = (props) => {
                     change
                       {/* <Icon
                           library={`bs`}
-                          icon={(() => { switch (states.listMode) {
+                          name={(() => { switch (states.listMode) {
                               case "column": return "BsGrid";
                               case "grid-2": return "BsGrid3X3Gap";
                               case "grid-3": return "BsListUl";
@@ -254,10 +254,10 @@ export const MobileListPage = (props) => {
                   {tools.map((tool, TI) =>
                       <button 
                           key={TI}
-                          className={`hidden md:block text-2xl flex-shrink-0 button-dol p-2 bg-primary dark:bg-dark rounded-full`}
+                          className={`hidden md:block text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}
                           onClick={() => set("openedOption", tool.state)}
                       >
-                          <Icon library={tool.icon.library} icon={tool.icon.icon} />
+                          <Icon library={tool.icon.library} name={tool.icon.icon} />
                       </button>
                   )}
                 </div>
@@ -266,13 +266,13 @@ export const MobileListPage = (props) => {
         </navbar>
 
         <div className="
-          shadow-md bg-dol text-sm font-semibold text-white 
+          shadow-md bg-smt text-sm font-semibold text-white 
           h-12 row-between-center overflow-x-auto"
         >
           {tabbarList.map((element, EI) => 
             <button
               className={`
-                tracking-wide uppercase flex-grow row-full-center relative h-full border-b-4 text-center button-dol bg-primary dark:bg-dark
+                tracking-wide uppercase flex-grow row-full-center relative h-full border-b-4 text-center button-smt bg-primary dark:bg-dark
                 ${states.chosenStatus == EI ? "border-white text-white dark:text-dark-text dark:border-dark-text" : "text-slate-300 dark:text-dark-soft-text border-transparent"}
               `}
               style={{ transition: "border-color 300ms, color 300ms" }}
@@ -294,7 +294,7 @@ export const MobileListPage = (props) => {
         >
           {/* <div className="col-h-center gap-2"> */}
             <div className="row-between-center gap-4 h-full w-full">
-              <label className="row-v-center gap-4 p-2 -ml-2 button-dol bg-white rounded-md" htmlFor="selectAll">
+              <label className="row-v-center gap-4 p-2 -ml-2 button-smt bg-white rounded-md" htmlFor="selectAll">
                 <input 
                   type="checkbox"
                   id="selectAll"
@@ -307,7 +307,7 @@ export const MobileListPage = (props) => {
               </label>
               <div className="row-v-center gap-2">
                 <button 
-                  className={`button-dol ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
+                  className={`button-smt ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
                   onClick={() => {
                     set("isSelectingFew", false);
                     set("selected", null);
@@ -315,11 +315,11 @@ export const MobileListPage = (props) => {
                 >
                   <Icon
                     library={`fa6`}
-                    icon={`FaGear`}
+                    name={`FaGear`}
                   />
                 </button>
                 <button 
-                  className={`button-dol ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
+                  className={`button-smt ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
                   onClick={() => {
                     set("isSelectingFew", false);
                     set("selected", null);
@@ -327,7 +327,7 @@ export const MobileListPage = (props) => {
                 >
                   <Icon
                     library={`io5`}
-                    icon={`IoCloseSharp`}
+                    name={`IoCloseSharp`}
                   />
                 </button>
               </div>
@@ -378,7 +378,7 @@ export const MobileListPage = (props) => {
                 className={`
                   ${states.isSelectingFew && "gap-4"}
                   ${(Array.isArray(states.selected) && states.selected.includes(EI)) && `brightness-96`}
-                  ${!states.isGettingList && "border button-dol"} bg-dol text-dol border-dol relative shadow-md p-2 row-between-center
+                  ${!states.isGettingList && "border button-smt"} bg-smt text-smt border-smt relative shadow-md p-2 row-between-center
                 `}
               >
                 {states.isGettingList && <div className="skeleton absolute inset-0 rounded-md bg-gray-200"/>}
@@ -395,9 +395,9 @@ export const MobileListPage = (props) => {
                 `}>
                   <p className={`${states.listMode !== "column" && "hidden"} font-semibold`}>{EI + 1}</p>
                   <p className="text-primary font-semibold">#1002322</p>
-                  {/* <p className="text-soft-dol">12/12/04 18:00</p> */}
+                  {/* <p className="text-soft-smt">12/12/04 18:00</p> */}
                   <p className="text-green-700 dark:text-green-500 py-1 px-2 tracking-wide font-bold bg-green-500 bg-opacity-20 dark:bg-opacity-10 rounded-full shadow-md uppercase">Ouvert</p>
-                  <p className="text-soft-dol truncate">Ordinateur ThinkPad + Souris Razer 360</p>
+                  <p className="text-soft-smt truncate">Ordinateur ThinkPad + Souris Razer 360</p>
                   <p className="font-semibold">230 €</p>
                 </div>
               </li>
@@ -412,60 +412,60 @@ export const MobileListPage = (props) => {
         <div
           onClick={() => set("selected", null)}
           className={`
-            ${(!Array.isArray(states.selected) && !isEmpty(states.selected)) ? "alert-dol" : "fixed bottom-0 right-0 left-0"}
+            ${(!Array.isArray(states.selected) && !isEmpty(states.selected)) ? "alert-smt" : "fixed bottom-0 right-0 left-0"}
             duration-300
           `}
         >
           <div 
             onClick={(e) => e.stopPropagation()}
             className={`
-              absolute right-0 left-0 bottom-0 bg-dol col-full-center h-2/3
+              absolute right-0 left-0 bottom-0 bg-smt col-full-center h-2/3
               ${(!Array.isArray(states.selected) && !isEmpty(states.selected)) ? "translate-y-0 duration-300" : "translate-y-full"}
             `}
           >
-            <button className={`absolute top-2 right-2 p-2 button-dol bg-dol text-2xl text-soft-dol rounded-full`}>
-              <Icon library={`io5`} icon={`IoClose`} />
+            <button className={`absolute top-2 right-2 p-2 button-smt bg-smt text-2xl text-soft-smt rounded-full`}>
+              <Icon library={`io5`} name={`IoClose`} />
             </button>
-            <div className={`row divide-x divide-dol w-full h-full p-4`}>
+            <div className={`row divide-x divide-smt w-full h-full p-4`}>
               <div className={`col gap-4 p-4 basis-1/3`}>
                 <div className={`row-v-center gap-4 text-2xl`}>
-                  <Icon library={`fa`} icon={`FaTools`} className={`text-primary`} />
+                  <Icon library={`fa`} name={`FaTools`} className={`text-primary`} />
                   <p className={`text-xl font-bold uppercase`}>Actions</p>
                 </div>
                 <p>Classiques</p>
                 <div className={`wrap-v-center gap-2`}>
-                  <button className={`button-dol flex-grow row-full-center p-2 gap-2 text-white dark:text-yellow-500 bg-yellow-500 dark:bg-opacity-20 dark:border border-yellow-500 rounded-md`}>
-                    <Icon library={`md`} icon={`MdEdit`} className={`text-xl`} />
+                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-yellow-500 bg-yellow-500 dark:bg-opacity-20 dark:border border-yellow-500 rounded-md`}>
+                    <Icon library={`md`} name={`MdEdit`} className={`text-xl`} />
                     <p className={``}>Modifier</p>
                   </button>
-                  <button className={`button-dol flex-grow row-full-center p-2 gap-2 text-white dark:text-red-500 bg-red-500 dark:bg-opacity-20 dark:border border-red-500 rounded-md`}>
-                    <Icon library={`fa`} icon={`FaTrash`} className={`text-xl`} />
+                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-red-500 bg-red-500 dark:bg-opacity-20 dark:border border-red-500 rounded-md`}>
+                    <Icon library={`fa`} name={`FaTrash`} className={`text-xl`} />
                     <p className={``}>Supprimer</p>
                   </button>
                 </div>
                 <p>Rapides</p>
                 <div className={`wrap-v-center gap-2`}>
-                  <button className={`button-dol flex-grow row-full-center p-2 gap-2 text-white dark:text-gray-500 bg-gray-500 dark:bg-opacity-20 dark:border border-gray-500 rounded-md`}>
-                    <Icon library={`md`} icon={`MdEdit`} className={`text-xl`} />
+                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-gray-500 bg-gray-500 dark:bg-opacity-20 dark:border border-gray-500 rounded-md`}>
+                    <Icon library={`md`} name={`MdEdit`} className={`text-xl`} />
                     <p className={``}>Stocker</p>
                   </button>
-                  <button className={`button-dol flex-grow row-full-center p-2 gap-2 text-white dark:text-green-500 bg-green-500 dark:bg-opacity-20 dark:border border-green-500 rounded-md`}>
-                    <Icon library={`fa`} icon={`FaTrash`} className={`text-xl`} />
+                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-green-500 bg-green-500 dark:bg-opacity-20 dark:border border-green-500 rounded-md`}>
+                    <Icon library={`fa`} name={`FaTrash`} className={`text-xl`} />
                     <p className={``}>Ouvrir</p>
                   </button>
                 </div>
               </div>
               <div className="col gap-4 basis-2/3 p-4">
                 <div className={`row-v-center gap-4 px-4 text-xl`}>
-                  <Icon library={`fa6`} icon={`FaBoxesStacked`} className={`text-primary text-3xl`} />
+                  <Icon library={`fa6`} name={`FaBoxesStacked`} className={`text-primary text-3xl`} />
                   <p className={`font-bold uppercase`}>Détails du Produit | Paiement</p>
                 </div>
                 {/* <p className="text-center font-bold text-3xl">Produit | Paiement sélectionné</p> */}
-                <dl className="divide-y divide-dol border border-dol rounded-md max-h-full overflow-auto">
+                <dl className="divide-y divide-smt border border-smt rounded-md max-h-full overflow-auto">
                   {details.map(item =>
-                    <div className={`col md:row-between-center md:even:bg-soft-dol divide-dol p-2 divide-x w-full`}>
-                      <dt className={`md:basis-1/3 text-dol py-2 pl-2 pr-4`}>{item.label}</dt>
-                      <dd className={`md:basis-2/3 text-soft-dol py-2 pr-2 pl-4 row-between-center gap-4`}>
+                    <div className={`col md:row-between-center md:even:bg-soft-smt divide-smt p-2 divide-x w-full`}>
+                      <dt className={`md:basis-1/3 text-smt py-2 pl-2 pr-4`}>{item.label}</dt>
+                      <dd className={`md:basis-2/3 text-soft-smt py-2 pr-2 pl-4 row-between-center gap-4`}>
                         {/* <Component type={item.type} value={item.value} />
                         <Button type={item.type} value={item.value} /> */}
                       </dd>
@@ -476,8 +476,8 @@ export const MobileListPage = (props) => {
             </div>
           </div>
         </div>
-        <Link to={`/`} className={`button-dol fixed bottom-4 p-2 text-3xl bg-primary rounded-full text-white right-4`}>
-           <Icon library={`fa6`} icon={`FaPlus`}/>
+        <Link to={`/`} className={`button-smt fixed bottom-4 p-2 text-3xl bg-primary rounded-full text-white right-4`}>
+           <Icon library={`fa6`} name={`FaPlus`}/>
         </Link>
       </div>
     </>

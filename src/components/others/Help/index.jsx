@@ -19,9 +19,9 @@ export const Help = (props) => {
     return (
         <Icon
             library={`io`}
-            icon={`IoMdInformationCircleOutline`}
+            name={`IoMdInformationCircleOutline`}
             title={content}
-            className={`${className} text-soft-dol`}
+            className={`${className} text-soft-smt`}
         />
     );
   
@@ -117,7 +117,7 @@ export const Help = (props) => {
                     {/* <p className={`text-sm text-justify text-gray-500`}>{content}</p>
                     <Icon
                         library="rx"
-                        icon="RxCross2"
+                        name="RxCross2"
                         className={`absolute right-2 top-2 text-xl text-gray-400`}
                         onClick={() => {
                             setIsOpened(false);

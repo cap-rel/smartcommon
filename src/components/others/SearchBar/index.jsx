@@ -58,7 +58,7 @@ export const SearchBar = (props) => {
           </BadgeSty>
         } */}
         <button 
-          className="button-dol bg-white text-gray-400 p-2 rounded-full text-3xl"
+          className="button-smt bg-white text-gray-400 p-2 rounded-full text-3xl"
           onClick={() => {
             if (!isEmpty(searchBar.current.value)) {
               searchBar.current.value = "";
@@ -72,7 +72,7 @@ export const SearchBar = (props) => {
         >
           <Icon
             library="io5"
-            icon="IoCloseSharp"
+            name="IoCloseSharp"
           /> 
         </button>
       </div>

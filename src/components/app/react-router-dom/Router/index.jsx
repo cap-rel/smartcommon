@@ -29,12 +29,13 @@ export const Router = (props) => {
   const Routes = () => {    
     return (
       <BrowserRoutes>
-        {/* <Route element={<PublicRoutes />}></Route> */}
-        {/* <Route element={<ProtectedRoutes />}></Route> */}
-        {/* <Route path={`/login`} element={<LoginPage />} />
-        <Route path={`/`} element={<HomePage />} />*/}
+        {/* <Route element={<PublicRoutes />}>
+          <Route path={`/login`} element={<LoginPage />} />
+        </Route>
+        <Route element={<ProtectedRoutes />}>
+          <Route path={`/`} element={<HomePage />} />
+        </Route> */}
         <Route path={`*`} element={<Error404Page />} /> 
-        
       </BrowserRoutes>
     );
   };

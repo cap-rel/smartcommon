@@ -93,7 +93,7 @@ export const useForm = (form) => {
                         className={`col gap-4`} 
                         style={{ flexBasis: basisOnRow, width: widthOnCol }}
                     >
-                        {title && <span className={`text-dol font-semibold`}>{title}</span>}
+                        {title && <span className={`text-smt font-semibold`}>{title}</span>}
                         <div 
                             className={`flex ${title ? "gap-4" : "gap-6"}`}
                                 // ${component.divide 
@@ -116,7 +116,7 @@ export const useForm = (form) => {
                         style={{ flexBasis: basisOnRow, width: widthOnCol }}
                     >
                         <div className={`row-v-center gap-4 px-4 py-2`}>
-                            {title && <span className={`text-dol font-semibold`}>{title}</span>}
+                            {title && <span className={`text-smt font-semibold`}>{title}</span>}
                             <div className={`row-v-center gap-2`}>
                                 {tabs.map((tab, TI) => 
                                     <button
@@ -131,7 +131,7 @@ export const useForm = (form) => {
                                             }
                                         }}
                                         className={`p-2 rounded-md
-                                            ${states.selectedTabs[id] === children[TI].id ? "text-primary border-primary bg-soft-dol" : "bg-dom button-dol"}
+                                            ${states.selectedTabs[id] === children[TI].id ? "text-primary border-primary bg-soft-smt" : "bg-dom button-smt"}
                                         `}
                                     >
                                         {tab}

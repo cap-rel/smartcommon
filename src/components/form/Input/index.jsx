@@ -25,16 +25,16 @@ import { propTypes } from "./props";
 
 const DEFAULT_PROPS_TYPE_MAP = {
   varchar  : { type: "text"          , placeholder: null , pictogram: null                                      , min: null, max: null, size: null, pattern: null },
-  mail     : { type: "email"         , placeholder: null , pictogram: { library: "md" , icon: "MdEmail"        }, min: null, max: null, size: null, pattern: null },
-  password : { type: "password"      , placeholder: null , pictogram: { library: "fa6", icon: "FaLock"         }, min: null, max: null, size: null, pattern: null },
-  phone    : { type: "tel"           , placeholder: null , pictogram: { library: "fa6", icon: "FaPhone"        }, min: null, max: null, size: null, pattern: null },
-  url      : { type: "url"           , placeholder: null , pictogram: { library: "fa" , icon: "FaLink"         }, min: null, max: null, size: null, pattern: null },
-  link     : { type: "url"           , placeholder: null , pictogram: { library: "fa" , icon: "FaLink"         }, min: null, max: null, size: null, pattern: null },
-  ip       : { type: "text"          , placeholder: null , pictogram: { library: "fa6", icon: "FaNetworkWired" }, min: null, max: null, size: null, pattern: null },
-  date     : { type: "date"          , placeholder: null , pictogram: { library: "fa6", icon: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
-  timestamp: { type: "date"          , placeholder: null , pictogram: { library: "fa6", icon: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
-  time     : { type: "time"          , placeholder: null , pictogram: { library: "io5", icon: "IoTime"         }, min: null, max: null, size: null, pattern: null },
-  datetime : { type: "datetime-local", placeholder: null , pictogram: { library: "fa6", icon: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
+  mail     : { type: "email"         , placeholder: null , pictogram: { library: "md" , name: "MdEmail"        }, min: null, max: null, size: null, pattern: null },
+  password : { type: "password"      , placeholder: null , pictogram: { library: "fa6", name: "FaLock"         }, min: null, max: null, size: null, pattern: null },
+  phone    : { type: "tel"           , placeholder: null , pictogram: { library: "fa6", name: "FaPhone"        }, min: null, max: null, size: null, pattern: null },
+  url      : { type: "url"           , placeholder: null , pictogram: { library: "fa" , name: "FaLink"         }, min: null, max: null, size: null, pattern: null },
+  link     : { type: "url"           , placeholder: null , pictogram: { library: "fa" , name: "FaLink"         }, min: null, max: null, size: null, pattern: null },
+  ip       : { type: "text"          , placeholder: null , pictogram: { library: "fa6", name: "FaNetworkWired" }, min: null, max: null, size: null, pattern: null },
+  date     : { type: "date"          , placeholder: null , pictogram: { library: "fa6", name: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
+  timestamp: { type: "date"          , placeholder: null , pictogram: { library: "fa6", name: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
+  time     : { type: "time"          , placeholder: null , pictogram: { library: "io5", name: "IoTime"         }, min: null, max: null, size: null, pattern: null },
+  datetime : { type: "datetime-local", placeholder: null , pictogram: { library: "fa6", name: "FaCalendarDays" }, min: null, max: null, size: null, pattern: null },
   // week     :
   // month    :
 };
@@ -117,7 +117,7 @@ export const Input = ({
             <div className={`text-2xl absolute-v-center left-2 text-primary`}>
               <Icon
                 library={isObject(finalPictogram) ? finalPictogram.library : "fa"}
-                icon={isObject(finalPictogram) ? finalPictogram.icon : finalPictogram}
+                name={isObject(finalPictogram) ? finalPictogram.icon : finalPictogram}
               />
             </div>
           }
@@ -130,7 +130,7 @@ export const Input = ({
             type={type === "password" ? (isPasswordVisible ? "text" : "password") : defaultType}
             onChange={e => (!readOnly && !disabled) && setValue(e.target.value)}
             className={`
-              outline-none bg-light dark:bg-dark-soft py-2 placeholder-dol flex-grow w-full resize-none overflow-hidden
+              outline-none bg-light dark:bg-dark-soft py-2 placeholder-smt flex-grow w-full resize-none overflow-hidden
               ${finalPictogram ? "pl-10" : "pl-4"}
               ${(type === "link" || type === "password") ? "pr-9" : "pr-2"}
               ${!note && "hidden"}
@@ -142,7 +142,7 @@ export const Input = ({
             value={value}
             onChange={e => (!readOnly && !disabled)  && setValue(e.target.value)}
             className={`
-              outline-none bg-light dark:bg-dark-soft py-2 placeholder-dol flex-grow w-full focus:ring-1 ring-primary focus:border-primary border border-dol rounded-md truncate
+              outline-none bg-light dark:bg-dark-soft py-2 placeholder-smt flex-grow w-full focus:ring-1 ring-primary focus:border-primary border border-smt rounded-md truncate
               ${finalPictogram ? "pl-10" : "pl-2"}
               ${(type === "link" || type === "password") ? "pr-9" : "pr-2"}
               ${note && "hidden"}
@@ -157,7 +157,7 @@ export const Input = ({
               value={value}
               onChange={(e) => !disabled && onChange(e.target.value)}
               className={`
-                outline-none bg-transparent dark:bg-dark-soft border border-dol py-2 focus:border-primary placeholder-dol flex-grow rounded-md truncate w-full
+                outline-none bg-transparent dark:bg-dark-soft border border-smt py-2 focus:border-primary placeholder-smt flex-grow rounded-md truncate w-full
                 ${finalPictogram ? "pl-9" : "pl-2"}
                 ${(type === "link" || type === "password") ? "pr-9" : "pr-2"}
               `}
@@ -167,22 +167,22 @@ export const Input = ({
 
           {type === "password" &&
             <button 
-              className={`absolute-v-center right-2 text-xl text-soft-dol`}
+              className={`absolute-v-center right-2 text-xl text-soft-smt`}
               onClick={(e) => {
                 e.preventDefault();
                 set("isPasswordVisible", !isPasswordVisible)
               }}
             >
-              <Icon library={`fa6`} icon={isPasswordVisible ? "FaEyeSlash" : "FaEye"} />
+              <Icon library={`fa6`} name={isPasswordVisible ? "FaEyeSlash" : "FaEye"} />
             </button>
           }
 
           {type === "link" &&
             <a
               href={value}
-              className={`absolute-v-center right-2 text-xl text-soft-dol`}
+              className={`absolute-v-center right-2 text-xl text-soft-smt`}
             >
-              <Icon library={`md`} icon={`MdAdsClick`} />
+              <Icon library={`md`} name={`MdAdsClick`} />
             </a>
           }
 

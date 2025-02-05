@@ -50,11 +50,11 @@ const [isSignatureValidated, setIsSignatureValidated] = useState(false);
                 padRef.current.clear();
               }
             }}                    
-            className={`button-dol z-10 p-2 bg-red-500`}
+            className={`button-smt z-10 p-2 bg-red-500`}
           >
             <Icon
               library={`im`}
-              icon={`ImCross`}
+              name={`ImCross`}
               className={`text-white text-xl`}
             />
           </button>
@@ -63,11 +63,11 @@ const [isSignatureValidated, setIsSignatureValidated] = useState(false);
               setIsSignatureValidated(true);
               onChange(padRef.current.toDataURL());
             }}
-            className={`button-dol p-2 bg-green-500 `}
+            className={`button-smt p-2 bg-green-500 `}
           >
             <Icon
               library={`fa`}
-              icon={`FaCheck`}
+              name={`FaCheck`}
               className={`text-white text-xl`}
             />
           </button>

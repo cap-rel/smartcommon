@@ -53,9 +53,9 @@ export const Stepper = ({
                     {!isNull(step) &&
                         <button 
                             onClick={() => value > finalMin && onChange(parseFloat(value - step))}
-                            className={`button-dol p-2 border border-primary bg-primary dark:bg-primary-20 text-white dark:text-primary outline-none rounded-l-lg h-full`}
+                            className={`button-smt p-2 border border-primary bg-primary dark:bg-primary-20 text-white dark:text-primary outline-none rounded-l-lg h-full`}
                         >
-                        <Icon library={`fa`} icon={`FaMinus`}/>
+                        <Icon library={`fa`} name={`FaMinus`}/>
                         </button>
                     }
 
@@ -64,7 +64,7 @@ export const Stepper = ({
                         value={value}
                         onChange={e => !disabled && onChange(e.target.value)}
                         className={`
-                            p-2 truncate outline-none placeholder-dol bg-dol dark:bg-dark-soft flex-grow border-dol focus:ring-1 ring-primary focus:border-primary w-full
+                            p-2 truncate outline-none placeholder-smt bg-smt dark:bg-dark-soft flex-grow border-smt focus:ring-1 ring-primary focus:border-primary w-full
                             ${!isNull(step) ? "border-y" : "border rounded-md"}
                         `}
                             // ${!step && ((type === "price" || type === "pricey") ? "rounded-l-md" : "rounded-r-md")}
@@ -74,9 +74,9 @@ export const Stepper = ({
                     {!isNull(step) &&
                         <button 
                             onClick={() => value < finalMax && onChange(parseFloat(value + step))}
-                            className={`button-dol p-2 border border-primary bg-primary dark:bg-primary-20 text-white dark:text-primary accent-primary rounded-r-lg h-full`}
+                            className={`button-smt p-2 border border-primary bg-primary dark:bg-primary-20 text-white dark:text-primary accent-primary rounded-r-lg h-full`}
                         >
-                        <Icon library={`fa6`} icon={`FaPlus`}/>
+                        <Icon library={`fa6`} name={`FaPlus`}/>
                         </button>
                     }
                 </div>

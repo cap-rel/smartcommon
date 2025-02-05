@@ -8,24 +8,26 @@ export const Label = ({
     required = false,
     help = null,
     className = null,
-    note = false,
+    row = false,
+    // note = false,
     children = null
+
 }) => {
     const { deviceType } = useNavigator();
 
     return (
-        <div className={`col ${deviceType === "desktop" ? "gap-4" : "gap-2"} ${className}`}>
+        <div className={`${row ? "row-v-center" : "col"} ${deviceType === "desktop" ? "gap-4" : "gap-2"} ${className}`}>
             {label && 
                 <div className={`row-v-center gap-2`}>
-                    {note && <Icon library={`fa`} icon={`FaCircle`} className={`text-[8px] text-note`} />}
+                    {/* {note && <Icon library={`fa`} name={`FaCircle`} className={`text-[8px] text-note`} />} */}
                     <label 
                         htmlFor={id}
-                        className={`text-dol font-semibold`}
+                        className={`text-black font-semibold`}
                     >
                         {label}
                     </label>
                     {required && <span className={`text-red-500`}>*</span>}
-                    {help && <Help content={help} />}
+                    {/* {help && <Help content={help} />} */}
                 </div>
             }
             {children}

@@ -1,94 +1,151 @@
-import { useWindow } from "../../../hooks";
+import { useEffect, useMemo } from "react";
+import { useStates, useWindow } from "../../../hooks";
 import { Icon } from "../../others";
+import { Label } from "../Label";
 import { propTypes } from "./props";
+import classNames from "classnames";
 
 export const Boolean = ({
-    label = null,
     id = null,
-    help = null,
+    name = null,
+    label = null,
+    help = {
+        position: "popup", // or top or bottom
+        content: null // can be html 
+    },
     variant = "switch",
     readOnly = false,
     required = false,
     disabled = false,
-    value,
+    booleanRef = null,
+    value = null,
     onChange = () => {},
     color = null,
-    className = null
+    custom = {
+        // color: null,
+        // activeColor: null,
+        // icon: null,
+        // activeIcon: null,
+        classNames: {
+            container: null,
+            label: null,
+            requiredIcon: null,
+            disabledIcon: null,
+            readOnlyIcon: null,
+            HelpIcon: null,      //
+            helpContainer: null, // todo
+            helpText: null,      //
+
+            input: null,
+            checkIcon: null // only for checkbox
+        },
+    }
 }) => {
     const { darkMode } = useWindow();
+    const labelProps = { label, id, name, help, readOnly, required, disabled };
+    const inputProps = { id, name, readOnly, required, disabled };
+    const { classNames } = custom;
+
+    const cursor = disabled ? "cursor-not-allowed" : "cursor-pointer";
+    const blocked = disabled || readOnly;
+
+    const { states, set } = useStates({
+        localValue: value ?? false
+    });
+
+    const { localValue } = states;
 
     return (
-        <div className={`row-v-center gap-4 ${className}`}>
-            {variant === "check" ?
+        <Label
+            // style={{ "--color": color || "var('--color-primary')" }}
+            row
+            { ...labelProps}
+        >
+            <input
+                type={`checkbox`}
+                ref={booleanRef}
+                className={`fixed appearance-none size-0`}
+                checked={localValue}
+                onChange={e => onChange(e.target.checked) || set("localValue", e.target.checked)}
+                { ...inputProps}
+            />
+            {variant === "switch" ?
                 <div
-                    onClick={() => !disabled && onChange(!value)}
+                    onClick={() => set("localValue", !localValue, !blocked)}
                     className={`
-                        relative border-2 duration-100 w-6 h-6 rounded-md flex-shrink-0
-                        ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
-                        ${value ? (!color && "bg-primary dark:bg-primary-20 border-primary") : "border-dol bg-soft-dol"}
+                        relative rounded-full w-11 h-6 duration-200 flex-shrink-0
+                        ${cursor}
+                        ${localValue ? "bg-primary" : "bg-slate-300"}
+                        ${classNames.input}
                     `}
-                    style={{ 
-                        backgroundColor: (color && value) && color,
-                        borderColor: (color && value) && color
-                    }}
-                    >
+                >
+                    <div className={`
+                        absolute top-1 left-1 rounded-full size-4 duration-200
+                        ${localValue ? "translate-x-5 bg-white dark:bg-primary" : "bg-light dark:bg-dark-soft"}
+                        ${classNames.circle}
+                    `}/>
+                </div>
+            : variant === "checkbox" ?
+                <div
+                    onClick={() => set("localValue", !localValue, !blocked)}
+                    className={`
+                        relative duration-100 size-5 rounded-md flex-shrink-0
+                        ${cursor}
+                        ${localValue ? "bg-primary" : "bg-slate-300"}
+                        ${classNames.input}
+                    `}
+                >
                     <Icon
-                        library="fa"
-                        icon="FaCheck"
+                        library={`fa6`}
+                        name={`FaCheck`}
                         className={`
-                        w-3 h-3 text-white dark:text-primary 
-                        ${value ? "absolute-full-center opacity-100 duration-100" : "opacity-0 absolute-h-center bottom-0"}
+                            size-3 duration-100 text-white dark:text-primary
+                            ${localValue ? "absolute-full-center opacity-100" : "opacity-0 absolute-h-center bottom-0"}
+                            ${classNames.checkIcon}
                         `}
                     />
+                    {/* ${classNames("text-white dark:text-primary", custom.classNames.checkIcon) */}
+                </div>
+            : variant === "radio" ?
+                <div
+                    onClick={() => set("localValue", !localValue, !blocked)}
+                    className={`
+                        relative duration-50 size-4 rounded-full border-2 flex-shrink-0 box-content
+                        ${cursor}
+                        ${localValue ? "border-primary" : "border-smt"}
+                    `}
+                >
+                    <div className={`
+                        absolute top-0.5 left-0.5 duration-50 bg-primary rounded-full
+                        ${localValue ? "size-3 opacity-100" : "opacity-0 size-0"}
+                        ${classNames.circle}
+                    `}/>
                 </div>
             : variant === "star" ?
                 <Icon
                     library={`fa6`}
-                    icon={value ? "FaStar" : "FaRegStar"}
+                    name={localValue ? "FaStar" : "FaRegStar"}
                     className={`
-                        text-2xl flex-shrink-0
-                        ${(!color) && "text-primary"}
-                        ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
+                        text-2xl flex-shrink-0 text-primary
+                        ${cursor}
+                        ${classNames.input}
                     `}
-                    style={{ color: color }}
-                    onClick={() => !disabled && onChange(!value)}
+                    onClick={() => set("localValue", !localValue, !blocked)}
                 />
             : variant === "heart" ?
                 <Icon
                     library={`io5`}
-                    icon={value ? "IoHeart" : "IoHeartOutline"}
+                    name={localValue ? "IoHeart" : "IoHeartOutline"}
                     className={`
-                        text-2xl flex-shrink-0
-                        ${(!color) && "text-primary"}
-                        ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
+                        text-2xl flex-shrink-0 text-primary
+                        ${cursor}
+                        ${classNames.input}
                     `}
-                    style={{ color: color }}
-                    onClick={() => !disabled && onChange(!value)}
+                    onClick={() => set("localValue", !localValue, !blocked)}
                 />
-            :
-                <div
-                    onClick={() => !disabled && onChange(!value)}
-                    className={`
-                        row-v-center rounded-full w-10 h-6 duration-200 border-2
-                        ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
-                        ${value ? `${!color && "bg-primary dark:bg-primary-10 border-primary"}` : "border-dol bg-light-soft dark:bg-transparent"}
-                    `}
-                    style={{ 
-                        backgroundColor: (value && color) && (darkMode ? color : color), // opacity 2
-                        borderColor: (value && color) && color
-                    }}
-                >
-                    <div 
-                        className={`
-                            rounded-full w-4 h-4 ml-1 duration-200
-                            ${value ? `translate-x-full bg-white ${!color && "dark:bg-primary"}` : "bg-light dark:bg-dark-soft"}
-                        `}
-                        style={{ backgroundColor: (value && color && darkMode) && color}}
-                    />
-                </div>
-            }
-            {label && <label onClick={() => !disabled && onChange(!value)} className={`${value ? "text-dol" : "text-soft-dol"} duration-100`}>{label}</label>}
-        </div>
+            : ""}
+      
+        </Label>
     );
 };
 

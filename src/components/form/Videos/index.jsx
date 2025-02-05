@@ -70,26 +70,26 @@ export const Videos = ({
                     onChange={handlePhotosOnChange}
                 />
             )}
-            <div className={`border border-dol rounded-md col w-full max-w-120`}>
-                <div className={`row-between-center bg-soft-dol rounded-t-md p-2`}>
+            <div className={`border border-smt rounded-md col w-full max-w-120`}>
+                <div className={`row-between-center bg-soft-smt rounded-t-md p-2`}>
                     <div className={`row-v-center gap-2`}>
                         <button 
                             onClick={(e) => {
                                 e.preventDefault();
                                 inputCameraRef.current.click();
                             }}
-                            className={`p-2 bg-soft-dol rounded-full text-white text-2xl button-dol`}
+                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
                         >
-                            <Icon library={`fa6`} icon={`FaVideo`} />
+                            <Icon library={`fa6`} name={`FaVideo`} />
                         </button>
                         <button 
                             onClick={(e) => {
                                 e.preventDefault();
                                 inputDownloadRef.current.click();
                             }}
-                            className={`p-2 bg-soft-dol rounded-full text-white text-2xl button-dol`}
+                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
                         >
-                            <Icon library={`fa6`} icon={`FaFileImport`} />
+                            <Icon library={`fa6`} name={`FaFileImport`} />
                         </button>
                     </div>
                     <button 
@@ -97,13 +97,13 @@ export const Videos = ({
                             e.preventDefault();
                             onChange([]);
                         }}
-                        className={`p-2 bg-soft-dol rounded-full text-error text-2xl button-dol`}
+                        className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
                     >
-                        <Icon library={`io5`} icon={`IoTrash`} />
+                        <Icon library={`io5`} name={`IoTrash`} />
                     </button>
                 </div>
                 {!isEmpty(value) 
-                    ?   <table className={`text-dol`}><tbody>
+                    ?   <table className={`text-smt`}><tbody>
                             {value.map((record, RI) => 
                                 <tr key={"video_" + RI}>
                                     <td className={`p-2`}>
@@ -114,15 +114,15 @@ export const Videos = ({
                                                 videoRef.current.src = value[RI].url;
                                                 // videoRef.current.play();
                                             }}
-                                            className={`button-dol rounded-full p-2 bg-dol text-2xl`}
+                                            className={`button-smt rounded-full p-2 bg-smt text-2xl`}
                                         >
-                                            <Icon library={`fa6`} icon={`FaEye`}/>
+                                            <Icon library={`fa6`} name={`FaEye`}/>
                                         </button> 
                                     </td>
-                                    <td className={`p-2 text-soft-dol max-w-40 truncate`}>
+                                    <td className={`p-2 text-soft-smt max-w-40 truncate`}>
                                         <span>{record.title}</span>
                                     </td>
-                                    <td className={`p-2 text-soft-dol`}>
+                                    <td className={`p-2 text-soft-smt`}>
                                         <span>{secondsToTime(record.duration)}</span>
                                     </td>
                                     <td className={`p-2 text-right`}>
@@ -131,43 +131,43 @@ export const Videos = ({
                                                 e.preventDefault();
                                                 onChange([...value.slice(0, RI), ...value.slice(RI + 1)])
                                             }}
-                                            className={`button-dol rounded-full p-2 bg-dol text-2xl text-error`}
+                                            className={`button-smt rounded-full p-2 bg-smt text-2xl text-error`}
                                         >
-                                            <Icon library={`io5`} icon={`IoTrash`}/>
+                                            <Icon library={`io5`} name={`IoTrash`}/>
                                         </button> 
                                     </td>
                                 </tr>
                             )}
                         </tbody></table>
-                    :   <div className={`col-h-center gap-2 p-4 text-soft-dol`}>
-                            <Icon library={`fa6`} icon={`FaFileVideo`} className={`text-4xl`} />
+                    :   <div className={`col-h-center gap-2 p-4 text-soft-smt`}>
+                            <Icon library={`fa6`} name={`FaFileVideo`} className={`text-4xl`} />
                             <span className={`italic`}>Aucune vidéo</span>
                         </div>
                 }
                 <div className={`
                     ${!isNull(selectedVideoId) ? "translate-y-0" : "translate-y-full"}
                     ${deviceType !== "desktop" && "w-full"}
-                    z-60 duration-300 fixed-h-center max-h-full bottom-0 col gap-4 overflow-y-auto bg-dol rounded-t-md 
+                    z-60 duration-300 fixed-h-center max-h-full bottom-0 col gap-4 overflow-y-auto bg-smt rounded-t-md 
                 `}>
-                    <div className={`sticky top-0 p-2 border-b border-dol bg-soft-dol z-30`}>
+                    <div className={`sticky top-0 p-2 border-b border-smt bg-soft-smt z-30`}>
                         <div className={`row-full-center gap-2`}>
                             <button 
                                 onClick={(e) => {
                                     e.preventDefault();
                                     inputCameraRef.current.click();
                                 }}
-                                className={`p-2 bg-soft-dol rounded-full text-white text-2xl button-dol`}
+                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
                             >
-                                <Icon library={`fa6`} icon={`FaVideo`} />
+                                <Icon library={`fa6`} name={`FaVideo`} />
                             </button>
                             <button 
                                 onClick={(e) => {
                                     e.preventDefault();
                                     inputDownloadRef.current.click();
                                 }}
-                                className={`p-2 bg-soft-dol rounded-full text-white text-2xl button-dol`}
+                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
                             >
-                                <Icon library={`fa6`} icon={`FaFileImport`} />
+                                <Icon library={`fa6`} name={`FaFileImport`} />
                             </button>
                             <button 
                                 onClick={(e) => {
@@ -175,9 +175,9 @@ export const Videos = ({
                                     onChange([...value.slice(0, selectedVideoId), ...value.slice(selectedVideoId + 1)])
                                     set("selectedVideoId", null);
                                 }}
-                                className={`p-2 bg-soft-dol rounded-full text-error text-2xl button-dol`}
+                                className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
                             >
-                                <Icon library={`io5`} icon={`IoTrash`} />
+                                <Icon library={`io5`} name={`IoTrash`} />
                             </button>
                         </div>
                         <button 
@@ -192,9 +192,9 @@ export const Videos = ({
                                 }
                                 set("selectedVideoId", null);
                             }}
-                            className={`absolute top-2 right-2 button-dol rounded-full p-2 bg-soft-dol text-2xl`}
+                            className={`absolute top-2 right-2 button-smt rounded-full p-2 bg-soft-smt text-2xl`}
                         >
-                            <Icon library={`io5`} icon={`IoClose`}/>
+                            <Icon library={`io5`} name={`IoClose`}/>
                         </button>
                     </div>
                         
@@ -207,7 +207,7 @@ export const Videos = ({
                                 newValue[selectedVideoId] = { ...newValue[selectedVideoId], duration: e.target.duration };
                                 onChange(newValue);
                             }} 
-                            className={`rounded-md max-h-100 border border-dol`}
+                            className={`rounded-md max-h-100 border border-smt`}
                         >
                             {/* <source 
                             // src={selectedVideo?.url} 
@@ -223,7 +223,7 @@ export const Videos = ({
                                 newValue[selectedVideoId].title = newState;
                                 onChange(newValue);
                             }}
-                            className={`bg-dol rounded-md mx-2`}
+                            className={`bg-smt rounded-md mx-2`}
                         />
                         <Textarea
                             placeholder={`Description de la vidéo ...`}
@@ -233,7 +233,7 @@ export const Videos = ({
                                 newValue[selectedVideoId].description = newState;
                                 onChange(newValue);
                             }}
-                            className={`bg-dol rounded-md mx-2`}
+                            className={`bg-smt rounded-md mx-2`}
                         />
                     </div>
                 </div>
@@ -244,9 +244,9 @@ export const Videos = ({
                         e.preventDefault();
                         inputRef.current.click();
                     }}
-                    className={`p-4 border border-primary rounded-full bg-primary dark:bg-primary-20 text-white dark:text-primary text-2xl button-dol`}
+                    className={`p-4 border border-primary rounded-full bg-primary dark:bg-primary-20 text-white dark:text-primary text-2xl button-smt`}
                 >
-                    <Icon library={`fa6`} icon={`FaVideo`} />
+                    <Icon library={`fa6`} name={`FaVideo`} />
                 </button>
             </div> */}
         </Label>

@@ -38,11 +38,11 @@ export const DesktopListPage = (props) => {
   const title = "Liste des produits";
 
   const fastActions = [
-    { label: "Retirer de la vente", color: "#57534e", icon: { library: "fa6", icon: "FaBox" } },
-    { label: "Mettre en vente", color: "#22c55e", icon: { library: "fa6", icon: "FaBoxOpen" } },
-    { label: "Promotion", color: "#06b6d4", icon: { library: "md", icon: "MdSell" } },
-    // { label: "Envoyer un mail", color: "#06b6d4", icon: { library: "md", icon: "MdEmail" } },
-    { label: "Supprimer", color: "#ef4444", icon: { library: "fa6", icon: "FaTrashCan" } },
+    { label: "Retirer de la vente", color: "#57534e", icon: { library: "fa6", name: "FaBox" } },
+    { label: "Mettre en vente", color: "#22c55e", icon: { library: "fa6", name: "FaBoxOpen" } },
+    { label: "Promotion", color: "#06b6d4", icon: { library: "md", name: "MdSell" } },
+    // { label: "Envoyer un mail", color: "#06b6d4", icon: { library: "md", name: "MdEmail" } },
+    { label: "Supprimer", color: "#ef4444", icon: { library: "fa6", name: "FaTrashCan" } },
   ];
 
   const test = () => { return (
@@ -215,9 +215,9 @@ export const DesktopListPage = (props) => {
   ];
 
   const tools = [
-    { state: "search", label: "Configuration recherche", icon : { library: "io5", icon: "IoSearchSharp" } },
-    { state: "filter", label: "Configuration filtration données", icon : { library: "io5", icon: "IoFilter" } },
-    { state: "view", label: "Configuration affichage", icon : { library: "fa6", icon: "FaRegEye" } }
+    { state: "search", label: "Configuration recherche", icon : { library: "io5", name: "IoSearchSharp" } },
+    { state: "filter", label: "Configuration filtration données", icon : { library: "io5", name: "IoFilter" } },
+    { state: "view", label: "Configuration affichage", icon : { library: "fa6", name: "FaRegEye" } }
   ];
 
   const { states, set } = useStates(
@@ -302,8 +302,8 @@ export const DesktopListPage = (props) => {
             ${states.opacityTransitions.initial ? "duration-300 opacity-100" : "opacity-0"}
           `}
       >
-        <div className={`bg-dol shadow-md h-full relative rounded-md`}>
-         {states.isGettingList && <div className="absolute z-20 inset-0 skeleton rounded-md bg-dol"/>}
+        <div className={`bg-smt shadow-md h-full relative rounded-md`}>
+         {states.isGettingList && <div className="absolute z-20 inset-0 skeleton rounded-md bg-smt"/>}
          <div 
           className={`
             col w-full h-full 
@@ -318,7 +318,7 @@ export const DesktopListPage = (props) => {
                 key={`fastAction${FAI}`}
                 title={`${isEmpty(states.selected) && "Vous devez d'abord sélectionner au moins un élément"}`} 
                 className={`
-                  ${!isEmpty(states.selected) ? "animate-wiggle button-dol" : "brightness-80 cursor-not-allowed"} 
+                  ${!isEmpty(states.selected) ? "animate-wiggle button-smt" : "brightness-80 cursor-not-allowed"} 
                   row-v-center gap-2 text-base px-4 py-2 text-white border-2 rounded-md
                 `}
                 style={{ 
@@ -330,7 +330,7 @@ export const DesktopListPage = (props) => {
                 {!isEmpty(fastAction.icon) &&
                   <Icon
                     library={fastAction.icon.library}
-                    icon={fastAction.icon.icon}
+                    name={fastAction.icon.icon}
                     className={`text-xl`}
                   />
                 }
@@ -341,7 +341,7 @@ export const DesktopListPage = (props) => {
             <div className={`w-[1px] h-full bg-gray-200 dark:bg-gray-500`}/>
             <button 
               className={`
-                button-dol row-v-center gap-2 text-base px-4 py-2 bg-primary dark:bg-primary-20 border-2 border-primary rounded-md
+                button-smt row-v-center gap-2 text-base px-4 py-2 bg-primary dark:bg-primary-20 border-2 border-primary rounded-md
                 ${darkMode ? "text-primary" : "text-white"}
               `}
               style={{ 
@@ -352,7 +352,7 @@ export const DesktopListPage = (props) => {
             >
               <Icon
                 library={`fa6`}
-                icon={`FaPlus`}
+                name={`FaPlus`}
                 className={`text-xl`}
               />
               <span>Nouveau</span>
@@ -371,13 +371,13 @@ export const DesktopListPage = (props) => {
             />
             <div className="relative z-10">
             <button 
-              className={`button-dol text-xl p-1 bg-white dark:bg-dark rounded-md text-primary`} 
+              className={`button-smt text-xl p-1 bg-white dark:bg-dark rounded-md text-primary`} 
               onClick={() => set("isToolsOpened", !states.isToolsOpened)}
             >
               <Icon
                 // library={`fa`}
-                // icon={`FaTools`}
-                icon={`IoSettingsSharp`}
+                // name={`FaTools`}
+                name={`IoSettingsSharp`}
                 library={`io5`}
               />
             </button>
@@ -399,7 +399,7 @@ export const DesktopListPage = (props) => {
                         }
                       }}
                       className={`
-                        px-4 py-2 flex-grow border-b-2 text-center button-dol bg-white text-xl
+                        px-4 py-2 flex-grow border-b-2 text-center button-smt bg-white text-xl
                         ${states.chosenTool === tool.state ? "text-[#3f51b5] border-[#3f51b5]" : "text-gray-300 border-white"}
                       `}
                       // 
@@ -407,7 +407,7 @@ export const DesktopListPage = (props) => {
                     >
                       <Icon
                         library={tool.icon.library}
-                        icon={tool.icon.icon}
+                        name={tool.icon.icon}
                         className={`mx-auto`}
                       />
                       {/* <span className={`absolute text-xs top-1 right-1 px-[2px] py-[1px] rounded-full duration-100 ${chosenStatus == EI ? "bg-white text-[#3f51b5]" : "bg-transparent border" }`}>14</span> */}
@@ -420,7 +420,7 @@ export const DesktopListPage = (props) => {
                 </div>
                 <div className={`${states.chosenTool !== "search" && "hidden"} col max-h-120 text-gray-500 overflow-y-auto`}>
                   {Object.values(attributes).map(element => 
-                    <label className={`row-between-center cursor-pointer px-4 py-2 gap-4 bg-white button-dol`}>
+                    <label className={`row-between-center cursor-pointer px-4 py-2 gap-4 bg-white button-smt`}>
                       <span className="truncate">{element.label}</span>
                       <input type="checkbox" className={`checkbox checkbox-sm [--chkbg:#3f51b5] [--chkfg:white] checked:border-none`} />
                     </label>
@@ -431,7 +431,7 @@ export const DesktopListPage = (props) => {
                 </div>
                 <div className={`${states.chosenTool !== "view" && "hidden"} col max-h-120 text-gray-500 overflow-y-auto`}>
                   {states.chosenTool === "view" && Object.values(attributes).map(element => 
-                    <label className={`row-between-center cursor-pointer px-4 py-2 gap-4 bg-white button-dol`}>
+                    <label className={`row-between-center cursor-pointer px-4 py-2 gap-4 bg-white button-smt`}>
                       <span className="truncate">{element.label}</span>
                       <input type="checkbox" className="checkbox checkbox-sm [--chkbg:blue] [--chkfg:white] checked:border-none" />
                     </label>
@@ -442,18 +442,18 @@ export const DesktopListPage = (props) => {
                   <div className="row-v-center gap-2">
                     <Icon
                       library={`io5`}
-                      icon={`IoSearchSharp`}
+                      name={`IoSearchSharp`}
                       className="text-xl"
                     />
                     <span>Configuration recherche</span>
                   </div>
                   <button 
-                    className={`button-dol ring-white text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
+                    className={`button-smt ring-white text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
                     onClick={() => set("chosenTool", null)}
                 >
                     <Icon
                       library={`io5`}
-                      icon={`IoCloseSharp`}
+                      name={`IoCloseSharp`}
                     />
                   </button>
                 </div>
@@ -462,7 +462,7 @@ export const DesktopListPage = (props) => {
                   <button className={`text-xl rounded-md text-gray-400`}>
                     <Icon
                       library={`io5`}
-                      icon={`IoCloseSharp`}
+                      name={`IoCloseSharp`}
                     />
                   </button>
                 </div>
@@ -485,18 +485,18 @@ export const DesktopListPage = (props) => {
                   <div className="row-v-center gap-2">
                     <Icon
                       library={`io5`}
-                      icon={`IoFilter`}
+                      name={`IoFilter`}
                       className="text-xl"
                     />
                     <span>Configuration filtration</span>
                   </div>
                   <button 
-                    className={`button-dol ring-white row-v-center gap-1 text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
+                    className={`button-smt ring-white row-v-center gap-1 text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
                     onClick={() => set("chosenTool", null)}
                 >
                     <Icon
                       library={`io5`}
-                      icon={`IoCloseSharp`}
+                      name={`IoCloseSharp`}
                     />
                   </button>
                 </div>
@@ -521,13 +521,13 @@ export const DesktopListPage = (props) => {
                         <input className="w-1/2 border bg-gray-100 rounded-md px-2 py-1" placeholder="0"/>
                         <Icon
                           library={`io`}
-                          icon={`IoIosArrowBack`}
+                          name={`IoIosArrowBack`}
                           className="text-2xl"
                         />
                         <p>Valeur</p>
                         <Icon
                           library={`io`}
-                          icon={`IoIosArrowBack`}
+                          name={`IoIosArrowBack`}
                           className="text-2xl"
                         />
                         <input className="w-1/2 border bg-gray-100 rounded-md px-2 py-1" placeholder="0"/>
@@ -545,7 +545,7 @@ export const DesktopListPage = (props) => {
                       </div>
                     </div>
                     <button 
-                      className="text-white rounded-md bg-[#3f51b5] px-3 py-2 button-dol font-semibold"
+                      className="text-white rounded-md bg-[#3f51b5] px-3 py-2 button-smt font-semibold"
                       onClick={() => set("filters", [...states.filters, states.chosenFilter])}
                     >
                       Ajouter le filtre
@@ -560,7 +560,7 @@ export const DesktopListPage = (props) => {
                           <p className="text-[#3f51b5] font-semibold">{filter}</p>
                           <Icon 
                             library={`rx`}
-                            icon={`RxCross2`}
+                            name={`RxCross2`}
                             className="text-orange-400"
                             onClick={(e) => {
                               e.preventDefault();
@@ -584,18 +584,18 @@ export const DesktopListPage = (props) => {
                   <div className="row-v-center gap-2">
                     <Icon
                       library={`fa`}
-                      icon={`FaRegEye`}
+                      name={`FaRegEye`}
                       className="text-xl"
                     />
                     <span>Configuration affichage</span>
                   </div>
                   <button 
-                    className={`button-dol row-v-center gap-1 text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
+                    className={`button-smt row-v-center gap-1 text-xl p-1 -mr-1 text-white rounded-md bg-[#3f51b5]`} 
                     onClick={() => set("chosenTool", null)}
                 >
                     <Icon
                       library={`io5`}
-                      icon={`IoCloseSharp`}
+                      name={`IoCloseSharp`}
                     />
                   </button>
                 </div>
@@ -604,7 +604,7 @@ export const DesktopListPage = (props) => {
                   <button className={`text-xl rounded-md text-gray-400`}>
                     <Icon
                       library={`io5`}
-                      icon={`IoCloseSharp`}
+                      name={`IoCloseSharp`}
                     />
                   </button>
                 </div>
@@ -619,10 +619,10 @@ export const DesktopListPage = (props) => {
               </div>
             </div>
             {/* <div className="relative">
-              <button className={`button-dol text-2xl text-[#3f51b5]`} onClick={() => setIsTagsOpened(prevState => !prevState)}>
+              <button className={`button-smt text-2xl text-[#3f51b5]`} onClick={() => setIsTagsOpened(prevState => !prevState)}>
                 <Icon
                   library={`lu`}
-                  icon={`LuTags`}
+                  name={`LuTags`}
                 />
               </button>
               <div                 
@@ -643,19 +643,19 @@ export const DesktopListPage = (props) => {
             </div>
             </div>
             {/* <button 
-              className={`button-dol text-xl p-1 bg-white dark:bg-dark rounded-md text-primary`} 
+              className={`button-smt text-xl p-1 bg-white dark:bg-dark rounded-md text-primary`} 
             >
               <Icon
-                icon={`GiSaveArrow`}
+                name={`GiSaveArrow`}
                 library={`gi`}
               />
             </button> */}
           </div>
-          <div className="row-v-center rounded-md border border-dol overflow-x-auto">
+          <div className="row-v-center rounded-md border border-smt overflow-x-auto">
             {status.map((status, SI) => 
               <button
                 className={`
-                  ${SI != states.chosenStatus ? "button-dol" : "brightness-100"} 
+                  ${SI != states.chosenStatus ? "button-smt" : "brightness-100"} 
                   ${SI == 0 && "rounded-l-md"} 
                   ${SI == status.length - 1 && "rounded-r-md"} 
                   uppercase font-bold tracking-wide px-4 py-2 text-xs duration-100 dark:bg-dark
@@ -674,33 +674,33 @@ export const DesktopListPage = (props) => {
           <div className="row-v-center gap-4 h-full">
             <div className="row-v-center gap-4 text-gray-500">
               <button 
-                className={`button-dol text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
+                className={`button-smt text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
                 onClick={() => set("scale", states.scale > 0 ? states.scale - 5 : 0)}
             >
                 <Icon
                   library={`fa6`}
-                  icon={`FaMinus`}
+                  name={`FaMinus`}
                 />
               </button>
               <span className={`text-secondary`}>{states.scale}%</span>
               <button 
-                className={`button-dol text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
+                className={`button-smt text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
                 onClick={() => set("scale", states.scale < 300 ? states.scale + 5 : 300)}
             >
                 <Icon
                   library={`fa6`}
-                  icon={`FaPlus`}
+                  name={`FaPlus`}
                 />
               </button>
             </div>
             <div className={`w-[1px] h-full bg-gray-200 dark:bg-slate-700`}/>
             {/* <button 
-                className={`button-dol text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
+                className={`button-smt text-primary text-xl p-1 rounded-md bg-white dark:bg-dark`} 
                 onClick={() => set("isOnFullScreen", !states.isOnFullScreen)}
             >
               <Icon
                 library={`pi`}
-                icon={states.isOnFullScreen ? "PiArrowsInFill" : "PiArrowsOutFill"}
+                name={states.isOnFullScreen ? "PiArrowsInFill" : "PiArrowsOutFill"}
               />
             </button> */}
           </div>
@@ -715,7 +715,7 @@ export const DesktopListPage = (props) => {
             // style={{ transform: `scale(${states.scale / 100})`, transformOrigin: 'top left'}}
           >
             <thead className="font-semibold z-10 sticky top-0">
-              <tr className="text-dol bg-light-border dark:bg-dark-border">
+              <tr className="text-smt bg-light-border dark:bg-dark-border">
                 <th 
                   className="whitespace-nowrap" 
                   style={{ padding: `${8 * states.scale / 100}px ${16 * states.scale / 100}px` }}
@@ -730,7 +730,7 @@ export const DesktopListPage = (props) => {
                     <span>N°</span>
                     {/* <Icon 
                       className="text-[#3f51b5]" 
-                      icon={`FaSort`} 
+                      name={`FaSort`} 
                       library={`fa6`} 
                     /> */}
                   {/* </div> */}
@@ -744,7 +744,7 @@ export const DesktopListPage = (props) => {
                       <span>{element.label}</span>
                       <Icon 
                         className="text-primary" 
-                        icon={`FaSort`} 
+                        name={`FaSort`} 
                         library={`fa6`} 
                       />
                     </div>
@@ -757,7 +757,7 @@ export const DesktopListPage = (props) => {
                   <tr
                     className={`
                       hover:bg-primary-10 cursor-pointer 10 duration-100
-                      ${EI%2 != 0 && "bg-soft-dol"}
+                      ${EI%2 != 0 && "bg-soft-smt"}
                     `}
                     key={EI}
                     onClick={() => navigate(`/list/${EI}`)}
@@ -810,7 +810,7 @@ export const DesktopListPage = (props) => {
                               {attributes[key].type === "password" 
                                 ? Array.from({ length: element.values[key].length }).map(() => "*")
                                 : attributes[key].type === "link"
-                                  ? <a className="link-dol text-secondary" href={element.values[key]}>{element.values[key]}</a>
+                                  ? <a className="link-smt text-secondary" href={element.values[key]}>{element.values[key]}</a>
                                   : (attributes[key].type === "array" || attributes[key].type === "checklist" || attributes[key].type === "sellist")
                                     ? <div className="wrap gap-1 w-40 uppercase text-xs">
                                         {element.values[key].map((tag, TI) => 
@@ -876,12 +876,12 @@ export const DesktopListPage = (props) => {
           </div>
           <div className="row-v-center rounded-md border">
           <button 
-            className={`button-dol text-xl p-2 border bg-white dark:bg-dark dark:border-gray-500 rounded-l-lg`} 
+            className={`button-smt text-xl p-2 border bg-white dark:bg-dark dark:border-gray-500 rounded-l-lg`} 
             onClick={() => set("page", states.page == 1 ? states.page : states.page - 1)}
         >
             <Icon
               library={`io`}
-              icon={`IoIosArrowBack`}
+              name={`IoIosArrowBack`}
             />
             {/* <div className="w-[1px] bg-gray-200 h-full"/> */}
           </button>
@@ -895,7 +895,7 @@ export const DesktopListPage = (props) => {
                   onClick={() => set("page", EI + 1)}
                   className={`
                     p-2 w-10 border dark:border-gray-500
-                    ${states.page == EI + 1 ? "text-white bg-[#3f51b5]" : "bg-white button-dol" }
+                    ${states.page == EI + 1 ? "text-white bg-[#3f51b5]" : "bg-white button-smt" }
                   `}
                 >
                   {EI + 1}
@@ -904,12 +904,12 @@ export const DesktopListPage = (props) => {
             </>
           )}
           <button 
-            className={`button-dol text-xl p-2 border bg-white`} 
+            className={`button-smt text-xl p-2 border bg-white`} 
             onClick={() => set("page", states.page == Math.ceil(tab.length / states.nbPerPage) ? states.page : states.page + 1)}
         >
             <Icon
               library={`io`}
-              icon={`IoIosArrowForward`}
+              name={`IoIosArrowForward`}
             />
           </button>
           </div>

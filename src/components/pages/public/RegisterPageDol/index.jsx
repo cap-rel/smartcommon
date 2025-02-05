@@ -40,7 +40,7 @@ export const RegisterPage = (props) => {
   return (
     <div className={`col gap-3`}>
         {states.isRegistering &&
-            <div className={`bg-alert-dol z-50`}>
+            <div className={`bg-alert-smt z-50`}>
                 <Spinner type={`dots`} />
             </div>
         }
@@ -66,10 +66,10 @@ export const RegisterPage = (props) => {
                     >
                         {t("public.emailLabel")}
                     </label>
-                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-dol`}>
+                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-smt`}>
                         <Icon
                             library={`fa`}
-                            icon={`FaUser`}
+                            name={`FaUser`}
                             className={`text-2xl text-primary flex-shrink-0`}
                             style={{ fill: darkMode && `url(#gradientSvg)` }}
                         />
@@ -82,7 +82,7 @@ export const RegisterPage = (props) => {
                                 e.preventDefault();
                                 set("email.root", e.target.value)
                             }}
-                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-dol`}
+                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-smt`}
                             required={true}
                         />
                     </div>
@@ -98,10 +98,10 @@ export const RegisterPage = (props) => {
                     >
                         {t("public.passwordLabel")}
                     </label>
-                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-dol`}>
+                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-smt`}>
                         <Icon
                             library={`fa`}
-                            icon={`FaLock`}
+                            name={`FaLock`}
                             className={`text-2xl text-primary flex-shrink-0`}
                             style={{ fill: darkMode && `url(#gradientSvg)` }}
                         />
@@ -113,7 +113,7 @@ export const RegisterPage = (props) => {
                             onChange={(e) => set("password.root", e.target.value)}
                             required={true}
                             title={`Mot de passe`}
-                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-dol`}
+                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-smt`}
                         />
                         <button 
                             title={`Voir mot de passe`}
@@ -121,11 +121,11 @@ export const RegisterPage = (props) => {
                                 e.preventDefault();
                                 set("isPasswordVisible", !states.isPasswordVisible);
                             }}
-                            className={`flex-shrink-0 text-soft-dol text-2xl`}
+                            className={`flex-shrink-0 text-soft-smt text-2xl`}
                         >
                             <Icon
                                 library={`fa`}
-                                icon={states.isPasswordVisible ? "FaEyeSlash" : "FaEye"}
+                                name={states.isPasswordVisible ? "FaEyeSlash" : "FaEye"}
                             />
                         </button>
                     </div>
@@ -141,10 +141,10 @@ export const RegisterPage = (props) => {
                     >
                         {t("public.confirmedPasswordLabel")}
                     </label>
-                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-dol`}>
+                    <div className={`row-v-center gap-3 bg-light-soft dark:bg-transparent p-3 rounded-md border border-smt`}>
                         <Icon
                             library={`fa6`}
-                            icon={`FaCircleCheck`}
+                            name={`FaCircleCheck`}
                             className={`text-2xl text-primary flex-shrink-0`}
                             style={{ fill: darkMode && `url(#gradientSvg)` }}
                         />
@@ -156,7 +156,7 @@ export const RegisterPage = (props) => {
                             onChange={(e) => set("confirmedPassword.root", e.target.value)}
                             required={true}
                             title={`Mot de passe`}
-                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-dol`}
+                            className={`min-w-0 flex-grow outline-none bg-transparent placeholder-smt`}
                         />
                         <button 
                             title={`Voir mot de passe`}
@@ -164,11 +164,11 @@ export const RegisterPage = (props) => {
                                 e.preventDefault()
                                 set("isConfirmedPasswordVisible", !states.isConfirmedPasswordVisible);
                             }}
-                            className={`flex-shrink-0 text-soft-dol text-2xl`}
+                            className={`flex-shrink-0 text-soft-smt text-2xl`}
                         >
                             <Icon
                                 library={`fa`}
-                                icon={states.isConfirmedPasswordVisible ? "FaEyeSlash" : "FaEye"}
+                                name={states.isConfirmedPasswordVisible ? "FaEyeSlash" : "FaEye"}
                             />
                         </button>
                     </div>
@@ -178,16 +178,16 @@ export const RegisterPage = (props) => {
                 col gap-3 text-sm
                 sm:gap-5
             `}>
-                <button className={`bg-gradient-to-r from-primary to-secondary button-dol text-white p-4 rounded-md w-full text-lg uppercase tracking-wide font-semibold`}>
+                <button className={`bg-gradient-to-r from-primary to-secondary button-smt text-white p-4 rounded-md w-full text-lg uppercase tracking-wide font-semibold`}>
                     {t("public.registerSubmitButton")}
                 </button>
                 <p className={`ml-2 row-v-center gap-2`}>
-                    <span className={`text-soft-dol`}>
+                    <span className={`text-soft-smt`}>
                         {t("public.loginLinkLabel")}
                     </span>
                     <Link 
                         to={`/login`}
-                        className={`link-dol text-primary`}
+                        className={`link-smt text-primary`}
                     >
                         {t("public.loginLink")}
                     </Link>
