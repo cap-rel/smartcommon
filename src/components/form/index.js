@@ -22,3 +22,5 @@ export * from "./Stepper";
 export * from "./Tags";
 export * from "./Textarea";
 export * from "./Videos";
+export * from "./Single";
+export * from "./Multi";
