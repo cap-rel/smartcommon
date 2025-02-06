@@ -3,7 +3,9 @@ import { useStates, useWindow } from "../../../hooks";
 import { Icon } from "../../others";
 import { Label } from "../Label";
 import { propTypes } from "./props";
-import classNames from "classnames";
+import { Switch, Checkbox, Radio, CheckedIcon } from "../tools";
+
+// todo add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = ({
     id = null,
@@ -11,7 +13,7 @@ export const Boolean = ({
     label = null,
     help = {
         position: "popup", // or top or bottom
-        content: null // can be html 
+        text: null // can only be text
     },
     variant = "switch",
     readOnly = false,
@@ -25,7 +27,8 @@ export const Boolean = ({
         // color: null,
         // activeColor: null,
         // icon: null,
-        // activeIcon: null,
+        // activeIcon: null, // todo customization ++
+        customType: null,
         classNames: {
             container: null,
             label: null,
@@ -37,7 +40,8 @@ export const Boolean = ({
             helpText: null,      //
 
             input: null,
-            checkIcon: null // only for checkbox
+            checkIcon: null, // only for checkbox
+            circle: null // only for switch and radio
         },
     }
 }) => {
@@ -70,78 +74,54 @@ export const Boolean = ({
                 { ...inputProps}
             />
             {variant === "switch" ?
-                <div
+                <Switch
                     onClick={() => set("localValue", !localValue, !blocked)}
-                    className={`
-                        relative rounded-full w-11 h-6 duration-200 flex-shrink-0
-                        ${cursor}
-                        ${localValue ? "bg-primary" : "bg-slate-300"}
-                        ${classNames.input}
-                    `}
-                >
-                    <div className={`
-                        absolute top-1 left-1 rounded-full size-4 duration-200
-                        ${localValue ? "translate-x-5 bg-white dark:bg-primary" : "bg-light dark:bg-dark-soft"}
-                        ${classNames.circle}
-                    `}/>
-                </div>
+                    checked={localValue}
+                    cursor={cursor}
+                    classNames={{
+                        input: classNames.input,
+                        circle: classNames.circle
+                    }}
+                />
             : variant === "checkbox" ?
-                <div
+                <Checkbox
                     onClick={() => set("localValue", !localValue, !blocked)}
-                    className={`
-                        relative duration-100 size-5 rounded-md flex-shrink-0
-                        ${cursor}
-                        ${localValue ? "bg-primary" : "bg-slate-300"}
-                        ${classNames.input}
-                    `}
-                >
-                    <Icon
-                        library={`fa6`}
-                        name={`FaCheck`}
-                        className={`
-                            size-3 duration-100 text-white dark:text-primary
-                            ${localValue ? "absolute-full-center opacity-100" : "opacity-0 absolute-h-center bottom-0"}
-                            ${classNames.checkIcon}
-                        `}
-                    />
-                    {/* ${classNames("text-white dark:text-primary", custom.classNames.checkIcon) */}
-                </div>
+                    checked={localValue}
+                    cursor={cursor}
+                    classNames={{
+                        input: classNames.input,
+                        checkIcon: classNames.checkIcon
+                    }}
+                />
             : variant === "radio" ?
-                <div
+                <Radio
                     onClick={() => set("localValue", !localValue, !blocked)}
-                    className={`
-                        relative duration-50 size-4 rounded-full border-2 flex-shrink-0 box-content
-                        ${cursor}
-                        ${localValue ? "border-primary" : "border-smt"}
-                    `}
-                >
-                    <div className={`
-                        absolute top-0.5 left-0.5 duration-50 bg-primary rounded-full
-                        ${localValue ? "size-3 opacity-100" : "opacity-0 size-0"}
-                        ${classNames.circle}
-                    `}/>
-                </div>
+                    checked={localValue}
+                    cursor={cursor}
+                    classNames={{
+                        input: classNames.input,
+                        circle: classNames.circle
+                    }}
+                />
             : variant === "star" ?
-                <Icon
+                <CheckedIcon
+                    onClick={() => set("localValue", !localValue, !blocked)}
                     library={`fa6`}
                     name={localValue ? "FaStar" : "FaRegStar"}
-                    className={`
-                        text-2xl flex-shrink-0 text-primary
-                        ${cursor}
-                        ${classNames.input}
-                    `}
-                    onClick={() => set("localValue", !localValue, !blocked)}
+                    cursor={cursor}
+                    classNames={{
+                        input: classNames.input,
+                    }}
                 />
             : variant === "heart" ?
-                <Icon
+                <CheckedIcon
+                    onClick={() => set("localValue", !localValue, !blocked)}
                     library={`io5`}
                     name={localValue ? "IoHeart" : "IoHeartOutline"}
-                    className={`
-                        text-2xl flex-shrink-0 text-primary
-                        ${cursor}
-                        ${classNames.input}
-                    `}
-                    onClick={() => set("localValue", !localValue, !blocked)}
+                    cursor={cursor}
+                    classNames={{
+                        input: classNames.input,
+                    }}
                 />
             : ""}
       
