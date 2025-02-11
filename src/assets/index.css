@@ -1,6 +1,25 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-light          : #fff ;
+  --color-light-soft     : #f1f5f9;
+  --color-light-border   : #e2e8f0;
+  --color-light-soft-text: #94a3b8;
+  --color-light-text     : #0f172a;
+
+  --color-dark           : #0f172a;
+  --color-dark-soft      : #1e293b;
+  --color-dark-border    : #334155;
+  --color-dark-soft-text : #94a3b8;
+  --color-dark-text      : #fff;
+
+  --color-primary        : #00bcff;
+  --color-secondary      : #fe4b82;
+  --color-success        : #22c55e;
+  --color-error          : #ef4444;
+  --color-warning        : #eab308;
+}
+
 @layer base {
   * {
     @apply p-0 m-0 box-border;
@@ -19,7 +38,7 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  input[type=range]::-webkit-slider-runnable-track {
+  /* input[type=range]::-webkit-slider-runnable-track {
     @apply bg-soft-smt h-2 rounded-full;
   }
   input[type=range]::-webkit-slider-thumb {
@@ -42,12 +61,27 @@
   }
   input[type=range]::-ms-thumb {
     @apply bg-smt border-4 border-primary rounded-full h-4 w-4;
+  } */
+
+  .absolute-full-center {
+    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }
-}
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer base {
+  .absolute-h-center {
+    @apply absolute left-1/2 -translate-x-1/2;
+  }
+  .absolute-v-center {
+    @apply absolute top-1/2 -translate-y-1/2;
+  } 
+  .fixed-full-center {
+    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
+  }
+  .fixed-h-center {
+    @apply fixed left-1/2 -translate-x-1/2;
+  }
+  .fixed-v-center {
+    @apply fixed top-1/2 -translate-y-1/2;
+  }
+
   .row {
     @apply flex flex-row;
   }
@@ -90,6 +124,7 @@
   .row-end-center {
     @apply flex flex-row justify-end items-center;
   }
+
   .col {
     @apply flex flex-col;
   }
@@ -132,6 +167,7 @@
   .col-end-center {
     @apply flex flex-col justify-end items-center;
   }
+
   .wrap {
     @apply flex flex-wrap;
   }
@@ -144,43 +180,16 @@
   .wrap-full-center {
     @apply flex flex-wrap justify-center items-center;
   }
-}
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer base {
-  .absolute-full-center {
-    @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
-  }
-  .absolute-h-center {
-    @apply absolute left-1/2 -translate-x-1/2;
-  }
-  .absolute-v-center {
-    @apply absolute top-1/2 -translate-y-1/2;
-  }
-  .fixed-full-center {
-    @apply fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
-  }
-  .fixed-h-center {
-    @apply fixed left-1/2 -translate-x-1/2;
-  }
-  .fixed-v-center {
-    @apply fixed top-1/2 -translate-y-1/2;
-  }
-}
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-@layer base {
+
   input {
     @apply outline-none;
   }
   select {
     @apply lg:cursor-pointer;
   }
-  .alert-smt {
-    @apply fixed inset-0 bg-dark-50 dark:bg-light-10 col-full-center z-60;
-  }
+  /* .alert-smt {
+    @apply fixed inset-0 bg-dark/50 dark:bg-light/10 col-full-center z-60;
+  } */
   .accent-smt {
     @apply accent-primary dark:accent-light;
   }
@@ -192,7 +201,7 @@
   }
   .bg-soft-smt {
     @apply bg-light-soft dark:bg-dark-soft;
-  }
+  }  
   .bg-smt {
     @apply bg-light dark:bg-dark;
   }
@@ -209,7 +218,7 @@
     @apply text-black active:underline active:brightness-90 dark:active:brightness-125 lg:hover:underline lg:cursor-pointer;
   }
   .button-smt {
-    @apply active:brightness-90 dark:active:brightness-140 lg:hover:brightness-90 lg:dark:hover:brightness-140 lg:active:brightness-80 lg:dark:active:brightness-180;
+    @apply active:brightness-95 dark:active:brightness-140 lg:hover:brightness-95 lg:dark:hover:brightness-140 lg:active:brightness-90 lg:dark:active:brightness-180;
     transition: filter 100ms;
   }
   .button-light-smt {
@@ -224,513 +233,16 @@
     @apply tracking-wide uppercase font-semibold rounded-full px-2 py-1;
   }
   .image-block {
-    @apply fixed z-50 inset-0 bg-black bg-opacity-70;
-  }
-  .darken-bg-0::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-0;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-5::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-5;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-10::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-10;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-15::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-15;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-20::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-20;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-25::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-25;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-30::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-30;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-35::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-35;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-40::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-40;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-45::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-45;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-50::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-50;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-55::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-55;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-60::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-60;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-65::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-65;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-70::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-70;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-75::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-75;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-80::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-80;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-85::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-85;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-90::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-90;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-95::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-95;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-100::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-100;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-105::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-105;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-110::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-110;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-115::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-115;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-120::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-120;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-125::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-125;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-130::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-130;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-135::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-135;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-140::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-140;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-145::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-145;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-150::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-150;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-155::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-155;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-160::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-160;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-165::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-165;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-170::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-170;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-175::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-175;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-180::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-180;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-185::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-185;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-190::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-190;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-195::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-195;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-200::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-200;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-205::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-205;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-210::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-210;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-215::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-215;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-220::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-220;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-225::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-225;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-230::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-230;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-235::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-235;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-240::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-240;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-245::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-245;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-250::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-250;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-255::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-255;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-260::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-260;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-265::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-265;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-270::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-270;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-275::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-275;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-280::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-280;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-285::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-285;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-290::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-290;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-295::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-295;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-300::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-300;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-305::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-305;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-310::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-310;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-315::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-315;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-320::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-320;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-325::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-325;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-330::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-330;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-335::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-335;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-340::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-340;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-345::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-345;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-350::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-350;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-355::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-355;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-360::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-360;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-365::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-365;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-370::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-370;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-375::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-375;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-380::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-380;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-385::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-385;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-390::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-390;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-395::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-395;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-400::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-400;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-405::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-405;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-410::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-410;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-415::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-415;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-420::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-420;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-425::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-425;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-430::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-430;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-435::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-435;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-440::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-440;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-445::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-445;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-450::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-450;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-455::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-455;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-460::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-460;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-465::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-465;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-470::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-470;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-475::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-475;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-480::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-480;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-485::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-485;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-490::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-490;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-495::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-495;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
-  .darken-bg-500::before {
-    @apply content-[""] absolute inset-0 bg-inherit z-0 brightness-500;
-    border-radius: inherit;
-    transition: brightness 0.5s ease-in-out;
-  }
+    @apply fixed z-50 inset-0 bg-black/70;
+  }
+
+  /* @for $i from 0 through 100 {
+    .darken-bg-#{$i * 5}::before {
+      @apply content-[''] absolute inset-0 bg-inherit z-0 brightness-#{$i * 5};
+      border-radius: inherit;
+      transition: brightness 0.5s ease-in-out;
+    }
+  } */
 }
 
 /*# sourceMappingURL=index.css.map */
