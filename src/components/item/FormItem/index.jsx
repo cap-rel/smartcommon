@@ -2,7 +2,7 @@ import { Address, Audios, Boolean, Checkbox, Drawing, Duration, Editor, Files, G
 import { useMemo } from "react";
 
 export const FormItem = (props) => {
-  const Components = useMemo(() => ({ Address, Audios, Boolean, Checkbox, Checkbox, Drawing, Duration, Editor, Files, GpsPoints, IconSelect, Input, MultiNumber, Photos, Radio, Range, Rating, Select, Signature, Stepper, Tags, Textarea, Videos }), []);
+  const Components = useMemo(() => ({ Address, Audios, Boolean, Checkbox, Drawing, Duration, Editor, Files, GpsPoints, IconSelect, Input, MultiNumber, Photos, Radio, Range, Rating, Select, Signature, Stepper, Tags, Textarea, Videos }), []);
 
   const { type } = props;
 
