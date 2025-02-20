@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess, logoutSuccess } from "../../reduxStore/reducers/authSlice";
 import { API_URL } from "../../globals/constants";
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStates } from "../../hooks";
 
@@ -71,5 +70,13 @@ export const useApi = () => {
     });
   }
 
-  return { fetchApi, login, logout, states };
+  const GET = (path) => fetchApi(path);
+
+  const POST = (path, body) => fetchApi(path, "POST", body);
+
+  const PUT = (path, body) => fetchApi(path, "PUT", body);
+
+  const DELETE = (path, body) => fetchApi(path, "DELETE", body);
+
+  return { fetchApi, login, logout, GET, POST, PUT, DELETE, states };
 };
