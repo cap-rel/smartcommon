@@ -8,7 +8,7 @@ export function setComponent(type) {
         radio        : "Radio",
         multiCheckbox: "Checkbox",
         multiSelect  : "Select",
-        array        : "Tags",
+        array        : "Array",
         varchar      : "Input",
         mail         : "Input",
         password     : "Input",
