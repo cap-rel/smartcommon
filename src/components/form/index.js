@@ -19,7 +19,7 @@ export * from "./Rating";
 export * from "./Select";
 export * from "./Signature";
 export * from "./Stepper";
-export * from "./Tags";
+export * from "./Array";
 export * from "./Textarea";
 export * from "./Videos";
 export * from "./Single";
