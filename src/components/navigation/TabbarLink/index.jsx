@@ -21,19 +21,19 @@ export const TabbarLink = ({
     return (
         <Link
             to={to}
-            className={`px-1 text-smt h-full col-full-center flex-1 gap-1 bg-smt group`}
+            className={`flex-1 gap-1 px-1 h-full text-strong col-full-center bg-strong group`}
         >
             {!isEmpty(icon) && 
                 <div className={
                     `py-2 w-3/4 rounded-full child
-                    ${isActive ? "bg-primary/15 duration-100" : "bg-smt group-active:brightness-90"}
+                    ${isActive ? "duration-100 bg-primary/15" : "bg-strong group-active:brightness-90"}
                 `}>
                     <Icon
                         library={isActive ? (!isEmpty(activeIcon) ? activeIcon.library : icon.library): icon.library}
                         name={isActive ? (!isEmpty(activeIcon) ? activeIcon.name : icon.name) : icon.name}
                         className={`
                             text-xl mx-auto duration-100 flex-shrink-0
-                            ${isActive ? "text-primary" : "text-soft-smt"}
+                            ${isActive ? "text-primary" : "text-soft-text"}
                         `}
                     />
                 </div>
@@ -41,7 +41,7 @@ export const TabbarLink = ({
             {!isEmpty(label) &&
                 <div className={`
                     truncate text-xs duration-100
-                    ${isActive ? "text-primary" : "text-soft-smt"}
+                    ${isActive ? "text-primary" : "text-soft-text"}
                 `}>
                     {label}
                 </div>
