@@ -19,8 +19,8 @@ export const Radio = ({
             `}
         >
             <div className={`
-                absolute top-0.5 left-0.5 duration-50 bg-primary rounded-full
-                ${checked ? "size-3 opacity-100" : "opacity-0 size-0"}
+                absolute top-1 left-1 duration-50 bg-primary rounded-full
+                ${checked ? "size-2 opacity-100" : "opacity-0 size-0"}
                 ${classNames.circle}
             `}/>
         </div>
