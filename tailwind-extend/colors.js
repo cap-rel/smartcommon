@@ -2,23 +2,23 @@ import { hexToRgb } from "../src/globals/functions";
 import hexRgb from "hex-rgb";
 
 export const appColors = {
-    "light"          : "#fff",
-    "light-soft"     : "#f1f5f9",
-    "light-border"   : "#e2e8f0",
-    "light-soft-text": "#94a3b8",
-    "light-text"     : "#0f172a",
+    // "light"          : "#fff",
+    // "light-soft"     : "#f1f5f9",
+    // "light-border"   : "#e2e8f0",
+    // "light-soft-text": "#94a3b8",
+    // "light-text"     : "#0f172a",
 
-    "dark"           : "#0f172a",
-    "dark-soft"      : "#1e293b",
-    "dark-border"    : "#334155",
-    "dark-soft-text" : "#94a3b8",
-    "dark-text"      : "#fff",
+    // "dark"           : "#0f172a",
+    // "dark-soft"      : "#1e293b",
+    // "dark-border"    : "#334155",
+    // "dark-soft-text" : "#94a3b8",
+    // "dark-text"      : "#fff",
 
-    "primary"        : "#f16c6d",
-    "secondary"      : "#000",
-    "success"        : "#22c55e",
-    "error"          : "#ef4444",
-    "warning"        : "#eab308",
+    // "primary"        : "#f16c6d",
+    // "secondary"      : "#000",
+    // "success"        : "#22c55e",
+    // "error"          : "#ef4444",
+    // "warning"        : "#eab308",
 };
 
 export let colors = appColors;
