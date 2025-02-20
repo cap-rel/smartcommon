@@ -209,32 +209,32 @@ export const MobileListPage = (props) => {
 
 
 
-      <navbar className={`bg-primary dark:bg-dark text-white dark:text-dark-text row-between-center py-4 pl-4 pr-2 gap-4 font-semibold`}>
-            <p className={`text-2xl flex-shrink-0`}>
+      <navbar className={`gap-4 py-4 pr-2 pl-4 font-semibold text-white bg-primary dark:bg-dark dark:text-dark-text row-between-center`}>
+            <p className={`flex-shrink-0 text-2xl`}>
               <Icon library={`fa6`} name={`FaBoxesStacked`} />
             </p>
-            <p className={`text-xl uppercase tracking-wide truncate flex-grow`}>
+            <p className={`flex-grow text-xl tracking-wide uppercase truncate`}>
               Produits | Paiements
             </p>    
             
-            <div className={`row-v-center flex-shrink-0`}>
-                <div className={`hidden md:row-v-center gap-1 p-1 rounded-md bg-white dark:bg-dark-soft`}>
+            <div className={`flex-shrink-0 row-v-center`}>
+                <div className={`hidden gap-1 p-1 bg-white rounded-md md:row-v-center dark:bg-dark-soft`}>
                     <input
                       value={states.searchBarValue}
                       onChange={(e) => set("searchBarValue", e.target.value)}
                       placeholder={`Recherchez...`}
-                      className={`min-w-0 flex-grow font-normal text-smt p-1 bg-transparent placeholder-smt outline-none`}
+                      className={`flex-grow p-1 min-w-0 font-normal bg-transparent outline-none text-smt placeholder-smt`}
                     />
-                    <button className={`text-2xl text-primary flex-shrink-0 p-1 button-smt bg-white dark:bg-dark-soft rounded-full`}>
+                    <button className={`flex-shrink-0 p-1 text-2xl bg-white rounded-full text-primary button-smt dark:bg-dark-soft`}>
                       <Icon library={`io5`} name={`IoClose`} />
                     </button>
                   </div>
-                <button className={`md:hidden text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}>
+                <button className={`flex-shrink-0 p-2 text-2xl rounded-full md:hidden button-smt bg-primary dark:bg-dark`}>
                     <Icon library={`io`} name={`IoMdSearch`} />
                 </button>
-                <div className={`row-v-center flex-shrink-0`}>
+                <div className={`flex-shrink-0 row-v-center`}>
                   <button 
-                      className={`text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}
+                      className={`flex-shrink-0 p-2 text-2xl rounded-full button-smt bg-primary dark:bg-dark`}
                       onClick={() => { switch (states.listMode) {
                           case "column": return set("listMode", "grid-2");
                           case "grid-2": return set("listMode", "grid-3");
@@ -254,7 +254,7 @@ export const MobileListPage = (props) => {
                   {tools.map((tool, TI) =>
                       <button 
                           key={TI}
-                          className={`hidden md:block text-2xl flex-shrink-0 button-smt p-2 bg-primary dark:bg-dark rounded-full`}
+                          className={`hidden flex-shrink-0 p-2 text-2xl rounded-full md:block button-smt bg-primary dark:bg-dark`}
                           onClick={() => set("openedOption", tool.state)}
                       >
                           <Icon library={tool.icon.library} name={tool.icon.icon} />
@@ -265,9 +265,7 @@ export const MobileListPage = (props) => {
             </div>
         </navbar>
 
-        <div className="
-          shadow-md bg-smt text-sm font-semibold text-white 
-          h-12 row-between-center overflow-x-auto"
+        <div className="overflow-x-auto h-12 text-sm font-semibold text-white shadow-md  bg-smt row-between-center"
         >
           {tabbarList.map((element, EI) => 
             <button
@@ -292,9 +290,9 @@ export const MobileListPage = (props) => {
               h-28 fixed-h-center top-0 w-full duration-300
           `}
         >
-          {/* <div className="col-h-center gap-2"> */}
-            <div className="row-between-center gap-4 h-full w-full">
-              <label className="row-v-center gap-4 p-2 -ml-2 button-smt bg-white rounded-md" htmlFor="selectAll">
+          {/* <div className="gap-2 col-h-center"> */}
+            <div className="gap-4 w-full h-full row-between-center">
+              <label className="gap-4 p-2 -ml-2 bg-white rounded-md row-v-center button-smt" htmlFor="selectAll">
                 <input 
                   type="checkbox"
                   id="selectAll"
@@ -305,9 +303,9 @@ export const MobileListPage = (props) => {
                 />
                 <span className="">Selectionner tout</span>
               </label>
-              <div className="row-v-center gap-2">
+              <div className="gap-2 row-v-center">
                 <button 
-                  className={`button-smt ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
+                  className={`p-2 -mr-2 text-2xl bg-white rounded-full ring-white button-smt`} 
                   onClick={() => {
                     set("isSelectingFew", false);
                     set("selected", null);
@@ -319,7 +317,7 @@ export const MobileListPage = (props) => {
                   />
                 </button>
                 <button 
-                  className={`button-smt ring-white text-2xl p-2 -mr-2 rounded-full bg-white`} 
+                  className={`p-2 -mr-2 text-2xl bg-white rounded-full ring-white button-smt`} 
                   onClick={() => {
                     set("isSelectingFew", false);
                     set("selected", null);
@@ -381,7 +379,7 @@ export const MobileListPage = (props) => {
                   ${!states.isGettingList && "border button-smt"} bg-smt text-smt border-smt relative shadow-md p-2 row-between-center
                 `}
               >
-                {states.isGettingList && <div className="skeleton absolute inset-0 rounded-md bg-gray-200"/>}
+                {states.isGettingList && <div className="absolute inset-0 bg-gray-200 rounded-md skeleton"/>}
                 <input 
                   type="checkbox"
                   className={`
@@ -394,10 +392,10 @@ export const MobileListPage = (props) => {
                   ${states.listMode === "column" ? "row-between-center" : "wrap-v-center"}
                 `}>
                   <p className={`${states.listMode !== "column" && "hidden"} font-semibold`}>{EI + 1}</p>
-                  <p className="text-primary font-semibold">#1002322</p>
+                  <p className="font-semibold text-primary">#1002322</p>
                   {/* <p className="text-soft-smt">12/12/04 18:00</p> */}
-                  <p className="text-green-700 dark:text-green-500 py-1 px-2 tracking-wide font-bold bg-green-500 bg-opacity-20 dark:bg-opacity-10 rounded-full shadow-md uppercase">Ouvert</p>
-                  <p className="text-soft-smt truncate">Ordinateur ThinkPad + Souris Razer 360</p>
+                  <p className="px-2 py-1 font-bold tracking-wide text-green-700 uppercase bg-green-500 bg-opacity-20 rounded-full shadow-md dark:text-green-500 dark:bg-opacity-10">Ouvert</p>
+                  <p className="truncate text-soft-smt">Ordinateur ThinkPad + Souris Razer 360</p>
                   <p className="font-semibold">230 €</p>
                 </div>
               </li>
@@ -405,7 +403,7 @@ export const MobileListPage = (props) => {
           </ul>
          </>
         ) : (
-          <span className="absolute-full-center text-center text-gray-400 text-lg">
+          <span className="text-lg text-center text-gray-400 absolute-full-center">
             Aucun objet trouvé
           </span>
         )}
@@ -423,49 +421,49 @@ export const MobileListPage = (props) => {
               ${(!Array.isArray(states.selected) && !isEmpty(states.selected)) ? "translate-y-0 duration-300" : "translate-y-full"}
             `}
           >
-            <button className={`absolute top-2 right-2 p-2 button-smt bg-smt text-2xl text-soft-smt rounded-full`}>
+            <button className={`absolute top-2 right-2 p-2 text-2xl rounded-full button-smt bg-smt text-soft-smt`}>
               <Icon library={`io5`} name={`IoClose`} />
             </button>
-            <div className={`row divide-x divide-smt w-full h-full p-4`}>
-              <div className={`col gap-4 p-4 basis-1/3`}>
-                <div className={`row-v-center gap-4 text-2xl`}>
+            <div className={`p-4 w-full h-full divide-x row divide-smt`}>
+              <div className={`gap-4 p-4 col basis-1/3`}>
+                <div className={`gap-4 text-2xl row-v-center`}>
                   <Icon library={`fa`} name={`FaTools`} className={`text-primary`} />
                   <p className={`text-xl font-bold uppercase`}>Actions</p>
                 </div>
                 <p>Classiques</p>
-                <div className={`wrap-v-center gap-2`}>
-                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-yellow-500 bg-yellow-500 dark:bg-opacity-20 dark:border border-yellow-500 rounded-md`}>
+                <div className={`gap-2 wrap-v-center`}>
+                  <button className={`flex-grow gap-2 p-2 text-white bg-yellow-500 rounded-md border-yellow-500 button-smt row-full-center dark:text-yellow-500 dark:bg-opacity-20 dark:border`}>
                     <Icon library={`md`} name={`MdEdit`} className={`text-xl`} />
                     <p className={``}>Modifier</p>
                   </button>
-                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-red-500 bg-red-500 dark:bg-opacity-20 dark:border border-red-500 rounded-md`}>
+                  <button className={`flex-grow gap-2 p-2 text-white bg-red-500 rounded-md border-red-500 button-smt row-full-center dark:text-red-500 dark:bg-opacity-20 dark:border`}>
                     <Icon library={`fa`} name={`FaTrash`} className={`text-xl`} />
                     <p className={``}>Supprimer</p>
                   </button>
                 </div>
                 <p>Rapides</p>
-                <div className={`wrap-v-center gap-2`}>
-                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-gray-500 bg-gray-500 dark:bg-opacity-20 dark:border border-gray-500 rounded-md`}>
+                <div className={`gap-2 wrap-v-center`}>
+                  <button className={`flex-grow gap-2 p-2 text-white bg-gray-500 rounded-md border-gray-500 button-smt row-full-center dark:text-gray-500 dark:bg-opacity-20 dark:border`}>
                     <Icon library={`md`} name={`MdEdit`} className={`text-xl`} />
                     <p className={``}>Stocker</p>
                   </button>
-                  <button className={`button-smt flex-grow row-full-center p-2 gap-2 text-white dark:text-green-500 bg-green-500 dark:bg-opacity-20 dark:border border-green-500 rounded-md`}>
+                  <button className={`flex-grow gap-2 p-2 text-white bg-green-500 rounded-md border-green-500 button-smt row-full-center dark:text-green-500 dark:bg-opacity-20 dark:border`}>
                     <Icon library={`fa`} name={`FaTrash`} className={`text-xl`} />
                     <p className={``}>Ouvrir</p>
                   </button>
                 </div>
               </div>
-              <div className="col gap-4 basis-2/3 p-4">
-                <div className={`row-v-center gap-4 px-4 text-xl`}>
-                  <Icon library={`fa6`} name={`FaBoxesStacked`} className={`text-primary text-3xl`} />
+              <div className="gap-4 p-4 col basis-2/3">
+                <div className={`gap-4 px-4 text-xl row-v-center`}>
+                  <Icon library={`fa6`} name={`FaBoxesStacked`} className={`text-3xl text-primary`} />
                   <p className={`font-bold uppercase`}>Détails du Produit | Paiement</p>
                 </div>
-                {/* <p className="text-center font-bold text-3xl">Produit | Paiement sélectionné</p> */}
-                <dl className="divide-y divide-smt border border-smt rounded-md max-h-full overflow-auto">
+                {/* <p className="text-3xl font-bold text-center">Produit | Paiement sélectionné</p> */}
+                <dl className="overflow-auto max-h-full rounded-md border divide-y divide-smt border-smt">
                   {details.map(item =>
-                    <div className={`col md:row-between-center md:even:bg-soft-smt divide-smt p-2 divide-x w-full`}>
-                      <dt className={`md:basis-1/3 text-smt py-2 pl-2 pr-4`}>{item.label}</dt>
-                      <dd className={`md:basis-2/3 text-soft-smt py-2 pr-2 pl-4 row-between-center gap-4`}>
+                    <div className={`p-2 w-full divide-x col md:row-between-center md:even:bg-soft-smt divide-smt`}>
+                      <dt className={`py-2 pr-4 pl-2 md:basis-1/3 text-smt`}>{item.label}</dt>
+                      <dd className={`gap-4 py-2 pr-2 pl-4 md:basis-2/3 text-soft-smt row-between-center`}>
                         {/* <Component type={item.type} value={item.value} />
                         <Button type={item.type} value={item.value} /> */}
                       </dd>
@@ -476,7 +474,7 @@ export const MobileListPage = (props) => {
             </div>
           </div>
         </div>
-        <Link to={`/`} className={`button-smt fixed bottom-4 p-2 text-3xl bg-primary rounded-full text-white right-4`}>
+        <Link to={`/`} className={`fixed right-4 bottom-4 p-2 text-3xl text-white rounded-full button-smt bg-primary`}>
            <Icon library={`fa6`} name={`FaPlus`}/>
         </Link>
       </div>
