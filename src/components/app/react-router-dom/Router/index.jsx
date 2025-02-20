@@ -21,7 +21,12 @@ import { BrowserRouter, Route, Routes as BrowserRoutes, useLocation, matchPath }
 import { ProtectedRoutes } from "../ProtectedRoutes";
 import { PublicRoutes } from "../PublicRoutes";
 
-import { Error404Page } from "../../../pages/errors/Error404PageDol"
+import { Error404Page } from "../../../pages/errors/Error404Page"
+import { PrivateLayout } from "../../../layouts/test/PrivateLayout";
+import { HomePage } from "../../../pages/test/HomePage";
+import { NotesPage } from "../../../pages/test/NotesPage";
+import { SyncPage } from "../../../pages/test/SyncPage";
+import { SettingsPage } from "../../../pages/test/SettingsPage";
 
 export const Router = (props) => {
   const { config } = props;
@@ -35,6 +40,10 @@ export const Router = (props) => {
         <Route element={<ProtectedRoutes />}>
           <Route path={`/`} element={<HomePage />} />
         </Route> */}
+        <Route path={`/`} element={<HomePage />} /> 
+        <Route path={`/notes`} element={<NotesPage />} /> 
+        <Route path={`/sync`} element={<SyncPage />} /> 
+        <Route path={`/settings`} element={<SettingsPage />} /> 
         <Route path={`*`} element={<Error404Page />} /> 
       </BrowserRoutes>
     );
