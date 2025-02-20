@@ -1,29 +1,56 @@
 @import "tailwindcss";
 
 @theme {
-  --color-light          : #fff ;
-  --color-light-soft     : #f1f5f9;
-  --color-light-border   : #e2e8f0;
-  --color-light-soft-text: #94a3b8;
-  --color-light-text     : #0f172a;
+  --color-primary      : var(--color-violet-500);
+    --color-secondary    : var(--color-pink-500);
+    --color-success      : var(--color-green-500);
+    --color-error        : var(--color-red-500);
+    --color-warning      : var(--color-yellow-500);
 
-  --color-dark           : #0f172a;
-  --color-dark-soft      : #1e293b;
-  --color-dark-border    : #334155;
-  --color-dark-soft-text : #94a3b8;
-  --color-dark-text      : #fff;
-
-  --color-primary        : #00bcff;
-  --color-secondary      : #fe4b82;
-  --color-success        : #22c55e;
-  --color-error          : #ef4444;
-  --color-warning        : #eab308;
+    --color-strong       : var(--color-gray-800);
+    --color-soft         : var(--color-gray-900);
+    --color-soft-border  : var(--color-gray-600);
+    --color-strong-border: var(--color-gray-400);
+    --color-soft-text    : var(--color-gray-400);
+    --color-strong-text  : white;
 }
 
 @layer base {
-  * {
-    @apply p-0 m-0 box-border;
+  .dark {
+    --color-strong            : white;
+    --color-soft              : var(--color-gray-100);
+    --color-soft-border       : var(--color-gray-200);     
+    --color-strong-border     : var(--color-gray-400);
+    --color-soft-text         : var(--color-gray-400);
+    --color-strong-text       : var(--color-gray-900);
+  
+    --color-primary           : var(--color-violet-600);
+    --color-secondary         : var(--color-pink-600);
+    --color-success           : var(--color-green-600);
+    --color-error             : var(--color-red-600);
+    --color-warning           : var(--color-yellow-600);
   }
+
+  * {
+    @apply box-border p-0 m-0;
+  }
+
+  .scrolled {
+    position: sticky;
+    top: 0;
+    background-color: green;
+    transition: height 0.3s ease-in-out;
+    height: 20px;
+  }
+
+  .no-scrolled {
+    position: sticky;
+    top: 0;
+    background-color: red;
+    transition: height 0.3s ease-in-out;
+    height: 50px;
+  }
+
   /* Firefox */
   input[type=number] {
     -moz-appearance: textfield;
@@ -39,28 +66,28 @@
     margin: 0;
   }
   /* input[type=range]::-webkit-slider-runnable-track {
-    @apply bg-soft-smt h-2 rounded-full;
+    @apply h-2 rounded-full bg-soft-smt;
   }
   input[type=range]::-webkit-slider-thumb {
-    @apply bg-smt border-4 border-primary rounded-full h-4 w-4;
+    @apply w-4 h-4 rounded-full border-4 bg-smt border-primary;
   }
   input[type=range]::-moz-range-track {
-    @apply bg-soft-smt h-2 rounded-full;
+    @apply h-2 rounded-full bg-soft-smt;
   }
   input[type=range]::-moz-range-progress {
-    @apply bg-primary h-2 rounded-full;
+    @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-moz-range-thumb {
-    @apply bg-smt border-4 border-primary rounded-full h-4 w-4;
+    @apply w-4 h-4 rounded-full border-4 bg-smt border-primary;
   }
   input[type=range]::-ms-track {
-    @apply bg-soft-smt h-2 rounded-full;
+    @apply h-2 rounded-full bg-soft-smt;
   }
   input[type=range]::-ms-fill-lower {
-    @apply bg-primary h-2 rounded-full;
+    @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-ms-thumb {
-    @apply bg-smt border-4 border-primary rounded-full h-4 w-4;
+    @apply w-4 h-4 rounded-full border-4 bg-smt border-primary;
   } */
 
   .absolute-full-center {
@@ -190,50 +217,51 @@
   /* .alert-smt {
     @apply fixed inset-0 bg-dark/50 dark:bg-light/10 col-full-center z-60;
   } */
-  .accent-smt {
-    @apply accent-primary dark:accent-light;
-  }
-  .border-smt {
-    @apply border-light-border dark:border-dark-border;
-  }
-  .divide-smt {
-    @apply divide-light-border dark:divide-dark-border;
-  }
-  .bg-soft-smt {
-    @apply bg-light-soft dark:bg-dark-soft;
-  }  
-  .bg-smt {
-    @apply bg-light dark:bg-dark;
-  }
-  .placeholder-smt {
-    @apply placeholder:text-light-soft-text dark:placeholder:text-dark-soft-text;
-  }
-  .text-soft-smt {
-    @apply text-light-soft-text dark:text-dark-soft-text;
-  }
-  .text-smt {
-    @apply text-light-text dark:text-dark-text;
-  }
+  /* .accent-smt {
+    @apply accent-primary dark:accent-strong;
+  } */
+  /* .border-smt {
+    @apply border-soft-border dark:border-dark-soft-border;
+  } */
+  /* .divide-smt {
+    @apply divide-soft-border dark:divide-dark-soft-border;
+  } */
+  /* .bg-soft-smt {
+    @apply bg-soft dark:bg-dark-soft;
+  }   */
+  /* .bg-strong-smt {
+    @apply bg-strong dark:bg-dark-strong;
+  } */
+  /* .bg-smt {
+    @apply bg-soft dark:bg-dark-strong;
+  } */
+  /* .bg-block-smt {
+    @apply bg-strong dark:bg-dark-soft;
+  } */
+  /* .placeholder-smt {
+    @apply placeholder:text-soft-text dark:placeholder:text-dark-soft-text;
+  } */
+  /* .text-soft-smt {
+    @apply text-soft-text dark:text-dark-soft-text;
+  } */
+  /* .text-smt {
+    @apply text-strong-text dark:text-dark-strong-text;
+  } */
   .link-smt {
     @apply text-black active:underline active:brightness-90 dark:active:brightness-125 lg:hover:underline lg:cursor-pointer;
   }
   .button-smt {
-    @apply active:brightness-95 dark:active:brightness-140 lg:hover:brightness-95 lg:dark:hover:brightness-140 lg:active:brightness-90 lg:dark:active:brightness-180;
-    transition: filter 100ms;
+    @apply transition-[filter] duration-100 active:brightness-90 dark:active:brightness-140 lg:hover:brightness-95 lg:dark:hover:brightness-140 lg:active:brightness-90 lg:dark:active:brightness-180;
+    /* transition: filter 100ms; */
   }
   .button-light-smt {
-    @apply active:brightness-90 lg:hover:brightness-90 lg:active:brightness-80;
-    transition: filter 100ms;
+    @apply transition-[filter] duration-100 active:brightness-90 lg:hover:brightness-90 lg:active:brightness-80;
   }
   .button-dark-smt {
-    @apply active:brightness-140 lg:hover:brightness-130 lg:active:brightness-160;
-    transition: filter 100ms;
+    @apply transition-[filter] duration-100 active:brightness-140 lg:hover:brightness-130 lg:active:brightness-160;
   }
   .tag-smt {
-    @apply tracking-wide uppercase font-semibold rounded-full px-2 py-1;
-  }
-  .image-block {
-    @apply fixed z-50 inset-0 bg-black/70;
+    @apply px-2 py-1 font-semibold tracking-wide uppercase rounded-full;
   }
 
   /* @for $i from 0 through 100 {
@@ -245,4 +273,3 @@
   } */
 }
 
-/*# sourceMappingURL=index.css.map */
