@@ -1,6 +1,18 @@
+import { useEffect } from "react";
 import { Head, I18nextProvider, ReduxProvider, Router, Toaster } from "./components/app";
+import { useWindow } from "./hooks";
 
 export const App = () => {
+//   const { darkMode } = useWindow()
+//   useEffect(() => {
+//     const htmlClasses = document.querySelector("html").classList;
+//     if (htmlClasses.contains("dark")) {
+//       htmlClasses.remove("dark")
+//     } else {
+//       htmlClasses.add("dark");
+//     }
+// }, [darkMode]);
+
   return (
     <ReduxProvider>
       <I18nextProvider>
