@@ -30,12 +30,17 @@ import * as md from "react-icons/md";
 // import * as ti from "react-icons/ti";
 // import * as vsc from "react-icons/vsc";
 // import * as wi from "react-icons/wi";
+import { RiCloseLargeLine } from "react-icons/ri";
 
 export const Icon = (props) => {
     const { library, name } = props;
     
+    const bonus = {
+        RiCloseLargeLine
+    };
+
     const libraries = { 
-        fa, fa6, io, io5, md
+        fa, fa6, io, io5, md, bonus
         // ai, bi, bs, cg, ci, di, fc, fi, gi, go, gr, hi, hi2, im, lia, lib, lu, pi, ri, rx, si, sl, tb, tfi, ti, vsc, wi 
     };
     
