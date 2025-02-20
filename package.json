@@ -30,6 +30,7 @@
     "redux-persist": "^6.0.0",
     "rgb-hex": "^4.1.0",
     "sass": "^1.84.0",
+    "tailwind-merge": "^3.0.1",
     "tailwindcss": "^4.0.1",
     "vite-plugin-pwa": "^0.21.1",
     "yup": "^1.6.1"
