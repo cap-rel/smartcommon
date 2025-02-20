@@ -1,4 +1,4 @@
-import { Address, Audios, Boolean, Checkbox, Checkbox, Drawing, Duration, Editor, GpsPoints, Input, Photos, Radio, Rating, Select, Signature, Stepper, Tags, Textarea, Videos } from "../../../dol";
+import { Address, Audios, Boolean, Checkbox, Checkbox, Drawing, Duration, Editor, GpsPoints, Input, Photos, Radio, Rating, Select, Signature, Stepper, Array, Textarea, Videos } from "../../../dol";
 import { useStates } from "../../../hooks";
 import IconSelect from "../../../form/IconSelect";
 import MultiNumber from "../../../form/MultiNumber";
@@ -89,8 +89,8 @@ export const TestPage = () => {
     });
 
     return (
-        <div className="bg-smt p-12 col items-start">
-            <div className={`col gap-6`}>
+        <div className="items-start p-12 bg-smt col">
+            <div className={`gap-6 col`}>
                 {/* {inputs.map(input =>
                     <Input label={input} type={input} value={states.inputs[input]} onChange={value => set(`inputs.${input}`, value)} />
                 )}
