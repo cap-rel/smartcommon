@@ -15,6 +15,8 @@ export const Multi = ({
     },
     variant = {
         display: "grid", // todo or buttons or field not for select
+        columns: "",
+        gap: "",
         mode: "select"
     },
     options = [],
@@ -42,12 +44,15 @@ export const Multi = ({
 
     const cursor = disabled ? "cursor-not-allowed" : "cursor-pointer";
     const blocked = disabled || readOnly;
+    const isButtons = mode === "button" || display === "buttons";
 
     const { states, set } = useStates({
         localValue: value ?? []
     });
 
     const { localValue } = states;
+    
+    useEffect(() => onChange && onChange(localValue), [localValue]);
 
     return (
         <Label
@@ -63,7 +68,7 @@ export const Multi = ({
                         value={localValue}
                         onChange={e => {
                             const value = Array.from(e.target.selectedOptions, option => option.value);
-                            onChange(value) || set("localValue", value);
+                            set("localValue", value);
                         }}
                         className={`py-2 pl-2 pr-7 appearance-none border-smt border-2 outline-none button-smt bg-soft-smt w-full rounded-md`}
                         { ...inputProps}
@@ -87,14 +92,14 @@ export const Multi = ({
                     {options.map((option, OI) => {
                         const isChecked = localValue.includes(option.value);
                         const filteredValue = localValue.filter(value => value !== option.value);
-                        const onClick = () =>  set("localValue", isChecked ? filteredValue : [...localValue, option.value], !blocked)
-                        const buttonsClass = `border-2 border-smt rounded-md p-2 row-between-center duration-200 bg-soft-dol ${isChecked ? "border-primary text-primary" : "border-smt text-soft-smt"}`;
+                        const onClick = () => display !== "buttons" && set("localValue", isChecked ? filteredValue : [...localValue, option.value], !blocked)
+                        const buttonsClass = `border-2 button-smt rounded-md p-2 row-between-center duration-200 bg-smt ${isChecked ? "border-primary text-primary outline-1" : "border-smt text-smt"}`;
                         return (
                             <div
                                 key={name + OI}
                                 onClick={() => {
                                     if (display === "buttons") {
-                                        onclick();
+                                        set("localValue", isChecked ? filteredValue : [...localValue, option.value], !blocked);
                                     }
                                 }}
                                 className={`
@@ -115,16 +120,7 @@ export const Multi = ({
                                     className={`fixed appearance-none size-0`}
                                     value={option.value}
                                     checked={isChecked}
-                                    onChange={e => {
-                                        if (isChecked) {
-                                            onChange(filteredValue) || set("localValue", filteredValue);
-                                        } else {
-                                            if (e.target.checked) {
-                                                const newValue = [...localValue, e.target.value];
-                                                onChange(newValue) || set("localValue", newValue);
-                                            }
-                                        }
-                                    }}
+                                    // onChange={e => {}}
                                     { ...inputProps}
                                 />
                                 {mode === "switch" ?
