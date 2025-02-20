@@ -13,10 +13,17 @@ export const useWindow = () => {
 
     const getWindowDimension = () => {
         if (!isWindowAvailable) {
-            return { width: 0, height: 0 };
+            return { w: 0, h: 0 };
         }
-        return { width: window.innerWidth, height: window.innerHeight };
+        return { w: window.innerWidth, h: window.innerHeight };
     };
+
+    const getScroll = () => {
+        if (!isWindowAvailable) {
+            return { x: 0, y: 0 };
+        }
+        return { x: window.scrollX, y: window.scrollY };
+    }
 
     const getDarkMode = () => {
         if (!isWindowAvailable) {
@@ -28,12 +35,20 @@ export const useWindow = () => {
     const { states, set } = useStates({
         orientation: getOrientation(),
         windowDimension: getWindowDimension(),
-        darkMode: getDarkMode()
+        scroll: getScroll(),
+        darkMode: getDarkMode(),
     })
   
     const handleResize = () => {
         set("orientation", getOrientation());
         set("windowDimension", getWindowDimension());
+    }
+
+    const handleScroll = () => {
+        set("scroll", getScroll());
+    }
+
+    const handleLoad = () => {
     }
 
     const handleDarkMode = () => set("darkMode", getDarkMode());
@@ -44,9 +59,13 @@ export const useWindow = () => {
         }
 
         window.addEventListener("resize", handleResize);
+        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("load", handleLoad);
         window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", handleDarkMode);
         return () => {
             window.removeEventListener("resize", handleResize);
+            window.removeEventListener("scroll", handleScroll);
+            window.addEventListener("load", handleLoad);
             window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", handleDarkMode);
         }
     }, [])
