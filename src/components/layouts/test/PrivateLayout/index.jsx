@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Navbar, Sidebar, SidebarLink, Tabbar, TabbarLink } from "../../../navigation";
-import TestNavbar from "../../../navigation/TestNavbar";
+
 
 export const PrivateLayout = () => {
     return (

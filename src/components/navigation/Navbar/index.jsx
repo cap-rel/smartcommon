@@ -91,10 +91,9 @@ export const Navbar = ({
                         }}
                         variant={{
                             classNames: {
-                                button: `text-sm px-3 first:ml-4 last:mr-4 shrink-0 transition duration-500 first:bg-primary first:text-white bg-soft-border text-strong-text`
+                                button: `text-sm px-3 first:ml-4 last:mr-4 shrink-0 first:bg-primary first:text-white bg-soft-border text-strong-text`
                             }
                         }}
-                        onClick={() => setIsAbove(!isAbove)}
                     >
                         {button}
                     </Button>
