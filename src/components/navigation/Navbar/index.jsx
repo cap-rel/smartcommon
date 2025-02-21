@@ -20,14 +20,14 @@ export const Navbar = ({
     const { y } = scroll;
 
     const { states, set } = useStates({
-        isSearchBarOpened: false,
+        isSearchBarVisible: true,
     });
 
-    const { isSearchBarOpened } = states;
+    const { isSearchBarVisible } = states;
    
     return (
         <>
-        <SearchBar isVisible={isSearchBarOpened} setVisibility={value => set("isSearchBarOpened", value)}/>
+        <SearchBar isVisible={isSearchBarVisible} setVisibility={value => set("isSearchBarVisible", value)}/>
         <div
             // style={{ "--opacity": `${y > 48 ? 100 : y * (100 / 48)}%`, "--title-padding": `${48 - y}px`, "--font-size": `${y > 48 ? 18 : 30 - y * (12 / 48)}px` }}
             className={`sticky top-0 z-20 text-lg col ${y > 0 ? "bg-strong" : "bg-soft"} duration-200 ${y > 0 && "shadow-md"}`}
@@ -64,7 +64,7 @@ export const Navbar = ({
                                 button: `${y > 0 ? "bg-strong" : "bg-soft"} transition duration-200 text-strong-text rounded-full p-3`
                             }
                         }}
-                        onClick={() => set("isSearchBarOpened", true)}
+                        onClick={() => set("isSearchBarVisible", true)}
                     />
                       <Button
                         leftIcon={{

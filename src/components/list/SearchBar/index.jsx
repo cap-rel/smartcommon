@@ -1,6 +1,9 @@
+import { useRef } from "react";
 import { isEmpty } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { Button, Panel } from "../../others";
+import { useEffect } from "react";
+import { Multi, Single } from "../../form";
 
 export const SearchBar = ({
     isVisible = true,
@@ -12,6 +15,21 @@ export const SearchBar = ({
 
     const { searchBar } = states;
 
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        if (isVisible) {
+            inputRef.current.focus();
+        }
+    }, [isVisible]);
+
+    const options = [
+        { label: "Noms", value: "name" },
+        { label: "Stockages", value: "stock" },
+        { label: "Lieux", value: "place" },
+        { label: "Prix", value: "price" }
+    ]
+
     return (
         <Panel
             isVisible={isVisible}
@@ -19,12 +37,12 @@ export const SearchBar = ({
             position={`bottom`}
             variant={{
                 classNames:{
-                    panel: "min-h-screen bg-soft rounded-none",
+                    panel: "min-h-screen bg-soft rounded-none col gap-4",
                     icon: "hidden"
                 }
             }}
         >
-            <div className={`gap-1 row-v-center`}>
+            <div className={`gap-1 border row-v-center border-success`}>
                 <Button
                     leftIcon={{
                         library: "fa6",
@@ -38,9 +56,11 @@ export const SearchBar = ({
                     onClick={() => setVisibility(false)}
                 />
                 <input
+                    ref={inputRef}
                     value={searchBar}
+                    placeholder={`Rechercher`}
                     onChange={e => set("searchBar", e.target.value)}
-                    className={`outline-none grow`}
+                    className={`w-full outline-none`}
                 />
                 {!isEmpty(searchBar) && 
                     <Button
@@ -50,12 +70,18 @@ export const SearchBar = ({
                         }}
                         variant={{
                             classNames: {
-                                button: `text-strong-text rounded-full p-3 bg-soft`
+                                button: `text-strong-text rounded-full p-3 -mr-3 bg-soft`
                             }
                         }}
                         onClick={() => set("searchBar", "")}
                     />
                 }
+            </div>
+            <div className={`border border-error`}>
+                <div className={`gap-4 col`}>
+                    <div className={``}>Rechercher par...</div>
+                        <Multi name={"filter"} options={options} value={["name", "price"]} variant={{mode: `checkbox`}}/>
+                </div>
             </div>
         </Panel>
     );
