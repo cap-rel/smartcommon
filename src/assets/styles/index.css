@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary      : var(--color-violet-500);
+    --color-primary      : var(--color-violet-500);
     --color-secondary    : var(--color-pink-500);
     --color-success      : var(--color-green-500);
     --color-error        : var(--color-red-500);
@@ -13,22 +13,28 @@
     --color-strong-border: var(--color-gray-400);
     --color-soft-text    : var(--color-gray-400);
     --color-strong-text  : white;
+
+    --soft-brightness    : 130%;
+    --strong-brightness  : 160%;
 }
 
 @layer base {
   .dark {
+    --color-primary           : var(--color-violet-600);
+    --color-secondary         : var(--color-pink-600);
+    --color-success           : var(--color-green-600);
+    --color-error             : var(--color-red-600);
+    --color-warning           : var(--color-yellow-600);
+
     --color-strong            : white;
     --color-soft              : var(--color-gray-100);
     --color-soft-border       : var(--color-gray-200);     
     --color-strong-border     : var(--color-gray-400);
     --color-soft-text         : var(--color-gray-400);
     --color-strong-text       : var(--color-gray-900);
-  
-    --color-primary           : var(--color-violet-600);
-    --color-secondary         : var(--color-pink-600);
-    --color-success           : var(--color-green-600);
-    --color-error             : var(--color-red-600);
-    --color-warning           : var(--color-yellow-600);
+
+    --soft-brightness    : 80%;
+    --strong-brightness  : 90%;
   }
 
   * {
@@ -251,14 +257,8 @@
     @apply text-black active:underline active:brightness-90 dark:active:brightness-125 lg:hover:underline lg:cursor-pointer;
   }
   .button-smt {
-    @apply transition-[filter] duration-100 active:brightness-90 dark:active:brightness-140 lg:hover:brightness-95 lg:dark:hover:brightness-140 lg:active:brightness-90 lg:dark:active:brightness-180;
-    /* transition: filter 100ms; */
-  }
-  .button-light-smt {
-    @apply transition-[filter] duration-100 active:brightness-90 lg:hover:brightness-90 lg:active:brightness-80;
-  }
-  .button-dark-smt {
-    @apply transition-[filter] duration-100 active:brightness-140 lg:hover:brightness-130 lg:active:brightness-160;
+    @apply active:brightness-(--soft-brightness);
+    transition: filter 100ms;
   }
   .tag-smt {
     @apply px-2 py-1 font-semibold tracking-wide uppercase rounded-full;
