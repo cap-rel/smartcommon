@@ -3,25 +3,25 @@ import { isEmpty } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { Button, Panel } from "../../others";
 import { useEffect } from "react";
-import { Multi, Single } from "../../form";
+import { GpsPoints, Input, Multi, Single, Textarea } from "../../form";
 
 export const SearchBar = ({
     isVisible = true,
     setVisibility = () => {}
 }) => { 
     const { states, set } = useStates({
-        searchBar: "",
+        searchBar: "blabla",
     });
 
     const { searchBar } = states;
 
-    const inputRef = useRef(null);
+    // const inputRef = useRef(null);
 
-    useEffect(() => {
-        if (isVisible) {
-            inputRef.current.focus();
-        }
-    }, [isVisible]);
+    // useEffect(() => {
+    //     if (isVisible) {
+    //         inputRef.current.focus();
+    //     }
+    // }, [isVisible]);
 
     const options = [
         { label: "Noms", value: "name" },
@@ -42,7 +42,7 @@ export const SearchBar = ({
                 }
             }}
         >
-            <div className={`gap-1 border row-v-center border-success`}>
+            {/* <div className={`gap-1 border row-v-center border-success`}>
                 <Button
                     leftIcon={{
                         library: "fa6",
@@ -82,7 +82,37 @@ export const SearchBar = ({
                     <div className={``}>Rechercher par...</div>
                         <Multi name={"filter"} options={options} value={["name", "price"]} variant={{mode: `checkbox`}}/>
                 </div>
-            </div>
+            </div> */}
+            <form 
+                className={`gap-4 col`}
+                onSubmit={e => {
+                    e.preventDefault();
+                    console.log(e.target["gps[]"][0].value);
+                    const test = new FormData(e.target);
+                    console.log(test.getAll("gps[]"));
+
+                }}
+            >
+                <Input
+                    name={`input`}
+                    type="varchar"
+                    value={searchBar}
+                    onChange={e => set("searchBar", e.target.value)}
+                    leftIcon={{ library: "fa6", name: "FaEnvelope" }} 
+                    label={"Timestamp"}
+                    id={"input"}
+                    required={true}
+                />
+                <Textarea
+                    value={searchBar}
+                    onChange={e => set("searchBar", e.target.value)}
+                    label={"Timestamp"}
+                    id={"textarea"}
+                    required={true}
+                />
+                <GpsPoints name={`gps[]`} />
+                <button>test</button>
+            </form>
         </Panel>
     );
 };
