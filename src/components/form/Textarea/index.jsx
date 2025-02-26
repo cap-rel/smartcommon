@@ -1,53 +1,33 @@
-import { useRef } from "react";
-import { isEmpty } from "../../../globals/functions";
 import { Label } from "../../form";
 import { propTypes } from "./props";
+import { twMerge } from "tailwind-merge";
 
 export const Textarea = ({
-  label = null,
-  id = null,
-  help = null,
-  placeholder = null,
-  min = 0,
-  size = null,
-  max = null,
-  pattern = null,
-  rows = 5,
-  readOnly = false,
-  required = false,
-  disabled = false,
-  value,
-  onChange = () => {},
-  color = null,
-  className = null,
-  note = false
+  label,
+  labelRow = false,
+  help,
+
+  containerProps,
+  labelContainerProps,
+  labelProps,
+  requiredStarProps,
+  helpProps,
+  textareaProps,
+  ...props
 }) => {
-  const labelProps = { id, label, required, help, className, note };
-  const textareaProps = { id, placeholder, required, disabled };
+  const textareaPs = { ...props, ...textareaProps };
 
-  const textareaRef = useRef(null);
+  const { required, readOnly, disabled, id } = textareaPs;
 
-  const handleInput = () => {
-    // Réinitialise la hauteur pour recalculer
-    textareaRef.current.style.height = "auto";
-    // Ajuste la hauteur au contenu
-    textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-  };
+  const textareaPsForLabel = { required, readOnly, disabled, id };
+  const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...textareaPsForLabel };
 
   return (
-    <Label { ...labelProps}>
+    <Label { ...allLabelPs}>
       <textarea 
-        ref={textareaRef}
-        onInput={note && handleInput}
         rows={5}
-        value={value}
-        onChange={(e) => onChange(e.target.value)} 
-        className={`
-          p-2 text-smt bg-light dark:bg-dark-soft outline-none bg-smt
-          ${note ? "overflow-hidden resize-none pl-4" : "focus:ring-1 ring-primary focus:border-primary border-smt border rounded-md"}
-        `}
-
-        { ...textareaProps}
+        { ...textareaPs}
+        className={twMerge(`disabled:brightness-90 disabled:cursor-not-allowed p-2 rounded-md border outline-none placeholder-soft-text border-soft-border bg-strong focus:ring-2 ring-primary`, textareaPs?.className)}
       >
       </textarea>
     </Label>
