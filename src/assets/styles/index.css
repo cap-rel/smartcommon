@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-    --color-primary      : var(--color-violet-500);
+    /* --color-primary      : var(--color-violet-500);
     --color-secondary    : var(--color-pink-500);
     --color-success      : var(--color-green-500);
     --color-error        : var(--color-red-500);
@@ -15,11 +15,8 @@
     --color-strong-text  : white;
 
     --soft-brightness    : 130%;
-    --strong-brightness  : 160%;
-}
+    --strong-brightness  : 160%; */
 
-@layer base {
-  .dark {
     --color-primary           : var(--color-violet-600);
     --color-secondary         : var(--color-pink-600);
     --color-success           : var(--color-green-600);
@@ -35,6 +32,72 @@
 
     --soft-brightness    : 80%;
     --strong-brightness  : 90%;
+
+    /* 
+      main:
+      --font-size
+      --font-bold
+
+      --text-font-size
+      --help-font-size
+      --toast-font-size
+      --title-font-size
+
+      --input-padding
+      --label-input-gap
+      --label-container-gap
+      --help-font-size
+      --
+
+      LABEL-INPUT
+
+      
+
+      INPUT
+      
+      --radius
+      --padding
+      --icon-text-gap
+      --border-width
+      --text-font-size
+      --icon-font-size
+      --font-weight
+    */
+}
+
+@layer base {
+  .dark {
+    --color-primary      : var(--color-violet-500);
+    --color-secondary    : var(--color-pink-500);
+    --color-success      : var(--color-green-500);
+    --color-error        : var(--color-red-500);
+    --color-warning      : var(--color-yellow-500);
+
+    --color-strong       : var(--color-gray-800);
+    --color-soft         : var(--color-gray-900);
+    --color-soft-border  : var(--color-gray-600);
+    --color-strong-border: var(--color-gray-400);
+    --color-soft-text    : var(--color-gray-400);
+    --color-strong-text  : white;
+
+    --soft-brightness    : 130%;
+    --strong-brightness  : 160%;
+    
+    /* --color-primary           : var(--color-violet-600);
+    --color-secondary         : var(--color-pink-600);
+    --color-success           : var(--color-green-600);
+    --color-error             : var(--color-red-600);
+    --color-warning           : var(--color-yellow-600);
+
+    --color-strong            : white;
+    --color-soft              : var(--color-gray-100);
+    --color-soft-border       : var(--color-gray-200);     
+    --color-strong-border     : var(--color-gray-400);
+    --color-soft-text         : var(--color-gray-400);
+    --color-strong-text       : var(--color-gray-900);
+
+    --soft-brightness    : 80%;
+    --strong-brightness  : 90%; */
   }
 
   * {
