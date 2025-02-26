@@ -1,32 +1,58 @@
-import { useNavigator } from "../../../hooks";
-import { Icon, Help } from "../../others";
+import { twMerge } from "tailwind-merge";
+import { Icon } from "../../others";
 import { propTypes } from "./props";
+import { isEmpty } from "../../../globals/functions";
+
+// IDEA Mini-popup for help
+
+// TODO help
 
 export const Label = ({
-    id = null, 
-    label = null, 
-    required = false,
-    help = null,
-    className = null,
-    row = false,
-    // note = false,
-    children = null
+    id,
+    label, 
+    help,
+    required,
+    readOnly,
+    disabled,
+    labelRow = false,
+    children,
 
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    ...props
 }) => {
-    const { deviceType } = useNavigator();
+
+    const labelPs = { ...props, ...labelProps };
 
     return (
-        <div className={`${row ? "row-v-center" : "col"} ${deviceType === "desktop" ? "gap-4" : "gap-2"} ${className}`}>
-            {label && 
-                <div className={`row-v-center gap-2`}>
+        <div 
+            { ...containerProps}
+            className={twMerge(`${labelRow ? "row-v-center" : "col"} gap-2`, containerProps?.className)}
+        >
+            {!isEmpty(label) && 
+                <div 
+                    { ...labelContainerProps}
+                    className={twMerge(`gap-2 row-v-center`, labelContainerProps?.className)}
+                >
                     {/* {note && <Icon library={`fa`} name={`FaCircle`} className={`text-[8px] text-note`} />} */}
                     <label 
                         htmlFor={id}
-                        className={`text-black font-semibold`}
+                        { ...labelPs}
+                        className={twMerge(`font-semibold`, labelPs?.className)}
                     >
                         {label}
                     </label>
-                    {required && <span className={`text-red-500`}>*</span>}
+                    {required && 
+                        <div 
+                            { ...requiredStarProps}
+                            className={twMerge(`text-red-500`, requiredStarProps?.className)}
+                        >
+                            *
+                        </div>
+                    }
                     {/* {help && <Help content={help} />} */}
                 </div>
             }
