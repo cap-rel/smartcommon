@@ -18,24 +18,20 @@ export const Photos = ({
     labelProps,
     requiredStarProps,
     helpProps,
-    inputContainerProps,
+    photosContainerProps,
     inputProps,
-
     ...props
 }) => {
     const inputPs = { ...props, ...inputProps };
 
-    const { required, readOnly, disabled, id, defaultValue, value, onChange } = inputPs;
+    const { required, readOnly, disabled, id, defaultValue, value } = inputPs;
   
     const inputPsForLabel = { required, readOnly, disabled, id };
     const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
     
     const { deviceType } = useNavigator();
 
-    const inputCameraRef = useRef(null);
-    const inputDownloadRef = useRef(null);
-
-    const inputs = [{ ref:inputCameraRef, capture: true }, { ref: inputDownloadRef, capture: false }];
+    const inputRef = useRef(null);
 
     const { states, set } = useStates({
         selectedPhotoIndex: null,
@@ -48,7 +44,7 @@ export const Photos = ({
 
     const selectedPhoto = photos[selectedPhotoIndex];
 
-    useEffect(() => onPost(photos), [photos]);
+    useEffect(() => onPost && onPost(photos), [photos]);
 
     const handlePhotosOnChange = (e) => {
         const file = e.target.files[0];
@@ -66,23 +62,20 @@ export const Photos = ({
 
     const handlePhotoOnClick = (capture) => {
         set("capture", capture);
-        setTimeout(() => inputCameraRef.current.click(), 0);
+        setTimeout(() => inputRef.current.click(), 0);
     }
 
     return (
         <Label { ...allLabelPs}>
-            {/* {inputs.map((input, II) => */}
-                <input
-                    // key={"input_" + II}
-                    ref={inputs[0].ref}
-                    type={`file`}
-                    accept={`image/*`}
-                    capture={capture}
-                    onChange={handlePhotosOnChange}
-                    { ...inputPs}
-                    className={`hidden`}
-                />
-            {/* )} */}
+            <input
+                ref={inputRef}
+                type={`file`}
+                accept={`image/*`}
+                capture={capture}
+                onChange={handlePhotosOnChange}
+                { ...inputPs}
+                className={`hidden`}
+            />
             <div className={`w-full rounded-md border border-smt col max-w-120`}>
                 <div className={`p-2 row-between-center bg-soft-smt`}>
                     <div className={`gap-2 row-v-center`}>
@@ -143,17 +136,15 @@ export const Photos = ({
                 <div className={`${!isNull(selectedPhotoIndex)  ? "translate-y-0" : "translate-y-full"} ${deviceType !== "desktop" && "w-full"} ${isImageFullScreen && "top-0"} fixed-h-center bottom-0 z-60 duration-300 max-h-full col gap-4 overflow-y-auto bg-smt rounded-t-md`}>
                     <div className={`sticky top-0 z-30 p-2 border-b border-smt bg-soft-smt`}>
                         <div className={`gap-2 row-full-center`}>
-                            <Icon 
-                                library={`fa6`}
-                                name={`FaCamera`}
+                            <Button
+                                leftIcon={{ library: "fa6", name: "FaCamera" }}
                                 onClick={() => handlePhotoOnClick(true)}
-                                className={`p-2 text-2xl text-white rounded-full bg-soft-smt button-smt`}
+                                className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
                             />
-                            <Icon 
-                                library={`fa6`}
-                                name={`FaFileImport`}
+                            <Button 
+                                leftIcon={{ library: "fa6", name: "FaFileImport" }}
                                 onClick={() => handlePhotoOnClick(false)}
-                                className={`p-2 text-2xl text-white rounded-full bg-soft-smt button-smt`}
+                                className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
                             />
                             <Icon 
                                 library={`io5`}
