@@ -1,28 +1,35 @@
 import { useEffect, useRef } from "react";
 import { Input, Label, Textarea } from "../../form"
-import { Icon } from "../../others";
+import { Button, Icon } from "../../others";
 import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../globals/functions";
 import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 
-export const Photos = ({
-    label = null,
-    id = null,
-    help = null,
-    min = 0,
-    size = null,
-    max = null,
-    multiple = false,
-    readOnly = false,
-    required = false,
-    disabled = false,
-    value,
-    onChange = () => {},
-    color = null,
-    className = null
-}) => {
-    const labelProps = { label, id, help, required, className };
+// TODO Change trash icon into FontAwesome icon
 
+export const Photos = ({
+    label,
+    labelRow = false,
+    help,
+    onPost,
+
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    inputContainerProps,
+    inputProps,
+
+    ...props
+}) => {
+    const inputPs = { ...props, ...inputProps };
+
+    const { required, readOnly, disabled, id, defaultValue, value, onChange } = inputPs;
+  
+    const inputPsForLabel = { required, readOnly, disabled, id };
+    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+    
     const { deviceType } = useNavigator();
 
     const inputCameraRef = useRef(null);
@@ -31,198 +38,179 @@ export const Photos = ({
     const inputs = [{ ref:inputCameraRef, capture: true }, { ref: inputDownloadRef, capture: false }];
 
     const { states, set } = useStates({
-        selectedPhotoId: null,
+        selectedPhotoIndex: null,
         isImageFullScreen: false,
+        capture: false,
+        photos: value ?? defaultValue ?? []
     }) 
 
-    const { selectedPhotoId, isImageFullScreen } = states;
+    const { selectedPhotoIndex, isImageFullScreen, capture, photos } = states;
 
-    const selectedPhoto = value[selectedPhotoId];
+    const selectedPhoto = photos[selectedPhotoIndex];
+
+    useEffect(() => onPost(photos), [photos]);
 
     const handlePhotosOnChange = (e) => {
         const file = e.target.files[0];
         const url = URL.createObjectURL(file);
-        if (isNull(selectedPhotoId)) {
-            onChange([...value, { file: file, url: url, title: "", description: "" }]);
-            set("selectedPhotoId", value.length);                    
+        if (isNull(selectedPhotoIndex)) {
+            set("photos", [...photos, { file: file, url: url, title: "", description: "" }]);
+            set("selectedPhotoIndex", photos.length);                    
         } else {
-            const newValue = [...value];
-            newValue[selectedPhotoId].url = url;
-            onChange(newValue);    
+            const newPhotos = [...photos];
+            newPhotos[selectedPhotoIndex].url = url;
+            set("photos", newPhotos);    
         }
         return () => URL.revokeObjectURL(url);
     };
 
+    const handlePhotoOnClick = (capture) => {
+        set("capture", capture);
+        setTimeout(() => inputCameraRef.current.click(), 0);
+    }
+
     return (
-        <Label { ...labelProps}>
-            {inputs.map((input, II) =>
+        <Label { ...allLabelPs}>
+            {/* {inputs.map((input, II) => */}
                 <input
-                    key={"input_" + II}
-                    className={`hidden`}
-                    ref={input.ref}
+                    // key={"input_" + II}
+                    ref={inputs[0].ref}
                     type={`file`}
                     accept={`image/*`}
-                    capture={input.capture}
+                    capture={capture}
                     onChange={handlePhotosOnChange}
+                    { ...inputPs}
+                    className={`hidden`}
                 />
-            )}
-            <div className={`border border-smt rounded-md col w-full max-w-120`}>
-                <div className={`row-between-center bg-soft-smt p-2`}>
-                    <div className={`row-v-center gap-2`}>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                inputCameraRef.current.click();
-                            }}
-                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                        >
-                            <Icon library={`fa6`} name={`FaCamera`} />
-                        </button>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                inputDownloadRef.current.click();
-                            }}
-                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                        >
-                            <Icon library={`fa6`} name={`FaFileImport`} />
-                        </button>
+            {/* )} */}
+            <div className={`w-full rounded-md border border-smt col max-w-120`}>
+                <div className={`p-2 row-between-center bg-soft-smt`}>
+                    <div className={`gap-2 row-v-center`}>
+                        <Button
+                            leftIcon={{ library: "fa6", name: "FaCamera" }}
+                            onClick={() => handlePhotoOnClick(true)}
+                            className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
+                        />
+                        <Button 
+                            leftIcon={{ library: "fa6", name: "FaFileImport" }}
+                            onClick={() => handlePhotoOnClick(false)}
+                            className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
+                        />
                     </div>
-                    <button 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onChange([]);
-                        }}
-                        className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
-                    >
-                        <Icon library={`io5`} name={`IoTrash`} />
-                    </button>
+                    <Button
+                        leftIcon={{ library: "io5", name: "IoTrash" }}
+                        onClick={() => set("photos", [])}
+                        className={`p-2 text-2xl rounded-full bg-soft-smt text-error button-smt`}
+                    />
                 </div>
-                {!isEmpty(value) 
-                    ?   <table className={`text-smt`}><tbody>
-                            {value.map((record, RI) => 
-                                <tr key={"photo_" + RI}>
-                                    <td className={`p-2`}>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                set("selectedPhotoId", RI);
-                                            }}
-                                            className={`button-smt rounded-full p-2 bg-smt text-2xl`}
-                                        >
-                                            <Icon library={`fa6`} name={`FaEye`}/>
-                                        </button> 
-                                    </td>
-                                    <td className={`p-2 text-soft-smt max-w-40 truncate`}>
-                                        <span>{record.title}</span>
-                                    </td>
-                                    <td className={`p-2 text-right`}>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                onChange([...value.slice(0, RI), ...value.slice(RI + 1)])
-                                            }}
-                                            className={`button-smt rounded-full p-2 bg-smt text-2xl text-error`}
-                                        >
-                                            <Icon library={`io5`} name={`IoTrash`}/>
-                                        </button> 
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody></table>
-                    :   <div className={`col-h-center gap-2 p-4 text-soft-smt`}>
-                            <Icon library={`fa6`} name={`FaFileImage`} className={`text-4xl`} />
-                            <span className={`italic`}>Aucune photo</span>
+                {!isEmpty(photos) 
+                    ?   <table className={`text-smt`}>
+                            <tbody>
+                                {photos.map((record, RI) => 
+                                    <tr key={"photo_" + RI}>
+                                        <td className={`p-2`}>
+                                            <Icon 
+                                                library={`fa6`}
+                                                name={`FaEye`}
+                                                onClick={() => set("selectedPhotoIndex", RI)}
+                                                className={`p-2 text-2xl rounded-full button-smt bg-smt`}
+                                            />
+                                        </td>
+                                        <td className={`p-2 truncate text-soft-smt max-w-40`}>
+                                            <div>{record.title}</div>
+                                        </td>
+                                        <td className={`p-2 text-right`}>
+                                            <Icon 
+                                                library={`io5`}
+                                                name={`IoTrash`}
+                                                onClick={() => set("photos", [...photos.slice(0, RI), ...photos.slice(RI + 1)])}
+                                                className={`p-2 text-2xl rounded-full button-smt bg-smt text-error`}
+                                            />
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    :   <div className={`gap-2 p-4 col-h-center text-soft-smt`}>
+                            <Icon 
+                                library={`fa6`}
+                                name={`FaFileImage`}
+                                className={`text-4xl`}
+                            />
+                            <div className={`italic`}>Aucune photo</div>
                         </div>
                 }
-                <div className={`
-                    ${!isNull(selectedPhotoId)  ? "translate-y-0" : "translate-y-full"}
-                    ${deviceType !== "desktop" && "w-full"}
-                    ${isImageFullScreen && "top-0"} 
-                    fixed-h-center bottom-0
-                    z-60 duration-300 max-h-full col gap-4 overflow-y-auto bg-smt rounded-t-md 
-                `}>
-                    <div className={`sticky top-0 p-2 border-b border-smt bg-soft-smt z-30`}>
-                        <div className={`row-full-center gap-2`}>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    inputCameraRef.current.click();
+                <div className={`${!isNull(selectedPhotoIndex)  ? "translate-y-0" : "translate-y-full"} ${deviceType !== "desktop" && "w-full"} ${isImageFullScreen && "top-0"} fixed-h-center bottom-0 z-60 duration-300 max-h-full col gap-4 overflow-y-auto bg-smt rounded-t-md`}>
+                    <div className={`sticky top-0 z-30 p-2 border-b border-smt bg-soft-smt`}>
+                        <div className={`gap-2 row-full-center`}>
+                            <Icon 
+                                library={`fa6`}
+                                name={`FaCamera`}
+                                onClick={() => handlePhotoOnClick(true)}
+                                className={`p-2 text-2xl text-white rounded-full bg-soft-smt button-smt`}
+                            />
+                            <Icon 
+                                library={`fa6`}
+                                name={`FaFileImport`}
+                                onClick={() => handlePhotoOnClick(false)}
+                                className={`p-2 text-2xl text-white rounded-full bg-soft-smt button-smt`}
+                            />
+                            <Icon 
+                                library={`io5`}
+                                name={`IoTrash`}
+                                onClick={() => {
+                                    set("photos", [...photos.slice(0, selectedPhotoIndex), ...photos.slice(selectedPhotoIndex + 1)])
+                                    set("selectedPhotoIndex", null);
                                 }}
-                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                            >
-                                <Icon library={`fa6`} name={`FaCamera`} />
-                            </button>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    inputDownloadRef.current.click();
-                                }}
-                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                            >
-                                <Icon library={`fa6`} name={`FaFileImport`} />
-                            </button>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onChange([...value.slice(0, selectedPhotoId), ...value.slice(selectedPhotoId + 1)])
-                                    set("selectedPhotoId", null);
-                                }}
-                                className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
-                            >
-                                <Icon library={`io5`} name={`IoTrash`} />
-                            </button>
+                                className={`p-2 text-2xl rounded-full bg-soft-smt text-error button-smt`}
+                            />
                         </div>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                const newValue = [...value];
-                                if (isEmpty(newValue[selectedPhotoId].title)) {
-                                    newValue[selectedPhotoId].title = `Photo ${selectedPhotoId + 1}`;
-                                    onChange(newValue);
+                        <Icon 
+                            library={`io5`}
+                            name={`IoClose`}
+                            onClick={() => {
+                                const newPhotos = [...photos];
+                                if (isEmpty(newPhotos[selectedPhotoIndex].title)) {
+                                    newPhotos[selectedPhotoIndex].title = `Photo ${selectedPhotoIndex + 1}`;
+                                    set("photos", newPhotos);
                                 }
-                                set("selectedPhotoId", null);
+                                set("selectedPhotoIndex", null);
                             }}
-                            className={`absolute top-2 right-2 button-smt rounded-full p-2 bg-soft-smt text-2xl`}
-                        >
-                            <Icon library={`io5`} name={`IoClose`}/>
-                        </button>
+                            className={`absolute top-2 right-2 p-2 text-2xl rounded-full button-smt bg-soft-smt`}
+                        />
                     </div>
                         
-                    <div className={`col gap-4 p-6`}>
+                    <div className={`gap-4 p-6 col`}>
                         <div 
                             className={`${isImageFullScreen ? "fixed inset-0 z-40 bg-smt row-full-center" : "relative"}`}
                         >
                             <img src={selectedPhoto?.url} className={`max-h-full`}/>
-                            <button 
-                                onClick={(e) => { 
-                                    e.preventDefault();
-                                    set("isImageFullScreen", !isImageFullScreen);
-                                }}
+                            <Icon 
+                                library={`fa`}
+                                name={isImageFullScreen ? "FaCompressArrowsAlt" : "FaExpandArrowsAlt"}
+                                onClick={() => set("isImageFullScreen", !isImageFullScreen)}
                                 className={`p-2 rounded-full text-2xl button-smt absolute top-2 right-2 z-20 ${isImageFullScreen ? "bg-smt" : "bg-light-20 dark:bg-dark-20"}`}
-                            >
-                                <Icon library={`fa`} name={isImageFullScreen ? "FaCompressArrowsAlt" : "FaExpandArrowsAlt"} />
-                            </button>
+                            />
                         </div>
                         <Input
                             placeholder={`Titre de l'audio ...`}
-                            value={selectedPhoto?.title}
+                            photos={selectedPhoto?.title}
                             onChange={newState => {
-                                const newValue = [...value];
-                                newValue[selectedPhotoId].title = newState;
-                                onChange(newValue);
+                                const newPhotos = [...photos];
+                                newPhotos[selectedPhotoIndex].title = newState;
+                                set("photos", newPhotos);
                             }}
-                            className={`bg-smt rounded-md mx-2`}
+                            className={`mx-2 rounded-md bg-smt`}
                         />
                         <Textarea
                             placeholder={`Description de l'audio ...`}
-                            value={selectedPhoto?.description}
+                            photos={selectedPhoto?.description}
                             onChange={newState => {
-                                const newValue = [...value];
-                                newValue[selectedPhotoId].description = newState;
-                                onChange(newValue);
+                                const newPhotos = [...photos];
+                                newPhotos[selectedPhotoIndex].description = newState;
+                                set("photos", newPhotos);
                             }}
-                            className={`bg-smt rounded-md mx-2`}
+                            className={`mx-2 rounded-md bg-smt`}
                         />
                     </div>
                 </div>
