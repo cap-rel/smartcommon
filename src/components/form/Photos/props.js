@@ -5,6 +5,10 @@ export const propTypes = {
     labelRow: PropTypes.bool,
     help: PropTypes.string,
     onPost: PropTypes.func,
+    provideTitle: PropTypes.bool,
+    provideDescription: PropTypes.bool,
+    provideGpsPoints: PropTypes.bool,
+    provideAddress: PropTypes.bool,
 
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,

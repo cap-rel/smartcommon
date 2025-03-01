@@ -6,12 +6,18 @@ import { useNavigator, useStates } from "../../../hooks";
 import { propTypes } from "./props";
 
 // TODO Change trash icon into FontAwesome icon
+// TODO Add GpsPoints and Address
+// TODO Put all inputs in map for name data getting
 
 export const Photos = ({
     label,
     labelRow = false,
     help,
     onPost,
+    provideTitle = true,
+    provideDescription = true,
+    provideGspPoints = false,
+    provideAddress = false,
 
     containerProps,
     labelContainerProps,
@@ -24,7 +30,7 @@ export const Photos = ({
 }) => {
     const inputPs = { ...props, ...inputProps };
 
-    const { required, readOnly, disabled, id, defaultValue, value } = inputPs;
+    const { required, readOnly, disabled, id, defaultValue, value, name } = inputPs;
   
     const inputPsForLabel = { required, readOnly, disabled, id };
     const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
@@ -184,7 +190,8 @@ export const Photos = ({
                             />
                         </div>
                         <Input
-                            placeholder={`Titre de l'audio ...`}
+                            name={`${name}[${photos.length}][title]`}
+                            placeholder={`Titre de la photo...`}
                             photos={selectedPhoto?.title}
                             onChange={newState => {
                                 const newPhotos = [...photos];
@@ -194,7 +201,8 @@ export const Photos = ({
                             className={`mx-2 rounded-md bg-smt`}
                         />
                         <Textarea
-                            placeholder={`Description de l'audio ...`}
+                            name={`${name}[${photos.length}][descriptionb]`}
+                            placeholder={`Description de la photo...`}
                             photos={selectedPhoto?.description}
                             onChange={newState => {
                                 const newPhotos = [...photos];
