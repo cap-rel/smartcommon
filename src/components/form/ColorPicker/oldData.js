@@ -1,3 +1,5 @@
+// Old Code
+
 export const defaultColors = {
     slate: { 
         "light"          : "#f8fafc", // slate-50
