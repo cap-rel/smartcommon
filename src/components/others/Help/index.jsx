@@ -4,25 +4,27 @@ import { Icon } from "../Icon";
 import { useWindow } from "../../../hooks";
 
 export const Help = (props) => {
-    const title   = props.title;
-    const content = props.content;
-    const className = props.className;
+    // OLD CODE but can be useful in the future
 
-    const [isOpened, setIsOpened] = useState(false);
-    const [isClicked, setIsClicked] = useState(false);
-    const [position, setPosition] = useState("");
+    // const title   = props.title;
+    // const content = props.content;
+    // const className = props.className;
 
-    const iconRef = useRef(null);
-    const helpRef = useRef(null);
-    const { isDesktop } = useWindow();
+    // const [isOpened, setIsOpened] = useState(false);
+    // const [isClicked, setIsClicked] = useState(false);
+    // const [position, setPosition] = useState("");
 
-    return (
-        <Icon
-            library={`io`}
-            name={`IoMdInformationCircleOutline`}
-            title={content}
-            className={`${className} text-soft-smt`}
-        />
+    // const iconRef = useRef(null);
+    // const helpRef = useRef(null);
+    // const { isDesktop } = useWindow();
+
+    return (null
+        // <Icon
+        //     library={`io`}
+        //     name={`IoMdInformationCircleOutline`}
+        //     title={content}
+        //     className={`${className} text-soft-smt`}
+        // />
     );
   
     // const listenForSettingPosition = () => {
@@ -108,9 +110,9 @@ export const Help = (props) => {
                     `}
                     ref={helpRef}
                 >
-                    {/* <div className={`w-0 h-0 border-y-4 border-y-transparent border-r-8 border-r-white absolute-v-center left-0 -translate-x-full`} /> */}
-                    {/* <div className="h-6 w-6">
-                        <div className={`w-6 h-6 absolute-v-center left-0 -translate-x-1/2 rotate-45 border-b border-l bg-white z-10`} />
+                    {/* <div className={`left-0 w-0 h-0 border-r-8 -translate-x-full border-y-4 border-y-transparent border-r-white absolute-v-center`} /> */}
+                    {/* <div className="w-6 h-6">
+                        <div className={`left-0 z-10 w-6 h-6 bg-white border-b border-l rotate-45 -translate-x-1/2 absolute-v-center`} />
                     </div> */}
                     
                     {/* {!isEmpty(title) && <p className={`text-sm font-bold`}>{title}</p>} */}
@@ -118,7 +120,7 @@ export const Help = (props) => {
                     <Icon
                         library="rx"
                         name="RxCross2"
-                        className={`absolute right-2 top-2 text-xl text-gray-400`}
+                        className={`absolute top-2 right-2 text-xl text-gray-400`}
                         onClick={() => {
                             setIsOpened(false);
                             setIsClicked(false);
