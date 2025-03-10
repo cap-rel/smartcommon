@@ -30,8 +30,8 @@
     --color-soft-text         : var(--color-gray-400);
     --color-strong-text       : var(--color-gray-900);
 
-    --soft-brightness    : 80%;
-    --strong-brightness  : 90%;
+    --brightness-soft    : 80%;
+    --brightness-strong  : 90%;
 
     /* 
       main:
@@ -76,12 +76,12 @@
     --color-strong       : var(--color-gray-800);
     --color-soft         : var(--color-gray-900);
     --color-soft-border  : var(--color-gray-600);
-    --color-strong-border: var(--color-gray-400);
+    --color-strong-border: var(--color-gray-500);
     --color-soft-text    : var(--color-gray-400);
     --color-strong-text  : white;
 
-    --soft-brightness    : 130%;
-    --strong-brightness  : 160%;
+    --brightness-soft    : 130%;
+    --brightness-strong  : 160%;
     
     /* --color-primary           : var(--color-violet-600);
     --color-secondary         : var(--color-pink-600);
