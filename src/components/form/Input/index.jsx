@@ -1,9 +1,11 @@
-import { isEmpty } from "../../../globals/functions";
+import { isEmpty, isNil } from "../../../globals/functions";
 import { Label } from "../../form";
 import { Icon } from "../../others";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
+import { FaE, FaEye, FaEyeSlash } from "react-icons/fa6";
+import { useEffect } from "react";
 
 // IDEA Prefix / suffix
 // IDEA Select (phone, ...)
@@ -15,13 +17,17 @@ import { twMerge } from "tailwind-merge";
 
 // TODO All steppers
 // TODO Stepper
+// TODO Duration
+// TODO Maybe give props for password icons
+// TODO Change type attribute
 
 export const Input = ({
     label,
     labelRow = false,
     help,
-    leftIcon,
-    rightIcon,
+    onValueChange = () => {},
+    left,
+    right,
     type = "varchar",
 
     containerProps,
@@ -30,17 +36,11 @@ export const Input = ({
     requiredStarProps,
     helpProps,
     inputContainerProps,
-    leftIconProps,
-    rightIconProps, 
+    leftProps,
+    rightProps, 
     inputProps,
     ...props
 }) => {
-
-  const { states, set } = useStates({
-    isPasswordVisible: false,
-  });
-
-  const { isPasswordVisible, test } = states;
 
   const INPUT_TYPE_MAP = {
     varchar      : "text",
@@ -62,53 +62,73 @@ export const Input = ({
     // month    :
   };
 
-  const isPassword = type === "password";  
-
-  const leftIconPs = { ...leftIcon, ...leftIconProps };
-  const rightIconPs = { ...rightIcon, ...rightIconProps };
+  
   const inputPs = { ...props, ...inputProps };  
-
-  const isLeftIcon = !isEmpty(leftIconPs);
-  const isRightIcon = !isEmpty(rightIconPs) || type === "password"; // || type === "url" 
-
-  const { disabled, required, readOnly, id } = inputPs
-
+  
+  const { disabled, required, readOnly, id, value, defaultValue } = inputPs
+  
   const inputPsForLabel = { disabled, required, readOnly, id };
   const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };  
+  
+  const isPassword = type === "password";
+  const isLeft = !isEmpty(left);
+  const isRight = !isEmpty(right) || type === "password"; // || type === "url" 
+  
+  const { states, set } = useStates({
+    localValue: defaultValue ?? "",
+    isPasswordVisible: false
+  });
+
+  const { localValue, isPasswordVisible } = states;
+
+  const realValue = value ?? localValue;
+
+  const handleInputOnChange = (e) => {
+    const newValue = e.target.value;
+    if (isNil(value)) {
+      set("localValue", newValue);
+    } else {
+      onValueChange(newValue);
+    }
+  };
 
   return (
     <Label { ...allLabelPs}>
-      
       <div
         { ...inputContainerProps}
-        className={twMerge(`relative rounded-md ${inputPs?.disabled && "brightness-90 *:cursor-not-allowed"}`, inputContainerProps?.className)}
+        className={twMerge(`relative rounded-md ${inputPs?.disabled && "brightness-90"}`, inputContainerProps?.className)}
       >
-        
-        {isLeftIcon &&
-          <Icon
-            { ...leftIconPs}
-            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-soft-text`, leftIconPs?.className)}              
-          />
+        {isLeft &&
+          <div
+            { ...leftProps}
+            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-soft-text`, leftProps?.className)}              
+          >
+            {left}
+          </div>
         }
-
         <input
-          type={INPUT_TYPE_MAP[type]}
+          placeholder={!isNil(label) ? `${label}...` : ""}
           { ...inputPs}
-          className={twMerge(`outline-none focus:ring-2 ring-primary bg-strong py-2 placeholder-soft-text flex-grow w-full border border-soft-border rounded-md truncate ${isLeftIcon ? "pl-9" : "pl-2"} ${isRightIcon ? "pr-9" : "pr-2"}`, inputPs?.className)}
+          type={INPUT_TYPE_MAP[type]}
+          onChange={handleInputOnChange}
+          value={realValue}
+          className={twMerge(`outline-none duration-100 focus:ring-2 ring-primary bg-strong py-2 placeholder-soft-text grow w-full border border-soft-border rounded-md truncate ${isLeft ? "pl-9" : "pl-2"} ${isRight ? "pr-9" : "pr-2"}`, inputPs?.className)}
         />
-
-        {isRightIcon &&
-          <Icon
+        {isRight &&
+          <div
+            { ...rightProps}
             onClick={() => isPassword && set("isPasswordVisible", !isPasswordVisible)}
-            library={isPassword && "fa6"}
-            name={isPassword && (isPasswordVisible ? "FaEyeSlash" : "FaEye")}
-            { ...rightIconPs}
-            className={twMerge(`right-2 text-xl shrink-0 absolute-v-center text-soft-text`, rightIconPs?.className)}              
-          />
+            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-soft-text`, rightProps?.className)}              
+          >
+            {isPassword && (
+              isPasswordVisible
+                ? <FaEyeSlash />
+                : <FaEye />
+            )}
+            {right}
+          </div>
         }
-
       </div>
-
     </Label>
   )
 };
