@@ -1,242 +1,332 @@
-import { useEffect, useRef } from "react";
-import { Input, Label, Textarea } from "../../form";
-import { Icon } from "../../others";
-import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../globals/functions";
-import { useNavigator, useStates } from "../../../hooks";
+import { useRef } from "react";
+import { Input, Label, Textarea } from "../../form"
+import { Button, Panel, Spinner } from "../../others";
+import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
+import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
+import { FaFileAudio, FaFileImage, FaMicrophoneLines, FaPlay } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
+import { RiCloseLargeFill } from "react-icons/ri";
+
+// TODO Add retake or reimport system
+
+// IDEA Add GpsPoints and Address
 
 export const Audios = ({
-    label = null,
-    id = null,
-    help = null,
-    min = 0,
-    size = null,
-    max = null,
+    label,
+    labelRow = false,
+    help,
     multiple = false,
-    readOnly = false,
-    required = false,
-    disabled = false,
-    value,
-    onChange = () => {},
-    color = null,
-    className = null
+    onValueChange = () => {},
+    
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    inputProps,
+    listAndButtonsContainerProps,
+    listProps,
+    listItemProps,
+    urlInputProps,
+    originInputProps,
+    iconProps,
+    titleProps,
+    deleteButtonProps,
+    deleteButtonIconProps,
+    panelProps,
+    audioProps,
+    titleInputProps,
+    descriptionInputProps,
+    buttonContainerProps,
+    microphoneButtonProps,
+    microphoneButtonSpinnerProps,
+    microphoneButtonIconProps,
+    microphoneButtonLabelProps,
+    filesButtonProps,
+    filesButtonSpinnerProps,
+    filesButtonIconProps,
+    filesButtonLabelProps,
+    ...props
 }) => {
-    const labelProps = { label, id, help, required, className };
+    const inputPs = { ...props, ...inputProps };
 
-    const { deviceType } = useNavigator();
+    const { required, readOnly, disabled, id, defaultValue, value, name } = inputPs;
+  
+    const inputPsForLabel = { required, readOnly, disabled, id };
+    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+    
+    const inputRef = useRef(null);
 
-    const inputMicrophoneRef = useRef(null);
-    const inputDownloadRef = useRef(null);
-
-    const inputs = [{ ref: inputMicrophoneRef, capture: "user" }, { ref: inputDownloadRef, capture: false }];
-
-    const audioRef = useRef(null);
+    const emptyAudio = { url: "", title: "", description: "", capture: false };
 
     const { states, set } = useStates({
-        selectedAudioIndex: null,
+        selectedAudioIndex: null, // for multiple audios
+        isAudioSelected: false, // for one audio
+        capture: false,
+        localValue: defaultValue ?? (multiple ? [] : emptyAudio),
+        isAudioLoading: false
     }) 
 
-    const { selectedAudioIndex } = states;
+    const { selectedAudioIndex, isAudioSelected, capture, localValue, isAudioLoading } = states;
 
-    const selectedAudio = value[selectedAudioIndex];
+    const realValue = value ?? localValue
+
+    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue.url);
+
+    const audioRefs = useRef(multiple ? [] : null)
 
     const handleAudiosOnChange = (e) => {
-        const file = e.target.files[0];
-        const url = URL.createObjectURL(file);
-        audioRef.current.src = url;
-        // audioRef.current.type = file.type;
-        if (isNull(selectedAudioIndex)) {
-            onChange([...value, { file: file, url: url, title: "", duration: "", description: "" }]);
-            set("selectedAudioIndex", value.length);                    
-        } else {
-            const newValue = [...value];
-            newValue[selectedAudioIndex].url = url;
-            // newValue[selectedAudioIndex].file = file;
-            onChange(newValue);    
-        }
-        return () => URL.revokeObjectURL(url);
+        set("isAudioLoading", true);
+        setTimeout(() => {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            // if (isNull(selectedAudioIndex)) {
+            const newAudio = { url: url, title: splitFileExtension(file.name)[0], description: "", capture: capture };
+            const newValue = multiple ? [...realValue, newAudio] : newAudio;
+            if (isNil(value)) {
+                set("localValue", newValue);
+            } else {
+                onValueChange(newValue);
+            }
+            // set("selectedAudioIndex", localValue.length);                    
+            // } else {
+            //     const newAudios = [...localValue];
+            //     newAudios[selectedAudioIndex].url = url;
+            //     set("localValue", newAudios);    
+            // }
+            set("isAudioLoading", false);
+            return () => URL.revokeObjectURL(url);
+        }, 1000);
     };
 
-    return (
-        <Label { ...labelProps}>
-            {inputs.map((input, II) =>
-                <input
-                    key={"input_" + II}
-                    className={`hidden`}
-                    ref={input.ref}
-                    type={`file`}
-                    accept={`audio/*`}
-                    capture={input.capture}
-                    onChange={handleAudiosOnChange}
-                />
-            )}
-            <div className={`border border-smt rounded-md col w-full max-w-120`}>
-                <div className={`row-between-center bg-soft-smt p-2`}>
-                    <div className={`row-v-center gap-2`}>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                inputMicrophoneRef.current.click();
-                            }}
-                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                        >
-                            <Icon library={`fa6`} name={`FaMicrophoneLines`} />
-                        </button>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                inputDownloadRef.current.click();
-                            }}
-                            className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                        >
-                            <Icon library={`fa6`} name={`FaFileImport`} />
-                        </button>
-                    </div>
-                    <button 
-                        onClick={(e) => {
-                            e.preventDefault();
-                            onChange([]);
-                        }}
-                        className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
+    const deleteAudio = (e, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let newValue;
+
+        if (multiple) {
+            newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+        } else {
+            newValue = emptyAudio;
+        }
+
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue)
+        }
+    }
+
+    const recordAudio = (e) => {
+        e.preventDefault(e);
+        set("capture", true);
+        setTimeout(() => inputRef.current.click(), 0);
+    };
+
+    const importAudio = (e) => {
+        e.preventDefault();
+        set("capture", false);
+        setTimeout(() => inputRef.current.click(), 0);
+    };
+
+    const openAudio = (e, index) => {
+        e.preventDefault();
+        if (multiple) {
+            set("selectedAudioIndex", index);
+        } else {
+            set("isAudioSelected", true);
+        }
+    };
+
+    const onInfoChange = (prop, newProp) => {
+        let newValue;
+
+        if (multiple) {
+            newValue = [...realValue];
+            newValue[selectedAudioIndex][prop] = newProp;
+        } else {
+            newValue = { ...realValue, [prop]: newProp };
+        }
+
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue)
+        }
+    };
+
+    const closePanel = (index) => {
+        if (multiple) {
+            audioRefs.current[index].pause();
+            audioRefs.current[index].currentTime = 0;
+            set("selectedAudioIndex", null);
+        } else {
+            audioRefs.current.pause();
+            audioRefs.current.currentTime = 0;
+            set("isAudioSelected", false);
+        }
+    }
+
+    const Audio = (audio, index) => {
+        return (
+            <>
+                <li 
+                    { ...listItemProps}
+                    onClick={e => openAudio(e, index)}
+                    className={twMerge(`first:rounded-t-md gap-4 p-2 row-v-center active:brightness-soft duration-100 bg-strong`, listItemProps?.className)}
+                >
+                    <input
+                        { ...urlInputProps}
+                        name={name}
+                        onChange={() => {}}
+                        value={audio.url}
+                        className={twMerge(`hidden`, urlInputProps?.className)}
+                    />
+                    <input
+                        { ...originInputProps}
+                        name={name}
+                        onChange={() => {}}
+                        value={audio.capture}
+                        className={twMerge(`hidden`, originInputProps?.className)}
+                    />
+                    {audio.capture
+                        ?   <FaMicrophoneLines
+                                { ...iconProps} 
+                                className={twMerge(` text-primary text-xl shrink-0`, iconProps?.className)}
+                            />
+                        :   <FaFileAudio
+                                { ...iconProps} 
+                                className={twMerge(` text-secondary text-xl shrink-0`, iconProps?.className)}
+                            />
+                    }
+                    <div 
+                        { ...titleProps}
+                        className={twMerge(`truncate grow`, titleProps?.className)}
                     >
-                        <Icon library={`io5`} name={`IoTrash`} />
-                    </button>
-                </div>
-                {!isEmpty(value) 
-                    ?   <table className={`text-smt`}><tbody>
-                            {value.map((record, RI) => 
-                                <tr key={"audio_" + RI}>
-                                    <td className={`p-2`}>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                set("selectedAudioIndex", RI);
-                                                audioRef.current.src = value[RI].url;
-                                                // audioRef.current.play();
-                                            }}
-                                            className={`button-smt rounded-full p-2 bg-smt text-2xl`}
-                                        >
-                                            <Icon library={`fa6`} name={`FaEye`}/>
-                                        </button> 
-                                    </td>
-                                    <td className={`p-2 text-soft-smt max-w-40 truncate`}>
-                                        <span>{record.title}</span>
-                                    </td>
-                                    <td className={`p-2 text-soft-smt`}>
-                                        <span>{secondsToTime(record.duration)}</span>
-                                    </td>
-                                    <td className={`p-2 text-right`}>
-                                        <button 
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                onChange([...value.slice(0, RI), ...value.slice(RI + 1)])
-                                            }}
-                                            className={`button-smt rounded-full p-2 bg-smt text-2xl text-error`}
-                                        >
-                                            <Icon library={`io5`} name={`IoTrash`}/>
-                                        </button> 
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody></table>
-                    :   <div className={`col-h-center gap-2 p-4 text-soft-smt`}>
-                            <Icon library={`fa6`} name={`FaFileAudio`} className={`text-4xl`} />
-                            <span className={`italic`}>Aucun audio</span>
-                        </div>
-                }
-                <div className={`
-                    ${!isNull(selectedAudioIndex) ? "translate-y-0" : "translate-y-full"}
-                    ${deviceType !== "desktop" && "w-full"}
-                    z-60 duration-300 fixed-h-center max-h-full bottom-0 col gap-4 overflow-y-auto bg-smt rounded-t-md 
-                `}>
-                    <div className={`sticky top-0 p-2 border-b border-smt bg-soft-smt z-30`}>
-                        <div className={`row-full-center gap-2`}>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    inputMicrophoneRef.current.click();
-                                }}
-                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                            >
-                                <Icon library={`fa6`} name={`FaMicrophoneLines`} />
-                            </button>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    inputDownloadRef.current.click();
-                                }}
-                                className={`p-2 bg-soft-smt rounded-full text-white text-2xl button-smt`}
-                            >
-                                <Icon library={`fa6`} name={`FaFileImport`} />
-                            </button>
-                            <button 
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onChange([...value.slice(0, selectedAudioIndex), ...value.slice(selectedAudioIndex + 1)])
-                                    set("selectedAudioIndex", null);
-                                }}
-                                className={`p-2 bg-soft-smt rounded-full text-error text-2xl button-smt`}
-                            >
-                                <Icon library={`io5`} name={`IoTrash`} />
-                            </button>
-                        </div>
-                        <button 
-                            onClick={(e) => {
-                                e.preventDefault();
-                                audioRef.current.pause();
-                                audioRef.current.currentTime = 0;
-                                const newValue = [...value];
-                                if (isEmpty(newValue[selectedAudioIndex].title)) {
-                                    newValue[selectedAudioIndex].title = `Audio ${selectedAudioIndex + 1}`;
-                                    onChange(newValue);
-                                }
-                                set("selectedAudioIndex", null);
-                            }}
-                            className={`absolute top-2 right-2 button-smt rounded-full p-2 bg-soft-smt text-2xl`}
-                        >
-                            <Icon library={`io5`} name={`IoClose`}/>
-                        </button>
+                        {isEmpty(audio.title) ? "Sans titre" : audio.title}
                     </div>
+                    <Button
+                        left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
+                        { ...deleteButtonProps}
+                        onClick={e => deleteAudio(e, index)}
+                        className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
+                    />
+                </li>
+                <Panel
+                    isOpen={multiple ? selectedAudioIndex == index : isAudioSelected}
+                    closePanel={() => closePanel(index)}
+                    position={`bottom`}
+                >
+                    <audio
+                        { ...audioProps}
+                        ref={el => multiple ? (audioRefs.current[index] = el) : (audioRefs.current = el)}
+                        src={audio.url}
+                        controls={true}
+                        // onLoadedMetadata={(e) => {
+                        //     const newValue = [...value];
+                        //     newValue[selectedAudioIndex] = { ...newValue[selectedAudioIndex], duration: e.target.duration };
+                        //     onChange(newValue);
+                        // }} 
+                        className={`w-full`}
+                    ></audio>
+                    <Input
+                        label={`Titre`}
+                        { ...titleInputProps}
+                        name={name}
+                        value={audio.title}
+                        onValueChange={newTitle => onInfoChange("title", newTitle)}
+                    />
+                    <Textarea
+                        label={`Description`}
+                        { ...descriptionInputProps}
+                        name={name}
+                        value={audio.description}
+                        onValueChange={newDescription => onInfoChange("description", newDescription)}
+                    />
+                </Panel>
+            </>
+        );
+    }
+
+    return (
+        <Label { ...allLabelPs}>
+            <input
+                accept={`audio/*`} // let the dev choose an image type
+                { ...inputPs}
+                name={null}
+                ref={inputRef}
+                type={`file`}
+                capture={capture}
+                onChange={handleAudiosOnChange}
+                className={twMerge(`hidden`, inputPs?.className)}
+            />
+            <div 
+                { ...listAndButtonsContainerProps}
+                className={twMerge(`rounded-md bg-strong col`, listAndButtonsContainerProps?.className)}
+            >
+                <ul 
+                    { ...listProps}
+                    className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
+                >
+                    {
+                        multiple 
+                            ?   !isEmpty(realValue) && realValue.map((audio, PI) => Audio(audio, PI))
+                            :   !isEmpty(realValue.url) && Audio(realValue)
                         
-                    <div className={`col gap-4 p-6`}>
-                        <audio
-                            ref={audioRef}
-                            controls={true}
-                            onLoadedMetadata={(e) => {
-                                const newValue = [...value];
-                                newValue[selectedAudioIndex] = { ...newValue[selectedAudioIndex], duration: e.target.duration };
-                                onChange(newValue);
-                            }} 
-                            className={`w-full`}
+                    }
+                </ul>
+                <div
+                    { ...buttonContainerProps}
+                    className={twMerge(`row-v-center rounded-b-md ${isRealValueEmpty ? "rounded-t-md" :  "rounded-t-none"}`, buttonContainerProps?.className)}
+                >
+                    <Button
+                        { ...microphoneButtonProps}
+                        onClick={recordAudio}
+                        disabled={isAudioLoading}
+                        className={twMerge(`flex-1 p-2 gap-1 rounded-none rounded-bl-md col-h-center ${isRealValueEmpty ? "rounded-tl-md" :  "rounded-tl-none"}`, microphoneButtonProps?.className)}
+                    >
+                        {(isAudioLoading && capture)
+                            ? <Spinner 
+                                { ...microphoneButtonSpinnerProps}
+                                className={twMerge(`border-white/50 border-l-white`, microphoneButtonSpinnerProps?.className)}
+                                />
+                            : <FaMicrophoneLines
+                                { ...microphoneButtonIconProps}
+                                className={twMerge(`text-3xl`, microphoneButtonIconProps?.className)}
+                                />
+                        }
+                        <div
+                            { ...microphoneButtonLabelProps}
+                            className={twMerge(`italic font-semibold`, microphoneButtonLabelProps?.className)}
                         >
-                            {/* <source 
-                            // src={selectedAudio?.url} 
-                            // type={selectedAudio?.file.type} 
-                            /> */}
-                            Votre navigateur ne supporte pas la lecture audio.
-                        </audio>
-                        <Input
-                            placeholder={`Titre de l'audio ...`}
-                            value={selectedAudio?.title}
-                            onChange={newState => {
-                                const newValue = [...value];
-                                newValue[selectedAudioIndex].title = newState;
-                                onChange(newValue);
-                            }}
-                            className={`bg-smt rounded-md mx-2`}
-                        />
-                        <Textarea
-                            placeholder={`Description de l'audio ...`}
-                            value={selectedAudio?.description}
-                            onChange={newState => {
-                                const newValue = [...value];
-                                newValue[selectedAudioIndex].description = newState;
-                                onChange(newValue);
-                            }}
-                            className={`bg-smt rounded-md mx-2`}
-                        />
-                    </div>
-                </div>
+                            Microphone
+                        </div>
+                    </Button>
+                    <Button 
+                        { ...filesButtonProps}
+                        onClick={importAudio}
+                        disabled={isAudioLoading}
+                        className={twMerge(`flex-1 p-2 gap-1 rounded-none rounded-br-md bg-secondary col-h-center ${isRealValueEmpty ? "rounded-tr-md" :  "rounded-tr-none"}`, filesButtonProps?.className)}
+                    >
+                        {(isAudioLoading && !capture) 
+                            ? <Spinner 
+                                { ...filesButtonSpinnerProps}
+                                className={twMerge(`border-white/50 border-l-white`, filesButtonSpinnerProps?.className)}
+                                />
+                            : <FaFileAudio
+                                { ...filesButtonIconProps}
+                                className={twMerge(`text-3xl`, filesButtonIconProps?.className)}
+                                />
+                        }
+                        <div
+                            { ...filesButtonLabelProps}
+                            className={twMerge(`italic font-semibold`, filesButtonLabelProps?.className)}
+                        >
+                            Fichiers
+                        </div>
+                    </Button>
+                </div>     
             </div>
         </Label>
     );
