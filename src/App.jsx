@@ -1,6 +1,8 @@
 import { useEffect } from "react";
-import { Head, I18nextProvider, ReduxProvider, Router, Toaster } from "./components/app";
+import { Head, I18nextProvider, ReduxProvider, Toaster } from "./components/app";
 import { useWindow } from "./hooks";
+import { DevPage } from "./components/pages";
+import { Route, Router, Routes, BrowserRouter } from "react-router-dom";
 
 export const App = () => {
 //   const { darkMode } = useWindow()
@@ -17,7 +19,11 @@ export const App = () => {
     <ReduxProvider>
       <I18nextProvider>
           <Head />
-          <Router />
+          <BrowserRouter>
+            <Routes>
+              <Route path={`/`} element={<DevPage />} />
+            </Routes>
+          </BrowserRouter>
           <Toaster />
 
           {/* For linear-gradient on borders */}
