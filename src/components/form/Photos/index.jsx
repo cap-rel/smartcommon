@@ -1,31 +1,53 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { Input, Label, Textarea } from "../../form"
-import { Button, Icon } from "../../others";
-import { isEmpty, isNull, removeFileExtension, secondsToTime } from "../../../globals/functions";
-import { useNavigator, useStates } from "../../../hooks";
+import { Button, Panel, Spinner } from "../../others";
+import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
+import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
+import { FaCamera, FaEye, FaFileImage } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
+import { RiCloseLargeFill } from "react-icons/ri";
 
-// TODO Change trash icon into FontAwesome icon
-// TODO Add GpsPoints and Address
-// TODO Put all inputs in map for name data getting
+// TODO Add retake or reimport system
+
+// IDEA Add GpsPoints and Address
+// IDEA Add full size mode for images
 
 export const Photos = ({
     label,
     labelRow = false,
     help,
-    onPost,
-    provideTitle = true,
-    provideDescription = true,
-    provideGspPoints = false,
-    provideAddress = false,
-
+    multiple = false,
+    onValueChange = () => {},
+    
     containerProps,
     labelContainerProps,
     labelProps,
     requiredStarProps,
     helpProps,
-    photosContainerProps,
     inputProps,
+    listAndButtonsContainerProps,
+    listProps,
+    listItemProps,
+    urlInputProps,
+    originInputProps,
+    iconProps,
+    titleProps,
+    deleteButtonProps,
+    deleteButtonIconProps,
+    panelProps,
+    imageProps,
+    titleInputProps,
+    descriptionInputProps,
+    buttonContainerProps,
+    cameraButtonProps,
+    cameraButtonSpinnerProps,
+    cameraButtonIconProps,
+    cameraButtonLabelProps,
+    filesButtonProps,
+    filesButtonSpinnerProps,
+    filesButtonIconProps,
+    filesButtonLabelProps,
     ...props
 }) => {
     const inputPs = { ...props, ...inputProps };
@@ -35,184 +57,265 @@ export const Photos = ({
     const inputPsForLabel = { required, readOnly, disabled, id };
     const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
     
-    const { deviceType } = useNavigator();
-
     const inputRef = useRef(null);
 
+    const emptyPhoto = { url: "", title: "", description: "", capture: false };
+
     const { states, set } = useStates({
-        selectedPhotoIndex: null,
-        isImageFullScreen: false,
+        selectedPhotoIndex: null, // for multiple photos
+        isPhotoSelected: false, // for one photo
+        // isImageFullScreen: false,
         capture: false,
-        photos: value ?? defaultValue ?? []
+        localValue: defaultValue ?? (multiple ? [] : emptyPhoto),
+        isImageLoading: false
     }) 
 
-    const { selectedPhotoIndex, isImageFullScreen, capture, photos } = states;
+    const { selectedPhotoIndex, isPhotoSelected, capture, localValue, isImageLoading } = states;
 
-    const selectedPhoto = photos[selectedPhotoIndex];
+    const realValue = value ?? localValue
 
-    useEffect(() => onPost && onPost(photos), [photos]);
+    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue.url);
 
     const handlePhotosOnChange = (e) => {
-        const file = e.target.files[0];
-        const url = URL.createObjectURL(file);
-        if (isNull(selectedPhotoIndex)) {
-            set("photos", [...photos, { file: file, url: url, title: "", description: "" }]);
-            set("selectedPhotoIndex", photos.length);                    
-        } else {
-            const newPhotos = [...photos];
-            newPhotos[selectedPhotoIndex].url = url;
-            set("photos", newPhotos);    
-        }
-        return () => URL.revokeObjectURL(url);
+        set("isImageLoading", true);
+        setTimeout(() => {
+            const file = e.target.files[0];
+            const url = URL.createObjectURL(file);
+            // if (isNull(selectedPhotoIndex)) {
+            const newPhoto = { url: url, title: splitFileExtension(file.name)[0], description: "", capture: capture };
+            const newValue = multiple ? [...realValue, newPhoto] : newPhoto;
+            if (isNil(value)) {
+                set("localValue", newValue);
+            } else {
+                onValueChange(newValue);
+            }
+            // set("selectedPhotoIndex", localValue.length);                    
+            // } else {
+            //     const newPhotos = [...localValue];
+            //     newPhotos[selectedPhotoIndex].url = url;
+            //     set("localValue", newPhotos);    
+            // }
+            set("isImageLoading", false);
+            return () => URL.revokeObjectURL(url);
+        }, 1000);
     };
 
-    const handlePhotoOnClick = (capture) => {
-        set("capture", capture);
+    const deletePhoto = (e, index) => {
+        e.preventDefault();
+        e.stopPropagation();
+        let newValue;
+
+        if (multiple) {
+            newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+        } else {
+            newValue = emptyPhoto;
+        }
+
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue)
+        }
+    }
+
+    const takePhoto = (e) => {
+        e.preventDefault(e);
+        set("capture", true);
         setTimeout(() => inputRef.current.click(), 0);
+    };
+
+    const importPhoto = (e) => {
+        e.preventDefault();
+        set("capture", false);
+        setTimeout(() => inputRef.current.click(), 0);
+    };
+
+    const openPhoto = (e, index) => {
+        e.preventDefault();
+        if (multiple) {
+            set("selectedPhotoIndex", index);
+        } else {
+            set("isPhotoSelected", true);
+        }
+    };
+
+    const onInfoChange = (prop, newProp) => {
+        let newValue;
+
+        if (multiple) {
+            newValue = [...realValue];
+            newValue[selectedPhotoIndex][prop] = newProp;
+        } else {
+            newValue = { ...realValue, [prop]: newProp };
+        }
+
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue)
+        }
+    };
+
+    const Photo = (photo, index) => {
+        return (
+            <>
+                <li 
+                    { ...listItemProps}
+                    onClick={e => openPhoto(e, index)}
+                    className={twMerge(`first:rounded-t-md gap-4 p-2 row-v-center active:brightness-soft duration-100 bg-strong`, listItemProps?.className)}
+                >
+                    <input
+                        { ...urlInputProps}
+                        name={name}
+                        onChange={() => {}}
+                        value={photo.url}
+                        className={twMerge(`hidden`, urlInputProps?.className)}
+                    />
+                    <input
+                        { ...originInputProps}
+                        name={name}
+                        onChange={() => {}}
+                        value={photo.capture}
+                        className={twMerge(`hidden`, originInputProps?.className)}
+                    />
+                    {photo.capture
+                        ?   <FaCamera
+                                { ...iconProps} 
+                                className={twMerge(` text-primary text-xl shrink-0`, iconProps?.className)}
+                            />
+                        :   <FaFileImage
+                                { ...iconProps} 
+                                className={twMerge(` text-secondary text-xl shrink-0`, iconProps?.className)}
+                            />
+                    }
+                    <div 
+                        { ...titleProps}
+                        className={twMerge(`truncate grow`, titleProps?.className)}
+                    >
+                        {isEmpty(photo.title) ? "Sans titre" : photo.title}
+                    </div>
+                    <Button
+                        left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
+                        { ...deleteButtonProps}
+                        onClick={e => deletePhoto(e, index)}
+                        className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
+                    />
+                </li>
+                <Panel
+                    isOpen={multiple ? selectedPhotoIndex == index : isPhotoSelected}
+                    closePanel={() => multiple ? set("selectedPhotoIndex", null) : set("isPhotoSelected", false)}
+                    position={`bottom`}
+                >
+                    {/* <div 
+                        className={`${isImageFullScreen ? "fixed inset-0 z-10 bg-strong row-full-center" : "relative"}`}
+                    >
+                        
+                    </div> */}
+                    <img 
+                        { ...imageProps}
+                        src={photo.url} 
+                        // onClick={() => set("isImageFullScreen", !isImageFullScreen)}
+                        className={twMerge(`max-h-full border border-soft-border`, imageProps?.className)}
+                    />
+                    <Input
+                        label={`Titre`}
+                        { ...titleInputProps}
+                        name={name}
+                        value={photo.title}
+                        onValueChange={newTitle => onInfoChange("title", newTitle)}
+                    />
+                    <Textarea
+                        label={`Description`}
+                        { ...descriptionInputProps}
+                        name={name}
+                        value={photo.description}
+                        onValueChange={newDescription => onInfoChange("description", newDescription)}
+                    />
+                </Panel>
+            </>
+        );
     }
 
     return (
         <Label { ...allLabelPs}>
             <input
+                accept={`image/*`} // let the dev choose an image type
+                { ...inputPs}
+                name={null}
                 ref={inputRef}
                 type={`file`}
-                accept={`image/*`}
                 capture={capture}
                 onChange={handlePhotosOnChange}
-                { ...inputPs}
-                className={`hidden`}
+                className={twMerge(`hidden`, inputPs?.className)}
             />
-            <div className={`w-full rounded-md border border-smt col max-w-120`}>
-                <div className={`p-2 row-between-center bg-soft-smt`}>
-                    <div className={`gap-2 row-v-center`}>
-                        <Button
-                            leftIcon={{ library: "fa6", name: "FaCamera" }}
-                            onClick={() => handlePhotoOnClick(true)}
-                            className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
-                        />
-                        <Button 
-                            leftIcon={{ library: "fa6", name: "FaFileImport" }}
-                            onClick={() => handlePhotoOnClick(false)}
-                            className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
-                        />
-                    </div>
-                    <Button
-                        leftIcon={{ library: "io5", name: "IoTrash" }}
-                        onClick={() => set("photos", [])}
-                        className={`p-2 text-2xl rounded-full bg-soft-smt text-error button-smt`}
-                    />
-                </div>
-                {!isEmpty(photos) 
-                    ?   <table className={`text-smt`}>
-                            <tbody>
-                                {photos.map((record, RI) => 
-                                    <tr key={"photo_" + RI}>
-                                        <td className={`p-2`}>
-                                            <Icon 
-                                                library={`fa6`}
-                                                name={`FaEye`}
-                                                onClick={() => set("selectedPhotoIndex", RI)}
-                                                className={`p-2 text-2xl rounded-full button-smt bg-smt`}
-                                            />
-                                        </td>
-                                        <td className={`p-2 truncate text-soft-smt max-w-40`}>
-                                            <div>{record.title}</div>
-                                        </td>
-                                        <td className={`p-2 text-right`}>
-                                            <Icon 
-                                                library={`io5`}
-                                                name={`IoTrash`}
-                                                onClick={() => set("photos", [...photos.slice(0, RI), ...photos.slice(RI + 1)])}
-                                                className={`p-2 text-2xl rounded-full button-smt bg-smt text-error`}
-                                            />
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </table>
-                    :   <div className={`gap-2 p-4 col-h-center text-soft-smt`}>
-                            <Icon 
-                                library={`fa6`}
-                                name={`FaFileImage`}
-                                className={`text-4xl`}
-                            />
-                            <div className={`italic`}>Aucune photo</div>
-                        </div>
-                }
-                <div className={`${!isNull(selectedPhotoIndex)  ? "translate-y-0" : "translate-y-full"} ${deviceType !== "desktop" && "w-full"} ${isImageFullScreen && "top-0"} fixed-h-center bottom-0 z-60 duration-300 max-h-full col gap-4 overflow-y-auto bg-smt rounded-t-md`}>
-                    <div className={`sticky top-0 z-30 p-2 border-b border-smt bg-soft-smt`}>
-                        <div className={`gap-2 row-full-center`}>
-                            <Button
-                                leftIcon={{ library: "fa6", name: "FaCamera" }}
-                                onClick={() => handlePhotoOnClick(true)}
-                                className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
-                            />
-                            <Button 
-                                leftIcon={{ library: "fa6", name: "FaFileImport" }}
-                                onClick={() => handlePhotoOnClick(false)}
-                                className={`p-2 text-2xl rounded-full bg-soft-smt button-smt`}
-                            />
-                            <Icon 
-                                library={`io5`}
-                                name={`IoTrash`}
-                                onClick={() => {
-                                    set("photos", [...photos.slice(0, selectedPhotoIndex), ...photos.slice(selectedPhotoIndex + 1)])
-                                    set("selectedPhotoIndex", null);
-                                }}
-                                className={`p-2 text-2xl rounded-full bg-soft-smt text-error button-smt`}
-                            />
-                        </div>
-                        <Icon 
-                            library={`io5`}
-                            name={`IoClose`}
-                            onClick={() => {
-                                const newPhotos = [...photos];
-                                if (isEmpty(newPhotos[selectedPhotoIndex].title)) {
-                                    newPhotos[selectedPhotoIndex].title = `Photo ${selectedPhotoIndex + 1}`;
-                                    set("photos", newPhotos);
-                                }
-                                set("selectedPhotoIndex", null);
-                            }}
-                            className={`absolute top-2 right-2 p-2 text-2xl rounded-full button-smt bg-soft-smt`}
-                        />
-                    </div>
+            <div 
+                { ...listAndButtonsContainerProps}
+                className={twMerge(`rounded-md bg-strong col`, listAndButtonsContainerProps?.className)}
+            >
+                <ul 
+                    { ...listProps}
+                    className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
+                >
+                    {
+                        multiple 
+                            ?   !isEmpty(realValue) && realValue.map((photo, PI) => Photo(photo, PI)
+                                    // <Photo key={`photo${PI}`} photo={photo} index={PI} />
+                                )
+                            :   !isEmpty(realValue.url) && Photo(realValue)
                         
-                    <div className={`gap-4 p-6 col`}>
-                        <div 
-                            className={`${isImageFullScreen ? "fixed inset-0 z-40 bg-smt row-full-center" : "relative"}`}
+                    }
+                </ul>
+                <div
+                    { ...buttonContainerProps}
+                    className={twMerge(`row-v-center rounded-b-md ${isRealValueEmpty ? "rounded-t-md" :  "rounded-t-none"}`, buttonContainerProps?.className)}
+                >
+                    <Button
+                        { ...cameraButtonProps}
+                        onClick={takePhoto}
+                        disabled={isImageLoading}
+                        className={twMerge(`flex-1 p-2 gap-1 rounded-none rounded-bl-md col-h-center ${isRealValueEmpty ? "rounded-tl-md" :  "rounded-tl-none"}`, cameraButtonProps?.className)}
+                    >
+                        {(isImageLoading && capture)
+                            ? <Spinner 
+                                { ...cameraButtonSpinnerProps}
+                                className={twMerge(`border-white/50 border-l-white`, cameraButtonSpinnerProps?.className)}
+                                />
+                            : <FaCamera
+                                { ...cameraButtonIconProps}
+                                className={twMerge(`text-3xl`, cameraButtonIconProps?.className)}
+                                />
+                        }
+                        <div
+                            { ...cameraButtonLabelProps}
+                            className={twMerge(`italic font-semibold`, cameraButtonLabelProps?.className)}
                         >
-                            <img src={selectedPhoto?.url} className={`max-h-full`}/>
-                            <Icon 
-                                library={`fa`}
-                                name={isImageFullScreen ? "FaCompressArrowsAlt" : "FaExpandArrowsAlt"}
-                                onClick={() => set("isImageFullScreen", !isImageFullScreen)}
-                                className={`p-2 rounded-full text-2xl button-smt absolute top-2 right-2 z-20 ${isImageFullScreen ? "bg-smt" : "bg-light-20 dark:bg-dark-20"}`}
-                            />
+                            Caméra
                         </div>
-                        <Input
-                            name={`${name}[${photos.length}][title]`}
-                            placeholder={`Titre de la photo...`}
-                            photos={selectedPhoto?.title}
-                            onChange={newState => {
-                                const newPhotos = [...photos];
-                                newPhotos[selectedPhotoIndex].title = newState;
-                                set("photos", newPhotos);
-                            }}
-                            className={`mx-2 rounded-md bg-smt`}
-                        />
-                        <Textarea
-                            name={`${name}[${photos.length}][descriptionb]`}
-                            placeholder={`Description de la photo...`}
-                            photos={selectedPhoto?.description}
-                            onChange={newState => {
-                                const newPhotos = [...photos];
-                                newPhotos[selectedPhotoIndex].description = newState;
-                                set("photos", newPhotos);
-                            }}
-                            className={`mx-2 rounded-md bg-smt`}
-                        />
-                    </div>
-                </div>
+                    </Button>
+                    <Button 
+                        { ...filesButtonProps}
+                        onClick={importPhoto}
+                        disabled={isImageLoading}
+                        className={twMerge(`flex-1 p-2 gap-1 rounded-none rounded-br-md bg-secondary col-h-center ${isRealValueEmpty ? "rounded-tr-md" :  "rounded-tr-none"}`, filesButtonProps?.className)}
+                    >
+                        {(isImageLoading && !capture) 
+                            ? <Spinner 
+                                { ...filesButtonSpinnerProps}
+                                className={twMerge(`border-white/50 border-l-white`, filesButtonSpinnerProps?.className)}
+                                />
+                            : <FaFileImage
+                                { ...filesButtonIconProps}
+                                className={twMerge(`text-3xl`, filesButtonIconProps?.className)}
+                                />
+                        }
+                        <div
+                            { ...filesButtonLabelProps}
+                            className={twMerge(`italic font-semibold`, filesButtonLabelProps?.className)}
+                        >
+                            Fichiers
+                        </div>
+                    </Button>
+                </div>     
             </div>
         </Label>
     );
