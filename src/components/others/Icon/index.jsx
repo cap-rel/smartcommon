@@ -4,8 +4,8 @@
 // import * as cg from "react-icons/cg";
 // import * as ci from "react-icons/ci";
 // import * as di from "react-icons/di";
-import * as fa from "react-icons/fa";
-import * as fa6 from "react-icons/fa6";
+// import * as fa from "react-icons/fa";
+// import * as fa6 from "react-icons/fa6";
 // import * as fc from "react-icons/fc";
 // import * as fi from "react-icons/fi";
 // import * as gi from "react-icons/gi";
@@ -14,12 +14,12 @@ import * as fa6 from "react-icons/fa6";
 // import * as hi from "react-icons/hi";
 // import * as hi2 from "react-icons/hi2";
 // import * as im from "react-icons/im";
-import * as io from "react-icons/io";
-import * as io5 from "react-icons/io5";
+// import * as io from "react-icons/io";
+// import * as io5 from "react-icons/io5";
 // import * as lia from "react-icons/lia";
 // import * as lib from "react-icons/lib";
 // import * as lu from "react-icons/lu";
-import * as md from "react-icons/md";
+// import * as md from "react-icons/md";
 // import * as pi from "react-icons/pi";
 // import * as ri from "react-icons/ri";
 // import * as rx from "react-icons/rx";
@@ -30,33 +30,35 @@ import * as md from "react-icons/md";
 // import * as ti from "react-icons/ti";
 // import * as vsc from "react-icons/vsc";
 // import * as wi from "react-icons/wi";
-import { RiCloseLargeLine } from "react-icons/ri";
+// import { RiCloseLargeLine } from "react-icons/ri";
 
 export const Icon = (props) => {
-    const { library, name } = props;
-    
-    const bonus = {
-        RiCloseLargeLine
-    };
+    // OLD CODE but can be useful in the future
 
-    const libraries = { 
-        fa, fa6, io, io5, md, bonus
-        // ai, bi, bs, cg, ci, di, fc, fi, gi, go, gr, hi, hi2, im, lia, lib, lu, pi, ri, rx, si, sl, tb, tfi, ti, vsc, wi 
-    };
+    // const { library, name } = props;
     
-    if (!libraries[library]) {
-        // console.warn(`${library} library not found`);
-        return <span { ...props} />;
-    }
+    // const bonus = {
+    //     RiCloseLargeLine
+    // };
+
+    // const libraries = { 
+    //     fa, fa6, io, io5, md, bonus
+    //     // ai, bi, bs, cg, ci, di, fc, fi, gi, go, gr, hi, hi2, im, lia, lib, lu, pi, ri, rx, si, sl, tb, tfi, ti, vsc, wi 
+    // };
     
-    const Icon = libraries[library][name];
+    // if (!libraries[library]) {
+    //     // console.warn(`${library} library not found`);
+    //     return <span { ...props} />;
+    // }
+    
+    // const Icon = libraries[library][name];
 
-    if (!Icon) {
-        // console.warn(`Icon ${icon} not found in ${library} library`);
-        return <span { ...props} />;
-    } 
+    // if (!Icon) {
+    //     // console.warn(`Icon ${icon} not found in ${library} library`);
+    //     return <span { ...props} />;
+    // } 
 
-    return (
-        <Icon { ...props} />
+    return ( null
+        // <Icon { ...props} />
     );
 };

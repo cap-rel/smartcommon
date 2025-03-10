@@ -1,5 +1,5 @@
 export * from "./Help";
-export * from "./Icon";
+// export * from "./Icon";
 export * from "./LazyLink";
 export * from "./Map";
 export * from "./SearchBar";
