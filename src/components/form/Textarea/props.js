@@ -4,7 +4,7 @@ export const propTypes = {
   label: PropTypes.string,
   labelRow: PropTypes.bool,
   help: PropTypes.string,
-  rows: PropTypes.number,
+  onValueChange: PropTypes.func,
   containerProps: PropTypes.object,
   labelContainerProps: PropTypes.object,
   labelProps: PropTypes.object,
