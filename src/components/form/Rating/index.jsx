@@ -1,64 +1,94 @@
-import { useWindow } from "../../../hooks";
+import { useStates, useWindow } from "../../../hooks";
 import { Label } from "../Label";
 import { Icon } from "../../others";
 import { propTypes } from "./props";
+import { twMerge } from "tailwind-merge";
+import { useMemo } from "react";
+import { IoHeart, IoHeartHalf, IoHeartOutline } from "react-icons/io5";
+import { FaFaceSmile, FaRegStar, FaRegStarHalfStroke, FaStar, FaThumbsUp } from "react-icons/fa6";
+import { isNil } from "../../../globals/functions";
+import { CheckedIcon } from "../tools";
+
+// IDEA Add decimal rating system
 
 export const Rating = ({
-    label = null,
-    id = null,
-    help = null,
-    min = 0,
-    max = null,
-    variant = "star",
-    divided = false,
-    ratingMax = 5,
-    readOnly = false,
-    required = false,
-    disabled = false,
-    value,
-    onChange = () => {},
-    color = null,
-    className = null
+    label,
+    labelRow = false,
+    help,
+    variant = "star", // heart, like, smile
+    maxRating = 5,
+    onValueChange = () => {},
+
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    inputProps,
+    ratingContainerProps,
+    iconProps,
+    ...props
 }) => {
-    const labelProps = { id, label, className, help, required };
+    const inputPs = { ...props, ...inputProps };
 
-    const { darkMode } = useWindow();
+    const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
 
-    const VARIANT_ICONS_MAP = {
-        heart: { library: "io5", empty: "IoHeartOutline", half: "IoHeartHalf", full: "IoHeart" },
-        star: { library: "fa6", empty: "FaRegStar", half: "FaRegStarHalfStroke", full: "FaStar" },
+    if (labelRow) {
+        containerProps = { ...containerProps, className: twMerge(`row-between-center bg-strong border border-soft-border p-2 rounded-md`, containerProps?.className) };
+        labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
     }
 
-    const variantIcons = VARIANT_ICONS_MAP[variant];
+    const inputPsForLabel = { required, readOnly, disabled, id };
+    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
 
-    const intValue = Math.floor(value);
-    // const isDivided = value % 1 !== 0;
+    const { states, set } = useStates({
+        localValue: defaultValue ?? ""
+    });
+
+    const { localValue } = states;
+
+    const realValue = value ?? localValue;
+
+    const VARIANT_ICONS_MAP = useMemo(() => ({
+        star: { empty: FaRegStar, half: FaRegStarHalfStroke, full: FaStar },
+        heart: { empty: IoHeartOutline, half: IoHeartHalf, full: IoHeart },
+        like: { full: FaThumbsUp },
+        smile: { full: FaFaceSmile }
+    }), []);
+
+    const Icon = VARIANT_ICONS_MAP[variant].full;
+
+    const handleOnClick = (index) => {
+        const newValue = realValue == Number(index) + 1  ? index : Number(index) + 1;
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue);
+        }
+    };
 
     return (
-        <Label { ...labelProps}>
-            <div className={`row-v-center gap-2`}>
-                {Array(max || 5).fill("").map((step, SI) =>
-                    <Icon
-                        library={variantIcons.library}
-                        name={
-                              intValue >= SI + 1
-                            ? variantIcons.full
-                            // : (isDivided && value < SI + 1) 
-                            // ? variantIcons.half
-                            : variantIcons.empty
-                        }
-                        className={`
-                            text-2xl flex-shrink-0
-                            ${(!color) && "text-primary"}
-                            ${disabled ? "cursor-not-allowed" : "cursor-pointer"}
-                        `}
-                        style={{ color: color }}
-                        onClick={() => !disabled && onChange(SI + 1)}
+        <Label { ...allLabelPs}>
+            <input
+                { ...inputPs}
+                onChange={() => {}}
+                value={realValue}
+                className={twMerge(`hidden`, inputPs?.className)}
+            />
+            <div 
+                { ...ratingContainerProps}
+                className={twMerge(`gap-2 row-v-center overflow-x-auto`, ratingContainerProps?.className)}
+            >
+                {Array(maxRating).fill("").map((step, SI) =>
+                    <CheckedIcon
+                        key={`icon${SI}`}
+                        { ...iconProps}
+                        icon={<Icon />}
+                        checked={SI < realValue}
+                        onClick={() => handleOnClick(SI)}
                     />
                 )}
             </div>
-            
-            {/* {disabledFilter && <div className={`absolute inset-0 z-10 bg-black-10 dark:bg-white-10 rounded-full`}/>} */}
         </Label>
     );
 };
