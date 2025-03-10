@@ -1,32 +1,24 @@
-import { Icon } from "../../../others";
+import { FaCheck } from "react-icons/fa6";
+import { twMerge } from "tailwind-merge";
 
 export const Checkbox = ({
-    cursor = "cursor-pointer",
     checked,
-    onClick,
-    classNames = {
-        input: null,
-        checkIcon: null
-    }
+    
+    checkboxProps,
+    checkIconProps,
+    ...props
 }) => {
+    const checkboxPs = { ...props, ...checkboxProps };
+
     return (
         <div
-            onClick={onClick}
-            className={`
-                relative duration-100 size-5 rounded-md flex-shrink-0
-                ${cursor}
-                ${checked ? "bg-primary" : "bg-slate-300"}
-                ${classNames.input}
-            `}
+            { ...checkboxPs}
+            style={{ transition: "background-color 200ms, filter 100ms", ...checkboxPs?.style }}
+            className={twMerge(`relative size-7 rounded-md shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-border"}`, checkboxPs?.className)}
         >
-            <Icon
-                library={`fa6`}
-                name={`FaCheck`}
-                className={`
-                    size-3 duration-100 text-white dark:text-primary
-                    ${checked ? "absolute-full-center opacity-100" : "opacity-0 absolute-h-center bottom-0"}
-                    ${classNames.checkIcon}
-                `}
+            <FaCheck
+                { ...checkIconProps}
+                className={twMerge(`size-5 absolute left-1 duration-200 text-strong ${checked ? "bottom-1 opacity-100" : "bottom-0 opacity-0"}`, checkIconProps?.className)}
             />
         </div>
     );

@@ -1,23 +1,21 @@
-import { Icon } from "../../../others";
+import { twMerge } from "tailwind-merge";
 
 export const CheckedIcon = ({
-    library,
-    name,
-    cursor = "cursor-pointer",
-    onClick,
-    classNames = {
-        input: null,
-    }
+    checked,
+    icon,
+
+    iconProps,
+    ...props
 }) => {
-    const iconProps = { library, name, onClick };
+    const iconPs = { ...props, ...iconProps };
+
     return (
-        <Icon
-            className={`
-                text-2xl flex-shrink-0 text-primary
-                ${cursor}
-                ${classNames.input}
-            `}
-            { ...iconProps}
-        />
+        <div
+            { ...iconPs}
+            style={{ transition: "color 200ms, filter 100ms", ...iconPs?.style }}
+            className={twMerge(`text-[28px] shrink-0 active:brightness-soft ${checked ? "text-primary" : "text-strong-border"}`, iconPs?.className)}
+        >
+            {icon}
+        </div>
     );
 };
