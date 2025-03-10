@@ -1,127 +1,100 @@
-import { useEffect, useMemo } from "react";
-import { useStates, useWindow } from "../../../hooks";
-import { Icon } from "../../others";
+import { useEffect } from "react";
+import { useStates } from "../../../hooks";
 import { Label } from "../Label";
 import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, CheckedIcon } from "../tools";
+import { FaRegStar, FaStar } from "react-icons/fa6";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
+import { isNil } from "../../../globals/functions";
 
-// todo add icon to switch like (like / dislike or check / cross, etc)
+// IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = ({
-    id = null,
-    name = null,
-    label = null,
-    help = {
-        position: "popup", // or top or bottom
-        text: null // can only be text
-    },
+    label,
+    labelRow = false,
+    help,
     variant = "switch",
-    readOnly = false,
-    required = false,
-    disabled = false,
-    booleanRef = null,
-    value = null,
-    onChange = () => {},
-    color = null,
-    custom = {
-        // color: null,
-        // activeColor: null,
-        // icon: null,
-        // activeIcon: null, // todo customization ++
-        customType: null,
-        classNames: {
-            container: null,
-            label: null,
-            requiredIcon: null,
-            disabledIcon: null,
-            readOnlyIcon: null,
-            HelpIcon: null,      //
-            helpContainer: null, // todo
-            helpText: null,      //
+    icon,
+    onValueChange = () => {},
 
-            input: null,
-            checkIcon: null, // only for checkbox
-            circle: null // only for switch and radio
-        },
-    }
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    inputProps,
+    switchProps,
+    checkboxProps,
+    radioProps,
+    iconProps,
+    ...props
 }) => {
-    const { darkMode } = useWindow();
-    const labelProps = { label, id, name, help, readOnly, required, disabled };
-    const inputProps = { id, name, readOnly, required, disabled };
-    const { classNames } = custom;
+    const booleanPs = { ...props, ...inputProps };
+    const { required, readOnly, disabled, id, value, defaultValue } = booleanPs;
 
-    const cursor = disabled ? "cursor-not-allowed" : "cursor-pointer";
     const blocked = disabled || readOnly;
+  
+    const booleanPsForLabel = { disabled, required, readOnly, id };
+
+    if (labelRow) {
+        containerProps = { ...containerProps, className: twMerge(`row-between-center bg-strong border border-soft-border p-2 rounded-md`, containerProps?.className) };
+        labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
+    }
+
+    const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...booleanPsForLabel };
 
     const { states, set } = useStates({
-        localValue: value ?? false
+        localValue: defaultValue ?? false
     });
 
     const { localValue } = states;
 
+    const realValue = value ?? localValue;
+
+    const handleOnClick = () => {
+        if (isNil(value)) {
+            set("localValue", !realValue, !blocked);
+        } else {
+            if (!blocked) {
+                onValueChange(!realValue)
+            }
+        }
+    };
+
     return (
-        <Label
-            // style={{ "--color": color || "var('--color-primary')" }}
-            row
-            { ...labelProps}
-        >
+        <Label { ...allLabelPs}>
             <input
+                { ...booleanPs}
                 type={`checkbox`}
-                ref={booleanRef}
-                className={`fixed appearance-none size-0`}
-                checked={localValue}
-                onChange={e => onChange(e.target.checked) || set("localValue", e.target.checked)}
-                { ...inputProps}
+                onChange={() => {}}
+                checked={realValue}
+                className={twMerge(`hidden`, booleanPs?.className)}
             />
             {variant === "switch" ?
                 <Switch
-                    onClick={() => set("localValue", !localValue, !blocked)}
-                    checked={localValue}
-                    cursor={cursor}
-                    classNames={{
-                        input: classNames.input,
-                        circle: classNames.circle
-                    }}
+                    { ...switchProps}
+                    onClick={handleOnClick}
+                    checked={realValue}
                 />
             : variant === "checkbox" ?
                 <Checkbox
-                    onClick={() => set("localValue", !localValue, !blocked)}
-                    checked={localValue}
-                    cursor={cursor}
-                    classNames={{
-                        input: classNames.input,
-                        checkIcon: classNames.checkIcon
-                    }}
+                    { ...checkboxProps}
+                    onClick={handleOnClick}
+                    checked={realValue}
                 />
             : variant === "radio" ?
                 <Radio
-                    onClick={() => set("localValue", !localValue, !blocked)}
-                    checked={localValue}
-                    cursor={cursor}
-                    classNames={{
-                        input: classNames.input,
-                        circle: classNames.circle
-                    }}
+                    { ...radioProps}
+                    onClick={handleOnClick}
+                    checked={realValue}
                 />
-            : variant === "star" ?
+            : variant === "icon" ?
                 <CheckedIcon
-                    onClick={() => set("localValue", !localValue, !blocked)}
-                    library={`fa6`}
-                    name={localValue ? "FaStar" : "FaRegStar"}
-                    cursor={cursor}
-                    classNames={{
-                        input: classNames.input,
-                    }}
-                />
-            : variant === "heart" ?
-                <CheckedIcon
-                    onClick={() => set("localValue", !localValue, !blocked)}
-                    library={`io5`}
-                    name={localValue ? "IoHeart" : "IoHeartOutline"}
-                    cursor={cursor}
-                    classNames={{
-                        input: classNames.input,
-                    }}
+                    { ...iconProps}
+                    icon={icon}
+                    onClick={handleOnClick}
+                    checked={realValue}
                 />
             : ""}
       
