@@ -1,81 +1,104 @@
-import { useState } from "react";
-import { isEmpty } from "../../../globals/functions";
-import { Help, Icon } from "../../others";
+import { useStates } from "../../../hooks";
+import { Input, Label } from "../../form";
 import { propTypes } from "./props";
-
-// TODO Faire les pattern
+import { twMerge } from "tailwind-merge";
+import { isEmpty, isNil } from "../../../globals/functions";
+import { useRef } from "react";
 
 export const Array = ({
-  label = null,
-  id = null,
-  help = null,
-  placeholder = null,
-  min = 0,
-  size = null,
-  max = null,
-  variant,
-  readOnly = false,
-  required = false,
-  disabled = false,
-  value,
-  onChange = () => {},
-  color = null,
-  className = null
-}) => {
-  const finalPlaceholder = placeholder || "Ecrire ici pour ajouter ..."
+  label,
+  labelRow = false,
+  help,
+  onValueChange = () => {},
 
-  const [newTag, setNewTag] = useState("");
+  containerProps,
+  labelContainerProps,
+  labelProps,
+  requiredStarProps,
+  helpProps,
+  arrayContainerProps,
+  arrayInputProps,
+  tagsContainerProps,
+  tagProps,
+  inputProps,
+  ...props
+}) => {
+  const inputPs = { ...props, ...inputProps };
+
+  const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
+
+  const inputPsForLabel = { required, readOnly, disabled, id };
+  const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+
+  const { states, set } = useStates({
+    localValue: defaultValue ?? [],
+    inputValue: ""
+  });
+
+  const { inputValue, localValue } = states;
+
+  const realValue = value ?? localValue;
+
+  const addItem = (e) => {
+    if (!isEmpty(inputValue.trim()) && e.key === "Enter") {
+      const newValue = [...realValue, inputValue];
+      if (isNil(value)) {
+        set("localValue", newValue);
+      } else {
+        onValueChange(newValue);
+      }
+      set("inputValue", "");
+    }
+  };
+
+  const deleteItem = (index) => {
+    const newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+    if (isNil(value)) {
+      set("localValue", newValue);
+    } else {
+      onValueChange(newValue);
+    }
+  }
 
   return (
-    <div className={`gap-2 col`}>
-        {label && <label htmlFor={id} className={`font-semibold text-soft-smt`}>{label}</label>}     
+    <Label { ...allLabelPs}>
+      <div 
+        { ...arrayContainerProps}
+        className={twMerge(`gap-2 col`, arrayContainerProps?.className)}
+      >
+        <Input 
+          placeholder={`Ajouter...`}
+          { ...arrayInputProps}
+          onValueChange={value => set("inputValue", value)}
+          value={inputValue}
+          onKeyDown={addItem}
+        />
         <div 
-          className={`
-            bg-smt row-v-center border dark:border-gray-600 
-            rounded-md flex-grow ${disabled && "brightness-75 cursor-not-allowed"} p-2
-          `}
+          { ...tagsContainerProps}
+          className={twMerge(`gap-2 wrap-v-center`, tagsContainerProps?.className)}
         >
-
-
-          {/* Tags */}
-          <div className="flex-grow gap-2 wrap">
-            {value.map((tag, TI) => (
-              <div key={TI} className="gap-2 p-2 rounded-md border bg-primary-20 border-primary row-v-center">
-                <p className="font-semibold text-primary">{tag}</p>
-                <Icon 
-                  library={`rx`}
-                  name={`RxCross2`}
-                  className="text-primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const newTags = [...value];
-                    newTags.splice(TI, 1);
-                    onChange(newTags);
-                  }}
+          {!isEmpty(realValue) &&
+            realValue.map((item, II) => 
+              <div 
+                key={`item${II}`}
+                { ...tagProps}
+                onClick={() => deleteItem(II)}
+                className={twMerge(`px-2 py-1 font-semibold text-sm tracking-wide uppercase text-primary bg-primary/10 rounded-md`, tagProps?.className)}
+              >
+                {item}
+                <input
+                  { ...inputPs}
+                  onChange={() => {}}
+                  value={item}
+                  className={twMerge(`hidden`, inputPs?.className)}
                 />
               </div>
-            ))}
-
-            {/* Textarea */}
-            <input
-              id={id}
-              placeholder={finalPlaceholder}
-              value={newTag}
-              onChange={(e) => setNewTag(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.target.value.trim() && e.key === "Enter") {
-                  onChange([...value, e.target.value.trim()]);
-                  setNewTag("");
-                }
-              }}
-              className={`flex-grow p-2 rounded-md border outline-none focus:ring-1 ring-primary bg-soft-smt border-smt placeholder-smt`}
-            />
-          </div>
-
+            )
+          }
         </div>
-        </div>
-
-  )
+      </div>
+    </Label>
+  );
 };
 
 Array.propTypes = propTypes;
