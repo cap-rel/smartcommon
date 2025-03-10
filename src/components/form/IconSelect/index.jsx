@@ -10,6 +10,8 @@ import { useStates } from "../../../hooks";
 import { cleanForComparison, isUndefined } from "../../../globals/functions";
 import { propTypes } from "./props";
 
+// OLD CODE but maybe useful in the future
+
 export const IconSelect = ({
     label = null,
     id = null,
@@ -71,8 +73,8 @@ export const IconSelect = ({
                     className={`${value && "hidden"} outline-none focus:border-primary rounded-md bg-light dark:bg-dark-soft w-full border focus:ring-1 ring-primary border-smt py-2 pl-2 pr-8 placeholder-smt`}
                 />
                 <div className={`${!value && "hidden"} row-v-center gap-2 rounded-md w-full bg-light dark:bg-dark-soft border border-smt pl-2 py-2 pr-7`}>
-                    <Icon { ...value} className={`text-primary text-xl`}/>
-                    <p className={`truncate text-left`}>{value?.icon}</p>
+                    <Icon { ...value} className={`text-xl text-primary`}/>
+                    <p className={`text-left truncate`}>{value?.icon}</p>
                     <p>({value?.library})</p>
                 </div>
                 
@@ -92,10 +94,10 @@ export const IconSelect = ({
                                 onMouseDown={() => {
                                     onChange(icon);
                                 }}
-                                className={`px-2 py-1 row-v-center gap-2 button-smt bg-soft-smt cursor-pointer`}
+                                className={`gap-2 px-2 py-1 cursor-pointer row-v-center button-smt bg-soft-smt`}
                             >
                                 <Icon { ...icon} className={`text-primary`}/>
-                                <p className={`truncate flex-grow text-left`}>{icon.icon}</p>
+                                <p className={`flex-grow text-left truncate`}>{icon.icon}</p>
                                 <p className={`italic`}>{icon.library}</p>
                             </li>
                         )}
