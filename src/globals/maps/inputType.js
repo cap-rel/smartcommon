@@ -1,0 +1,18 @@
+export const DEFAULT_PROPS_TYPE_MAP = {
+    varchar      : "text",
+    email        : "email",
+    password     : "password",
+    phone        : "tel",
+    url          : "url",
+    // link     : "url",
+    ip           : "text",
+    date         : "date",
+    timestamp    : "date",
+    time         : "time",
+    datetime     : "datetime-local",
+    integer      : "number",
+    stock        : "number",
+    float        : "number",
+    price        : "number",
+    priceCurrency: "number",
+};

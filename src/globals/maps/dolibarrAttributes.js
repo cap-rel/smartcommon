@@ -19,7 +19,7 @@ export const COMPONENTS_MAP = {
     stock        : "stock",          // return(stock:number)
     real         : "float",          // return(real:number(float)) | TODO renommer reel
     price        : "price",          // return(price:number(float))
-    pricecy      : "priceCurrency",         // return("price:currency") | TODO renommer pricecy
+    pricecy      : "priceCurrency",  // return("price:currency") | TODO renommer pricecy
     stars        : "rating",         // return(rating:number)
     duration     : "duration",       // return(duration(seconds):number)
     double       : "double",         // return(double:number(float)) | type => double(before, after) | TODO remonner double
