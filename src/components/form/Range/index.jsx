@@ -2,37 +2,71 @@ import { useMemo } from "react";
 import { Label, Select } from "../../form";
 import { Icon } from "../../others";
 import { useStates } from "../../../hooks";
-import { isUndefined } from "../../../globals/functions";
+import { isNil, isUndefined } from "../../../globals/functions";
 import { propTypes } from "./props";
+import { twMerge } from "tailwind-merge";
 
 export const Range = ({
-    label = null,
-    id = null,
-    help = null,
-    min = 0,
-    max = 100,
-    readOnly = false,
-    required = false,
-    disabled = false,
-    value,
-    onChange = () => {},
-    color = null,
-    className = null
-}) => {
-    const labelProps = { id, label, required, help, className };
-    const inputProps = { type: "range", id, min: min || 0, max: max || 100, required, disabled };
+    label,
+    labelRow = false,
+    help,
+    onValueChange = () => {},
+  
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    inputContainerProps,
+    inputProps,
+    valueProps,
+    ...props
+  }) => {
+    const inputPs = { ...props, ...inputProps };
+  
+    const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
+  
+    const inputPsForLabel = { required, readOnly, disabled, id };
+    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+  
+    const { states, set } = useStates({
+      localValue: defaultValue ?? 0
+    });
+  
+    const { localValue } = states;
+  
+    const realValue = value ?? localValue;
+
+    const handleInputOnChange = (e) => {
+        const newValue = e.target.value;
+
+        if (isNil(value)) {
+            set("localValue", newValue);
+        } else {
+            onValueChange(newValue);
+        }
+    }
 
     return (
-        <Label { ...labelProps}>
-            <input
-                value={value}
-                onChange={e => !disabled && onChange(e.target.value)}
-                className={`
-                    flex-grow w-full appearance-none accent-primary bg-transparent cursor-ew-resize
-                `}
-                    // ${!finalStep && ((type === "price" || type === "pricey") ? "rounded-l-md" : "rounded-r-md")}
-                { ...inputProps}
-            />
+        <Label { ...allLabelPs}>
+            <div
+                { ...inputContainerProps}
+                className={twMerge(`gap-2 row-v-center`, inputContainerProps?.className)}
+            >
+                <input
+                    { ...inputPs}
+                    type={`range`}
+                    value={realValue}
+                    onChange={handleInputOnChange}
+                    className={`flex-grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize`}
+                />
+                <div
+                    { ...valueProps}
+                    className={twMerge(``, valueProps?.className)}
+                >
+                    {realValue}
+                </div>
+            </div>
         </Label>
     );  
 };
