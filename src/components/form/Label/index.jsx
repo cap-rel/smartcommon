@@ -39,7 +39,7 @@ export const Label = ({
                     <label 
                         htmlFor={id}
                         { ...labelPs}
-                        className={twMerge(`font-semibold ml-0.5`, labelPs?.className)}
+                        className={twMerge(`font-semibold`, labelPs?.className)}
                     >
                         {label}
                     </label>
