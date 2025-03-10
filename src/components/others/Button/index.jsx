@@ -2,20 +2,18 @@ import { twMerge } from "tailwind-merge";
 import { isEmpty } from "../../../globals/functions";
 
 export const Button = ({
-    leftIcon = null,
-    rightIcon = null,
-    floatingPosition = null,
-    variant = {
-        classNames: {
-            leftIcon: null,
-            rightIcon: null,
-            button: null
-        }
-    },
-    children = null,
+    left,
+    right,
+    floatingPosition = "bottom-right",
+
+    buttonProps,
+    leftProps,
+    rightProps,
     ...props
 }) => {
-    const { classNames } = variant;
+
+    const buttonPs = { ...props, ...buttonProps };
+    const { disabled, children } = buttonPs;
 
     const floatingPositionClass = () => {
         switch (floatingPosition) {
@@ -28,28 +26,23 @@ export const Button = ({
             case "bottom-left": return "";
             case "left": return "";
             case "center": return "";
-            default: return "";
         }
     }
     return (
         <button
-            className={twMerge(`row-v-center gap-2 cursor-pointer p-2 bg-primary text-white button-smt rounded-md text-base ${floatingPositionClass()}`, classNames.button)}
-            { ...props}
+            { ...buttonPs}
+            className={twMerge(`row-v-center gap-2 cursor-pointer p-2 bg-primary text-white rounded-md text-base duration-100  ${disabled ? "brightness-soft" : "active:brightness-soft"} ${floatingPositionClass()}`, buttonPs?.className)}
         >
-            {!isEmpty(leftIcon) &&
-                <Icon
-                    library={leftIcon.library}
-                    name={leftIcon.name}
-                    className={twMerge("text-xl", classNames.leftIcon)}
-                />
+            {!isEmpty(left) &&
+                <div className={twMerge(`text-xl`, leftProps?.className)}>
+                    {left}
+                </div>
             }
             {children}
-            {!isEmpty(rightIcon) &&
-                <Icon
-                    library={rightIcon.library}
-                    name={rightIcon.name}
-                    className={twMerge("text-xl", classNames.rightIcon)}
-                />
+            {!isEmpty(right) &&
+                <div className={twMerge(`text-xl`, rightProps?.className)}>
+                    {right}
+                </div>
             }
         </button>
     );
