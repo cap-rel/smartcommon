@@ -18,7 +18,7 @@
  */
 
 import { useState } from "react";
-import Resizer from "react-image-file-resizer";
+// import Resizer from "react-image-file-resizer";
 import { isEmpty } from "../../globals/functions";
 
 // TODO Fixer le bug quand deux même string se suivent (ex: "test.test")
@@ -95,30 +95,9 @@ export const useStates = (initialValues, handleSubmitAction) => {
 
   const set = (input, value, condition = true) => { condition && HIOC(input, value); }
 
-  const finalizeValues = () => {
-    const finalizedValues = { ...states };
-    Object.keys(states).forEach(key => { 
-      const { prefix, root, suffix } = states[key];
-      finalizedValues[key] = 
-        (!isEmpty(prefix) && !isEmpty(suffix) && !isEmpty(root))
-          ? `${prefix || ""}${root}${suffix || ""}`
-          : root
-    });
-    return finalizedValues
-  }
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    handleSubmitAction(e, finalizeValues());
-  };
-
-
   return {
     states,
     setStates,
-    finalizeValues,
-    HIOC,
     set,
-    handleSubmit,
   };
 };
