@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { timestampToDate } from "../../../globals/functions";
 import { Icon, Img } from "../../others";
-import { Boolean, Checkbox } from "../../form";
+import { Boolean } from "../../form";
 
 export const DetailsItem = () => {
 
@@ -14,7 +14,7 @@ export const DetailsItem = () => {
 
       case "boolean": return <Boolean checked={value} disabled={true}/>;
 
-      case "checkbox": return <Checkbox checked={value} disabled={true}/>;
+      // case "checkbox": return <Checkbox checked={value} disabled={true}/>;
 
       case "multiCheckbox": return (
         <div className={`wrap-v-center gap-2`}>

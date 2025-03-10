@@ -3,7 +3,8 @@ import { isEmpty } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { Button, Panel } from "../../others";
 import { useEffect } from "react";
-import { GpsPoints, Input, Multi, Single, Textarea } from "../../form";
+import { Address, Array, Audios, Boolean, Check, ColorPicker, Duration, Editor, Files, GpsPoints, Input, Photos, Range, Rating, Select, Signature, Textarea, Videos } from "../../form";
+import { FaEnvelope, FaRegStar, FaStar } from "react-icons/fa6";
 
 export const SearchBar = ({
     isVisible = true,
