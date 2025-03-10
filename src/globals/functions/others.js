@@ -195,12 +195,12 @@ export const now = (format) => {
     return randomString;
   }
   
-  export function removeFileExtension(fileName) {
+  export function splitFileExtension(fileName) {
     const firstDotIndex = fileName.indexOf('.');
     if (firstDotIndex === -1) {
-      return fileName.replaceAll("_", " ");
+      return [fileName.replaceAll("_", " "), ""];
     }
-    return fileName.substring(0, firstDotIndex).replaceAll("_", " ");
+    return [fileName.substring(0, firstDotIndex).replaceAll("_", " "), fileName.substring(firstDotIndex)];
   }
   
   export function isLast(array, index) {
@@ -208,6 +208,6 @@ export const now = (format) => {
   } 
   
   export function print(value) {
-      const formatted = JSON.stringify(value, null, 2);
-      document.write("<pre>" + formatted + "</pre>");
+    const formatted = JSON.stringify(value, null, 2);
+    document.write("<pre>" + formatted + "</pre>");
   }
