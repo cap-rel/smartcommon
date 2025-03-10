@@ -26,7 +26,7 @@
     --color-strong            : white;
     --color-soft              : var(--color-gray-100);
     --color-soft-border       : var(--color-gray-200);     
-    --color-strong-border     : var(--color-gray-400);
+    --color-strong-border     : var(--color-gray-300);
     --color-soft-text         : var(--color-gray-400);
     --color-strong-text       : var(--color-gray-900);
 
