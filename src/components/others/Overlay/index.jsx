@@ -1,21 +1,18 @@
 import { twMerge } from "tailwind-merge";
 
 export const Overlay = ({
-    isVisible = false,
-    setVisibility = () => {},
-    variant = {
-        classNames: {
-            overlay: null
-        }
-    },
+    isOpen = false,
+    closeOverlay = () => {},
+    overlayProps,
     ...props
 }) => {
-    const { classNames } = variant;
+    const overlayPs = { ...props, ...overlayProps };
+
     return (
         <div 
-            className={twMerge(`fixed z-40 bg-black/50 inset-0 duration-300 ${isVisible ? "opacity-100" : "opacity-0 pointer-events-none"}`, classNames.overlay)}
-            onClick={() => setVisibility(false)}
-            { ...props}
+            { ...overlayPs}
+            onClick={closeOverlay}
+            className={twMerge(`fixed z-40 bg-black/50 inset-0 duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`, overlayPs?.className)}
         />
     );
 };
