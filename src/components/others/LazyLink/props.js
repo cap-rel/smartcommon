@@ -5,4 +5,5 @@ export const propTypes = {
     state: PropTypes.object,
     duration: PropTypes.number,
     onCLick: PropTypes.func,
+    lazyLinkProps: PropTypes.object,
 }
