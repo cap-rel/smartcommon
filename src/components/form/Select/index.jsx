@@ -1,55 +1,92 @@
-import { Icon } from "../../others";
+import { twMerge } from "tailwind-merge";
 import { Label } from "../../form";
 import { propTypes } from "./props";
+import { IoIosArrowDown } from "react-icons/io";
+import { useStates } from "../../../hooks";
+import { isEmpty, isNil, isObject } from "../../../globals/functions";
+import { useEffect } from "react";
+
+// TODO Add attributes to options like disabled, maybe props
 
 export const Select = ({
-  label = null,
-  id = null,
-  help = null,
-  placeholder = "Sélectionner ...",
-  min = 0,
-  size = null,
-  max = null,
-  options,
-  multiple = false,
-  readOnly = false,
-  required = false,
-  disabled = false,
-  value,
-  onChange = () => {},
-  color = null,
-  className = null
+  label,
+  labelRow = false,
+  help,
+  onValueChange = () => {},
+  options = [],
+
+  containerProps,
+  labelContainerProps,
+  labelProps,
+  requiredStarProps,
+  helpProps,
+  selectContainerProps,
+  selectProps,
+  optionProps,
+  iconProps,
+  ...props
 }) => {
-  const labelProps = { label, id, help, required, className };
- 
+  const selectPs = { ...props, ...selectProps };
+  const { required, readOnly, disabled, id, multiple, value, defaultValue } = selectPs;
+
+  const selectPsForLabel = { disabled, required, readOnly, id };
+
+  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...selectPsForLabel };
+
+  const { states, set } = useStates({
+    localValue: defaultValue ?? (multiple ? [] : "")
+  });
+
+  const { localValue } = states;
+
+  const realValue = value ?? localValue;
+
+  const handleSelectOnChange = (e) => {
+    const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
+    if (isNil(value)) {
+      set("localValue", newValue);
+    } else {
+      onValueChange(newValue);
+    }
+  };
+
   return (
-    <Label { ...labelProps}>
-      <div className={`relative rounded-md`}>
-        <select 
-          id={id}
-          className={`py-2 pl-2 pr-7 appearance-none border-smt border-2 outline-none button-smt bg-soft-smt w-full rounded-md`}
-          multiple={multiple}
-          value={value}
-          disabled={disabled}
-          required={required}
-          onChange={(e) => {
-            if (multiple) {
-              onChange(Array.from(e.target.selectedOptions, option => option.value))
-            } else {
-              onChange(e.target.value);
-            }
-          }}
+    <Label { ...allLabelPs}>
+      <div 
+        { ...selectContainerProps}
+        className={twMerge(`relative`, selectContainerProps?.className)}
+      >
+        <select
+          { ...selectPs}
+          onChange={handleSelectOnChange}
+          value={realValue}
+          className={twMerge(`py-2 pr-7 pl-2 w-full rounded-md border border-soft-border appearance-none outline-none active-button-effect bg-strong`, selectPs?.className)}
         >
-          <option value={``} disabled={true}>{placeholder}</option>
-          {options && options.map((option, OI) => 
-            typeof option === "object"
-              ? <option key={OI} value={option.value}>{option.label}</option>
-              : <option key={OI} value={option}>{option}</option>
-          )}
+          {/* <option disabled { ...optionProps}>{placeholder}</option> */}
+          {!isEmpty(options) && 
+            options.map((option, OI) => 
+              isObject(option)
+                ? <option 
+                    key={OI}
+                    { ...optionProps}
+                    value={option.value} 
+                  >
+                    {option.label}
+                  </option>
+                : <option 
+                    key={OI}
+                    { ...optionProps}
+                    value={option}
+                  >
+                    {option}
+                  </option>
+            )
+          }
         </select>
-        <span className={`absolute-v-center right-2 z-10 pointer-events-none`}>
-          <Icon library={`io`} name={`IoIosArrowDown`} />
-        </span>
+        <IoIosArrowDown
+          { ...iconProps}
+          className={twMerge(`right-2 z-10 pointer-events-none absolute-v-center`, iconProps?.className)}
+        />
       </div>
     </Label>
   );
