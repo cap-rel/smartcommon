@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { isEmpty } from "../../../globals/functions";
+import { propTypes } from "./props";
 
 export const Button = ({
     left,
@@ -47,3 +48,5 @@ export const Button = ({
         </button>
     );
 };
+
+Button.propTypes = propTypes
