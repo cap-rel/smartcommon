@@ -1,58 +1,49 @@
 import { useRef } from 'react';
 import { useStates } from '../../../hooks';
 import { Spinner } from '../../others';
-import { Label } from '../../form';
-import { cleanForComparison, isEmpty, isUndefined } from '../../../globals/functions';
+import { Input, Label } from '../../form';
+import { isEmpty, isNil } from '../../../globals/functions';
 import { propTypes } from './props';
+import { FaSearchLocation } from 'react-icons/fa';
+import { twMerge } from 'tailwind-merge';
+
+// TODO Find a way to replace input focus condition
 
 export const Address = ({
-  label = null, 
-  id = null,
-  help = null,
-  placeholder = null,
-  min = null,
-  size = null,
-  max = null,
-  pattern = null,
-  readOnly = false,
-  required = false, 
-  disabled = false,   
-  value, 
-  onChange = () => {},
-  className = null,
-  color = null
-}) => {
-  const finalPlaceholder = isUndefined(placeholder) ? "Rechercher une addresse ..." : placeholder;
+  label, 
+  labelRow = false,
+  help,
+  onValueChange = () => {},
 
-  const labelProps = { id, label, required, help, className };
-  const inputProps = { id, placeholder: finalPlaceholder, required, disabled };
+  containerProps,
+  labelContainerProps,
+  labelProps,
+  requiredStarProps,
+  helpProps,
+  inputContainerProps,
+  inputProps,
+  inputSpinnerProps,
+  inputIconProps,
+  listProps,
+  listItemProps,
+  ...props
+}) => {
+  const addressPs = { ...props, ...inputProps };
+  const { required, readOnly, disabled, id, value, defaultValue } = addressPs;
+
+  const addressPsForLabel = { disabled, required, readOnly, id };
+  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...addressPsForLabel };
 
   const { states, set } = useStates({
+    localValue: defaultValue ?? "",
     suggestions: [],
     isSearching: false,
     isInputFocused: false
   });
 
-  const { suggestions, isSearching, isInputFocused } = states;
+  const { localValue, suggestions, isSearching, isInputFocused } = states;
 
-  const searchTimeoutRef = useRef(null);
-
-  const handleInputOnChange = (e) => {
-    set("suggestions", []);
-    const value = e.target.value;
-    onChange(value);
-
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-
-    if (value.trim().length > 4) {
-      set("isSearching", true);
-      searchTimeoutRef.current = setTimeout(() => fetchSuggestions(value), 1000);
-    } else {
-      set("isSearching", false);
-    }
-  };
+  const realValue = value ?? localValue;
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
@@ -76,36 +67,68 @@ export const Address = ({
     set("isSearching", false);
   };
 
+  const searchTimeoutRef = useRef(null);
+
+  const handleInputOnChange = (newValue) => {
+    set("suggestions", []);
+    if (isNil(value)) {
+      set("localValue", newValue);
+    } else {
+      onValueChange(newValue);
+    }
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (newValue.trim().length > 4) {
+      set("isSearching", true);
+      searchTimeoutRef.current = setTimeout(() => fetchSuggestions(newValue), 1000);
+    } else {
+      set("isSearching", false);
+    }
+  };
+
+  const select = (newValue) => {
+    if (isNil(value)) {
+      set("localValue", newValue);
+    } else {
+      onValueChange(newValue);
+    }
+    set("suggestions", []);
+  };
+
   return (
-    <Label { ...labelProps}>
-      <div className={`relative`}>
-        <div className={`relative w-full`}>
-          <input
-            onFocus={() => set("isInputFocused", true)}
-            onBlur={() => set("isInputFocused", false)}
-            value={value}
-            onChange={handleInputOnChange}
-            className={`focus:ring-1 ring-primary w-full py-2 pl-2 pr-7 truncate border border-smt bg-transparent outline-none focus:border-primary rounded-md`}
-            { ...inputProps}
-          />
-          {isSearching && 
-            <span className={`absolute-v-center right-2 z-10 pointer-events-none`}>
-              <Spinner size={1}/>
-            </span>
+    <Label { ...allLabelPs}>
+      <div 
+        { ...inputContainerProps}
+        className={twMerge(`relative`, inputContainerProps?.className)}
+      >
+        <Input
+          left={isSearching 
+            ? <Spinner size={20} borderWidth={3} { ...inputSpinnerProps} /> 
+            : <FaSearchLocation { ...inputIconProps} />
           }
-        </div>
-        {(!isEmpty(suggestions) && isInputFocused) && (
-          <ul className={`absolute z-10 top-[calc(100%+4px)] max-h-80 left-0 right-0 bg-smt col border border-smt rounded-md overflow-y-auto`}>
+          onFocus={() => set("isInputFocused", true)}
+          onBlur={() => set("isInputFocused", false)}
+          placeholder={`Rechercher une adresse...`}
+          { ...addressPs}
+          onValueChange={handleInputOnChange}
+          value={realValue}
+        />
+        {(!isEmpty(suggestions)) && (
+          <ul 
+            { ...listProps}
+            className={twMerge(`absolute z-10 top-[calc(100%+4px)] max-h-80 left-0 right-0 bg-strong col border border-strong-border rounded-md overflow-y-auto shadow-2xl`, listProps?.className)}
+          >
             {states.suggestions.map((suggestion, index) => {
               // if (cleanForComparison(suggestion).includes(cleanForComparison(states.searchBarValue))) {
                 return (
                   <li
                     key={index}
-                    onMouseDown={() => {
-                      onChange(suggestion);
-                      set("suggestions", []);
-                    }}
-                    className={`p-2 button-smt bg-soft-smt cursor-pointer`}
+                    { ...listItemProps}
+                    onClick={() => select(suggestion)}
+                    className={twMerge(`p-2 duration-100 bg-strong active:brightness-soft`, listItemProps?.className)}
                   >
                     {suggestion}
                   </li>
