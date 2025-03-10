@@ -18,7 +18,6 @@
  */
 
 import { useState } from "react";
-// import Resizer from "react-image-file-resizer";
 import { isEmpty } from "../../globals/functions";
 
 // TODO Fixer le bug quand deux même string se suivent (ex: "test.test")
