@@ -1,5 +1,4 @@
 import { Link, useLocation } from "react-router-dom";
-import { Icon } from "../../others";
 import { useNavigator } from "../../../hooks";
 import { isEmpty } from "../../../globals/functions";
 
@@ -28,14 +27,22 @@ export const TabbarLink = ({
                     `py-2 w-3/4 rounded-full child
                     ${isActive ? "duration-100 bg-primary/15" : "bg-strong group-active:brightness-90"}
                 `}>
-                    <Icon
+                    <div
+                        className={`
+                            text-xl mx-auto duration-100 flex-shrink-0
+                            ${isActive ? "text-primary" : "text-soft-text"}
+                        `}
+                    >
+                        
+                    </div>
+                    {/* <Icon
                         library={isActive ? (!isEmpty(activeIcon) ? activeIcon.library : icon.library): icon.library}
                         name={isActive ? (!isEmpty(activeIcon) ? activeIcon.name : icon.name) : icon.name}
                         className={`
                             text-xl mx-auto duration-100 flex-shrink-0
                             ${isActive ? "text-primary" : "text-soft-text"}
                         `}
-                    />
+                    /> */}
                 </div>
             }
             {!isEmpty(label) &&

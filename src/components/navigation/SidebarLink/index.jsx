@@ -1,6 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { isEmpty } from "../../../globals/functions";
-import { Button, Icon, LazyLink } from "../../others";
+import { Button, LazyLink } from "../../others";
 
 export const SidebarLink = ({
     to = null,

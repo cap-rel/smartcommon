@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge";
 import { isEmpty } from "../../../globals/functions";
-import { Icon } from "../Icon";
 
 export const Button = ({
     leftIcon = null,

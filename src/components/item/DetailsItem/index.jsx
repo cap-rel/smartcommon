@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { timestampToDate } from "../../../globals/functions";
-import { Icon, Img } from "../../others";
 import { Boolean } from "../../form";
+
+const Icon = () => {
+  return null;
+}
 
 export const DetailsItem = () => {
 
@@ -17,7 +20,7 @@ export const DetailsItem = () => {
       // case "checkbox": return <Checkbox checked={value} disabled={true}/>;
 
       case "multiCheckbox": return (
-        <div className={`wrap-v-center gap-2`}>
+        <div className={`gap-2 wrap-v-center`}>
           {value.map((item, IE) => 
             <span key={IE} className={`bg-primary-20 text-primary tag-smt`}>{item}</span>
           )}
@@ -29,7 +32,7 @@ export const DetailsItem = () => {
       case "select": return value;
 
       case "multiSelect": return (
-        <div className={`wrap-v-center gap-2`}>
+        <div className={`gap-2 wrap-v-center`}>
           {value.map((item, IE) => 
             <span key={IE} className={`bg-primary-20 text-primary tag-smt`}>{item}</span>
           )}
@@ -37,7 +40,7 @@ export const DetailsItem = () => {
       );
 
       case "array": return (
-        <div className={`wrap-v-center gap-2`}>
+        <div className={`gap-2 wrap-v-center`}>
           {value.map((item, IE) => 
             <>
               <span>{item}</span>
@@ -79,21 +82,21 @@ export const DetailsItem = () => {
 
       case "duration": return <span className={`text-smt`}>{value}</span>;
 
-      case "text": return <p className={`text-sm max-h-40 text-justify overflow-auto`}>{value}</p>;
+      case "text": return <p className={`overflow-auto max-h-40 text-sm text-justify`}>{value}</p>;
 
       case "html": return value;
 
       case "address": return <span className={`text-smt`}>{value}</span>;
 
       case "gps": return (
-        <div className={`row-v-center divide-x divide-smt border border-smt rounded-md`}>
-          <div className={`col divide-y divide-smt rounded-l-lg flex-shrink-0`}>
-            <span className={`pb-1 pt-2 px-2`}>Longitude</span>
-            <span className={`pt-1 pb-2 px-2`}>Latitude</span>
+        <div className={`rounded-md border divide-x row-v-center divide-smt border-smt`}>
+          <div className={`flex-shrink-0 rounded-l-lg divide-y col divide-smt`}>
+            <span className={`px-2 pt-2 pb-1`}>Longitude</span>
+            <span className={`px-2 pt-1 pb-2`}>Latitude</span>
           </div>
-          <div className={`col divide-y divide-smt text-smt flex-grow`}>
-            <span className={`pb-1 pt-2 px-2`}>{value[0]}</span>
-            <span className={`pt-1 pb-2 px-2`}>{value[1]}</span>
+          <div className={`flex-grow divide-y col divide-smt text-smt`}>
+            <span className={`px-2 pt-2 pb-1`}>{value[0]}</span>
+            <span className={`px-2 pt-1 pb-2`}>{value[1]}</span>
           </div>
         </div>
       );
@@ -123,103 +126,103 @@ export const DetailsItem = () => {
 
     switch (type) {
       case "mail": return (
-        <button className={`button-smt text-xl bg-orange-500 border border-orange-500 p-2 rounded-md text-white dark:bg-orange-500 dark:bg-opacity-20 dark:text-orange-500`}>
+        <button className={`p-2 text-xl text-white bg-orange-500 rounded-md border border-orange-500 button-smt dark:bg-orange-500 dark:bg-opacity-20 dark:text-orange-500`}>
           <Icon library={`md`} name={`MdEmail`} />
         </button>
       );
 
       case "phone": return (
-        <button className={`button-smt text-xl bg-green-500 border border-green-500 p-2 rounded-md text-white dark:bg-green-500 dark:bg-opacity-20 dark:text-green-500`}>
+        <button className={`p-2 text-xl text-white bg-green-500 rounded-md border border-green-500 button-smt dark:bg-green-500 dark:bg-opacity-20 dark:text-green-500`}>
           <Icon library={`fa6`} name={`FaPhone`} />
         </button>
       );
 
       case "link": return (
-        <a className={`cursor-pointer button-smt text-xl bg-purple-500 border border-purple-500 p-2 rounded-md text-white dark:bg-purple-500 dark:bg-opacity-20 dark:text-purple-500`}>
+        <a className={`p-2 text-xl text-white bg-purple-500 rounded-md border border-purple-500 cursor-pointer button-smt dark:bg-purple-500 dark:bg-opacity-20 dark:text-purple-500`}>
           <Icon library={`fa6`} name={`FaLink`} />
         </a>
       );
 
       case "date": return (
-        <Link className={`cursor-pointer button-smt text-xl bg-teal-500 border border-teal-500 p-2 rounded-md text-white dark:bg-teal-500 dark:bg-opacity-20 dark:text-teal-500`}>
+        <Link className={`p-2 text-xl text-white bg-teal-500 rounded-md border border-teal-500 cursor-pointer button-smt dark:bg-teal-500 dark:bg-opacity-20 dark:text-teal-500`}>
           <Icon library={`fa6`} name={`FaCalendarDays`} />
         </Link>
       );
 
       case "datetime": return (
-        <Link className={`button-smt text-xl bg-teal-500 border border-teal-500 p-2 rounded-md text-white dark:bg-teal-500 dark:bg-opacity-20 dark:text-teal-500`}>
+        <Link className={`p-2 text-xl text-white bg-teal-500 rounded-md border border-teal-500 button-smt dark:bg-teal-500 dark:bg-opacity-20 dark:text-teal-500`}>
           <Icon library={`fa6`} name={`FaCalendarDays`} />
         </Link>
       );
       
       case "address": return (
-        <a className={`cursor-pointer button-smt text-xl bg-primary border border-primary p-2 rounded-md text-white dark:bg-primary-20 dark:text-primary`}>
+        <a className={`p-2 text-xl text-white rounded-md border cursor-pointer button-smt bg-primary border-primary dark:bg-primary-20 dark:text-primary`}>
           <Icon library={`fa6`} name={`FaLocationDot`} />
         </a>
       );
 
       case "gps": return (
-        <a className={`button-smt text-xl bg-primary border border-primary p-2 rounded-md text-white dark:bg-primary-20 dark:text-primary`}>
+        <a className={`p-2 text-xl text-white rounded-md border button-smt bg-primary border-primary dark:bg-primary-20 dark:text-primary`}>
           <Icon library={`fa6`} name={`FaLocationDot`} />
         </a>
       );
 
       case "file": return (
-        <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
           <Icon library={`fa6`} name={`FaDownload`} />
         </button>
       );
 
       case "audio": return (
-        <div className={`row-v-center gap-1`}>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <div className={`gap-1 row-v-center`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaPlay`} />
           </button>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaDownload`} />
           </button>
         </div>
       );
 
       case "video": return (
-        <div className={`row-v-center gap-1`}>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <div className={`gap-1 row-v-center`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaPlay`} />
           </button>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaDownload`} />
           </button>
         </div>
       );
 
       case "photo": return (
-        <div className={`row-v-center gap-1`}>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <div className={`gap-1 row-v-center`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`md`} name={`MdOutlineFullscreen`} />
           </button>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaDownload`} />
           </button>
         </div>
       );
 
       case "signature": return (
-        <div className={`row-v-center gap-1`}>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <div className={`gap-1 row-v-center`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`md`} name={`MdOutlineFullscreen`} />
           </button>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaDownload`} />
           </button>
         </div>
       );
 
       case "drawing": return (
-        <div className={`row-v-center gap-1`}>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+        <div className={`gap-1 row-v-center`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`md`} name={`MdOutlineFullscreen`} />
           </button>
-          <button className={`button-smt text-xl bg-gray-500 border border-gray-500 p-2 rounded-md text-white dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
+          <button className={`p-2 text-xl text-white bg-gray-500 rounded-md border border-gray-500 button-smt dark:bg-gray-500 dark:bg-opacity-20 dark:text-gray-500`}>
             <Icon library={`fa6`} name={`FaDownload`} />
           </button>
         </div>

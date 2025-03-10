@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { isEmpty, sortArray } from "../../../globals/functions";
 import { useLocation } from "react-router-dom";
 import { useNavigator, useStates, useWindow } from "../../../hooks";
-import { Icon, Img, LazyLink } from "../../others";
+import { LazyLink } from "../../others";
 import { Button, Overlay } from "../../others";
 
 export const Sidebar = ({
