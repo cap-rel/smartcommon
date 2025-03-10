@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
 import { isEmpty } from "../../../globals/functions";
+import { propTypes } from "./props";
 
 export const Block = ({
     title,
@@ -53,3 +54,5 @@ export const Block = ({
         </div>
     );
 }
+
+Block.propTypes = propTypes;

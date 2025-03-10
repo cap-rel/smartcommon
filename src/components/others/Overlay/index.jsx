@@ -1,4 +1,5 @@
 import { twMerge } from "tailwind-merge";
+import { propTypes } from "./props";
 
 export const Overlay = ({
     isOpen = false,
@@ -16,3 +17,5 @@ export const Overlay = ({
         />
     );
 };
+
+Overlay.propTypes = propTypes;
