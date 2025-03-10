@@ -1,34 +1,30 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { isEmpty } from '../../../globals/functions';
+import { propTypes } from './props';
 
 export const LazyLink = ({
-  to = null,
-  state = null,
+  to,
+  state,
   duration = 0,
-  onClick = null,
-  children = null,
+  onClick = () => {},
+  children,
   ...props
 }) => {
   const navigate = useNavigate();
 
   const handleOnClick = (e) => {
     e.preventDefault();
-    if (!isEmpty(onClick)) {
-      onClick();
-    }
-    setTimeout(() => {
-      navigate(to, { state });
-    }, duration);
+    onClick();
+    setTimeout(() => navigate(to, { state }), duration);
   };
 
   return (
     <Link
-      to={to}
-      state={state}
-      onClick={handleOnClick}
       { ...props}
+      onClick={handleOnClick}
     >
       {children}
     </Link>
   );
 };
+
+LazyLink.propTypes = propTypes;
