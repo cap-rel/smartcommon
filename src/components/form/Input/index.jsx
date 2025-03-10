@@ -1,11 +1,9 @@
 import { isEmpty, isNil } from "../../../globals/functions";
 import { Label } from "../../form";
-import { Icon } from "../../others";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { FaE, FaEye, FaEyeSlash } from "react-icons/fa6";
-import { useEffect } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa6";
 
 // IDEA Prefix / suffix
 // IDEA Select (phone, ...)

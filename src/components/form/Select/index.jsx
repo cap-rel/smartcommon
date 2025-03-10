@@ -4,7 +4,6 @@ import { propTypes } from "./props";
 import { IoIosArrowDown } from "react-icons/io";
 import { useStates } from "../../../hooks";
 import { isEmpty, isNil, isObject } from "../../../globals/functions";
-import { useEffect } from "react";
 
 // TODO Add attributes to options like disabled, maybe props
 

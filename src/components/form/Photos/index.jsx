@@ -4,7 +4,7 @@ import { Button, Panel, Spinner } from "../../others";
 import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
-import { FaCamera, FaEye, FaFileImage } from "react-icons/fa6";
+import { FaCamera, FaFileImage } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
 

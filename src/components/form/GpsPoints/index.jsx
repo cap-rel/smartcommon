@@ -1,12 +1,10 @@
 import toast from "react-hot-toast";
-import { getUserLocation, isEmpty, isNil } from "../../../globals/functions";
+import { isEmpty, isNil } from "../../../globals/functions";
 import { Label } from "../Label";
-import { Button, Icon, Spinner } from "../../others";
+import { Button, Spinner } from "../../others";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { useStates } from "../../../hooks";
-import { useEffect } from "react";
-import Geolocation from 'react-native-geolocation-service';
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
 

@@ -1,10 +1,7 @@
-import { useEffect } from "react";
 import { useStates } from "../../../hooks";
 import { Label } from "../Label";
 import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, CheckedIcon } from "../tools";
-import { FaRegStar, FaStar } from "react-icons/fa6";
-import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { twMerge } from "tailwind-merge";
 import { isNil } from "../../../globals/functions";
 

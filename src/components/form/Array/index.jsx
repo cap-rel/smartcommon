@@ -3,7 +3,6 @@ import { Input, Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { isEmpty, isNil } from "../../../globals/functions";
-import { useRef } from "react";
 
 export const Array = ({
   label,

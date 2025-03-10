@@ -1,6 +1,5 @@
-import { useStates, useWindow } from "../../../hooks";
+import { useStates } from "../../../hooks";
 import { Label } from "../Label";
-import { Icon } from "../../others";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { useMemo } from "react";

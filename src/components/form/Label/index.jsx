@@ -1,5 +1,4 @@
 import { twMerge } from "tailwind-merge";
-import { Icon } from "../../others";
 import { propTypes } from "./props";
 import { isEmpty } from "../../../globals/functions";
 
@@ -37,7 +36,6 @@ export const Label = ({
                     { ...labelContainerProps}
                     className={twMerge(`gap-2 row-v-center`, labelContainerProps?.className)}
                 >
-                    {/* {note && <Icon library={`fa`} name={`FaCircle`} className={`text-[8px] text-note`} />} */}
                     <label 
                         htmlFor={id}
                         { ...labelPs}

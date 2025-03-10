@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { isEmpty, isNil } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
 import { Label, Textarea } from "../../form";
 // import MDEditor, { commands } from '@uiw/react-md-editor';
 import { propTypes } from "./props";

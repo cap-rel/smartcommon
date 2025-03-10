@@ -1,14 +1,12 @@
 import { Button } from "../../others";
 import { Label } from "../Label";
-import { useEffect, useRef } from "react";
-// import SignaturePad from 'react-signature-pad-wrapper';
-// import { SignaturePad } from "signature-pad-package";
+import { useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature } from "react-icons/fa6";
-import { isEmpty, isNil } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
 import toast from "react-hot-toast";
 
 // TODO faire le required
