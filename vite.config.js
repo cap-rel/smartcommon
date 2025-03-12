@@ -2,9 +2,24 @@ import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import path from "path";
 
 export default defineConfig({
   base: "./",
+  lib: {
+    entry: path.resolve(__dirname, 'src/index.js'), // Point d'entrée de la lib
+    name: 'SmartCommon',  // Nom global de la bibliothèque
+    fileName: (format) => `smart-common.${format}.js`,  // Format du fichier de sortie
+  },
+  rollupOptions: {
+    external: ['react', 'react-dom'], // Assurez-vous que React et ReactDOM ne sont pas inclus dans le bundle
+    output: {
+      globals: {
+        react: 'React',
+        'react-dom': 'ReactDOM',
+      },
+    },
+  },
   plugins: [
     react(),
     tailwindcss(),
