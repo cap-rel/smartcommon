@@ -1,5 +1,5 @@
 {
-  "name": "smart-common",
+  "name": "smartcommon",
   "private": false,
   "version": "1.0.1",
   "type": "module",
@@ -52,7 +52,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/smart-common.es.js"
+      "import": "./dist/smartcommon.es.js"
     },
     "./dist/*": "./dist/*"
   }
