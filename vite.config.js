@@ -6,17 +6,20 @@ import path from "path";
 
 export default defineConfig({
   base: "./",
-  lib: {
-    entry: path.resolve(__dirname, 'src/index.js'), // Point d'entrée de la lib
-    name: 'SmartCommon',  // Nom global de la bibliothèque
-    fileName: (format) => `smart-common.${format}.js`,  // Format du fichier de sortie
-  },
-  rollupOptions: {
-    external: ['react', 'react-dom'], // Assurez-vous que React et ReactDOM ne sont pas inclus dans le bundle
-    output: {
-      globals: {
-        react: 'React',
-        'react-dom': 'ReactDOM',
+  build: {
+    lib: {
+      entry: path.resolve(__dirname, 'src/index.js'),
+      name: 'smart-common',
+      fileName: (format) => `smart-common.${format}.js`,
+      cssFileName: "smart-common-style"
+    },
+    rollupOptions: {
+      external: ['react', 'react-dom'],
+      output: {
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM',
+        },
       },
     },
   },

@@ -49,5 +49,15 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "globals": "^15.14.0",
     "vite": "^6.0.5"
-  }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/smart-common.es.js"
+    },
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "./dist/smart-common.es.js",
+    "./dist/smart-common.style.css"
+  ]
 }
