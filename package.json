@@ -3,6 +3,13 @@
   "private": false,
   "version": "1.0.2",
   "type": "module",
+  "description": "Common package for all smart* applications (PWA for dolibarr)",
+  "homepage": "https://cap-rel.fr/smartcommon",
+  "bugs": {
+    "url": "https://inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/issues"
+  },
+  "license":"AGPL-3.0-or-later",
+  "funding": "https://shop.cap-rel.fr/cat/112",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

@@ -2,3 +2,8 @@ node_modules/
 build/
 src/
 test/
+.gitlab-ci.yml
+.env.example
+index.html
+public/.htaccess
+vite.config.js
