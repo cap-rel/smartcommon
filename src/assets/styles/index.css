@@ -1,37 +1,37 @@
 @import "tailwindcss";
 
 @theme {
-    /* --color-primary      : var(--color-violet-500);
-    --color-secondary    : var(--color-pink-500);
+    /* --color-primary      : #6d4aff;
+    --color-secondary    : #26daaf;
     --color-success      : var(--color-green-500);
     --color-error        : var(--color-red-500);
     --color-warning      : var(--color-yellow-500);
 
-    --color-strong       : var(--color-gray-800);
-    --color-soft         : var(--color-gray-900);
+    --color-strong       : #292734; 
+    --color-soft         : #1c1b23;
     --color-soft-border  : var(--color-gray-600);
-    --color-strong-border: var(--color-gray-400);
-    --color-soft-text    : var(--color-gray-400);
+    --color-strong-border: #3b3746; 
+    --color-soft-text    : var(--color-gray-500);
     --color-strong-text  : white;
 
-    --soft-brightness    : 130%;
-    --strong-brightness  : 160%; */
+    --brightness-soft    : 130%;
+    --brightness-strong  : 160%; */
 
-    --color-primary           : var(--color-violet-600);
+    --color-primary           : #6d4aff;
     --color-secondary         : var(--color-pink-600);
     --color-success           : var(--color-green-600);
     --color-error             : var(--color-red-600);
     --color-warning           : var(--color-yellow-600);
 
-    --color-strong            : white;
-    --color-soft              : var(--color-gray-100);
-    --color-soft-border       : var(--color-gray-200);     
-    --color-strong-border     : var(--color-gray-300);
-    --color-soft-text         : var(--color-gray-400);
-    --color-strong-text       : var(--color-gray-900);
+    --color-softest           : white;
+    --color-softer            : var(--color-gray-100);
+    --color-soft              : var(--color-gray-200);     
+    --color-strong            : var(--color-gray-300);
+    --color-stronger          : var(--color-gray-400);
+    --color-strongest         : var(--color-gray-900);
 
-    --brightness-soft    : 80%;
-    --brightness-strong  : 90%;
+    --brightness-soft    : 90%;
+    --brightness-strong  : 80%;
 
     /* 
       main:
@@ -67,43 +67,22 @@
 
 @layer base {
   .dark {
-    --color-primary      : var(--color-violet-500);
-    --color-secondary    : var(--color-pink-500);
-    --color-success      : var(--color-green-500);
-    --color-error        : var(--color-red-500);
-    --color-warning      : var(--color-yellow-500);
 
-    --color-strong       : var(--color-gray-800);
-    --color-soft         : var(--color-gray-900);
-    --color-soft-border  : var(--color-gray-600);
-    --color-strong-border: var(--color-gray-500);
-    --color-soft-text    : var(--color-gray-400);
-    --color-strong-text  : white;
-
-    --brightness-soft    : 130%;
-    --brightness-strong  : 160%;
-    
-    /* --color-primary           : var(--color-violet-600);
-    --color-secondary         : var(--color-pink-600);
-    --color-success           : var(--color-green-600);
-    --color-error             : var(--color-red-600);
-    --color-warning           : var(--color-yellow-600);
-
-    --color-strong            : white;
-    --color-soft              : var(--color-gray-100);
-    --color-soft-border       : var(--color-gray-200);     
-    --color-strong-border     : var(--color-gray-400);
-    --color-soft-text         : var(--color-gray-400);
-    --color-strong-text       : var(--color-gray-900);
-
-    --soft-brightness    : 80%;
-    --strong-brightness  : 90%; */
   }
 
   * {
     @apply box-border p-0 m-0;
   }
 
+  .scroll-hidden {
+    -ms-overflow-style: none;  /* Pour Internet Explorer */
+    scrollbar-width: none;  /* Pour Firefox */
+  }
+  
+  .scroll-hidden::-webkit-scrollbar {
+    display: none;  /* Cache la scrollbar pour les navigateurs Webkit */
+  }
+  
   .scrolled {
     position: sticky;
     top: 0;
@@ -135,30 +114,30 @@
     margin: 0;
   }
   input[type=range]::-webkit-slider-runnable-track {
-    @apply h-2 rounded-full bg-strong-border;
+    @apply h-2 rounded-full bg-strong;
   }
   input[type=range]::-webkit-slider-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-strong border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
   }
   input[type=range]::-moz-range-track {
-    @apply h-2 rounded-full bg-strong-border;
+    @apply h-2 rounded-full bg-strong;
   }
   input[type=range]::-moz-range-progress {
     @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-moz-range-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-strong border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
   }
   input[type=range]::-ms-track {
-    @apply h-2 rounded-full bg-strong-border;
+    @apply h-2 rounded-full bg-strong;
   }
   input[type=range]::-ms-fill-lower {
     @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-ms-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-strong border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
   }
-
+  
   .absolute-full-center {
     @apply absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2;
   }

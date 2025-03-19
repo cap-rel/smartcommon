@@ -107,7 +107,7 @@ export const Input = ({
         <input
           placeholder={!isNil(label) ? `${label}...` : ""}
           { ...inputPs}
-          type={INPUT_TYPE_MAP[type]}
+          type={isPassword ? (isPasswordVisible ? "text" : "password") : INPUT_TYPE_MAP[type]}
           onChange={handleInputOnChange}
           value={realValue}
           className={twMerge(`outline-none duration-100 focus:ring-2 ring-primary bg-strong py-2 placeholder-soft-text grow w-full border border-soft-border rounded-md truncate ${isLeft ? "pl-9" : "pl-2"} ${isRight ? "pr-9" : "pr-2"}`, inputPs?.className)}
@@ -116,7 +116,7 @@ export const Input = ({
           <div
             { ...rightProps}
             onClick={() => isPassword && set("isPasswordVisible", !isPasswordVisible)}
-            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-soft-text`, rightProps?.className)}              
+            className={twMerge(`right-2 text-xl shrink-0 absolute-v-center text-soft-text`, rightProps?.className)}              
           >
             {isPassword && (
               isPasswordVisible

@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { Head, I18nextProvider, ReduxProvider, Toaster } from "./components/app";
 import { useWindow } from "./hooks";
-import { DevPage } from "./components/pages";
+import { DevPage, LoginPage, SmartPage } from "./components/pages";
 import { Route, Router, Routes, BrowserRouter } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Navigate, Outlet } from "react-router-dom";
 
 export const App = () => {
 //   const { darkMode } = useWindow()
@@ -15,13 +17,32 @@ export const App = () => {
 //     }
 // }, [darkMode]);
 
+  const ProtectedRoutes = () => {
+    const user = useSelector((state) => state.auth.user);
+    return user ? <Outlet /> : <Navigate to="/login" />;
+  };
+
+  const PublicRoutes = () => {
+    const user = useSelector((state) => state.auth.user);
+    return user ? <Navigate to="/" /> :  <Outlet />;
+  };
+
+
   return (
     <ReduxProvider>
       <I18nextProvider>
           <Head />
           <BrowserRouter>
             <Routes>
-              <Route path={`/`} element={<DevPage />} />
+              <Route element={<PublicRoutes />}>
+                <Route path={`/login`} element={<LoginPage />} />
+              </Route>
+              <Route element={<ProtectedRoutes />}>
+                <Route path={`/`} element={<SmartPage />} />
+                <Route path={`/2`} element={<DevPage />} />
+                <Route path={`/3`} element={<DevPage />} />
+                <Route path={`/4`} element={<DevPage />} />
+              </Route>
             </Routes>
           </BrowserRouter>
           <Toaster />

@@ -1,58 +1,68 @@
 import { Link, useLocation } from "react-router-dom";
-import { useNavigator } from "../../../hooks";
-import { isEmpty } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
+
+import { propTypes } from "./props";
+import { tabbarLinkVariants } from "./variants";
+import { mergeProps } from "../../../globals/functions/variant";
 
 export const TabbarLink = ({
-    to = null,
-    icon = null,
-    activeIcon = null,
-    label = null,
-    variant = "",
-    customType = null,
-    custom = {
-        color: null,
-        classNames: null
-    }
+    icon,
+    activeIcon,
+    label,
+    disabled,
+    variant = "classic",
+    linkProps,
+    iconAndLabelContainerProps,
+    iconContainerProps,
+    labelProps,
+    ...props
 }) => {
+    const linkPs = { ...props, ...linkProps };
+
+    const { to } = linkPs;
+
     const location = useLocation();
     const isActive = location.pathname === to;
+    const currentIcon = isActive ? (activeIcon ?? icon) : icon;
+
+    const params = { isActive };
 
     return (
         <Link
-            to={to}
-            className={`flex-1 gap-1 px-1 h-full text-strong col-full-center bg-strong group`}
+            { ...mergeProps(
+                {}, `flex-1 py-2`,
+                linkPs, tabbarLinkVariants, variant, "linkProps", params
+            )}
         >
-            {!isEmpty(icon) && 
-                <div className={
-                    `py-2 w-3/4 rounded-full child
-                    ${isActive ? "duration-100 bg-primary/15" : "bg-strong group-active:brightness-90"}
-                `}>
+            <div
+                { ...mergeProps(
+                    {}, `col items-center gap-1`,
+                    iconAndLabelContainerProps, tabbarLinkVariants, variant, "iconAndLabelContainerProps", params
+                )}
+            >
+                {!isNil(icon) && 
                     <div
-                        className={`
-                            text-xl mx-auto duration-100 flex-shrink-0
-                            ${isActive ? "text-primary" : "text-soft-text"}
-                        `}
+                        { ...mergeProps(
+                            {}, `text-xl row justify-center items-center ${isActive ? "text-primary" : "text-stronger"}`,
+                            iconContainerProps, tabbarLinkVariants, variant, "iconContainerProps", params
+                        )}
                     >
-                        
+                        {currentIcon}
                     </div>
-                    {/* <Icon
-                        library={isActive ? (!isEmpty(activeIcon) ? activeIcon.library : icon.library): icon.library}
-                        name={isActive ? (!isEmpty(activeIcon) ? activeIcon.name : icon.name) : icon.name}
-                        className={`
-                            text-xl mx-auto duration-100 flex-shrink-0
-                            ${isActive ? "text-primary" : "text-soft-text"}
-                        `}
-                    /> */}
-                </div>
-            }
-            {!isEmpty(label) &&
-                <div className={`
-                    truncate text-xs duration-100
-                    ${isActive ? "text-primary" : "text-soft-text"}
-                `}>
-                    {label}
-                </div>
-            }
+                }
+                {!isNil(label) &&
+                    <div
+                        { ...mergeProps(
+                            {}, `truncate text-xs ${isActive ? "text-primary" : "text-stronger"}`,
+                            labelProps, tabbarLinkVariants, variant, "labelProps", params
+                        )}
+                    >
+                        {label}
+                    </div>
+                }
+            </div>
         </Link>
     );
 };
+
+TabbarLink.propTypes = propTypes;

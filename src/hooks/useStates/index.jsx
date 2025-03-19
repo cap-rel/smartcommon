@@ -39,7 +39,8 @@ export const useStates = (initialValues, handleSubmitAction) => {
       const newState = { ...prevState };
       const keys = input.split(".");
       let level = newState;
-      const regex = /(\w+)|\[(\d+)\]/g;
+      // const regex = /(\w+)|\[(\d+)\]/g;
+      const regex = /([\w-]+)|\[(\d+)\]/g;      
 
       keys.forEach((key) => {
         let tab = [];

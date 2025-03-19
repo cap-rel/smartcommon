@@ -2,7 +2,8 @@ import { twMerge } from "tailwind-merge";
 import { isEmpty } from "../../../globals/functions";
 import { propTypes } from "./props";
 
-export const Block = ({
+export const Stepper = ({
+    steps = [],
     title,
     header,
     footer,
@@ -19,9 +20,9 @@ export const Block = ({
     return (
         <div
             { ...containerProps}
-            className={twMerge(`col gap-4 p-4`, containerProps?.className)}
+            className={twMerge(`col gap-4 p-4 w-full overflow-x-auto`, containerProps?.className)}
         >
-            {!isEmpty(title) && 
+            {isEmpty(title) && 
                 <div
                     { ...title}
                     className={twMerge(`text-strong-text font-semibold text-lg`, title?.className)}
@@ -29,7 +30,7 @@ export const Block = ({
                     {title}
                 </div>
             }
-            {!isEmpty(header) && 
+            {isEmpty(header) && 
                 <div
                     { ...headerProps}
                     className={twMerge(`text-soft-text`, headerProps?.className)}
@@ -39,11 +40,11 @@ export const Block = ({
             }
             <div 
                 { ...blockPs}
-                className={twMerge(`col gap-4 bg-strong p-4 border-soft-border rounded-md`, blockPs?.className)}
+                className={twMerge(`col gap-4 bg-strong p-4 border border-soft-border`, blockPs?.className)}
             >
                 {children}
             </div>
-            {!isEmpty(footer) && 
+            {isEmpty(footer) && 
                 <div
                     { ...footerProps}
                     className={twMerge(`text-soft-text text-sm italic`, footerProps?.className)}
@@ -55,4 +56,4 @@ export const Block = ({
     );
 }
 
-Block.propTypes = propTypes;
+Stepper.propTypes = propTypes;

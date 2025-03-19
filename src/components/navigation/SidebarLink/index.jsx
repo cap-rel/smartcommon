@@ -1,51 +1,44 @@
-import { useLocation } from "react-router-dom";
 import { isEmpty } from "../../../globals/functions";
-import { Button, LazyLink } from "../../others";
+import { LazyLink } from "../../others";
+import { twMerge } from "tailwind-merge";
+import { propTypes } from "./props";
 
 export const SidebarLink = ({
-    to = null,
-    icon = null,
-    activeIcon = null,
-    label = null,
-    variant = "",
-    customType = null,
-    custom = {
-        color: null,
-        classNames: null
-    },
+    icon,
+    label,
+    closeSidebar = () => {},
+    lazyLinkProps,
+    iconProps,
+    labelProps,
     ...props
 }) => {
-    const location = useLocation();
-    const isActive = location.pathname === to;
-    const filteredIcon = (isActive && !isEmpty(activeIcon)) ? activeIcon : icon
+    const lazyLinkPs = { ...props, ...lazyLinkProps };
 
     return (
         <LazyLink
-            to={to}
-            // onClick={() => set("isOpened", false)}
             duration={300}
-            className={`gap-1 px-6 py-3 duration-200 col-full-center bg-strong button-smt max-w-40`}
-            { ...props}
+            { ...lazyLinkPs}
+            onClick={closeSidebar}
+            className={twMerge(`gap-1 px-6 py-3 duration-100 active:brightness-soft col-full-center bg-strong max-w-40`, lazyLinkPs?.className)}
         >
             {!isEmpty(icon) && 
-                <Button
-                    leftIcon={{
-                        library: icon.library,
-                        name: icon.name
-                    }}
-                    variant={{
-                        classNames: {
-                            button: "p-4 active:brightness-100",
-                            leftIcon: "flex-shrink-0 text-3xl"
-                        }
-                    }}
-                />
+                <div
+                    { ...iconProps}
+                    className={twMerge(`p-4 bg-primary rounded-md text-white text-3xl shrink-0`, iconProps?.className)}
+                >
+                    {icon}
+                </div>
             }
             {!isEmpty(label) &&
-                <div className={`text-sm font-semibold truncate text-soft-text`}>
+                <div 
+                    { ...labelProps}
+                    className={twMerge(`text-sm font-semibold truncate text-soft-text`, labelProps?.className)}
+                >
                     {label}
                 </div>
             }
         </LazyLink>
     );
 };
+
+SidebarLink.propTypes = propTypes;

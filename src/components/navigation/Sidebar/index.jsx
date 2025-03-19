@@ -4,33 +4,37 @@ import { useLocation } from "react-router-dom";
 import { useNavigator, useStates, useWindow } from "../../../hooks";
 import { LazyLink } from "../../others";
 import { Button, Overlay } from "../../others";
+import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
+import { twMerge } from "tailwind-merge";
+import { propTypes } from "./props";
 
 export const Sidebar = ({
   position = "left",
-  children = null,
-  variant = "",
-  customType = null,
-  custom = {
-    colors: null,
-    classNames: null
-  }
+  overlayProps,
+  sidebarProps,
+  buttonProps,
+  ...props
 }) => {
+  const sidebarPs = { ...props, ...sidebarProps };
+
+  const { children } = sidebarPs;
+
   const { states, set } = useStates({
-    isOpened: true,
+    isOpen: true,
     clickedLink: false,
   });
 
-  const { isOpened, clickedLink } = states;
+  const { isOpen, clickedLink } = states;
 
   // useEffect(() => {
-  //   if (states.isOpened) {
+  //   if (states.isOpen) {
   //     set("isNotOpened", false);
   //   } else {
   //     setTimeout(() => {
   //       set("isNotOpened", true);
   //     }, 300);
   //   }
-  // }, [states.isOpened]);
+  // }, [states.isOpen]);
 
   // useEffect(() => {
   //   if (clickedLink) {
@@ -40,33 +44,36 @@ export const Sidebar = ({
   //   }
   // }, [clickedLink]);
 
-  let positionClass = `left-0 ${isOpened ? "translate-x-0" : "-translate-x-full"}`;
+  let positionClass = `${isOpen ? "left-0 " : "-left-32"}`;
 
   if (position === "right") {
-    positionClass = `right-0 ${isOpened ? "translate-x-0" : "translate-x-full"}`;
+    positionClass = `${isOpen ? "right-0" : "-right-32"}`;
   }
 
   return (
     <>
-      <Overlay isVisible={isOpened} />
-      <div 
-        style={{ "--transitionDuration": transitionDuration }}
-        className={`fixed top-0 bottom-0 z-30 py-4 duration-(--transitionDuration) bg-strong ${positionClass}`}
+      <Overlay
+        { ...overlayProps}
+        isOpen={isOpen}
+        closeOverlay={() => set("isOpen", false)}
+      />
+      <div
+        { ...sidebarPs}
+        style={{ "--transitionDuration": "300ms", ...sidebarPs?.style }}
+        className={twMerge(`fixed top-0 bottom-0 z-50 py-4 w-32 duration-(--transitionDuration) bg-strong ${positionClass}`, sidebarPs?.className)}
       >
         {children}
         <Button 
-          leftIcon={{
-            library: isOpened ? "io5" : "io5",
-            name: isOpened ? "IoCloseSharp" : "IoMenuSharp"
-          }}
-          onClick={() => set("isOpened", !isOpened)}
-          variant={{
-            classNames: {
-              button: `z-50 absolute bottom-4 shadow-md rounded-full ${position === "right" ? "-left-11" : "-right-15"}`
-            }
-          }}
+          left={isOpen ? <IoCloseSharp /> : <IoMenuSharp />}
+          { ...buttonProps}
+          onClick={() => set("isOpen", !isOpen)}
+          // className={twMerge(`z-50 absolute bottom-4 shadow-md rounded-none rounded-r-md ${position === "right" ? "-left-10" : "-right-10"}`, buttonProps?.className)}
+          className={twMerge(`z-50 absolute bottom-4 shadow-md rounded-full ${position === "right" ? "-left-14" : "-right-15"}`, buttonProps?.className)}
+          leftProps={{ className: "text-3xl" }}
         />
       </div>
     </>
   );
 };
+
+Sidebar.propTypes = propTypes;
