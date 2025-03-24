@@ -9,9 +9,9 @@ export default defineConfig({
   build: {
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
-      name: 'smart-common',
-      fileName: (format) => `smart-common.${format}.js`,
-      cssFileName: "smart-common-style"
+      name: 'smartcommon',
+      fileName: (format) => `smartcommon.${format}.js`,
+      cssFileName: "smartcommon-style"
     },
     rollupOptions: {
       external: ['react', 'react-dom'],
