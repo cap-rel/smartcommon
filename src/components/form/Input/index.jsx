@@ -94,12 +94,12 @@ export const Input = ({
     <Label { ...allLabelPs}>
       <div
         { ...inputContainerProps}
-        className={twMerge(`relative rounded-md ${inputPs?.disabled && "brightness-90"}`, inputContainerProps?.className)}
+        className={twMerge(`relative rounded-md ${inputPs?.disabled && "brightness-soft"}`, inputContainerProps?.className)}
       >
         {isLeft &&
           <div
             { ...leftProps}
-            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-soft-text`, leftProps?.className)}              
+            className={twMerge(`left-2 text-xl shrink-0 absolute-v-center text-stronger`, leftProps?.className)}              
           >
             {left}
           </div>
@@ -110,13 +110,13 @@ export const Input = ({
           type={isPassword ? (isPasswordVisible ? "text" : "password") : INPUT_TYPE_MAP[type]}
           onChange={handleInputOnChange}
           value={realValue}
-          className={twMerge(`outline-none duration-100 focus:ring-2 ring-primary bg-strong py-2 placeholder-soft-text grow w-full border border-soft-border rounded-md truncate ${isLeft ? "pl-9" : "pl-2"} ${isRight ? "pr-9" : "pr-2"}`, inputPs?.className)}
+          className={twMerge(`outline-none duration-100 focus:ring-2 ring-primary bg-softest dark:bg-softer py-2 placeholder-stronger grow w-full border border-strong rounded-md truncate ${isLeft ? "pl-9" : "pl-2"} ${isRight ? "pr-9" : "pr-2"}`, inputPs?.className)}
         />
         {isRight &&
           <div
             { ...rightProps}
             onClick={() => isPassword && set("isPasswordVisible", !isPasswordVisible)}
-            className={twMerge(`right-2 text-xl shrink-0 absolute-v-center text-soft-text`, rightProps?.className)}              
+            className={twMerge(`right-2 text-xl shrink-0 absolute-v-center text-stronger`, rightProps?.className)}              
           >
             {isPassword && (
               isPasswordVisible
