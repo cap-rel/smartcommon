@@ -5,85 +5,105 @@ import { IoArrowDown, IoHome } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { Tabbar, TabbarLink } from "../../navigation";
 import { FaBook } from "react-icons/fa";
-import { GpsPoints } from "../../form";
+import { Check, GpsPoints } from "../../form";
 import { Variables } from "./Variables";
-import { convertCSSVar } from "../../../globals/functions/variant";
+import { convertClassName, convertCSSVar } from "../../../globals/functions/variant";
+import { TabbarDev } from "../../navigation/Tabbar/TabbarDev";
+import { Components } from "./Components";
+import { Radio } from "./Radio";
+import { twMerge } from "tailwind-merge";
 
 export const SmartPage = () => {
     const { states, set } = useStates({
-        test: "",
-    });
-
-    const { test } = states;
-
-    const components = [
-        {
-            label: "Navigation",
-            slug: "navigation",
-            components: ["Navbar", "Sidebar", "SidebarLink", "Tabbar", "TabbarButton" ,"TabbarLink"]
+        hideOnScroll: false,
+        tabbarLinkProps: {
+            linkProps: {
+                className: ""
+            },
+            iconAndLabelContainerProps: {
+                className: ""
+            },
+            iconContainerProps: {
+                className: ""
+            },
+            labelProps: {
+                className: ""
+            },
         },
-        {
-            label: "Formulaire",
-            slug: "form",
-            components: ["Address", "Array", "Audios", "Boolean", "Check", "ColorPicker", "Duration", "Editor", "Files", "GpsPoints", "Input", "Label", "Photos", "Range", "Rating", "Select", "Signature", "Textarea", "Videos"]
-        }
-    ]
+        test: {}
+    })
 
-    useEffect(() => console.log(convertCSSVar()), []);
+    const { hideOnScroll, tabbarLinkProps, test } = states;
+    const { linkProps, iconAndLabelContainerProps, iconContainerProps, labelProps } = tabbarLinkProps;
 
+    const stylesheet = document.styleSheets[0];
+
+    const handleChange = (e) => {
+        stylesheet.insertRule(`.testtest { @apply ${e.target.value} }`, stylesheet.cssRules.length);
+        set("tabbarLinkProps.linkProps.className", e.target.value);
+    } 
+
+    // useEffect(() => console.log(document.styleSheets[0]), []);
+  
     return (
         <div className={`row fixed inset-0`}>
-            <div className={`col w-50 shrink-0 h-full relative border-r border-soft bg-softest`}>   
-                <div className={`sticky top-0 p-4 font-semibold uppercase text-lg row justify-center items-center bg-primary text-white`}>
-                    Composants
-                </div>
-                <div className={`grow col overflow-y-auto py-4 gap-4 text-sm`}>
-                    {components.map((group, GI) =>
-                        <div 
-                            key={`group${GI}`}
-                            className={`col gap-2`}
-                        >
-                            <div className={`text-strongest font-semibold px-4 truncate uppercase`}>
-                                {group.label}
-                            </div>
-                            <div className={`col`}>
-                               {group.components.map((component, CI) =>
-                                    <button 
-                                        key={`component${CI}`}
-                                        onClick={() => set("test", component)}
-                                        className={`${test === component ? "bg-primary/20 text-strongest border-primary" : "hover:brightness-soft bg-softest border-softest text-stronger"} border-l-4 px-6 py-1 duration-100 row items-center gap-2 w-full cursor-pointer`}
-                                    >
-                                        <FaReact className={`${test === component ? "text-primary" : "text-stronger"}`} />
-                                        <div className={`truncate`}>
-                                            {component}
-                                        </div>
-                                    </button>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+            <Components />
             <div className={`bg-softer row justify-center items-center`}>
                 <div className={`bg-softer relative overflow-auto resize translate-y-0 shadow-md border rounded-xl h-210 w-100 scale-80 border-y-20 border-x-10 border-strongest`}>
-                    <Tabbar className={``}>
-                        <TabbarLink
-                            label={`Accueil`}
-                            to={`/`}
-                            icon={<IoHome />}
-                            // variant={"classic"}
-                        />
-                        <TabbarLink
-                            label={`Carnet`}
-                            to={`/2`}
-                            icon={<FaBook />}
-                        />
-                    </Tabbar>
+                    <TabbarDev { ...test}/>
                 </div>
             </div>
 
-            <div className={`grow bg-softest border-x border-soft h-full`}>
-
+            <div className={`grow bg-softest border-x border-soft col p-6 gap-6`}>
+                <div className={`col gap-4`}>
+                    <div className={`text-strongest text-lg uppercase font-semibold truncate`}>
+                        Attributes
+                    </div>
+                    <div className={`col gap-4`}>
+                    <Radio
+                        onClick={() => set("hideOnScroll", !hideOnScroll)}
+                        checked={hideOnScroll}
+                        label={`hideOnScroll`}
+                    />
+                    </div>
+                </div>
+                <div className={`text-strongest text-lg uppercase font-semibold truncate`}>
+                    Variants
+                </div>
+                <div className={`col gap-4 text-sm`}>
+                    <button onClick={() => set("test", tabbarLinkProps)}>
+                        test
+                    </button>
+                    <textarea
+                        rows={5}
+                        className={twMerge(`p-2 border-2 outline-none border-strong rounded-md focus:border-primary`, linkProps.className)}
+                        value={linkProps.className}
+                        onChange={handleChange}
+                        placeholder={`linkProps`}
+                    ></textarea>
+                    <Check type="checkbox" options={["banane"]}/>
+                     {/* <textarea
+                        rows={5}
+                        className={`p-2 border-2 outline-none border-strong rounded-md focus:border-primary`}
+                        value={iconAndLabelContainerProps.className}
+                        onChange={e => set("tabbarLinkProps.iconAndLabelContainerProps.className", e.target.value)}
+                        placeholder={`iconAndLabelContainerProps`}
+                    ></textarea>
+                     <textarea
+                        rows={5}
+                        className={`p-2 border-2 outline-none border-strong rounded-md focus:border-primary`}
+                        value={iconContainerProps.className}
+                        onChange={e => set("tabbarLinkProps.iconContainerProps.className", e.target.value)}
+                        placeholder={`iconContainerProps`}
+                    ></textarea>
+                     <textarea
+                        rows={5}
+                        className={`p-2 border-2 outline-none border-strong rounded-md focus:border-primary`}
+                        value={labelProps.className}
+                        onChange={e => set("tabbarLinkProps.labelProps.className", e.target.value)}
+                        placeholder={`labelProps`}
+                    ></textarea> */}
+                </div>
             </div>
             <Variables />
                 

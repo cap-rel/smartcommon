@@ -5,11 +5,13 @@ import { isEmpty } from "../../../../globals/functions";
 import { Resizable } from "re-resizable";
 import { FaClipboardCheck, FaRegClipboard } from "react-icons/fa6";
 import { FaRegSave, FaSave } from "react-icons/fa";
+import { convertCSSVar } from "../../../../globals/functions/variant";
 
 // TODO Use var() for variables
 
 export const Variables = () => {
-    const getVariable = (variable) => getComputedStyle(document.documentElement).getPropertyValue(`${variable}`);
+    const getVariable = (variableName) => getComputedStyle(document.documentElement).getPropertyValue(`${variableName}`);
+    const setVariable = (variableName, value) => document.documentElement.style.setProperty(variableName, value)
 
     const variablesName = [
         "--color-primary",
@@ -27,47 +29,43 @@ export const Variables = () => {
 
     const { states, set } = useStates({
         searchbarContent: "",
-        variables: Object.fromEntries(variablesName.map(variableName => [variableName, { variableMode: false, default: getVariable(variableName), value: getVariable(variableName) }])),
+        variables: Object.fromEntries(variablesName.map(variableName => [variableName, { default: getVariable(variableName), value: getVariable(variableName) }])),
         searchedVariables: "",
         isVariablesCopied: false,
-        isVariablesSaved: false
+        isVariablesSaved: false,
+        isCopyButtonFocused: false
     })
 
-    const { searchbarContent, variables, searchedVariables, isVariablesCopied, isVariablesSaved } = states;
+    const { searchbarContent, variables, searchedVariables, isVariablesCopied, isVariablesSaved, isCopyButtonFocused } = states;
 
-    const handleVariableOnChange = (value, variable, variableName) => {        
-        const currentValue = variable.variableMode ? getVariable(value) : value;
-
+    const handleVariableOnChange = (value, variableName) => { 
         set(`variables.${variableName}.value`, value);
-        document.documentElement.style.setProperty(`${variableName}`, currentValue);
+        const { vars, newStr } = convertCSSVar(value);
+        console.log(vars, newStr);
+        const varsValue = vars.map(varName => getVariable(varName));
+        const newValue = `${varsValue.join(" ")} ${newStr}`; 
+        setVariable(variableName, newValue);
     };
 
-    const toggleVariableMode = (variable, variableName) => {
-        set(`variables.${variableName}.variableMode`, !variable.variableMode);
-        const currentValue = variable.variableMode ? variable.value : getVariable(variable.value);
-
-        document.documentElement.style.setProperty(`${variableName}`, currentValue);
-    } 
-
     const resetVariable = (value, variableName) => {
-        set(`variables.${variableName}.variableMode`, false);
+        const { vars, newStr } = convertCSSVar(value);
         set(`variables.${variableName}.value`, value);
-        document.documentElement.style.setProperty(`${variableName}`, value);
+        setVariable(variableName, value);
     };
 
     const resetAllVariables = () => {
-        const resetVariables = Object.fromEntries(Object.entries(variables).map(([variableName, variable]) => [variableName, { variableMode: false, value: variable.default, default: variable.default }]));
+        const resetVariables = Object.fromEntries(Object.entries(variables).map(([variableName, variable]) => [variableName, { value: variable.default, default: variable.default }]));
         set("variables", resetVariables);
-        Object.entries(variables).forEach(([variableName, variable]) => document.documentElement.style.setProperty(`${variableName}`, variable.default));
+        Object.entries(variables).forEach(([variableName, variable]) => setVariable(variableName, variable.default));
     };
 
-    const copyVariablesToClipboard = () => {
-        set("isVariablesCopied", !isVariablesCopied);
-    };
+    const copyVariablesToClipboard = () => navigator.clipboard.writeText("test").then(() => set("isVariablesCopied", true));
 
     const saveToLocalStorage = () => {
         set("isVariablesSaved", !isVariablesSaved);
     };
+
+    const handleCopyButtonOnBlur = () => set("isVariablesCopied", false);
 
     // useEffect(() => console.log(variables), [variables]);
 
@@ -77,24 +75,24 @@ export const Variables = () => {
             className={`col min-w-40 bg-softest h-full overflow-y-auto`}
         >
             <div className={`sticky top-0 col`}>
-                <div className={`text-strongest text-lg uppercase p-4 font-semibold truncate`}>
+                <div className={`text-strongest text-lg uppercase p-6 pb-4 font-semibold truncate`}>
                     Variables Tailwind CSS
                 </div>
-                <div className={`row items-center gap-4 text-sm px-4 pb-2`}>
+                <div className={`row items-center gap-4 text-sm px-6 pb-4`}>
                     <button 
-                        onClick={copyVariablesToClipboard}
-                        className={`cursor-pointer text-lg duration-200 ${isVariablesCopied ? "text-secondary" : "text-stronger"}`}
-                    >
-                        {isVariablesCopied ? <FaClipboardCheck /> : <FaRegClipboard />}
-                    </button>
-                    <button 
-                        title={`Sauvegarder les variables localement`}
+                        title={`Sauvegarder les variables`}
                         onClick={saveToLocalStorage}
                         className={`cursor-pointer text-lg duration-200 ${isVariablesSaved ? "text-secondary" : "text-stronger"}`}
                     >
                         {isVariablesSaved ? <FaSave /> : <FaRegSave />}
-                        {/* <FaSave className={`absolute-full-center duration-200 ${isVariablesSaved ? "opacity-100" : "opacity-0"}`} />
-                        <FaRegSave className={`absolute-full-center duration-200 ${isVariablesSaved ? "opacity-0" : "opacity-100"}`} /> */}
+                    </button>
+                    <button 
+                        title={`Copier les variables`}
+                        onBlur={handleCopyButtonOnBlur}
+                        onClick={copyVariablesToClipboard}
+                        className={`cursor-pointer text-lg duration-200 ${isVariablesCopied ? "text-secondary" : "text-stronger"}`}
+                    >
+                        {isVariablesCopied ? <FaClipboardCheck /> : <FaRegClipboard />}
                     </button>
                     <input
                         value={searchbarContent}
@@ -113,16 +111,19 @@ export const Variables = () => {
             <ul className={`col text-sm divide-y divide-soft border-y border-soft`}>
                 {Object.entries(variables).map(([variableName, variable], VI) => {
                     return (
-                        <li key={`variable${VI}`} className={`row items-center gap-2 odd:bg-softer px-4 py-2`}>
+                        <li key={`variable${VI}`} className={`row items-center gap-2 odd:bg-softer px-6 py-2`}>
                             <button 
-                                onClick={() => toggleVariableMode(variable, variableName)}
-                                className={`${variable.variableMode ? "bg-secondary text-white border-secondary active:brightness-soft" : "bg-softest text-stronger hover:brightness-soft active:brightness-strong border-soft"} border-2 duration-100 cursor-pointer rounded-md text-[10px] p-0.5 italic font-extrabold`}
+                                title={`Sauvegarder les variables localement`}
+                                onClick={saveToLocalStorage}
+                                className={`cursor-pointer text-lg duration-200 ${isVariablesSaved ? "text-secondary" : "text-stronger"}`}
                             >
-                                var
+                                {isVariablesSaved ? <FaSave /> : <FaRegSave />}
+                                {/* <FaSave className={`absolute-full-center duration-200 ${isVariablesSaved ? "opacity-100" : "opacity-0"}`} />
+                                <FaRegSave className={`absolute-full-center duration-200 ${isVariablesSaved ? "opacity-0" : "opacity-100"}`} /> */}
                             </button>
                             <div className={`text-stronger italic line-clamp-1`}>{variableName} :</div>
                             <input 
-                                onChange={e => handleVariableOnChange(e.target.value, variable, variableName)}
+                                onChange={e => handleVariableOnChange(e.target.value, variableName)}
                                 value={variable.value}
                                 className={`text-strongest appearance-none border-none outline-none grow italic truncate min-w-0`}
                             />
