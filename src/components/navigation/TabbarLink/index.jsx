@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { isNil } from "../../../globals/functions";
 
-import { propTypes } from "./props";
+import { tabbarLinkPropTypes } from "./props";
 import { tabbarLinkVariants } from "./variants";
 import { mergeProps } from "../../../globals/functions/variant";
 
@@ -10,7 +10,7 @@ export const TabbarLink = ({
     activeIcon,
     label,
     disabled,
-    variant = "classic",
+    variant = "smart",
     linkProps,
     iconAndLabelContainerProps,
     iconContainerProps,
@@ -22,29 +22,29 @@ export const TabbarLink = ({
     const { to } = linkPs;
 
     const location = useLocation();
-    const isActive = location.pathname === to;
+    const isActive = `${location.pathname}${location.search}` === to;
     const currentIcon = isActive ? (activeIcon ?? icon) : icon;
 
-    const params = { isActive };
+    const propsParams = { isActive, disabled };
 
     return (
         <Link
             { ...mergeProps(
-                {}, `flex-1 py-2`,
-                linkPs, tabbarLinkVariants, variant, "linkProps", params
+                {}, `flex-1 py-2 ${disabled && "pointer-events-none"}`,
+                linkPs, tabbarLinkVariants, variant, "linkProps", propsParams
             )}
         >
             <div
                 { ...mergeProps(
                     {}, `col items-center gap-1`,
-                    iconAndLabelContainerProps, tabbarLinkVariants, variant, "iconAndLabelContainerProps", params
+                    iconAndLabelContainerProps, tabbarLinkVariants, variant, "iconAndLabelContainerProps", propsParams
                 )}
             >
                 {!isNil(icon) && 
                     <div
                         { ...mergeProps(
-                            {}, `text-xl row justify-center items-center ${isActive ? "text-primary" : "text-stronger"}`,
-                            iconContainerProps, tabbarLinkVariants, variant, "iconContainerProps", params
+                            {}, `text-xl row justify-center items-center ${isActive ? "text-primary" : "text-soft-text"}`,
+                            iconContainerProps, tabbarLinkVariants, variant, "iconContainerProps", propsParams
                         )}
                     >
                         {currentIcon}
@@ -53,8 +53,8 @@ export const TabbarLink = ({
                 {!isNil(label) &&
                     <div
                         { ...mergeProps(
-                            {}, `truncate text-xs ${isActive ? "text-primary" : "text-stronger"}`,
-                            labelProps, tabbarLinkVariants, variant, "labelProps", params
+                            {}, `truncate text-xs ${isActive ? "text-primary" : "text-soft-text"}`,
+                            labelProps, tabbarLinkVariants, variant, "labelProps", propsParams
                         )}
                     >
                         {label}
@@ -65,4 +65,4 @@ export const TabbarLink = ({
     );
 };
 
-TabbarLink.propTypes = propTypes;
+TabbarLink.propTypes = tabbarLinkPropTypes;

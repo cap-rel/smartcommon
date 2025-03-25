@@ -1,4 +1,4 @@
-const classic = {
+const smart = {
     linkProps: {
         className: ({ isActive }) => `group`
     },
@@ -6,14 +6,14 @@ const classic = {
         className: ({ isActive }) => ``
     },
     iconContainerProps: {
-        className: ({ isActive }) => `py-2 px-6 rounded-full duration-200 ${isActive ? "text-primary bg-primary/20" : "text-stronger bg-softest group-active:brightness-soft"}`
+        className: ({ isActive }) => `py-2 px-6 rounded-full duration-200 ${isActive ? "text-primary bg-primary/20" : "text-soft-text bg-soft-bg group-active:brightness-soft"}`
     },
     labelProps: {
-        className: ({ isActive }) => `font-semibold duration-200 ${isActive ? "text-primary brightness-soft" : "text-stronger"}`
+        className: ({ isActive }) => `font-semibold duration-200 ${isActive ? "text-primary" : "text-soft-text"}`
     }
 };
 
-const test = {
+const classic = {
     linkProps: {
         className: ({ isActive }) => `group border-t-4 duration-200 ${isActive ? "border-primary": "border-softest"}`
     },
@@ -28,4 +28,4 @@ const test = {
     }
 };
 
-export const tabbarLinkVariants = { classic, test };
+export const tabbarLinkVariants = { smart, classic };

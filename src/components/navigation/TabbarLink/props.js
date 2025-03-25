@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const propTypes = {
+export const tabbarLinkPropTypes = {
     icon: PropTypes.node,
     activeIcon: PropTypes.node,
     label: PropTypes.node,
