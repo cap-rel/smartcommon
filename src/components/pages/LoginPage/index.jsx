@@ -2,6 +2,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../reduxStore/reducers/authSlice";
 import { Input, Boolean } from "../../form";
 import { useApi, useStates } from "../../../hooks";
+import toast from "react-hot-toast";
 
 export const LoginPage = () => {
     const dispatch = useDispatch();
