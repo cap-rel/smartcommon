@@ -74,6 +74,7 @@ export function mergeProps(elementStyle, elementClassName, elementProps, default
     }
     
     const propsStyle = resolveProp(elementProps?.style, params);
+    // const propsClassName = resolveProp(convertClassName(elementProps?.className, params), params);
     const propsClassName = resolveProp(elementProps?.className, params);
 
     const style = { ...elementStyle, ...variantStyle, ...propsStyle };
@@ -83,6 +84,48 @@ export function mergeProps(elementStyle, elementClassName, elementProps, default
 }
 
 export function convertCSSVar(css) {     
-    const test = "var(sdfsdfsf var(fsdfsdfsf)";
-    return test.indexOf("var(");
+    const string = "var(--color var(--font) fsdfsdf ) fdsfds var(  --size) var--image)";
+
+    // function getAllIndexes(str, subStr) {
+    //     let indexes = [];
+    //     let index = str.indexOf(subStr);
+        
+    //     while (index !== -1) {
+    //         indexes.push(index);
+    //         index = str.indexOf(subStr, index + 1);
+    //     }
+        
+    //     return indexes;
+    // }
+
+    // return getAllIndexes(test ,"var(");
+
+    function extractVars(str) {
+        let regex = /var\(([^)]+)\)/g;
+        let vars = [];
+        let match;
+    
+        while ((match = regex.exec(str)) !== null) {
+            vars.push(match[1]); // Capture uniquement le contenu entre var(...)
+        }
+    
+        return vars;
+    }
+
+    function extractAndRemoveVars(str) {
+        let vars = [];
+        let newStr = str.replace(/var\((.*?)\)/g, (match, content) => {
+            vars.push(content); // On stocke le contenu de var() dans le tableau
+            return ""; // On remplace par une chaîne vide pour supprimer l'occurrence
+        });
+    
+        return { vars, newStr };
+    }
+    
+
+    return extractAndRemoveVars(css);
 }
+
+export const convertClassName = (className, params) => {
+    return new Function(...Object.keys(params), `return \`${className}\`;`)(...Object.values(params));
+};
