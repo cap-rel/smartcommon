@@ -23,12 +23,15 @@
     --color-error             : var(--color-red-600);
     --color-warning           : var(--color-yellow-600);
 
-    --color-softest           : white;
-    --color-softer            : var(--color-gray-100);
-    --color-soft              : var(--color-gray-200);     
-    --color-strong            : var(--color-gray-300);
-    --color-stronger          : var(--color-gray-400);
-    --color-strongest         : var(--color-gray-900);
+    --color-soft-text    : var(--color-gray-400);
+    --color-medium-text  : var(--color-gray-500);
+    --color-strong-text  : var(--color-gray-900);
+
+    --color-soft-bg    : white;
+    --color-medium-bg  : var(--color-gray-100);
+    --color-strong-bg  : var(--color-gray-200);
+
+    --color-border     : var(--color-gray-300);
 
     --brightness-soft    : 90%;
     --brightness-strong  : 80%;
@@ -114,28 +117,28 @@
     margin: 0;
   }
   input[type=range]::-webkit-slider-runnable-track {
-    @apply h-2 rounded-full bg-strong;
+    @apply h-2 rounded-full bg-strong-bg;
   }
   input[type=range]::-webkit-slider-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
   }
   input[type=range]::-moz-range-track {
-    @apply h-2 rounded-full bg-strong;
+    @apply h-2 rounded-full bg-strong-bg;
   }
   input[type=range]::-moz-range-progress {
     @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-moz-range-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
   }
   input[type=range]::-ms-track {
-    @apply h-2 rounded-full bg-strong;
+    @apply h-2 rounded-full bg-strong-bg;
   }
   input[type=range]::-ms-fill-lower {
     @apply h-2 rounded-full bg-primary;
   }
   input[type=range]::-ms-thumb {
-    @apply w-4 h-4 rounded-full border-4 bg-softest border-primary;
+    @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
   }
   
   .absolute-full-center {
