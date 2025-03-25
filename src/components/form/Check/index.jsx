@@ -3,7 +3,7 @@ import { Label } from "../Label";
 import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, CheckedIcon } from "../tools";
 import { twMerge } from "tailwind-merge";
-import { isEmpty, isNil, isObject } from "../../../globals/functions";
+import { isEmpty, isNil, isObject, mergeProps } from "../../../globals/functions";
 
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
@@ -11,10 +11,11 @@ export const Check = ({
     label,
     labelRow = false,
     help,
-    variant = "checkbox", // switch, radio, icon
+    type = "checkbox", // switch, radio, icon
     icon,
     options = [],
     onValueChange = () => {},
+    variant,
 
     containerProps,
     labelContainerProps,
@@ -73,8 +74,10 @@ export const Check = ({
         <Label { ...allLabelPs}>
             {!isEmpty(options) &&
                 <div
-                    { ...listProps}
-                    className={twMerge(`col rounded-md border border-soft-border divide-y divide-soft-border`, listProps?.className)}
+                    { ...mergeProps(
+                        {}, `col rounded-md border border-border divide-y divide-border`,
+                        listProps, {}, variant, "listProps", {}
+                    )}
                 >
                     {options.map((option, OI) => {
                         const optionValue = isObject(option) ? option.value : option;
@@ -83,42 +86,48 @@ export const Check = ({
 
                         return (
                             <div 
-                                { ...listItemProps}
-                                className={twMerge(`row-between-center gap-2 p-2 bg-strong first:rounded-t-md last:rounded-b-md`, listItemProps?.className)}
+                                { ...mergeProps(
+                                    {}, `row-between-center gap-2 p-2 bg-soft-bg first:rounded-t-md last:rounded-b-md`,
+                                    listItemProps, {}, variant, "listItemProps", {}
+                                )}
                             >
                                 <input
-                                    { ...inputPs}
+                                    { ...mergeProps(
+                                        {}, `hidden`,
+                                        inputPs, {}, variant, "inputProps", {}
+                                    )}
                                     type={`checkbox`}
                                     onChange={() => {}}
                                     value={optionValue}
                                     checked={checked}
-                                    className={twMerge(`hidden`, inputPs?.className)}
                                 />
                                 <div
-                                    { ...optionLabelProps}
-                                    className={twMerge(`text-strong-text truncate`, optionLabelProps?.className)}
+                                    { ...mergeProps(
+                                        {}, `text-strong-text truncate`,
+                                        optionLabelProps, {}, variant, "optionLabelProps", {}
+                                    )}
                                 >
                                     {optionLabel}
                                 </div>
-                                {variant === "switch" ?
+                                {type === "switch" ?
                                     <Switch
                                         { ...switchProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                     />
-                                : variant === "checkbox" ?
+                                : type === "checkbox" ?
                                     <Checkbox
                                         { ...checkboxProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                     />
-                                : variant === "radio" ?
+                                : type === "radio" ?
                                     <Radio
                                         { ...radioProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                     />
-                                : variant === "icon" ?
+                                : type === "icon" ?
                                     <CheckedIcon
                                         { ...iconProps}
                                         icon={icon}

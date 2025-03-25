@@ -14,11 +14,11 @@ export const Checkbox = ({
         <div
             { ...checkboxPs}
             style={{ transition: "background-color 200ms, filter 100ms", ...checkboxPs?.style }}
-            className={twMerge(`relative size-7 rounded-md shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-border"}`, checkboxPs?.className)}
+            className={twMerge(`relative size-7 rounded-md shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-bg"}`, checkboxPs?.className)}
         >
             <FaCheck
                 { ...checkIconProps}
-                className={twMerge(`size-5 absolute left-1 duration-200 text-strong ${checked ? "bottom-1 opacity-100" : "bottom-0 opacity-0"}`, checkIconProps?.className)}
+                className={twMerge(`size-5 absolute left-1 duration-200 text-white ${checked ? "bottom-1 opacity-100" : "bottom-0 opacity-0"}`, checkIconProps?.className)}
             />
         </div>
     );

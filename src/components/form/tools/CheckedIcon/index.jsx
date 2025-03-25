@@ -13,7 +13,7 @@ export const CheckedIcon = ({
         <div
             { ...iconPs}
             style={{ transition: "color 200ms, filter 100ms", ...iconPs?.style }}
-            className={twMerge(`text-[28px] shrink-0 active:brightness-soft ${checked ? "text-primary" : "text-strong-border"}`, iconPs?.className)}
+            className={twMerge(`text-[28px] shrink-0 active:brightness-soft ${checked ? "text-primary" : "text-strong-bg"}`, iconPs?.className)}
         >
             {icon}
         </div>

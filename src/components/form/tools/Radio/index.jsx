@@ -13,7 +13,7 @@ export const Radio = ({
         <div
             { ...radioPs}
             style={{ transition: "border-color 200ms, background-color 200ms, filter 100ms", ...radioPs?.style }}
-            className={twMerge(`relative duration-50 size-7 border-3 rounded-full active:brightness-soft shrink-0 ${checked ? "border-primary" : "border-strong-border"}`, radioPs?.className)}
+            className={twMerge(`relative duration-50 size-7 border-3 rounded-full active:brightness-soft shrink-0 ${checked ? "border-primary" : "border-strong-bg"}`, radioPs?.className)}
         >
             <div 
                 { ...circleProps}
