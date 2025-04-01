@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const propTypes = {
+export const durationPropTypes = {
     label: PropTypes.string,
     labelRow: PropTypes.bool,
     help: PropTypes.string,

@@ -16,13 +16,11 @@ export const Tabbar = ({
 
   // const isScrollingDown = false;
 
-  const propsParams = { };
-
   return (
     <div 
       { ...mergeProps(
         {}, `fixed right-0 bottom-0 left-0 z-10 bg-soft-bg row justify-between items-center`,
-        tabbarPs, tabbarVariants, variant, "tabbarProps", propsParams
+        tabbarPs, tabbarVariants, variant, "tabbarProps", {}
       )}
     >
       {children}

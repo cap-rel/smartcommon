@@ -18,11 +18,10 @@
  */
 
 import { useState } from "react";
-import { isEmpty } from "../../globals/functions";
 
 // TODO Fixer le bug quand deux même string se suivent (ex: "test.test")
 
-export const useStates = (initialValues, handleSubmitAction) => {
+export const useStates = (initialValues) => {
   const [states, setStates] = useState(initialValues);
 
   // let match = keys[i].match(/(\w+)\[(\d+)\]$/);
@@ -33,11 +32,10 @@ export const useStates = (initialValues, handleSubmitAction) => {
   // }
   // level[keys[keys.length - 1]] = value;
 
-  // HandleInputOnChange
-  const HIOC = (input, value) => {
-    setStates((prevState) => {
+  const set = (path, value) => {
+    setStates(prevState => {
       const newState = { ...prevState };
-      const keys = input.split(".");
+      const keys = path.split(".");
       let level = newState;
       // const regex = /(\w+)|\[(\d+)\]/g;
       const regex = /([\w-]+)|\[(\d+)\]/g;      
@@ -93,11 +91,8 @@ export const useStates = (initialValues, handleSubmitAction) => {
     });
   };
 
-  const set = (input, value, condition = true) => { condition && HIOC(input, value); }
-
   return {
     states,
-    setStates,
     set,
   };
 };

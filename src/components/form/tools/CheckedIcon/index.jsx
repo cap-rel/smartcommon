@@ -1,19 +1,24 @@
-import { twMerge } from "tailwind-merge";
+import { mergeProps } from "../../../../globals";
 
 export const CheckedIcon = ({
     checked,
     icon,
+    variants,
+    variant,
 
     iconProps,
     ...props
 }) => {
     const iconPs = { ...props, ...iconProps };
 
+    const variantParams = { isChecked: checked };
+
     return (
         <div
-            { ...iconPs}
-            style={{ transition: "color 200ms, filter 100ms", ...iconPs?.style }}
-            className={twMerge(`text-[28px] shrink-0 active:brightness-soft ${checked ? "text-primary" : "text-strong-bg"}`, iconPs?.className)}
+            { ...mergeProps(
+                { transition: "color 200ms, filter 100ms" }, `text-2xl shrink-0 size-6 active:brightness-soft ${checked ? "text-primary" : "text-strong-bg"}`,
+                iconPs, variants, variant, "iconProps", variantParams
+            )}
         >
             {icon}
         </div>

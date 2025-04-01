@@ -5,6 +5,7 @@ import { DevPage, LoginPage, SmartPage } from "./components/pages";
 import { Route, Router, Routes, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router-dom";
+import { componentNames } from "./components/pages/SmartPage/components";
 
 export const App = () => {
 //   const { darkMode } = useWindow()
@@ -38,8 +39,10 @@ export const App = () => {
                 <Route path={`/login`} element={<LoginPage />} />
               </Route>
               <Route element={<ProtectedRoutes />}>
-                <Route path={`/`} element={<SmartPage />} />
-                <Route path={`/2`} element={<DevPage />} />
+                {componentNames.map((component, CI) => 
+                  <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
+                )}
+                <Route path={`/2`} element={<DevPage />} /> 
                 <Route path={`/3`} element={<DevPage />} />
                 <Route path={`/4`} element={<DevPage />} />
               </Route>

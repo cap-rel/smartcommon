@@ -1,52 +1,53 @@
-import { twMerge } from "tailwind-merge";
-import { isEmpty } from "../../../globals/functions";
-import { propTypes } from "./props";
+import { isNil, mergeProps } from "../../../globals/functions";
+import { Spinner } from "../Spinner";
+
+import { buttonPropTypes } from "./props";
+import { buttonVariants } from "./variants";
+
+// TODO floating position
 
 export const Button = ({
-    left,
-    right,
-    floatingPosition = "bottom-right",
+    loading = false,
+    icon,
+    disabled = false,
+    // floatingPosition = "bottom-right",
+    variant = "smart",
 
-    buttonProps,
-    leftProps,
-    rightProps,
-    ...props
+    children,
+
+    iconProps,
+    spinnerProps,
+    ...buttonProps
 }) => {
 
-    const buttonPs = { ...props, ...buttonProps };
-    const { disabled, children } = buttonPs;
+    // const buttonPs = { ...props, ...buttonProps };
 
-    const floatingPositionClass = () => {
-        switch (floatingPosition) {
-            case "top-left": return "";
-            case "top": return "";
-            case "top-right": return "";
-            case "right": return "";
-            case "bottom-right": return "";
-            case "bottom": return "";
-            case "bottom-left": return "";
-            case "left": return "";
-            case "center": return "";
-        }
-    }
+    const variantParams = { disabled };
+
     return (
         <button
-            { ...buttonPs}
-            className={twMerge(`row-v-center gap-2 cursor-pointer p-2 bg-primary text-white rounded-md text-base duration-100  ${disabled ? "brightness-soft" : "active:brightness-soft"} ${floatingPositionClass()}`, buttonPs?.className)}
+            disabled={disabled}
+            { ...mergeProps(
+                {}, `flex items-center gap-2 p-2 text-base duration-100 ${disabled ? "brightness-soft" : "active:brightness-soft"}`,
+                buttonProps, buttonVariants, variant, "buttonProps", variantParams
+            )}
         >
-            {!isEmpty(left) &&
-                <div className={twMerge(`text-xl`, leftProps?.className)}>
-                    {left}
+            {loading &&
+                <Spinner />
+            }
+            {(!isNil(icon) && !loading) &&
+                <div 
+                    { ...mergeProps(
+                        {}, `text-xl`,
+                        iconProps, buttonVariants, variant, "iconProps", variantParams
+                    )}
+                >
+                    {icon}
                 </div>
             }
             {children}
-            {!isEmpty(right) &&
-                <div className={twMerge(`text-xl`, rightProps?.className)}>
-                    {right}
-                </div>
-            }
         </button>
     );
 };
 
-Button.propTypes = propTypes
+Button.propTypes = buttonPropTypes

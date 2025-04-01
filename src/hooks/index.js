@@ -1,6 +1,7 @@
 export * from "./useNavigator";
 export * from "./useWindow";
 export * from "./useApi";
+export * from "./useValue";
 export * from "./useIntl";
 export * from "./useStates";
 export * from "./useFile";

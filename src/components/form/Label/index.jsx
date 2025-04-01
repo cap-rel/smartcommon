@@ -1,6 +1,4 @@
-import { twMerge } from "tailwind-merge";
-import { propTypes } from "./props";
-import { isEmpty } from "../../../globals/functions";
+import { isEmpty, isNil, mergeProps } from "../../../globals/functions";
 
 // IDEA Mini-popup for help
 
@@ -10,43 +8,57 @@ export const Label = ({
     id,
     label, 
     help,
+    prefix,
+    suffix,
     required,
     readOnly,
     disabled,
-    labelRow = false,
     children,
+    variants,
+    variant,
+    variantParams,
 
     containerProps,
     labelContainerProps,
     labelProps,
     requiredStarProps,
+    childrenContainerProps,
+    prefixProps,
+    suffixProps,
     helpProps,
     ...props
 }) => {
-
     const labelPs = { ...props, ...labelProps };
 
     return (
         <div 
-            { ...containerProps}
-            className={twMerge(`${labelRow ? "row-v-center" : "col"} gap-2`, containerProps?.className)}
+            { ...mergeProps(
+                {}, `flex flex-col gap-2`,
+                containerProps, variants, variant, "containerProps", variantParams
+            )}
         >
-            {!isEmpty(label) && 
+            {!isNil(label) && 
                 <div 
-                    { ...labelContainerProps}
-                    className={twMerge(`gap-2 row-v-center`, labelContainerProps?.className)}
+                    { ...mergeProps(
+                        {}, `gap-2 flex items-center`,
+                        labelContainerProps, variants, variant, "labelContainerProps", variantParams
+                    )}
                 >
                     <label 
+                        { ...mergeProps(
+                            {}, `text-strong-text`,
+                            labelPs, variants, variant, "labelProps", variantParams
+                        )}
                         htmlFor={id}
-                        { ...labelPs}
-                        className={twMerge(`font-semibold`, labelPs?.className)}
                     >
                         {label}
                     </label>
                     {required && 
                         <div 
-                            { ...requiredStarProps}
-                            className={twMerge(`text-red-500`, requiredStarProps?.className)}
+                            { ...mergeProps(
+                                {}, `text-error`,
+                                requiredStarProps, variants, variant, "requiredStarProps", variantParams
+                            )}
                         >
                             *
                         </div>
@@ -54,9 +66,34 @@ export const Label = ({
                     {/* {help && <Help content={help} />} */}
                 </div>
             }
-            {children}
+            <div
+                { ...mergeProps(
+                    {}, `flex gap-2`,
+                    childrenContainerProps, variants, variant, "childrenContainerProps", variantParams
+                )}
+            >
+                {!isNil(prefix) &&
+                    <div
+                        { ...mergeProps(
+                            {}, `text-strong-text`,
+                            prefixProps, variants, variant, "prefixProps", variantParams
+                        )}
+                    >
+                        {prefix}
+                    </div>
+                }
+                {children}
+                {!isNil(suffix) &&
+                    <div
+                        { ...mergeProps(
+                            {}, `text-strong-text`,
+                            suffixProps, variants, variant, "suffixProps", variantParams
+                        )}
+                    >
+                        {suffix}
+                    </div>
+                }
+            </div>
         </div>
     );
 }
-
-Label.propTypes = propTypes;

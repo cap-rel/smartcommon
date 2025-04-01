@@ -1,27 +1,32 @@
 import PropTypes from "prop-types";
 
-export const propTypes = {
+export const signaturePropTypes = {
+    id: PropTypes.string,
     label: PropTypes.string,
-    labelRow: PropTypes.bool,
+    placeholder: PropTypes.string,
     help: PropTypes.string,
-    settings: PropTypes.object,
-    onValueChange: PropTypes.func,
+    icon: PropTypes.object,
+    required: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    disabled: PropTypes.bool,
+    compressionOptions: PropTypes.object,
+  
+    name: PropTypes.string,
+    defaultValue: PropTypes.object,
+    value: PropTypes.object,
+    onChangeValue: PropTypes.func,
+  
+    variant: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
   
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
     labelProps: PropTypes.object,
     requiredStarProps: PropTypes.object,
     helpProps: PropTypes.object,
-    inputProps: PropTypes.object,
-    signatureContainerProps: PropTypes.object,
-    relativeContainerProps: PropTypes.object,
-    signatureProps: PropTypes.object,
-    filterProps: PropTypes.object,
-    buttonContainerProps: PropTypes.object,
+    headerAndSignatureContainerProps: PropTypes.object,
+    headerProps: PropTypes.object,
     clearButtonProps: PropTypes.object,
-    clearButtonIconProps: PropTypes.object,
-    clearButtonLabelProps: PropTypes.object,
+    titleProps: PropTypes.object,
     validateButtonProps: PropTypes.object,
-    validateButtonIconProps: PropTypes.object,
-    validateButtonLabelProps: PropTypes.object,
+    signatureProps: PropTypes.object,
 };

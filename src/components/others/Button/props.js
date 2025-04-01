@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const propTypes = {
+export const buttonPropTypes = {
     left: PropTypes.node,
     right: PropTypes.node,
     floatingPosition: PropTypes.oneOf(["top-left", "top", "top-right", "right", "bottom-right", "bottom", "bottom-left", "left", "center"]),

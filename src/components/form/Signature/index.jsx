@@ -1,13 +1,17 @@
 import { Button } from "../../others";
 import { Label } from "../Label";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
 import { useStates } from "../../../hooks";
-import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { FaEraser, FaSignature } from "react-icons/fa6";
-import { isNil } from "../../../globals/functions";
+import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
+import { isNil, mergeProps } from "../../../globals/functions";
 import toast from "react-hot-toast";
+
+import { signaturePropTypes } from "./props";
+import { signatureVariants } from "./variants";
+import { Input } from "../Input";
+import { Address } from "../Address";
 
 // TODO faire le required
 // TODO faire le disabled
@@ -15,57 +19,54 @@ import toast from "react-hot-toast";
 // TODO Settings prop
 
 export const Signature = ({
+  id,
   label,
-  labelRow = false,
+  placeholder = "Signer ici...",
+  penColor = "black",
   help,
-  settings,
-  onValueChange = () => {},
+  icon,
+  required,
+  readOnly,
+  disabled,
+  compressionOptions,
+
+  name,
+  defaultValue,
+  value,
+  onChangeValue = () => {},
+
+  variant = "smart",
 
   containerProps,
   labelContainerProps,
   labelProps,
   requiredStarProps,
   helpProps,
-  inputProps,
-  signatureContainerProps,
-  relativeContainerProps,
-  signatureProps,
-  filterProps,
-  buttonContainerProps,
+  headerAndSignatureContainerProps,
+  headerProps,
   clearButtonProps,
-  clearButtonIconProps,
-  clearButtonLabelProps,
+  titleProps,
   validateButtonProps,
-  validateButtonIconProps,
-  validateButtonLabelProps,
+  signatureContainerProps,
+  signatureProps,
   ...props
 }) => {
-  const inputPs = { ...props, ...inputProps };
-  const { required, readOnly, disabled, id, value } = inputPs;
+  const signaturePs = { ...props, ...signatureProps };
 
-  const inputPsForLabel = { disabled, required, readOnly, id };
-
-  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+  const LabelPs = { id, label, help, disabled, required, readOnly, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps };
 
   const padRef = useRef(null);
 
   const { states, set } = useStates({
-    isSignatureValidated: false,
-    localValue: "",
-  })
+    localValue: defaultValue ?? "",
+    isSignatureOpen: false,
+  });
 
-  const { isSignatureValidated, localValue } = states;
+  const { localValue, isSignatureOpen } = states;
 
-  const realValue = value ?? localValue;
+  const currentValue = value ?? localValue;
 
-  const validate = (e) => {
-    e.preventDefault();
-    if (padRef.current.isEmpty()) {
-      return toast("La siganture est vide...")
-    }
-    
-    set("isSignatureValidated", true);
-    const newValue = padRef.current.toDataURL();
+  const setValue = (newValue) => {
     if (isNil(value)) {
       set("localValue", newValue);
     } else {
@@ -73,53 +74,89 @@ export const Signature = ({
     }
   };
 
-  const clear = (e) => {
+  const validate = (e) => {
     e.preventDefault();
-    if (isSignatureValidated) {
-      set("isSignatureValidated", false);
-      if (isNil(value)) {
-        set("localValue", "");
-      } else {
-        onValueChange("");
-      }
-    } else {
-      padRef.current.clear();
+    if (padRef.current.isEmpty()) {
+      return toast("La signature est vide...");
     }
+
+    setValue(padRef.current.toDataURL());
+
+    toast.success("Signature validée...");
+    padRef.current.off();
   };
 
+  const clear = (e) => {
+    e.preventDefault();
+    padRef.current.on();
+    setValue("");
+    padRef.current.clear();
+  };
+
+  const propParams = {};
+
   return (
-    <Label { ...allLabelPs}>
+    <Label { ...LabelPs}>
       <input
-        { ...inputPs}
+        name={name}
         onChange={() => {}}
-        value={realValue}
-        className={twMerge(`hidden`, inputPs?.className)}
+        value={currentValue}
+        className={`hidden`}
       />
-      <div
-        { ...signatureContainerProps} 
-        className={twMerge(`rounded-md col`, signatureContainerProps?.className)}
-      >
-        <div 
-          { ...relativeContainerProps}
-          className={twMerge(`relative`, relativeContainerProps?.className)}
-        >
-          <SignatureCanvas 
-            backgroundColor={`white`}
-            penColor={`black`}
-            canvasProps={{
-              className: twMerge(`rounded-t-md bg-strong border border-b-0 border-soft-border w-full h-50`, signatureProps?.className)
-            }}
-            { ...signatureProps}
-            ref={padRef}
-          />
-          <div 
-            { ...filterProps}
-            className={twMerge(`${!isSignatureValidated && "hidden"} absolute inset-0 text-2xl text-white rounded-t-md col-full-center bg-black/50`, filterProps?.className)}
-          >
-            Signé
+      <div { ...mergeProps(
+        {}, `rounded-md col gap-2 border border-border bg-soft-bg p-4`,
+        headerAndSignatureContainerProps, signatureVariants, variant, "headerAndSignatureContainerProps", propParams
+      )}>
+        {/* <div 
+          { ...signatureContainerProps}
+          className={twMerge(`relative`, signatureContainerProps?.className)}
+        > */}
+
+          <div { ...mergeProps(
+            {}, `flex justify-between items-center -mt-2`,
+            headerProps, signatureVariants, variant, "headerProps", propParams
+          )}>
+            <Button
+              icon={<FaEraser />}
+              variant={`iconButton`}
+              className={`text-error -ml-2`}
+              onClick={clear}
+            />
+            <div { ...mergeProps(
+              {}, `font-semibold text-strong-text`,
+              titleProps, signatureVariants, variant, "titleProps", propParams
+            )}>
+              {placeholder}
+            </div>
+            <Button
+              icon={<FaSignature />}
+              variant={`iconButton`}
+              className={`text-success -mr-2`}
+              onClick={validate}
+            />
           </div>
-        </div>
-        <div
+          <div { ...mergeProps(
+            {}, `bg-medium-bg rounded-md h-60`,
+            signatureContainerProps, signatureVariants, variant, "signatureContainerProps", propParams
+          )}>
+            <SignatureCanvas 
+              backgroundColor={`transparent`}
+              penColor={`black`}
+              canvasProps={{
+                className: twMerge(`rounded-md w-full h-full`, signatureProps?.className)
+              }}
+              { ...signaturePs}
+              ref={padRef}
+            />
+          </div>
+          <Input
+            icon={<FaUser />}
+            required
+            placeholder={`Nom du signataire`}
+            // inputContainerProps={{ className: "bg-medium-bg" }}
+          />
+        {/* </div> */}
+        {/* <div
           { ...buttonContainerProps}
           className={twMerge(`row-v-center rounded-b-md rounded-t-none`, buttonContainerProps?.className)}
         >
@@ -156,10 +193,10 @@ export const Signature = ({
               Valider
             </div>
           </Button>
-        </div>
+        </div> */}
       </div>
     </Label>
   )
 };
 
-Signature.propTypes = propTypes;
+Signature.propTypes = signaturePropTypes

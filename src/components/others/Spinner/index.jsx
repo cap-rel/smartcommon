@@ -60,7 +60,7 @@ export const Spinner = ({
             borderWidth: `${borderWidth}px`,
             ...SpinnerPs?.style
           }}
-          className={twMerge(`rounded-full animate-spin size-(--size) border-primary border-l-soft-border`, SpinnerPs?.className)}
+          className={twMerge(`rounded-full animate-spin size-(--size) border-primary border-l-border`, SpinnerPs?.className)}
         />
   );
 

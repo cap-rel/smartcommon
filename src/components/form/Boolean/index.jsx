@@ -1,19 +1,21 @@
 import { useStates } from "../../../hooks";
 import { Label } from "../Label";
-import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, CheckedIcon } from "../tools";
 import { twMerge } from "tailwind-merge";
 import { isNil } from "../../../globals/functions";
 
+import { booleanPropTypes } from "./props";
+import { booleanVariants } from "./variants";
+import { mergeProps } from "../../../globals/functions";
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = ({
     label,
-    labelRow = false,
     help,
-    variant = "switch",
+    type = "switch",
     icon,
     onValueChange = () => {},
+    variant = "smart",
 
     containerProps,
     labelContainerProps,
@@ -27,19 +29,19 @@ export const Boolean = ({
     iconProps,
     ...props
 }) => {
-    const booleanPs = { ...props, ...inputProps };
-    const { required, readOnly, disabled, id, value, defaultValue } = booleanPs;
+    const inputPs = { ...props, ...inputProps };
+    const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
 
     const blocked = disabled || readOnly;
   
-    const booleanPsForLabel = { disabled, required, readOnly, id };
+    const inputPsForLabel = { disabled, required, readOnly, id };
 
-    if (labelRow) {
-        containerProps = { ...containerProps, className: twMerge(`row-between-center bg-strong border border-soft-border p-2 rounded-md`, containerProps?.className) };
-        labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
-    }
+    // if (labelRow) {
+    //     containerProps = { ...containerProps, className: twMerge(`row-between-center bg-soft-bg border border-border p-2 rounded-md`, containerProps?.className) };
+    //     labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
+    // }
 
-    const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...booleanPsForLabel };
+    const allLabelPs = { label, help, variants: booleanVariants, variant, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
 
     const { states, set } = useStates({
         localValue: defaultValue ?? false
@@ -59,37 +61,50 @@ export const Boolean = ({
         }
     };
 
+    const variantParams = { isChecked: realValue };
+
     return (
         <Label { ...allLabelPs}>
             <input
-                { ...booleanPs}
+                { ...mergeProps(
+                    {}, `hidden`,
+                    inputPs, booleanVariants, variant, "inputProps", variantParams
+                )}
                 type={`checkbox`}
                 onChange={() => {}}
                 checked={realValue}
-                className={twMerge(`hidden`, booleanPs?.className)}
+                className={twMerge(`hidden`, inputPs?.className)}
             />
-            {variant === "switch" ?
+            {type === "switch" ?
                 <Switch
                     { ...switchProps}
+                    variants={booleanVariants}
+                    variant={variant}
                     onClick={handleOnClick}
                     checked={realValue}
                 />
-            : variant === "checkbox" ?
+            : type === "checkbox" ?
                 <Checkbox
                     { ...checkboxProps}
+                    variants={booleanVariants}
+                    variant={variant}
                     onClick={handleOnClick}
                     checked={realValue}
                 />
-            : variant === "radio" ?
+            : type === "radio" ?
                 <Radio
                     { ...radioProps}
+                    variants={booleanVariants}
+                    variant={variant}
                     onClick={handleOnClick}
                     checked={realValue}
                 />
-            : variant === "icon" ?
+            : type === "icon" ?
                 <CheckedIcon
                     { ...iconProps}
                     icon={icon}
+                    variants={booleanVariants}
+                    variant={variant}
                     onClick={handleOnClick}
                     checked={realValue}
                 />
@@ -99,4 +114,4 @@ export const Boolean = ({
     );
 };
 
-Boolean.propTypes = propTypes;
+Boolean.propTypes = booleanPropTypes;

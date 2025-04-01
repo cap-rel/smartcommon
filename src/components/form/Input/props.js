@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const propTypes = {
+export const inputPropTypes = {
   label: PropTypes.string,
   labelRow: PropTypes.bool,
   help: PropTypes.string,
@@ -13,7 +13,7 @@ export const propTypes = {
   labelProps: PropTypes.object,
   requiredStarProps: PropTypes.object,
   helpProps: PropTypes.object,
-  inputContainerProps: PropTypes.object,
+  relativeContainerProps: PropTypes.object,
   leftIconProps: PropTypes.object,
   rightIconProps: PropTypes.object, 
   inputProps: PropTypes.object,

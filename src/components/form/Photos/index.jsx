@@ -14,10 +14,25 @@ import { RiCloseLargeFill } from "react-icons/ri";
 // IDEA Add full size mode for images
 
 export const Photos = ({
+    id,
+    name,
     label,
-    labelRow = false,
     help,
+    icon,
+    prefix,
+    suffix,
+    defaultValue,
+    required,
+    readOnly,
+    disabled,
+    min,
+    max,
+    size,
+    rows = 5,
+    accept,
     multiple = false,
+    compressionSettings = {},
+    value,
     onValueChange = () => {},
     
     containerProps,
@@ -51,11 +66,9 @@ export const Photos = ({
     ...props
 }) => {
     const inputPs = { ...props, ...inputProps };
-
-    const { required, readOnly, disabled, id, defaultValue, value, name } = inputPs;
   
     const inputPsForLabel = { required, readOnly, disabled, id };
-    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+    const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
     
     const inputRef = useRef(null);
 
