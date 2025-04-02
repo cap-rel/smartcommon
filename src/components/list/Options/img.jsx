@@ -1,57 +1,61 @@
 const img = () => {
     return (
         <img
-            // about="" // RDFa
-            accessKey=""
+            // about=""
+            // accessKey=""
             alt=""
-            autoCapitalize=""
-            autoCorrect=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             crossOrigin=""
             dangerouslySetInnerHTML={}
-            datatype=""
+            // datatype=""
             decoding=""
-            defaultChecked
-            defaultValue={}
+            // defaultChecked
+            // defaultValue={}
             dir=""
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             height={}
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             loading=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            referrerPolicy=""
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
+            // referrerPolicy=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
             sizes=""
-            slot=""
+            // slot=""
             spellCheck
             src=""
             srcSet=""
@@ -61,10 +65,10 @@ const img = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             useMap=""
-            vocab=""
+            // vocab=""
             width={}
         />
     );

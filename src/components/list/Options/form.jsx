@@ -1,57 +1,61 @@
 const form = () => {
     return (
         <form
-            // about="" // RDFa
+            // about=""
             acceptCharset=""
-            accessKey=""
+            // accessKey=""
             action=""
-            autoCapitalize=""
+            // autoCapitalize=""
             autoComplete=""
-            autoCorrect=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             draggable
             encType=""
-            enterKeyHint=""
+            // enterKeyHint=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             method=""
             name=""
             noValidate
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -60,9 +64,9 @@ const form = () => {
             target=""
             title=""
             translate=""
-            typeof=""
-            unselectable=""
-            vocab=""
+            // typeof=""
+            // unselectable=""
+            // vocab=""
         >
 
         </form>

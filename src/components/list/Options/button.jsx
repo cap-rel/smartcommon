@@ -1,26 +1,26 @@
 const button = () => {
     return (
         <button
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             disabled
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             form=""
             formAction=""
             formEncType=""
@@ -28,31 +28,35 @@ const button = () => {
             formNoValidate
             formTarget=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             name=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -61,10 +65,10 @@ const button = () => {
             title=""
             translate=""
             type=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             value={}
-            vocab=""
+            // vocab=""
         >
 
         </button>

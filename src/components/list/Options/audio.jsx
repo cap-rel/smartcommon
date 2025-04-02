@@ -1,60 +1,64 @@
 const audio = () => {
     return (
         <audio
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
             autoPlay
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             controls
             controlsList=""
             crossOrigin=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             loop
             mediaGroup=""
             muted
-            nonce=""
+            // nonce=""
+            // part=""
             playsInline
-            prefix=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
             preload=""
-            property=""
-            radioGroup=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
-            spellCheck
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
+            // slot=""
+            // spellCheck
             src=""
             style={}
             suppressContentEditableWarning
@@ -62,9 +66,9 @@ const audio = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
-            vocab=""
+            // typeof=""
+            // unselectable=""
+            // vocab=""
         >
 
         </audio>

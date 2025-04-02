@@ -1,57 +1,61 @@
 const select = () => {
     return (
         <select
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
             autoComplete=""
-            autoCorrect=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
+            // datatype=""
             defaultChecked
             defaultValue={}
             dir=""
             disabled
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             form=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             multiple
             name=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
+            // rel=""
             required
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
             size={}
-            slot=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -59,10 +63,10 @@ const select = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             value={}
-            vocab=""
+            // vocab=""
         >
 
         </select>

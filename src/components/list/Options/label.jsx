@@ -1,52 +1,56 @@
 const label = () => {
     return (
         <label
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             form=""
             hidden
             htmlFor=""
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // lang=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -54,9 +58,9 @@ const label = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
-            vocab=""
+            // typeof=""
+            // unselectable=""
+            // vocab=""
         >
 
         </label>

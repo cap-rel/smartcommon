@@ -1,62 +1,66 @@
 const textarea = () => {
     return (
         <textarea
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
             autoComplete=""
-            autoCorrect=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
+            // color=""
             cols={}
-            content=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
+            // datatype=""
+            // defaultChecked
             defaultValue={}
             dir=""
             dirName=""
             disabled
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             form=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             maxLength={}
             minLength={}
             name=""
-            nonce=""
+            // nonce=""
+            // part=""
             placeholder=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             readOnly
             ref={}
-            rel=""
+            // rel=""
             required
-            resource=""
-            results={}
-            rev=""
-            role=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
             rows={}
-            security=""
-            slot=""
+            // security=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -64,10 +68,10 @@ const textarea = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             value={}
-            vocab=""
+            // vocab=""
             wrap=""
         >
 

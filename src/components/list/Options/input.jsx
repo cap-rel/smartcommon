@@ -1,37 +1,31 @@
 const input = () => {
     return (
-        data?,
-        dialog?,
-        li?,
-        ul?,
-        ol?, 
-        base?, link, script, style, title,
         <input
-            // about="" // RDFa
-            accessKey=""
+            // about=""
+            // accessKey=""
             alt=""
-            autoCapitalize=""
+            // autoCapitalize=""
             autoComplete=""
-            autoCorrect=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             accept=""
             capture
             checked
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML=""
-            datatype=""
+            // datatype=""
             defaultChecked
             defaultValue=""
             dir=""
             disabled
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             form=""
             formAction=""
             formEncType=""
@@ -40,18 +34,18 @@ const input = () => {
             formTarget=""
             height=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist=""
+            // inlist=""
             inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key=""
-            lang=""
+            // lang=""
             list=""
             max=""
             maxLength=""
@@ -59,23 +53,27 @@ const input = () => {
             minLength=""
             multiple
             name=""
-            nonce=""
+            // nonce=""
+            // part=""
             pattern=""
             placeholder=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             readOnly
             ref=""
-            rel=""
+            // rel=""
             required
-            resource=""
-            results=""
-            rev=""
-            role=""
-            security=""
+            // resource=""
+            // results=""
+            // rev=""
+            // role=""
+            // security=""
             size=""
-            slot=""
+            // slot=""
             spellCheck
             src=""
             step=""
@@ -86,10 +84,10 @@ const input = () => {
             title=""
             translate=""
             type=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             value=""
-            vocab=""
+            // vocab=""
             width=""
         />
     );

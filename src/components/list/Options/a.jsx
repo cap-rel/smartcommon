@@ -1,56 +1,66 @@
 const a = () => {
+    // data?,
+    // dialog?,
+    // li?,
+    // ul?,
+    // ol?, 
+    // base?, link, script, style, title,
     return (
         <a
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about="" No interest / RDFa
+            // accessKey="" No interest / shortcut desktop
+            // autoCapitalize="" Not available on all navigators
+            // autoCorrect="" Not available on all navigators
             autoFocus
-            autoSave=""
+            // autoSave="" No interest / ?
             children
             className=""
-            color=""
-            content=""
+            // color="" No interest / not supported by Html 5
+            // content="" No interest / RDFa
             contentEditable
-            contextMenu=""
+            // contextMenu="" No interest / menu / deprecated
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype="" No interest / RDFa
+            // defaultChecked No interest
+            // defaultValue={} No interest
             dir=""
             download={}
             draggable
-            enterKeyHint=""
+            // enterKeyHint="" No interest / ?
             hidden
             href=""
-            hrefLang=""
-            i18nIsDynamicList
+            // hrefLang="" No interest / lang
+            // i18nIsDynamicList No interest / lang
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={} No interest / RDFa
+            // inputMode="" No interest / applies on input only
+            // is="" No interest / ? / not available on all navigators
+            // itemID="" No interest / Book
+            // itemProp="" No interest / Book
+            // itemRef="" No interest / Book
+            // itemScope No interest / Book
+            // itemType="" No interest / Book
             key={}
-            lang=""
-            media=""
-            nonce=""
-            ping=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // lang="" No interest / lang
+            // media="" No interest
+            // nonce="" No interest / ?
+            // part="" ?
+            // ping="" No interest
+            // prefix="" No interest / RDFa
+            // property="" No interest / RDFa
+            // popover="" No interest / popover
+            // popoverTarget="" No interest / popover
+            // popoverTargetAction="" No interest / popover
+            // radioGroup="" No interest / RDFa
             ref={}
-            referrerPolicy=""
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
+            // referrerPolicy="" No interest
+            // rel="" No interest / RDFa
+            // resource="" No interest / RDFa
+            // results={} ?
+            // rev="" No interest / RDFa
+            // role="" ARIA
+            // security="" ?
+            // slot="" ?
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -60,9 +70,9 @@ const a = () => {
             title=""
             translate=""
             type=""
-            typeof=""
-            unselectable=""
-            vocab=""
+            // typeof="" No interest / RDFa
+            // unselectable="" No interest / ?
+            // vocab="" No interest / RDFa
         >
 
         </a>

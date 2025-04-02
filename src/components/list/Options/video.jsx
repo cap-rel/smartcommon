@@ -1,62 +1,66 @@
 const video = () => {
     return (
         <video
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
             autoPlay
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             controls
             controlsList=""
             crossOrigin=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             disablePictureInPicture
             disableRemotePlayback
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             height={}
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             loop
             mediaGroup=""
             muted
+            // part=""
             playsInline
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
             poster=""
-            prefix=""
+            // prefix=""
             preload=""
-            property=""
-            radioGroup=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
-            slot=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
+            // slot=""
             spellCheck
             src=""
             style={}
@@ -65,8 +69,9 @@ const video = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
+            // vocab=""
             width={}
         >
 

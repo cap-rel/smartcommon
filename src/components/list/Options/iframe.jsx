@@ -1,56 +1,60 @@
 const iframe = () => {
     return (
         <iframe
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
-            defaultChecked
-            defaultValue={}
+            // datatype=""
+            // defaultChecked
+            // defaultValue={}
             dir=""
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             height={}
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope
+            // itemType=""
             key={}
-            lang=""
+            // lang=""
             loading=""
             name=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            referrerPolicy=""
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
+            // referrerPolicy=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
             sandbox=""
             seamless
-            security=""
-            slot=""
+            // security=""
+            // slot=""
             spellCheck
             src=""
             srcDoc=""
@@ -60,9 +64,9 @@ const iframe = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
-            vocab=""
+            // typeof=""
+            // unselectable=""
+            // vocab=""
             width={}
         >
 

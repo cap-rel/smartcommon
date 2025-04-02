@@ -1,53 +1,57 @@
 const option = () => {
     return (
         <option
-            // about="" // RDFa
-            accessKey=""
-            autoCapitalize=""
-            autoCorrect=""
+            // about=""
+            // accessKey=""
+            // autoCapitalize=""
+            // autoCorrect=""
             autoFocus
-            autoSave=""
+            // autoSave=""
             children
             className=""
-            color=""
-            content=""
+            // color=""
+            // content=""
             contentEditable
-            contextMenu=""
+            // contextMenu=""
             dangerouslySetInnerHTML={}
-            datatype=""
+            // datatype=""
             defaultChecked
             defaultValue={}
             dir=""
             disabled
             draggable
-            enterKeyHint=""
+            // enterKeyHint=""
             hidden
-            i18nIsDynamicList
+            // i18nIsDynamicList
             id=""
-            inlist={}
-            inputMode=""
-            is=""
-            itemID=""
-            itemProp=""
-            itemRef=""
-            itemScope 
-            itemType=""
+            // inlist={}
+            // inputMode=""
+            // is=""
+            // itemID=""
+            // itemProp=""
+            // itemRef=""
+            // itemScope 
+            // itemType=""
             key={}
             label=""
-            lang=""
-            nonce=""
-            prefix=""
-            property=""
-            radioGroup=""
+            // lang=""
+            // nonce=""
+            // part=""
+            // popover=""
+            // popoverTarget=""
+            // popoverTargetAction=""
+            // prefix=""
+            // property=""
+            // radioGroup=""
             ref={}
-            rel=""
-            resource=""
-            results={}
-            rev=""
-            role=""
-            security=""
+            // rel=""
+            // resource=""
+            // results={}
+            // rev=""
+            // role=""
+            // security=""
             selected
-            slot=""
+            // slot=""
             spellCheck
             style={}
             suppressContentEditableWarning
@@ -55,10 +59,10 @@ const option = () => {
             tabIndex={}
             title=""
             translate=""
-            typeof=""
-            unselectable=""
+            // typeof=""
+            // unselectable=""
             value={}
-            vocab=""
+            // vocab=""
         >
 
         </option>
