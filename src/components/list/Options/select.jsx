@@ -1,7 +1,7 @@
 const select = () => {
     return (
         <select
-            about=""
+            // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoComplete=""

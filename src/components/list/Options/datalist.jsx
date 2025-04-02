@@ -1,6 +1,6 @@
-const button = () => {
+const datalist = () => {
     return (
-        <button
+        <datalist
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
@@ -18,15 +18,8 @@ const button = () => {
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
             hidden
             i18nIsDynamicList
             id=""
@@ -40,7 +33,6 @@ const button = () => {
             itemType=""
             key={}
             lang=""
-            name=""
             nonce=""
             prefix=""
             property=""
@@ -60,13 +52,11 @@ const button = () => {
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
         >
 
-        </button>
+        </datalist>
     );
 }

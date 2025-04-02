@@ -1,7 +1,7 @@
 const option = () => {
     return (
         <option
-            about=""
+            // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoCorrect=""

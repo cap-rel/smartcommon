@@ -1,6 +1,6 @@
-const button = () => {
+const label = () => {
     return (
-        <button
+        <label
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
@@ -18,16 +18,11 @@ const button = () => {
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
             draggable
             enterKeyHint=""
             form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
             hidden
+            htmlFor=""
             i18nIsDynamicList
             id=""
             inlist={}
@@ -40,7 +35,6 @@ const button = () => {
             itemType=""
             key={}
             lang=""
-            name=""
             nonce=""
             prefix=""
             property=""
@@ -60,13 +54,11 @@ const button = () => {
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
         >
 
-        </button>
+        </label>
     );
 }

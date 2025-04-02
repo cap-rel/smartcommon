@@ -1,11 +1,12 @@
-const button = () => {
+const video = () => {
     return (
-        <button
+        <video
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoCorrect=""
             autoFocus
+            autoPlay
             autoSave=""
             children
             className=""
@@ -13,20 +14,19 @@ const button = () => {
             content=""
             contentEditable
             contextMenu=""
+            controls
+            controlsList=""
+            crossOrigin=""
             dangerouslySetInnerHTML={}
             datatype=""
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
+            disablePictureInPicture
+            disableRemotePlayback
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
+            height={}
             hidden
             i18nIsDynamicList
             id=""
@@ -40,9 +40,13 @@ const button = () => {
             itemType=""
             key={}
             lang=""
-            name=""
-            nonce=""
+            loop
+            mediaGroup=""
+            muted
+            playsInline
+            poster=""
             prefix=""
+            preload=""
             property=""
             radioGroup=""
             ref={}
@@ -54,19 +58,18 @@ const button = () => {
             security=""
             slot=""
             spellCheck
+            src=""
             style={}
             suppressContentEditableWarning
             suppressHydrationWarning
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
-            vocab=""
+            width={}
         >
 
-        </button>
-    );
+        </video>
+    );   
 }

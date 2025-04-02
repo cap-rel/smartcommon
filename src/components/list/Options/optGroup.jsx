@@ -1,6 +1,6 @@
-const button = () => {
+const optGroup = () => {
     return (
-        <button
+        <optgroup
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
@@ -21,12 +21,6 @@ const button = () => {
             disabled
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
             hidden
             i18nIsDynamicList
             id=""
@@ -39,8 +33,8 @@ const button = () => {
             itemScope
             itemType=""
             key={}
+            label=""
             lang=""
-            name=""
             nonce=""
             prefix=""
             property=""
@@ -60,13 +54,11 @@ const button = () => {
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
         >
 
-        </button>
+        </optgroup>
     );
 }

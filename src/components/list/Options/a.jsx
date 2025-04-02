@@ -1,7 +1,7 @@
 const a = () => {
     return (
         <a
-            about=""
+            // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoCorrect=""

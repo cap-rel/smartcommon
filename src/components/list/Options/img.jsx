@@ -1,7 +1,7 @@
 const img = () => {
     return (
         <img
-            about=""
+            // about="" // RDFa
             accessKey=""
             alt=""
             autoCapitalize=""

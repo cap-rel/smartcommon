@@ -1,20 +1,13 @@
 const input = () => {
     return (
-        audio,
         data?,
-        datalist,
         dialog?,
-        iframe,
-        label,
-        li,
-        ul,
-        ol, 
-        optGroup,
-        time?,
-        video,
+        li?,
+        ul?,
+        ol?, 
         base?, link, script, style, title,
         <input
-            about=""
+            // about="" // RDFa
             accessKey=""
             alt=""
             autoCapitalize=""

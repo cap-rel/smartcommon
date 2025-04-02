@@ -1,7 +1,7 @@
 const textarea = () => {
     return (
         <textarea
-            about=""
+            // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoComplete=""

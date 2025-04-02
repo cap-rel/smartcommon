@@ -1,6 +1,6 @@
-const button = () => {
+const time = () => {
     return (
-        <button
+        <time
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
@@ -15,18 +15,12 @@ const button = () => {
             contextMenu=""
             dangerouslySetInnerHTML={}
             datatype=""
+            dateTime=""
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
             hidden
             i18nIsDynamicList
             id=""
@@ -40,7 +34,6 @@ const button = () => {
             itemType=""
             key={}
             lang=""
-            name=""
             nonce=""
             prefix=""
             property=""
@@ -60,13 +53,11 @@ const button = () => {
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
-        >
+>
 
-        </button>
+        </time>
     );
 }

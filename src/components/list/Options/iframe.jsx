@@ -1,6 +1,6 @@
-const button = () => {
+const iframe = () => {
     return (
-        <button
+        <iframe
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
@@ -18,15 +18,9 @@ const button = () => {
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
+            height={}
             hidden
             i18nIsDynamicList
             id=""
@@ -40,33 +34,38 @@ const button = () => {
             itemType=""
             key={}
             lang=""
+            loading=""
             name=""
             nonce=""
             prefix=""
             property=""
             radioGroup=""
             ref={}
+            referrerPolicy=""
             rel=""
             resource=""
             results={}
             rev=""
             role=""
+            sandbox=""
+            seamless
             security=""
             slot=""
             spellCheck
+            src=""
+            srcDoc=""
             style={}
             suppressContentEditableWarning
             suppressHydrationWarning
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
+            width={}
         >
 
-        </button>
+        </iframe>
     );
 }

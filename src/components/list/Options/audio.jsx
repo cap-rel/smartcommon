@@ -1,11 +1,12 @@
-const button = () => {
+const audio = () => {
     return (
-        <button
+        <audio
             // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoCorrect=""
             autoFocus
+            autoPlay
             autoSave=""
             children
             className=""
@@ -13,20 +14,16 @@ const button = () => {
             content=""
             contentEditable
             contextMenu=""
+            controls
+            controlsList=""
+            crossOrigin=""
             dangerouslySetInnerHTML={}
             datatype=""
             defaultChecked
             defaultValue={}
             dir=""
-            disabled
             draggable
             enterKeyHint=""
-            form=""
-            formAction=""
-            formEncType=""
-            formMethod=""
-            formNoValidate
-            formTarget=""
             hidden
             i18nIsDynamicList
             id=""
@@ -40,9 +37,13 @@ const button = () => {
             itemType=""
             key={}
             lang=""
-            name=""
+            loop
+            mediaGroup=""
+            muted
             nonce=""
+            playsInline
             prefix=""
+            preload=""
             property=""
             radioGroup=""
             ref={}
@@ -54,19 +55,18 @@ const button = () => {
             security=""
             slot=""
             spellCheck
+            src=""
             style={}
             suppressContentEditableWarning
             suppressHydrationWarning
             tabIndex={}
             title=""
             translate=""
-            type=""
             typeof=""
             unselectable=""
-            value={}
             vocab=""
         >
 
-        </button>
+        </audio>
     );
 }

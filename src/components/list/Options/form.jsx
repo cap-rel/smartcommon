@@ -1,7 +1,7 @@
 const form = () => {
     return (
         <form
-            about=""
+            // about="" // RDFa
             acceptCharset=""
             accessKey=""
             action=""

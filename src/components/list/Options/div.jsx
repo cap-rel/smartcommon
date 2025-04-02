@@ -1,7 +1,7 @@
 const div = () => {
     return (
         <div
-            about=""
+            // about="" // RDFa
             accessKey=""
             autoCapitalize=""
             autoCorrect=""
