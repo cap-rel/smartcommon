@@ -71,3 +71,7 @@ export function isEmpty(value) {
 
     return false;
 }
+
+export function toArray(value){
+    return isArray(value) ? value : [value];
+}
