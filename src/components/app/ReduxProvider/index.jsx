@@ -1,10 +1,11 @@
 import { Provider } from "react-redux";
-import { store } from "../../../../reduxStore";
 
 export const ReduxProvider = (props) => {
+  const { store, children } = props;
+
   return (
     <Provider store={store}>
-        {props.children}
+      {children}
     </Provider>
   );
 };

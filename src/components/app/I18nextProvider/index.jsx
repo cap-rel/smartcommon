@@ -18,16 +18,20 @@
  */
 
 import { I18nextProvider as Provider } from "react-i18next";
-import { i18n } from "../../../../i18n";
 import { useSelector } from "react-redux";
 import { useEffect } from "react";
 
 export const I18nextProvider = (props) => {
-  const language = useSelector((state) => state.settings.language);
+  const { i18n, children } = props;
+  const language = useSelector(state => state.settings.language);
 
   useEffect(() => {
     i18n.changeLanguage(language);
   }, [language]);
 
-  return <Provider i18n={i18n}>{props.children}</Provider>;
+  return (
+    <Provider i18n={i18n}>
+      {children}
+    </Provider>
+  );
 };
