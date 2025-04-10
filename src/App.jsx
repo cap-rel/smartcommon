@@ -31,9 +31,13 @@ export const App = () => {
   return (
     <ReduxProvider store={store}>
       <I18nextProvider i18n={i18n}>
-        <Head />
-        <Router />
-        <Toaster />
+          <VariantsProvider variants={variants}>
+            <ThemesProvider themes={themes} theme={"SmartInterventions"}>
+            <Head />
+            <Router />
+            <Toaster />
+            </ThemesProvider>
+          </VariantsProvider>
       </I18nextProvider>
     </ReduxProvider>
   );
