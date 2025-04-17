@@ -1,7 +1,7 @@
 import { isNil } from "../../globals";
 import { useStates } from "../useStates"
 
-export const useValue = (localValue, value, onValueChange) => {
+export const useValue = (localValue, value, onChange) => {
     const { states, set } = useStates({ localValue });
 
     const currentValue = value ?? states.localValue;
@@ -10,7 +10,7 @@ export const useValue = (localValue, value, onValueChange) => {
         if (isNil(value)) {
             set("localValue", newValue);
         } else {
-            onValueChange(newValue);
+            onChange(newValue);
         }
     }
 

@@ -11,7 +11,7 @@ import { convertCSSVar } from "../../../../globals/functions/variant";
 
 export const Variables = () => {
     const getVariable = (variableName) => getComputedStyle(document.documentElement).getPropertyValue(`${variableName}`);
-    const setVariable = (variableName, value) => document.documentElement.style.setProperty(variableName, value)
+    const setVariable = (variableName, value) => document.documentElement.style.setProperty(variableName, value);
 
     const variablesName = [
         "--color-primary",

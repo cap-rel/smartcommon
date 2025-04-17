@@ -1,53 +1,78 @@
-import { isNil, mergeProps } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
+import { useVariantToProps } from "../../../hooks";
 import { Spinner } from "../Spinner";
 
-import { buttonPropTypes } from "./props";
-import { buttonVariants } from "./variants";
+import { propTypes } from "./props";
 
-// TODO floating position
+// TODO params
 
-export const Button = ({
-    loading = false,
-    icon,
-    disabled = false,
-    // floatingPosition = "bottom-right",
-    variant = "smart",
+export const Button = (props) => {
+    // const basePropsKeys = ["loading", "icon", "children", "destroyTheme", "componentVariant"];
+    const { variantProps, mergeProps, setParams } = useVariantToProps("button", props);
 
-    children,
+    const { loading, icon, text, badge, buttonProps = {} } = variantProps;
 
-    iconProps,
-    spinnerProps,
-    ...buttonProps
-}) => {
+    const { disabled } = buttonProps;
 
-    // const buttonPs = { ...props, ...buttonProps };
-
-    const variantParams = { disabled };
+    // useEffect(() => {
+    //     setParams({ disabled, loading });
+    // }, []);
 
     return (
-        <button
-            disabled={disabled}
-            { ...mergeProps(
-                {}, `flex items-center gap-2 p-2 text-base duration-100 ${disabled ? "brightness-soft" : "active:brightness-soft"}`,
-                buttonProps, buttonVariants, variant, "buttonProps", variantParams
-            )}
-        >
+        <button { ...mergeProps("button", props => ({
+            ...props,
+            className: `flex justify-center items-center 
+            gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
+            text-white duration-(--quick) bg-primary
+            disabled:brightness-soft active:brightness-soft`,
+            disabled: loading || disabled
+        }))}>
             {loading &&
-                <Spinner />
+                <Spinner { ...mergeProps("Spinner", props => ({
+                    ...props,
+                    spinnerProps: {
+                        ...props.spinnerProps,
+                        className: `border-white border-l-white/30`
+                    },
+                }))} />
             }
             {(!isNil(icon) && !loading) &&
-                <div 
-                    { ...mergeProps(
-                        {}, `text-xl`,
-                        iconProps, buttonVariants, variant, "iconProps", variantParams
-                    )}
-                >
+                <div { ...mergeProps("icon", props => ({
+                    ...props,
+                    className: `shrink-0`
+                }))}>
                     {icon}
                 </div>
             }
-            {children}
+            {!isNil(text) &&
+                <div { ...mergeProps("text", props => ({
+                    ...props,
+                    className: `truncate`
+                }))}>
+                    {text}
+                </div>
+            }
         </button>
     );
 };
 
-Button.propTypes = buttonPropTypes
+// --button-background-color
+// --button-padding
+// --button-gap
+// --button-filter-duration
+// --button-filter-brightness
+// --button-rounded
+
+// --button-font-size
+// --button-spinner-size
+// --button-icon-font-size
+// --button-children-font-size
+
+// --button-color
+// --button-spinner-color ?
+// --button-icon-color
+// --button-children-color
+
+// --button-children-font-weight
+
+Button.propTypes = propTypes;

@@ -1,14 +1,17 @@
-import { twMerge } from "tailwind-merge";
 import { propTypes } from "./props";
+import { useVariantToProps } from "../../../hooks";
 
-export const Spinner = ({
-  borderWidth = 4,
-  size = 30,
-  spinnerProps,
-  ...props
-}) => {
-  const SpinnerPs = { ...props, ...spinnerProps };
+export const Spinner = (props) => {
+  const { variantProps, mergeProps } = useVariantToProps("spinner", props);
+
+  const { size = 4 } = variantProps;
+
   return (
+    <div { ...mergeProps("spinner", props => ({
+      ...props,
+      style: { "--size": `${size * 4}px`, "--border-width": `${size * 4 / 6}px` },
+      className: `rounded-full animate-spin size-(--size) border-primary [border-width:var(--border-width)] border-l-border shrink-0`
+    }))} />
   //   <>
   //       {type === "dots" ? (
   //         <div className="flex gap-2 p-2">
@@ -52,16 +55,6 @@ export const Spinner = ({
 
   //     {/* <div class="fixed-center h-6 w-6 animate-spin rounded-full border-2 border-current border-[#6b7280] border-e-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]"></div> */}
   //   </>
-        <div
-          { ...SpinnerPs}
-          style={{ 
-            // "--border-width": `${borderWidth}px`,
-            "--size": `${size}px`,
-            borderWidth: `${borderWidth}px`,
-            ...SpinnerPs?.style
-          }}
-          className={twMerge(`rounded-full animate-spin size-(--size) border-primary border-l-border`, SpinnerPs?.className)}
-        />
   );
 
 };

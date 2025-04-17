@@ -1,57 +1,31 @@
-import { useStates } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { isNil } from "../../../globals/functions";
 
-export const Textarea = ({
-  label,
-  labelRow = false,
-  help,
-  onValueChange = () => {},
+export const Textarea = (props) => {
+  const { variantProps, mergeProps } = useVariantToProps("textarea", props);
 
-  containerProps,
-  labelContainerProps,
-  labelProps,
-  requiredStarProps,
-  helpProps,
-  textareaProps,
-  ...props
-}) => {
-  const textareaPs = { ...props, ...textareaProps };
+  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
-  const { required, readOnly, disabled, id, value, defaultValue } = textareaPs;
+  const { textareaProps = {} } = filteredProps;
 
-  const textareaPsForLabel = { required, readOnly, disabled, id };
-  const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...textareaPsForLabel };
+  const { value, defaultValue, onChange = () => {} } = textareaProps;
 
-  const { states, set } = useStates({
-    localValue: defaultValue ?? ""
-  });
+  const { currentValue, setValue } = useValue(defaultValue, value, onChange);
 
-  const { localValue } = states;
-
-  const realValue = value ?? localValue;
-
-  const handleTextareaOnChange = (e) => {
-    const newValue = e.target.value;
-    if (isNil(value)) {
-      set("localValue", newValue);
-    } else {
-      onValueChange(newValue);
-    }
-  };
+  const handleTextareaOnChange = e => setValue(e.target.value);
 
   return (
-    <Label { ...allLabelPs}>
-      <textarea 
-        rows={5}
-        placeholder={`${label}...` ?? ""}
-        { ...textareaPs}
-        onChange={handleTextareaOnChange}
-        value={realValue}
-        className={twMerge(`disabled:brightness-90 p-2 rounded-md border outline-none placeholder-soft-text border-soft-border bg-strong duration-100 focus:ring-2 ring-primary`, textareaPs?.className)}
-      >
+    <Label { ...extractedLabelProps} mergeProps={mergeProps}>
+      <textarea { ...mergeProps("textarea", props => ({
+        rows: 5,
+        ...props,
+        value: currentValue,
+        onChange: handleTextareaOnChange,
+        className: `min-w-0 disabled:brightness-soft p-app-xs rounded-app-md border outline-none placeholder-soft-text border-border bg-soft-bg duration-(--quick) focus:ring-1 ring-primary focus:border-primary`
+      }))}>
       </textarea>
     </Label>
   );

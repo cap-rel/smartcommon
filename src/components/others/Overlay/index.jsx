@@ -1,20 +1,16 @@
-import { twMerge } from "tailwind-merge";
 import { propTypes } from "./props";
+import { useVariantToProps } from "../../../hooks";
 
-export const Overlay = ({
-    isOpen = false,
-    closeOverlay = () => {},
-    overlayProps,
-    ...props
-}) => {
-    const overlayPs = { ...props, ...overlayProps };
+export const Overlay = (props) => {
+    const { variantProps, mergeProps } = useVariantToProps("overlay", props);
+    const { isOpen, close = () => {} } = variantProps;
 
     return (
-        <div 
-            { ...overlayPs}
-            onClick={closeOverlay}
-            className={twMerge(`fixed z-40 bg-black/50 inset-0 duration-300 ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`, overlayPs?.className)}
-        />
+        <div { ...mergeProps("overlay", props => ({
+            ...props,
+            onClick: close,
+            className: `fixed z-40 bg-black/50 inset-0 duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`
+        }))} />
     );
 };
 

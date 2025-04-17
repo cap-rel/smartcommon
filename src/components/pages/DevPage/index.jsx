@@ -4,7 +4,7 @@ import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
 import { Calendar, List } from "../../list";
-import { Button } from "../../others";
+import { Button, Popup, Spinner } from "../../others";
 import { useEffect } from "react";
 import { useStates } from "../../../hooks";
 import { useLocation } from "react-router-dom";
@@ -22,9 +22,10 @@ export const DevPage = () => {
 
     const { states, set } = useStates({
         init: false,
+        isPopupOpen: false,
     });
 
-    const { init } = states;
+    const { init, isPopupOpen } = states;
 
     const location = useLocation();
 
@@ -66,7 +67,7 @@ export const DevPage = () => {
 
     return (
         <div id="main" className={`fixed inset-0 text-strong-text bg-medium-bg`}>
-            <Navbar 
+            {/* <Navbar 
                 title={`Accueil`}
                 left={[
                     { to: "Carnet", icon: <IoHome /> },
@@ -76,7 +77,7 @@ export const DevPage = () => {
                     // { to: "Accueil", icon: <IoEllipsisHorizontal /> },
                 ]}
                 links={list}
-            />
+            /> */}
                 
             {/* <List
                 list={list}
@@ -102,15 +103,25 @@ export const DevPage = () => {
 
               <form 
                 
-                            className={`gap-4 col p-4 overflow-y-auto max-h-full`}
+                            className={`gap-4 flex flex-col p-4 overflow-y-auto max-h-full`}
                             onSubmit={e => {
+                                e.preventDefault();
+                                // if (e.target.checkValidity()) {
+                                //     e.preventDefault();
+                                //     console.log("test");
+                                // } else {
+                                //     console.log("test2")
+                                // }
                                 // e.preventDefault();
                                 const formData = new FormData(e.target);
                                 // console.log(formData.get("range"));
                                 // console.log(formData.get("check"));
                                 // console.log(formData.getAll("checks"));
                                 // console.log(formData.get("color"));
-                                // console.log(formData.get("input"));
+                                // console.log(formData.get("date"));
+                                // console.log(formData.get("datetime"));
+                                // console.log(formData.get("time"));
+                                // console.log(formData.get("timestamp"));
                                 // console.log(formData.get("textarea"));
                                 // console.log(formData.get("address"));
                                 // console.log(getGpsPoints(formData.getAll("gps")));
@@ -174,14 +185,40 @@ export const DevPage = () => {
                                 labelRow
                                 name={`color`}
                             /> */}
-                            <Input
+                            {/* <Input
+                                // max={4}
                                 min={4}
-                                max={8}
-                                type={`int`}
+                                // type="varchar"
+                                // required
+                            /> */}
+                            {/* <Input
+                                type={`date`}
                                 icon={<FaEnvelope />} 
                                 label={"Input"}
-                                name={`input`}
+                                name={`date`}
+                                // formNoValidate
                             />
+                            <Input
+                                type={`datetime`}
+                                icon={<FaEnvelope />} 
+                                label={"Input"}
+                                name={`datetime`}
+                                // formNoValidate
+                            />
+                            <Input
+                                type={`time`}
+                                icon={<FaEnvelope />} 
+                                label={"Input"}
+                                name={`time`}
+                                // formNoValidate
+                            />
+                            <Input
+                                type={`timestamp`}
+                                icon={<FaEnvelope />} 
+                                label={"Input"}
+                                name={`timestamp`}
+                                // formNoValidate
+                            /> */}
                             {/* <Textarea
                                 label={"Textarea"}
                                 name={`textarea`}
@@ -298,10 +335,55 @@ export const DevPage = () => {
                                 onChange={value => set("searchbar", value)}
                             />
                             <Photos name={`photos`} /> */}
-                            <button>test</button>
+
+                            <Input
+                                label={"Bonjour"}
+                                variant={"int"}
+                                // loading
+                                icon={<FaEnvelope />}
+                                iconProps={{ className: "text-success" }}
+                                inputProps={{ required: false, step: 2 }}
+                                Spinner={{
+                                    // size: 8,
+                                    spinnerProps: { className: "border-success" }
+                                }}
+                                MinusButton={{
+                                    loading: true,
+                                    Spinner: {
+                                        // size: 10,
+                                        spinnerProps: { className: "border-primary border-l-primary/30" }
+                                    }
+                                }}
+                            />
+
+                            <Popup
+                                isOpen={isPopupOpen}
+                                close={() => set("isPopupOpen", false)}
+                            >
+                                Bonjour
+                            </Popup>
+                            
+                            <Button
+                                // ignoreTheme
+                                variant={["error", "squared", "rounded", "success"]}
+                                // loading
+                                icon={<FaEnvelope/>}
+                                buttonProps={{ 
+                                    className: "",
+                                    onClick: () => set("isPopupOpen", true)
+                                }}
+                                Spinner={{
+                                    size: 8,
+                                    spinnerProps: { className: "border-red-500" } 
+                                }}
+                                // iconProps={{ className: "text-xl" }}
+                            >
+                              Ouvrir la Popup
+                            </Button>
+                            {/* <Spinner /> */}
                         </form>
                 
-            <Tabbar>
+            {/* <Tabbar>
                 <TabbarLink
                     label={`Accueil`}
                     to={`/`}
@@ -323,7 +405,7 @@ export const DevPage = () => {
                     to={`/4`}
                     icon={<FaGear />}
                 />
-            </Tabbar>
+            </Tabbar> */}
             {/* <Sidebar>
                 <SidebarLink
                     label={`Accueil`}

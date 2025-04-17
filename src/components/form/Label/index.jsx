@@ -4,96 +4,77 @@ import { isEmpty, isNil, mergeProps } from "../../../globals/functions";
 
 // TODO help
 
-export const Label = ({
-    id,
-    label, 
-    help,
-    prefix,
-    suffix,
-    required,
-    readOnly,
-    disabled,
-    children,
-    variants,
-    variant,
-    variantParams,
-
-    containerProps,
-    labelContainerProps,
-    labelProps,
-    requiredStarProps,
-    childrenContainerProps,
-    prefixProps,
-    suffixProps,
-    helpProps,
-    ...props
-}) => {
-    const labelPs = { ...props, ...labelProps };
+export const Label = (props) => {
+    const { 
+        mergeProps,
+        id,
+        label,
+        prefix,
+        suffix,
+        required,
+        children,
+    } = props
 
     return (
-        <div 
-            { ...mergeProps(
-                {}, `flex flex-col gap-2`,
-                containerProps, variants, variant, "containerProps", variantParams
-            )}
-        >
+        <div { ...mergeProps("container", props => ({
+            ...props,
+            className: `flex flex-col gap-app-xs`
+        }))}>
+
             {!isNil(label) && 
-                <div 
-                    { ...mergeProps(
-                        {}, `gap-2 flex items-center`,
-                        labelContainerProps, variants, variant, "labelContainerProps", variantParams
-                    )}
-                >
-                    <label 
-                        { ...mergeProps(
-                            {}, `text-strong-text`,
-                            labelPs, variants, variant, "labelProps", variantParams
-                        )}
-                        htmlFor={id}
-                    >
+                <div { ...mergeProps("labelContainer", props => ({
+                    ...props,
+                    className: `gap-app-xs flex items-center`
+                }))}>
+
+                    <label { ...mergeProps("label", props => ({
+                        ...props,
+                        className: `text-strong-text`,
+                        htmlFor: id
+                    }))}>
                         {label}
                     </label>
+
                     {required && 
-                        <div 
-                            { ...mergeProps(
-                                {}, `text-error`,
-                                requiredStarProps, variants, variant, "requiredStarProps", variantParams
-                            )}
-                        >
+                        <div { ...mergeProps("star", props => ({
+                            ...props,
+                            className: `text-error`
+                        }))}>
                             *
                         </div>
                     }
+
                     {/* {help && <Help content={help} />} */}
                 </div>
             }
-            <div
-                { ...mergeProps(
-                    {}, `flex gap-2`,
-                    childrenContainerProps, variants, variant, "childrenContainerProps", variantParams
-                )}
-            >
+            
+            <div { ...mergeProps("childrenContainer", props => ({
+                ...props,
+                className: `flex gap-app-xs`
+            }))}>
+
                 {!isNil(prefix) &&
-                    <div
-                        { ...mergeProps(
-                            {}, `text-strong-text`,
-                            prefixProps, variants, variant, "prefixProps", variantParams
-                        )}
-                    >
+                    <div { ...mergeProps("prefix", props => ({
+                        ...props,
+                        className: `text-strong-text`
+                    }))}>
                         {prefix}
                     </div>
                 }
+
                 {children}
+
                 {!isNil(suffix) &&
-                    <div
-                        { ...mergeProps(
-                            {}, `text-strong-text`,
-                            suffixProps, variants, variant, "suffixProps", variantParams
-                        )}
-                    >
+                    <div { ...mergeProps("suffix", props => ({
+                        ...props,
+                        className: `text-strong-text`
+                    }))}>
                         {suffix}
                     </div>
                 }
+
             </div>
+
         </div>
     );
 }

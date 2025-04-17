@@ -4,21 +4,24 @@ import { PublicRoutes } from "./components/app/PublicRoutes";
 import { componentNames } from "./components/pages/SmartPage/components";
 import { DevPage, LoginPage, SmartPage } from "./components";
 import { ReactRouter } from "./components/app/ReactRouter";
+import ListPage from "./components/pages/ListPage";
+import PrivateLayout from "./components/pages/PrivateLayout";
 
 export const Router = () => {
     return (
         <ReactRouter>
-            <Route element={<PublicRoutes/>}>
+            {/* <Route element={<PublicRoutes/>}> */}
                 <Route path={`/login`} element={<LoginPage />} />
-            <Route path={`/2`} element={<DevPage />} /> 
-            </Route>
-            <Route element={<PrivateRoutes />}>
+                <Route path={`/2`} element={<DevPage />} />
+                <Route path={`/list`} element={<PrivateLayout />} />
+            {/* </Route> */}
+            {/* <Route element={<PrivateRoutes />}> */}
                 {componentNames.map((component, CI) => 
                     <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
                 )}
                 <Route path={`/3`} element={<DevPage />} />
                 <Route path={`/4`} element={<DevPage />} />
-            </Route>
+            {/* </Route> */}
         </ReactRouter>
     );        
 };

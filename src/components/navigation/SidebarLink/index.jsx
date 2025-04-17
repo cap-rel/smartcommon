@@ -1,42 +1,35 @@
-import { isEmpty } from "../../../globals/functions";
-import { LazyLink } from "../../others";
-import { twMerge } from "tailwind-merge";
+import { Button, LazyLink } from "../../others";
 import { propTypes } from "./props";
+import { useVariantToProps } from "../../../hooks";
 
-export const SidebarLink = ({
-    icon,
-    label,
-    closeSidebar = () => {},
-    lazyLinkProps,
-    iconProps,
-    labelProps,
-    ...props
-}) => {
-    const lazyLinkPs = { ...props, ...lazyLinkProps };
+export const SidebarLink = (props) => {
+    const { variantProps, mergeProps } = useVariantToProps("sidebarLink", props);
+
+    const { closeSidebar } = variantProps;
 
     return (
-        <LazyLink
-            duration={300}
-            { ...lazyLinkPs}
-            onClick={closeSidebar}
-            className={twMerge(`gap-1 px-6 py-3 duration-100 active:brightness-soft col-full-center bg-strong max-w-40`, lazyLinkPs?.className)}
-        >
-            {!isEmpty(icon) && 
-                <div
-                    { ...iconProps}
-                    className={twMerge(`p-4 bg-primary rounded-md text-white text-3xl shrink-0`, iconProps?.className)}
-                >
-                    {icon}
-                </div>
+        <LazyLink { ...mergeProps("LazyLink", props => ({
+            ...props,
+            Link: {
+                ...props.Link,
+                onClick: closeSidebar,
             }
-            {!isEmpty(label) &&
-                <div 
-                    { ...labelProps}
-                    className={twMerge(`text-sm font-semibold truncate text-soft-text`, labelProps?.className)}
-                >
-                    {label}
-                </div>
-            }
+        }))}>
+            <Button { ...mergeProps("Button", props => ({
+                ...props,
+                buttonProps: { 
+                    ...props.buttonProps,
+                    className: `gap-app-xxs w-full flex-col justify-center bg-soft-bg rounded-app-base`
+                },
+                iconProps: {
+                    ...props.iconProps,
+                    className: `bg-primary rounded-app-md p-app-base text-3xl`
+                },
+                textProps: { 
+                    ...props.textProps,
+                    className: `text-app-sm text-soft-text`
+                }
+            }))} />
         </LazyLink>
     );
 };

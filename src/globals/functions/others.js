@@ -1,32 +1,4 @@
-export const now = (format) => {
-    const date = new Date();
-  
-    const year      =         date.getFullYear()             ;
-    const month     = ("0" + (date.getMonth() + 1)).slice(-2);
-    const dayNumber = ("0" +  date.getDate()      ).slice(-2);
-    const day       =         date.getDay()                  ;
-    const hours     = ("0" +  date.getHours()     ).slice(-2);
-    const minutes   = ("0" +  date.getMinutes()   ).slice(-2);
-    const seconds   = ("0" +  date.getSeconds()   ).slice(-2);
-    
-    const time      =         date.getTime();
-  
-    if (format.toLowerCase() === "timestamp") {
-      return time;
-    }
-  
-    const formatted = format
-      .replace("YYYY", year)
-      .replace("YY"  , year.toString().slice(2, 4))
-      .replace("MM"  , month)
-      .replace("DD"  , dayNumber)
-      .replace("HH"  , hours)
-      .replace("hh"  , hours > 12 ? ("0" + (hours - 12)).slice(-2) : hours)
-      .replace("mm"  , minutes)
-      .replace("ss"  , seconds);
-  
-    return formatted;
-  };
+import { isNil } from "./type";
   
   export const secondsToTime = (seconds) => {
     const m = Math.floor(seconds / 60);

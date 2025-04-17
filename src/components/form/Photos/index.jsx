@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Input, Label, Textarea } from "../../form"
-import { Button, Panel, Spinner } from "../../others";
+import { Button, Spinner } from "../../others";
 import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
@@ -214,16 +214,11 @@ export const Photos = ({
                         className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
                     />
                 </li>
-                <Panel
+                {/* <Panel
                     isOpen={multiple ? selectedPhotoIndex == index : isPhotoSelected}
                     closePanel={() => multiple ? set("selectedPhotoIndex", null) : set("isPhotoSelected", false)}
                     position={`bottom`}
                 >
-                    {/* <div 
-                        className={`${isImageFullScreen ? "fixed inset-0 z-10 bg-strong row-full-center" : "relative"}`}
-                    >
-                        
-                    </div> */}
                     <img 
                         { ...imageProps}
                         src={photo.url} 
@@ -244,7 +239,7 @@ export const Photos = ({
                         value={photo.description}
                         onValueChange={newDescription => onInfoChange("description", newDescription)}
                     />
-                </Panel>
+                </Panel> */}
             </>
         );
     }

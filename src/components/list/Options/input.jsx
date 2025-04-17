@@ -93,6 +93,14 @@ const input = () => {
     );
 }
 
+// check => input number
+// select => input number
+// duration => input number
+// rating => input number
+// array => input number
+// gpsPoints => input number
+// audios, photos, videos, files => input number
+
 // about : je ne connais pas
 
 // accessKey : Définit une touche de raccourci clavier

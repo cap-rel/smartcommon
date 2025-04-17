@@ -1,31 +1,32 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { propTypes } from './props';
-import { isEmpty } from '../../../globals/functions';
+import { isNil } from '../../../globals/functions';
+import { useVariantToProps } from '../../../hooks';
 
-export const LazyLink = ({
-  duration = 0,
-  lazyLinkProps,
-  ...props
-}) => {
-  const lazyLinkPs = { ...props, ...lazyLinkProps };
+export const LazyLink = (props) => {
+  const { variantProps, mergeProps } = useVariantToProps("lazyLink", props);
 
-  const { to, state, onClick, children } = lazyLinkPs;
+  const { duration = 0, children } = variantProps;
+
+  const linkProps = variantProps.Link || {};
+
+  const { to, onClick } = linkProps;
 
   const navigate = useNavigate();
 
-  const handleOnClick = (e) => {
+  const handleLinkOnClick = e => {
     e.preventDefault();
-    if (!isEmpty(onClick)) {
+    if (!isNil(onClick)) {
       onClick();
     }
-    setTimeout(() => navigate(to, { state }), duration);
+    setTimeout(() => navigate(to, { ...linkProps }), duration);
   };
 
   return (
-    <Link
-      { ...lazyLinkPs}
-      onClick={handleOnClick}
-    >
+    <Link { ...mergeProps("Link", props => ({
+      ...props,
+      onClick: handleLinkOnClick
+    }))}>
       {children}
     </Link>
   );

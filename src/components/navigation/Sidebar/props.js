@@ -1,8 +1,19 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
-    position: PropTypes.oneOf(["left", "right"]),
-    overlayProps: PropTypes.object,
-    sidebarProps: PropTypes.object,
-    buttonProps: PropTypes.object,
+    id: PropTypes.string,
+    toggleButton: PropTypes.bool,
+    open: PropTypes.func,
+    hideButtonOnScroll: PropTypes.bool,
+    links: PropTypes.arrayOf(PropTypes.object),
+    duration: PropTypes.number,
+    children: PropTypes.node,
+
+    Panel: PropTypes.object,
+    Button: PropTypes.object,
+    linkProps: PropTypes.object,
+    iconAndLabelContainerProps: PropTypes.object,
+    iconProps: PropTypes.object,
+    badgeProps: PropTypes.object,
+    labelProps: PropTypes.object,
 };

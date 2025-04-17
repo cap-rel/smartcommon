@@ -1,34 +1,110 @@
-import { tabbarPropTypes } from "./props";
-import { mergeProps } from "../../../globals";
-import { tabbarVariants } from "./variants";
+import { propTypes } from "./props";
+import { useStates, useVariantToProps } from "../../../hooks";
+import { Link, useLocation } from "react-router-dom";
+import { isNil } from "../../../globals";
+import { useEffect, useRef } from "react";
 
 // TODO HideOnScroll
+// TODO centralButton
+// TODO badge for link
+// TODO Fix label truncate not working
 
-export const Tabbar = ({
-  // hideOnScroll = false,
-  variant = "smart",
-  tabbarProps,
-  ...props
-}) => {
-  const tabbarPs = { ...props, ...tabbarProps };
+export const Tabbar = (props) => {
+  const { variantProps, mergeProps, setParams } = useVariantToProps("tabbar", props);
 
-  const { children } = tabbarPs;
+  const { links = [], id, children } = variantProps;
 
-  // const isScrollingDown = false;
+  const location = useLocation();
+
+  const tabbarRef = useRef();
+
+  const { states, set } = useStates({
+    tabbarHeight: 0,
+    tabbarWidth: 0
+  });
+
+  const { tabbarHeight, tabbarWidth } = states;
+
+  useEffect(() => {
+    if (tabbarRef.current) {
+      set("tabbarHeight", tabbarRef.current.offsetHeight);
+      set("tabbarWidth", tabbarRef.current.offsetWidth);
+    }
+  }, []);
+
+  const globalVariables = {
+    [`--${id}-tabbar-height`]: `${tabbarHeight}px`,
+    [`--${id}-tabbar-width`]: `${tabbarWidth}px`
+  };
+
+  const variables = {
+    [`--tabbar-height`]: `${tabbarHeight}px`,
+    [`--tabbar-width`]: `${tabbarWidth}px`
+  };
+
+  useEffect(() => {
+    setParams({ tabbarHeight, tabbarWidth });
+  }, [tabbarHeight, tabbarWidth]);
 
   return (
-    <div 
-      { ...mergeProps(
-        {}, `fixed right-0 bottom-0 left-0 z-10 bg-soft-bg row justify-between items-center`,
-        tabbarPs, tabbarVariants, variant, "tabbarProps", {}
-      )}
-    >
+    <div { ...mergeProps("tabbar", props => ({
+      ...props,
+      ref: tabbarRef,
+      style: variables,
+      className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
+    }))}>
+
+      {links.map((link, LI) => {
+        const { badge, icon, activeIcon, disabled, label, active: activeManually } = link;
+      
+        const { to } = link;
+    
+        const active = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
+        const currentIcon = active ? (!isNil(activeIcon) ? activeIcon : icon) : icon;
+
+        return (
+          <Link key={`link${LI}`} { ...mergeProps("link", props => ({
+            ...props,
+            ...link,
+            className: `flex-1 py-app-sm ${disabled && "pointer-events-none"}`
+          }))}>
+
+            <div { ...mergeProps("iconAndLabelContainer", props => ({
+              ...props,
+              className: `w-full flex flex-col items-center gap-app-xxs`
+            }))}>
+
+              {!isNil(icon) && 
+                <div { ...mergeProps("icon", props => ({
+                  ...props,
+                  className: `text-lg flex justify-center items-center ${active ? "text-primary" : "text-soft-text"}`
+                }))}>
+                  {currentIcon}
+                </div>
+              }
+
+              {!isNil(label) &&
+                <div { ...mergeProps("label", props => ({
+                  ...props,
+                  className: `truncate text-app-xs ${active ? "text-primary" : "text-soft-text"}`
+                }))}>
+                  {label}
+                </div>
+              }
+
+            </div>
+
+          </Link>
+        );
+      })}
+
       {children}
+
     </div>
   );
 };
 
-Tabbar.propTypes = tabbarPropTypes;
+Tabbar.propTypes = propTypes;
 
 // Revenir par default
 // Montrer le code et le copier

@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Input, Label, Textarea } from "../../form"
-import { Button, Panel, Spinner } from "../../others";
+import { Button, Spinner } from "../../others";
 import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
@@ -213,7 +213,7 @@ export const Videos = ({
                         className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
                     />
                 </li>
-                <Panel
+                {/* <Panel
                     isOpen={multiple ? selectedVideoId == index : isVideoSelected}
                     closePanel={() => closePanel(index)}
                     position={`bottom`}
@@ -244,7 +244,7 @@ export const Videos = ({
                         value={video.description}
                         onValueChange={newDescription => onInfoChange("description", newDescription)}
                     />
-                </Panel>
+                </Panel> */}
             </>
         );
     }

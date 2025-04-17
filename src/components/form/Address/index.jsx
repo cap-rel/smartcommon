@@ -1,49 +1,64 @@
 import { useRef } from 'react';
-import { useStates } from '../../../hooks';
+import { useStates, useValue } from '../../../hooks';
 import { Spinner } from '../../others';
 import { Input, Label } from '../../form';
 import { isEmpty, isNil } from '../../../globals/functions';
 import { propTypes } from './props';
 import { FaSearchLocation } from 'react-icons/fa';
 import { twMerge } from 'tailwind-merge';
+import { addressVariants } from './variants';
 
 // TODO Find a way to replace input focus condition
 
 export const Address = ({
-  label, 
-  labelRow = false,
+  id,
+  label,
   help,
+  icon,
+  prefix,
+  suffix,
+  hasCopyButton = false,
+  required = false,
+  readOnly = false,
+  disabled = false,
+  // patternError,
+  loading = false,
+
+  // name,
+  defaultValue,
+  value,
   onValueChange = () => {},
+
+  variant = "smart",
 
   containerProps,
   labelContainerProps,
   labelProps,
   requiredStarProps,
   helpProps,
+  childrenContainerProps,
+  prefixProps,
+  suffixProps,
+
   inputContainerProps,
-  inputProps,
   inputSpinnerProps,
   inputIconProps,
   listProps,
   listItemProps,
   ...props
 }) => {
-  const addressPs = { ...props, ...inputProps };
-  const { required, readOnly, disabled, id, value, defaultValue } = addressPs;
 
-  const addressPsForLabel = { disabled, required, readOnly, id };
-  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...addressPsForLabel };
+  // const labelPs = { id, label, help, prefix, suffix, required, readOnly, disabled, variants: addressVariants, variant, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, childrenContainerProps, prefixProps, suffixProps };
+
 
   const { states, set } = useStates({
-    localValue: defaultValue ?? "",
     suggestions: [],
     isSearching: false,
-    isInputFocused: false
   });
 
-  const { localValue, suggestions, isSearching, isInputFocused } = states;
+  const { suggestions, isSearching } = states;
 
-  const realValue = value ?? localValue;
+  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onValueChange);
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
@@ -52,11 +67,11 @@ export const Address = ({
         const suggestions = json.map((item) => {        
           const { house_number, building_number, road, street, highway, postcode, zipcode, postal_code, city, municipality, town, village, hamlet, country, state, nation } = item.address;
 
-          const finalNumber   = house_number || building_number || "";
-          const finalRoad     = road || street || highway || "";
-          const finalCode     = postcode || zipcode || postal_code || "";
-          const finalCity     = city || municipality || town || village || hamlet || "";
-          const finalCountry  = country || state || nation || "";
+          const finalNumber   = house_number ?? building_number ?? "";
+          const finalRoad     = road ?? street ?? highway ?? "";
+          const finalCode     = postcode ?? zipcode ?? postal_code ?? "";
+          const finalCity     = city ?? municipality ?? town ?? village ?? hamlet ?? "";
+          const finalCountry  = country ?? state ?? nation ?? "";
 
           return `${finalNumber && finalNumber + " "}${finalRoad && finalRoad + " "}${finalCode && finalCode + " "}${finalCity && finalCity + " "}${finalCountry}`;
         });
@@ -71,11 +86,7 @@ export const Address = ({
 
   const handleInputOnChange = (newValue) => {
     set("suggestions", []);
-    if (isNil(value)) {
-      set("localValue", newValue);
-    } else {
-      onValueChange(newValue);
-    }
+    setValue(newValue);
 
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
@@ -89,32 +100,27 @@ export const Address = ({
     }
   };
 
-  const select = (newValue) => {
-    if (isNil(value)) {
-      set("localValue", newValue);
-    } else {
-      onValueChange(newValue);
-    }
+  const handleSelectionOnClick = (newValue) => {
+    setValue(newValue)
     set("suggestions", []);
   };
 
   return (
-    <Label { ...allLabelPs}>
+    <Label
+      id={id}
+      label={label}
+    >
       <div 
         { ...inputContainerProps}
         className={twMerge(`relative`, inputContainerProps?.className)}
       >
         <Input
-          left={isSearching 
-            ? <Spinner size={20} borderWidth={3} { ...inputSpinnerProps} /> 
-            : <FaSearchLocation { ...inputIconProps} />
-          }
-          onFocus={() => set("isInputFocused", true)}
-          onBlur={() => set("isInputFocused", false)}
+          type={`varchar`}
+          loading={isSearching}
+          icon={<FaSearchLocation />}
           placeholder={`Rechercher une adresse...`}
-          { ...addressPs}
           onValueChange={handleInputOnChange}
-          value={realValue}
+          value={currentValue}
         />
         {(!isEmpty(suggestions)) && (
           <ul 
@@ -127,7 +133,7 @@ export const Address = ({
                   <li
                     key={index}
                     { ...listItemProps}
-                    onClick={() => select(suggestion)}
+                    onClick={() => handleSelectionOnClick(suggestion)}
                     className={twMerge(`p-2 duration-100 bg-strong active:brightness-soft`, listItemProps?.className)}
                   >
                     {suggestion}

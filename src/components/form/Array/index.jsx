@@ -1,13 +1,23 @@
 import { useStates } from "../../../hooks";
 import { Input, Label } from "../../form";
-import { propTypes } from "./props";
+import { arrayPropTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { isEmpty, isNil } from "../../../globals/functions";
 
 export const Array = ({
   label,
-  labelRow = false,
   help,
+  icon,
+  prefix,
+  suffix,
+  hasCopyButton = false,
+
+  min,
+  max,
+
+  name,
+  defaultValue,
+  value,
   onValueChange = () => {},
 
   containerProps,
@@ -15,6 +25,10 @@ export const Array = ({
   labelProps,
   requiredStarProps,
   helpProps,
+  childrenContainerProps,
+  prefixProps,
+  suffixProps,
+
   arrayContainerProps,
   arrayInputProps,
   tagsContainerProps,
@@ -24,10 +38,9 @@ export const Array = ({
 }) => {
   const inputPs = { ...props, ...inputProps };
 
-  const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
+  const { required, readOnly, disabled, id } = inputPs;
 
-  const inputPsForLabel = { required, readOnly, disabled, id };
-  const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+  const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps  };
 
   const { states, set } = useStates({
     localValue: defaultValue ?? [],
@@ -100,4 +113,4 @@ export const Array = ({
   );
 };
 
-Array.propTypes = propTypes;
+Array.propTypes = arrayPropTypes;

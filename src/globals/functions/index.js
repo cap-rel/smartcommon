@@ -6,3 +6,4 @@ export * from "./type";
 export * from "./date";
 export * from "./others";
 export * from "./variant";
+export * from "./twMerge";

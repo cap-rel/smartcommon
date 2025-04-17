@@ -1,97 +1,127 @@
-import { Button } from "../Button";
 import { Overlay } from "../Overlay";
-import { useStates } from "../../../hooks";
-import { isNull } from "../../../globals/functions";
-import { useEffect } from "react";
-import { twMerge } from "tailwind-merge";
+import { useVariantToProps } from "../../../hooks";
+import { propTypes } from "./props";
+// TODO Fix closeOnMove system
 
-export const Popup = ({
-    overlay = {
-        variant: {
-            classNames: {
-                overlay: null
-            }
-        },
-        ...props
-    },
-    closeOnClickOverlay = true,
-    closeOnMove = true,
-    isVisible = false,
-    setVisibility = () => {},
-    position = null,
-    variant = {
-        classNames: {
-            panel: null,
-            icon: null,
-        }
-    },
-    children = null,
-    ...props
-}) => {
+// {
+//     overlay = true,
+//     shadow = false,
+//     closeOnClickOverlay = true,
+//     closeOnMove = false,
+//     isOpen = false,
+//     closePanel = () => {},
+//     floating = false,
+//     position = "left",
+//     overlayProps,
+//     panelProps,
+//     iconProps,
+//     ...props
+// }
 
-    const { classNames } = variant;
+export const Popup = (props) => {
+    const { variantProps, mergeProps } = useVariantToProps("popup", props);
 
-    const { states, set } = useStates({
-        startTouch: null,
-        moveTouch: null
-    })
-
-    const { startTouch, moveTouch } = states;
-
-    const moveMin = 30;
+    const { 
+        children,
+        overlay = true,
+        closeOnClickOverlay = true,
+        closeOnMove,
+        close,
+        isOpen,
+    } = variantProps;
     
-    let positionClass;
-    let icon;
-    let cannotClose;
-    let client;
+    // const { states, set } = useStates({
+    //     startTouch: null,
+    //     moveTouch: null
+    // })
 
-    switch (position) {
-        case "left"  : positionClass = `${isVisible ? "translate-x-0" : "-translate-x-full point-events-none"} fixed left-0 top-0 bottom-0 rounded-r-md`;
-                       icon = "absolute-v-center right-4 h-8 w-2";
-                       cannotClose = moveTouch + moveMin < startTouch;
-                       client = "clientX";
-                       break;
-        case "top"   : positionClass = `${isVisible ? "translate-y-0" : "-translate-y-full point-events-none"} fixed top-0 left-0 right-0 rounded-b-md`;
-                       icon = "absolute-h-center bottom-4 w-8 h-2";
-                       cannotClose = moveTouch + moveMin < startTouch;
-                       client = "clientY";
-                       break;
-        case "right" : positionClass = `${isVisible ? "translate-x-0" : "translate-x-full point-events-none"} fixed right-0 top-0 bottom-0 rounded-l-md`;
-                       icon = "absolute-v-center left-4 h-8 w-2";
-                       cannotClose = moveTouch - moveMin > startTouch;
-                       client = "clientX";
-                       break;
-        case "bottom": positionClass = `${isVisible ? "translate-y-0" : "translate-y-full point-events-none"} fixed bottom-0 left-0 right-0 rounded-t-md`;
-                       icon = "absolute-h-center top-4 w-8 h-2";
-                       cannotClose = moveTouch - moveMin > startTouch;
-                       client = "clientY";
-                       break;
-    }
+    // const { startTouch, moveTouch } = states;
+
+    // const moveMin = 30;
+    
+    // let positionClass;
+    // let icon;
+    // let cannotClose;
+    // let client;
+
+    // switch (position) {
+    //     case "top"   : positionClass = `${isOpen ? "top-(--initial)" : "-top-(--translate) point-events-none"} ${floating ? "left-2 right-2 rounded-xl" : "left-0 right-0 rounded-b-xl"} fixed pb-10`;
+    //                    icon = "absolute-h-center bottom-4 w-8 h-2";
+    //                    cannotClose = moveTouch + moveMin < startTouch;
+    //                    client = "clientY";
+    //                    break;
+    //     case "right" : positionClass = `${isOpen ? "right-(--initial)" : "-right-(--translate) point-events-none"} ${floating ? "top-2 bottom-2 rounded-xl" : "top-0 bottom-0 rounded-l-xl"} fixed pl-10`;
+    //                    icon = "absolute-v-center left-4 h-8 w-2";
+    //                    cannotClose = moveTouch - moveMin > startTouch;
+    //                    client = "clientX";
+    //                    break;
+    //     case "bottom": positionClass = `${isOpen ? "bottom-(--initial)" : "-bottom-(--translate) point-events-none"} ${floating ? "left-2 right-2 rounded-xl" : "left-0 right-0 rounded-t-xl"} fixed pt-10`;
+    //                    icon = "absolute-h-center top-4 w-8 h-2";
+    //                    cannotClose = moveTouch - moveMin > startTouch;
+    //                    client = "clientY";
+    //                    break;
+    //     default      : positionClass = `${isOpen ? "left-(--initial)" : "-left-(--translate) point-events-none"} ${floating ? "top-2 bottom-2 rounded-xl" : "top-0 bottom-0 rounded-r-xl"} fixed pr-10`;
+    //                    icon = "absolute-v-center right-4 h-8 w-2";
+    //                    cannotClose = moveTouch + moveMin < startTouch;
+    //                    client = "clientX";
+    //                    break;
+    // }
    
     return (
         <>
-            {overlay && <Overlay isVisible={isVisible} setVisibility={value => closeOnClickOverlay && setVisibility(value)} { ...overlay} />}
-            <div
-                style={{ 
-                    "--duration": "300ms",
-                }}
-                className={twMerge(`z-30 p-4 duration-(--duration) bg-strong ${positionClass}`, classNames.panel)}
-                onTouchStart={e => {
-                    set("startTouch", e.touches[0][client]);
-                    set("moveTouch", e.touches[0][client]);
-                }}
-                onTouchMove={e => set("moveTouch", e.touches[0][client])}
-                onTouchEnd={e => {
-                    if (closeOnMove) {
-                        setVisibility(!cannotClose);
-                    }
-                    set("startTouch", null);
-                    set("moveTouch", null);
-                }}
-            >
-                <div className={twMerge(`absolute rounded-full bg-soft-text ${icon}`, classNames.icon)}/>
+            {overlay &&
+                <Overlay { ...mergeProps("Overlay", props => ({
+                    ...props,
+                    isOpen,
+                    close: closeOnClickOverlay && close
+                }))} />
+            }
+            <div { ...mergeProps("popup", props => ({
+                ...props,
+                className: `rounded-app-lg fixed top-1/2 left-app-lg right-app-lg max-w-screen z-50 p-app-base gap-app-base flex flex-col duration-(--medium) bg-soft-bg ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`
+            }))}>
+                {/* <div 
+                    { ...iconProps}
+                    className={twMerge(`rounded-full bg-strong-border ${icon}`, iconProps?.className)}
+                /> */}
                 {children}
             </div>
         </>
     );
 };
+
+Popup.prototypes = propTypes;
+
+{/* <Overlay 
+    { ...overlayProps}
+    isOpen={isOpen} 
+    closeOverlay={closeOnClickOverlay && closePanel} 
+/>
+<div
+    { ...panelPs}
+    style={{ 
+        "--duration": "300ms",
+        "--initial": floating ? "8px" : "0",
+        "--translate": floating ? "calc(100% + 8px)" : "100%",
+        ...panelPs?.style
+    }}
+    className={twMerge(`max-h-screen max-w-screen overflow-auto z-50 p-4 gap-4 col duration-(--duration) bg-strong ${positionClass}`, panelPs?.className)}
+    onTouchStart={e => {
+        set("startTouch", e.touches[0][client]);
+        set("moveTouch", e.touches[0][client]);
+    }}
+    onTouchMove={e => set("moveTouch", e.touches[0][client])}
+    onTouchEnd={e => {
+        if (closeOnMove && cannotClose) {
+            closePanel();
+        }
+        set("startTouch", null);
+        set("moveTouch", null);
+    }}
+    >
+    <div 
+        { ...iconProps}
+        className={twMerge(`rounded-full bg-strong-border ${icon}`, iconProps?.className)}
+    />
+    {children}
+</div> */}

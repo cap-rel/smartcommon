@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 
-export const buttonPropTypes = {
-    left: PropTypes.node,
-    right: PropTypes.node,
-    floatingPosition: PropTypes.oneOf(["top-left", "top", "top-right", "right", "bottom-right", "bottom", "bottom-left", "left", "center"]),
-
+export const propTypes = {
+    icon: PropTypes.node,
+    loading: PropTypes.bool,
+    badge: PropTypes.number,
+    text: PropTypes.string,
     buttonProps: PropTypes.object,
-    leftProps: PropTypes.object,
-    rightProps: PropTypes.object,
+    Spinner: PropTypes.object,
+    iconProps: PropTypes.object,
+    childrenProps: PropTypes.object
 }

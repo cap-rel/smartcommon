@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+    * {
+      @apply box-border p-0 m-0;
+      -ms-overflow-style: none;  /* Pour Internet Explorer */
+      scrollbar-width: none;  /* Pour Firefox */
+
+    }
+
+    *::-webkit-scrollbar {
+      display: none;  /* Cache la scrollbar pour les navigateurs Webkit */
+    }
+  
+    .scroll-hidden {
+      -ms-overflow-style: none;  /* Pour Internet Explorer */
+      scrollbar-width: none;  /* Pour Firefox */
+    }
+    
+    .scroll-hidden::-webkit-scrollbar {
+      display: none;  /* Cache la scrollbar pour les navigateurs Webkit */
+    }
+  
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    /* Chrome, Safari */
+    input[type=number] {
+      -webkit-appearance: textfield;
+    }
+    /* Chrome */
+    input::-webkit-inner-spin-button,
+    input::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    /* input[type=range]::-webkit-slider-runnable-track {
+      @apply h-2 rounded-full bg-strong-bg;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
+    }
+    input[type=range]::-moz-range-track {
+      @apply h-2 rounded-full bg-strong-bg;
+    }
+    input[type=range]::-moz-range-progress {
+      @apply h-2 rounded-full bg-primary;
+    }
+    input[type=range]::-moz-range-thumb {
+      @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
+    }
+    input[type=range]::-ms-track {
+      @apply h-2 rounded-full bg-strong-bg;
+    }
+    input[type=range]::-ms-fill-lower {
+      @apply h-2 rounded-full bg-primary;
+    }
+    input[type=range]::-ms-thumb {
+      @apply w-4 h-4 rounded-full border-4 bg-soft-bg border-primary;
+    } */
+}
+  

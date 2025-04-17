@@ -1,79 +1,153 @@
-import { useEffect, useState } from "react";
-import { isEmpty, sortArray } from "../../../globals/functions";
-import { useLocation } from "react-router-dom";
-import { useNavigator, useStates, useWindow } from "../../../hooks";
-import { LazyLink } from "../../others";
-import { Button, Overlay } from "../../others";
+import { useVariantToProps } from "../../../hooks";
+import { Panel } from "../../others";
+import { Button } from "../../others";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
-import { twMerge } from "tailwind-merge";
 import { propTypes } from "./props";
+import { Link } from "react-router-dom";
+import { isNil } from "../../../globals";
 
-export const Sidebar = ({
-  position = "left",
-  overlayProps,
-  sidebarProps,
-  buttonProps,
-  ...props
-}) => {
-  const sidebarPs = { ...props, ...sidebarProps };
+// TODO badge for link
+// TODO hideButtonOnScroll
+// TODO duration
+// TODO button position with app variables
+// TODO global variables
+// TODO id automatique dans le useVariantToProps
 
-  const { children } = sidebarPs;
+export const Sidebar = (props) => {
+  const { variantProps, mergeProps } = useVariantToProps("sidebar", props);
 
-  const { states, set } = useStates({
-    isOpen: true,
-    clickedLink: false,
-  });
+  const { id, toggleButton, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
 
-  const { isOpen, clickedLink } = states;
+  const { isOpen, close, id: panelId } = PanelProps;
 
-  // useEffect(() => {
-  //   if (states.isOpen) {
-  //     set("isNotOpened", false);
-  //   } else {
-  //     setTimeout(() => {
-  //       set("isNotOpened", true);
-  //     }, 300);
-  //   }
-  // }, [states.isOpen]);
-
-  // useEffect(() => {
-  //   if (clickedLink) {
-  //     setTimeout(() => {
-  //       set("clickedLink", false);
-  //     }, 300);
-  //   }
-  // }, [clickedLink]);
-
-  let positionClass = `${isOpen ? "left-0 " : "-left-32"}`;
-
-  if (position === "right") {
-    positionClass = `${isOpen ? "right-0" : "-right-32"}`;
-  }
+  const PanelId = !isNil(panelId) ? panelId : `${id}-Panel`;
+  const ButtonId = !isNil(panelId) ? panelId : `${id}-Button`;
 
   return (
-    <>
-      <Overlay
-        { ...overlayProps}
+      <Panel { ...mergeProps("Panel", props => ({
+        id: PanelId,
+        ...props,
+        panelProps: {
+          ...props.panelProps,
+          className: `top-0 bottom-0 right-auto rounded-none rounded-r-app-base py-app-xs px-0 gap-0 ${isOpen ? "left-0" : `-left-(--panel-width)`}`
+        }
+      }))}>
+
+        {links.map((link, LI) => {
+          const { badge, icon, activeIcon, disabled, label, active: activeManually, onClick = () => {} } = link;
+        
+          const { to } = link;
+      
+          const active = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
+          const currentIcon = active ? (!isNil(activeIcon) ? activeIcon : icon) : icon;
+  
+          return (
+            <Link key={`link${LI}`} { ...mergeProps("link", props => ({
+              ...props,
+              ...link,
+              onClick: e => {
+                onClick(e);
+                close();
+              },
+              className: `bg-soft-bg py-app-sm px-app-md ${disabled ? "pointer-events-none" : "active:brightness-soft"}`
+            }))}>
+
+              <div { ...mergeProps("iconAndLabelContainer", props => ({
+                ...props,
+                className: `flex flex-col items-center gap-app-xxs`
+              }))}>
+
+                {!isNil(icon) && 
+                  <div { ...mergeProps("icon", props => ({
+                    ...props,
+                    className: `bg-primary text-white text-app-2xl p-app-base rounded-app-md`
+                  }))}>
+                    {currentIcon}
+                  </div>
+                }
+
+                {!isNil(label) &&
+                  <div { ...mergeProps("label", props => ({
+                    ...props,
+                    className: `text-app-sm text-soft-text`
+                  }))}>
+                    {label}
+                  </div>
+                }
+                
+              </div>
+            </Link>
+          );
+        })}
+
+        {children}
+
+
+        {toggleButton &&
+          <Button { ...mergeProps("Button", props => ({
+            id: ButtonId,
+            ...props,
+            icon: isOpen ? <IoCloseSharp /> : <IoMenuSharp />,
+            buttonProps: {
+              ...props.buttonProps,
+              onClick: isOpen ? close : open,
+              className: `z-50 px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17`
+            },
+          }))} />
+        }
+
+
+      </Panel> 
+
+  );
+};
+
+//  <LazyLink { ...mergeProps("LazyLink", props => ({
+//             ...props,
+//             Link: {
+//                 ...props.Link,
+//                 onClick: closeSidebar,
+//             }
+//         }))}>
+//             <Button { ...mergeProps("Button", props => ({
+//                 ...props,
+//                 buttonProps: { 
+//                     ...props.buttonProps,
+//                     className: `gap-app-xxs w-full flex-col justify-center bg-soft-bg rounded-app-base`
+//                 },
+//                 iconProps: {
+//                     ...props.iconProps,
+//                     className: `bg-primary rounded-app-md p-app-base text-3xl`
+//                 },
+//                 textProps: { 
+//                     ...props.textProps,
+//                     className: `text-app-sm text-soft-text`
+//                 }
+//             }))} />
+//         </LazyLink>
+
+Sidebar.propTypes = propTypes;
+
+{/* <Overlay
         isOpen={isOpen}
-        closeOverlay={() => set("isOpen", false)}
+        close={() => set("isOpen", false)}
       />
       <div
         { ...sidebarPs}
         style={{ "--transitionDuration": "300ms", ...sidebarPs?.style }}
-        className={twMerge(`fixed top-0 bottom-0 z-50 py-4 w-32 duration-(--transitionDuration) bg-strong ${positionClass}`, sidebarPs?.className)}
+        className={twMerge(`fixed flex flex-col top-0 bottom-0 z-50 py-4 w-32 duration-(--transitionDuration) bg-soft-bg ${positionClass}`, sidebarPs?.className)}
       >
         {children}
-        <Button 
-          left={isOpen ? <IoCloseSharp /> : <IoMenuSharp />}
-          { ...buttonProps}
-          onClick={() => set("isOpen", !isOpen)}
-          // className={twMerge(`z-50 absolute bottom-4 shadow-md rounded-none rounded-r-md ${position === "right" ? "-left-10" : "-right-10"}`, buttonProps?.className)}
-          className={twMerge(`z-50 absolute bottom-4 shadow-md rounded-full ${position === "right" ? "-left-14" : "-right-15"}`, buttonProps?.className)}
-          leftProps={{ className: "text-3xl" }}
-        />
-      </div>
-    </>
-  );
-};
-
-Sidebar.propTypes = propTypes;
+        {floatingButton &&
+          <Button 
+            icon={isOpen ? <IoCloseSharp /> : <IoMenuSharp />}
+            buttonProps={{
+              onClick: () => set("isOpen", !isOpen),
+              className: twMerge(`z-50 p-4 text-xl absolute bottom-4 shadow-md rounded-full ${position === "right" ? "-left-14" : "-right-15"}`, buttonProps?.className)
+            }}
+            iconsProps={{
+              className: ""
+            }}
+          />
+        }
+      // </div> */}

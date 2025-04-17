@@ -1,21 +1,21 @@
 export const useLabel = (props) => {
     const labelProps = {
-        id: props.id,
         label: props.label,
         help: props.help,
         prefix: props.prefix,
         suffix: props.suffix,
-        required: props.required,
-        disabled: props.disabled,
-        readOnly: props.readOnly,
+        id: props.inputProps.id,
+        required: props.inputProps.required,
+        disabled: props.inputProps.disabled,
+        readOnly: props.inputProps.readOnly,
         variant: props.variant,
         containerProps: props.containerProps,
         labelContainerProps: props.labelContainerProps,
         labelProps: props.labelProps,
         starProps: props.starProps,
+        childrenContainerProps: props.childrenProps,
         prefixProps: props.prefixProps,
         suffixProps: props.suffixProps,
-        childrenProps: props.childrenProps,
         helpProps: props.helpProps,
     }
 
@@ -26,10 +26,10 @@ export const useLabel = (props) => {
     delete props.containerProps;
     delete props.labelContainerProps;
     delete props.labelProps;
+    delete props.childrenContainerProps;
     delete props.starProps;
     delete props.prefixProps;
     delete props.suffixProps;
-    delete props.childrenProps;
     delete props.helpProps
 
     return { extractedLabelProps: labelProps, filteredProps: props };

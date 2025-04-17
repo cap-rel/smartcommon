@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Input, Label, Textarea } from "../../form"
-import { Button, Panel, Spinner } from "../../others";
+import { Button, Spinner } from "../../others";
 import { isEmpty, isNil, splitFileExtension } from "../../../globals/functions";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";
@@ -174,7 +174,7 @@ export const Files = ({
                         className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
                     />
                 </li>
-                <Panel
+                {/* <Panel
                     isOpen={multiple ? selectedFileId == index : isFileSelected}
                     closePanel={() => multiple ? set("selectedFileId", null) : set("isFileSelected", false)}
                     position={`bottom`}
@@ -201,7 +201,7 @@ export const Files = ({
                         value={file.description}
                         onValueChange={newDescription => onInfoChange("description", newDescription)}
                     />
-                </Panel>
+                </Panel> */}
             </>
         );
     }
