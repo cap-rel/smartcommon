@@ -1,12 +1,10 @@
 import { IoHome, IoWarning } from "react-icons/io5";
-import { Navbar, Sidebar, SidebarLink, Tabbar, TabbarLink } from "../../navigation";
+import { Navbar, Sidebar, Tabbar } from "../../navigation";
 import { FaGear, FaMagnifyingGlass } from "react-icons/fa6";
 import { FaBook, FaQuestion, FaSyncAlt, FaUser } from "react-icons/fa";
 import { IoIosWarning } from "react-icons/io";
 import { Button } from "../../others";
 import { useStates } from "../../../hooks";
-import { NavbarUpperLink } from "../../navigation/NavbarUpperLink.jsx";
-import { NavbarBottomLink } from "../../navigation/NavbarBottomLink.jsx";
 import { useEffect } from "react";
 
 const PrivateLayout = () => {

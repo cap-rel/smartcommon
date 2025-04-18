@@ -3,12 +3,11 @@ import { useStates } from "../../../hooks";
 import { FaReact } from "react-icons/fa6";
 import { IoArrowDown, IoHome } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-import { Tabbar, TabbarLink } from "../../navigation";
+import { Tabbar } from "../../navigation";
 import { FaBook } from "react-icons/fa";
 import { Check, GpsPoints } from "../../form";
 import { Variables } from "./Variables";
 import { convertClassName, convertCSSVar } from "../../../globals/functions/variant";
-import { TabbarDev } from "../../navigation/Tabbar/TabbarDev";
 import { Components } from "./Components";
 import { Radio } from "./Radio";
 import { twMerge } from "tailwind-merge";
@@ -50,7 +49,7 @@ export const SmartPage = () => {
             <Components />
             <div className={`bg-softer row justify-center items-center`}>
                 <div className={`bg-softer relative overflow-auto resize translate-y-0 shadow-md border rounded-xl h-210 w-100 scale-80 border-y-20 border-x-10 border-strongest`}>
-                    <TabbarDev { ...test}/>
+                    {/* <TabbarDev { ...test}/> */}
                 </div>
             </div>
 

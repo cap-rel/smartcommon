@@ -1,4 +1,4 @@
-import { Navbar, Sidebar, SidebarLink, Tabbar, TabbarLink } from "../../navigation";
+import { Navbar, Sidebar, Tabbar } from "../../navigation";
 import { Block } from "../../others/Block";
 import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
