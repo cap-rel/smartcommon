@@ -5,6 +5,7 @@ const spacing = [
     "m", "mb", "me", "ml", "mr", "ms", "mt", "mx", "my",
     "gap", "gap-x", "gap-y",
     "bottom", "left", "top", "right",
+    "inset", "inset-x", "inset-y",
     "w", "min-w", "max-w",
     "h", "min-h", "max-h"
 ];
