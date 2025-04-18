@@ -1,53 +1,47 @@
-import { twMerge } from "tailwind-merge";
-import { isEmpty } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
 import { propTypes } from "./props";
+import { useVariantToProps } from "../../../hooks";
 
-export const Block = ({
-    title,
-    header,
-    footer,
-    containerProps,
-    titleProps,
-    headerProps,
-    blockProps,
-    footerProps,
-    ...props
-}) => {
-    const blockPs = { ...props, ...blockProps };
-    const { children } = blockPs;
+export const Block = (props) => {
+    const { variantProps, mergeProps } = useVariantToProps("block", props);
+
+    const { id, title, header, footer, children } = variantProps;
 
     return (
-        <div
-            { ...containerProps}
-            className={twMerge(`col gap-4 p-4`, containerProps?.className)}
-        >
-            {!isEmpty(title) && 
-                <div
-                    { ...title}
-                    className={twMerge(`text-strong-text font-semibold text-lg`, title?.className)}
-                >
+        <div { ...mergeProps("container", props => ({
+            ...props,
+            className: `flex flex-col gap-app-xs px-app-base`
+        }))}>
+            {!isNil(title) && 
+                <div { ...mergeProps("title", props => ({
+                    ...props,
+                    className: `font-app-semibold text-strong-text text-app-base mx-app-xxs`
+                }))}>
                     {title}
                 </div>
             }
-            {!isEmpty(header) && 
-                <div
-                    { ...headerProps}
-                    className={twMerge(`text-soft-text`, headerProps?.className)}
-                >
+            {!isNil(header) && 
+                <div { ...mergeProps("header", props => ({
+                    ...props,
+                    className: `text-soft-text text-app-sm mx-app-xxs`
+                }))}>
                     {header}
                 </div>
             }
-            <div 
-                { ...blockPs}
-                className={twMerge(`col gap-4 bg-strong p-4 border-soft-border rounded-md`, blockPs?.className)}
-            >
-                {children}
-            </div>
-            {!isEmpty(footer) && 
-                <div
-                    { ...footerProps}
-                    className={twMerge(`text-soft-text text-sm italic`, footerProps?.className)}
-                >
+            {!isNil(children) &&
+                <div { ...mergeProps("block", props => ({
+                    ...props,
+                    className: `flex flex-col gap-app-base bg-soft-bg p-app-base rounded-app-md
+                    border border-border text-strong-text shadow-md text-app-sm`
+                }))}>
+                    {children}
+                </div>
+            }
+            {!isNil(footer) && 
+                <div { ...mergeProps("footer", props => ({
+                    ...props,
+                    className: ` text-soft-text text-app-sm mx-app-xxs`
+                }))}>
                     {footer}
                 </div>
             }

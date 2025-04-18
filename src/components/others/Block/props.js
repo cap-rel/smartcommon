@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    id: PropTypes.string.isRequired,
+    children: PropTypes.node,
     title: PropTypes.string,
     header: PropTypes.string,
     footer: PropTypes.string,
