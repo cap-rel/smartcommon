@@ -4,19 +4,14 @@ import { Spinner } from "../Spinner";
 
 import { propTypes } from "./props";
 
-// TODO params
+// TODO badge
 
 export const Button = (props) => {
-    // const basePropsKeys = ["loading", "icon", "children", "destroyTheme", "componentVariant"];
     const { variantProps, mergeProps, setParams } = useVariantToProps("button", props);
 
-    const { loading, icon, text, badge, buttonProps = {} } = variantProps;
+    const { id, loading, icon, text, badge, children, buttonProps = {} } = variantProps;
 
     const { disabled } = buttonProps;
-
-    // useEffect(() => {
-    //     setParams({ disabled, loading });
-    // }, []);
 
     return (
         <button { ...mergeProps("button", props => ({
@@ -36,6 +31,7 @@ export const Button = (props) => {
                     },
                 }))} />
             }
+
             {(!isNil(icon) && !loading) &&
                 <div { ...mergeProps("icon", props => ({
                     ...props,
@@ -44,6 +40,7 @@ export const Button = (props) => {
                     {icon}
                 </div>
             }
+
             {!isNil(text) &&
                 <div { ...mergeProps("text", props => ({
                     ...props,
@@ -52,6 +49,9 @@ export const Button = (props) => {
                     {text}
                 </div>
             }
+
+            {children}
+
         </button>
     );
 };
