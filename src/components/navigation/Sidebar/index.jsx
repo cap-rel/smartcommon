@@ -82,15 +82,21 @@ export const Sidebar = (props) => {
 
         {children}
 
-
         {toggleButton &&
           <Button { ...mergeProps("Button", props => ({
             id: ButtonId,
-            ...props,
             icon: isOpen ? <IoCloseSharp /> : <IoMenuSharp />,
+            ...props,
             buttonProps: {
               ...props.buttonProps,
-              onClick: isOpen ? close : open,
+              onClick: e => {
+                props.buttonProps?.onClick(e);
+                if (isOpen) {
+                  close();
+                } else {
+                  open();
+                }
+              },
               className: `z-50 px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17`
             },
           }))} />

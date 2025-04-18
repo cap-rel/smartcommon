@@ -8,7 +8,10 @@ export const Overlay = (props) => {
     return (
         <div { ...mergeProps("overlay", props => ({
             ...props,
-            onClick: close,
+            onClick: e => {
+                props.onClick(e);
+                close();
+            },
             className: `fixed z-40 bg-black/50 inset-0 duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`
         }))} />
     );
