@@ -10,7 +10,7 @@ export const Block = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            className: `flex flex-col gap-app-xs px-app-base`
+            className: `flex flex-col gap-app-xs mx-app-base`
         }))}>
             {!isNil(title) && 
                 <div { ...mergeProps("title", props => ({

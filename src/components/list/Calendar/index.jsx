@@ -1,10 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { isNil } from "../../../globals/functions";
-import { useStates } from "../../../hooks";
+import { useStates, useVariantToProps } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+import { propTypes } from "./props";
 
-export const Calendar = () => {
+// TODO interval
+
+export const Calendar = (props) => {
+  const { variantProps, mergeProps } = useVariantToProps("calendar", props);
+
+  const { id, yearsInterval, value, onChange } = variantProps;
 
   // Fonction pour obtenir le jour de la semaine d'une date donnée
   function getDayOfWeek(dateString) {
@@ -64,67 +70,128 @@ export const Calendar = () => {
   const monthAfter = month.month === 12 ? null : months[month.month];
 
   return (
-    <div className={`col bg-strong z-50 shadow-md`}>
-        <div className={`row-between-center p-2`}>
-            <Button
-                left={<FaArrowLeft />} 
-                className={`text-primary bg-strong`}
-                onClick={() => {
-                    if (!isNil(monthBefore)) {
-                        set("month", monthBefore)
-                    }
-                }}
-            />
-                {/* {!isNil(monthBefore) && monthBefore.name} */}
-            <div className={`text-xl font-medium uppercase row-v-center gap-4`}>
-              <div onClick={() => yearRef.current.click()} className={`relative`}>
+    <div { ...mergeProps("container", props => ({
+      ...props,
+      className: `flex flex-col bg-soft-bg shadow-md rounded-app-lg border border-border py-app-xs gap-app-xs mx-app-base`
+    }))}>
+
+        <div { ...mergeProps("upperContainer", props => ({
+          ...props,
+          className: `flex justify-between items-center gap-app-xs px-app-xs`
+        }))}>
+
+            <Button { ...mergeProps("PreviousButton", props => ({
+              icon: <FaArrowLeft />,
+              ...props,
+              buttonProps: {
+                ...props.buttonProps,
+                className: `bg-soft-bg p-app-xs text-soft-text text-app-lg`,
+                onClick: e => {
+                  props.buttonProps?.onClick(e);
+                  if (!isNil(monthBefore)) {
+                    set("month", monthBefore)
+                  }
+                }
+              }
+            }))}/>
+
+            <div { ...mergeProps("monthAndYearContainer", props => ({
+              ...props,
+              className: `text-app-base font-app-semibold uppercase flex items-center gap-app-xs`
+            }))}>
+
+              <div { ...mergeProps("month", props => ({
+                  ...props,
+                  className: `relative`
+              }))}>
+
                 {month.name}
-                <select onChange={e => set("month", months[e.target.value - 1])} value={month} className={`absolute opacity-0 inset-0`} id={`year`}>
+
+                <select 
+                  onChange={e => set("month", months[e.target.value - 1])} 
+                  value={month} 
+                  className={`absolute opacity-0 inset-0`} 
+                >
                   {months.map((option, OI) =>
-                    <option key={`month${OI}`} value={option.month}>{option.name}</option>
+                    <option 
+                      key={`month${OI}`} 
+                      value={option.month}
+                    >
+                      {option.name}
+                    </option>
                   )}
                 </select>
+
               </div>
-              <div className={`relative`}>
+
+              <div { ...mergeProps("year", props => ({
+                  ...props,
+                  className: `relative`
+              }))}>
+
                 {year}
-                <select onChange={e => setYear(e.target.value)} value={year} className={`absolute opacity-0 inset-0`} id={`year`}>
+
+                <select 
+                  onChange={e => setYear(e.target.value)} 
+                  value={year} 
+                  className={`absolute opacity-0 inset-0`}
+                >
                   {Array.from([2000, 2001, 2002, 2003]).map((option, OI) =>
                     <option key={`year${OI}`}>{option}</option>
                   )}
                 </select>
+
               </div>
               
             </div>
-            <Button 
-                left={<FaArrowRight/>}
-                className={`text-primary bg-strong`}
-                onClick={() => {
-                    if (!isNil(monthAfter)) {
-                        set("month", monthAfter)
-                    }
-                }}
-            />
-                {/* {!isNil(monthAfter) && monthAfter.name} */}
+
+            <Button { ...mergeProps("NextButton", props => ({
+              icon: <FaArrowRight />,
+              ...props,
+              buttonProps: {
+                ...props.buttonProps,
+                className: `bg-soft-bg p-app-xs text-soft-text text-app-lg`,
+                onClick: e => {
+                  props.buttonProps?.onClick(e);
+                  if (!isNil(monthAfter)) {
+                    set("month", monthAfter)
+                  }
+                }
+              }
+            }))}/>
+
         </div>
 
-        <div className={`relative`}>
-          <div 
-              style={{ backgroundImage: `linear-gradient(to right, var(--color-strong), transparent 5%, transparent 95%, var(--color-strong))` }}
-              className={`absolute inset-0 pointer-events-none`} 
-          />
-          <div className={`row-v-center gap-2 overflow-x-auto p-4 pt-0 -mx-2 scroll-hidden`}>
-              {month.days.map((day, DI) => 
-                <div className={`col-h-center gap-1`}>
-                  <div className={`uppercase text-soft-text font-bold`}>
-                    {day.weekday.slice(0, 1)}
-                  </div>
-                  <div className={`font-semibold size-9 row-full-center rounded-md ${day.day === test ? "bg-primary text-white" : "bg-strong text-strong-text"}`}>
-                      {day.day}
-                  </div>
+        <div { ...mergeProps("lowerContainer", props => ({
+            ...props,
+            className: `flex items-center gap-app-xs overflow-x-auto text-app-sm mx-app-xs`
+        }))}>
+        
+            {month.days.map((day, DI) => 
+              <div { ...mergeProps("dayAndNumberContainer", props => ({
+                  ...props,
+                  className: `flex flex-col items-center gap-app-xxs`
+              }))}>
+                <div { ...mergeProps("weekDay", props => ({
+                    ...props,
+                    className: `uppercase text-soft-text font-app-semibold`
+                }))}>
+                  {day.weekday.slice(0, 1)}
                 </div>
-              )}
-          </div>
+                <div { ...mergeProps("day", props => ({
+                    ...props,
+                    className: `size-8 flex justify-center items-center rounded-app-md text-soft-text font-app-semibold
+                    ${day.day === test ? "bg-primary text-white" : "bg-soft-bg text-strong-text active:brightness-soft"}`
+                }))}> 
+                    {day.day}
+                </div>
+                {/* className={`font-semibold size-9 flex justify-center items-center rounded-md ${day.day === test ? "bg-primary text-white" : "bg-strong text-strong-text"}`}> */}
+              </div>
+            )}
+
         </div>
     </div>
   );
 }
+
+Calendar.propTypes = propTypes;
