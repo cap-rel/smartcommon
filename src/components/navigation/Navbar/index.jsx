@@ -13,12 +13,12 @@ export const Navbar = (props) => {
     return (
         <div { ...mergeProps("navbar", props => ({
             ...props,
-            className: `sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-lg`
+            className: `sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md`
         }))}>     
 
             <div { ...mergeProps("upperNavbar", props => ({
                 ...props,
-                className: `-mx-app-xs px-app-base py-app-xs flex justify-between items-center ${!isNil(bottomLinks) ? "rounded-b-none" :  "rounded-b-app-base"}`
+                className: `p-app-xs flex justify-between items-center ${!isNil(bottomLinks) ? "rounded-b-none" :  "rounded-b-app-base"}`
             }))}>
 
                 <div { ...mergeProps("leftLinks", props => ({
@@ -50,7 +50,6 @@ export const Navbar = (props) => {
                 
                             </Link>
                         );
-
                     })}
 
                 </div>
@@ -119,10 +118,10 @@ export const Navbar = (props) => {
                                 ...props,
                                 ...link,
                                 style: { transition: `filter var(--quick), color var(--medium), border-color var(--medium)` },
-                                className: `bg-primary text-app-base snap-center border-b-4 px-app-base py-app-xs 
-                                font-app-base flex-1 py-app-sm ${disabled && "pointer-events-none"}
-                                ${isActive ? "text-white border-white" : "text-white/50 border-primary"} flex items-center gap-app-sm
-                                active:brightness-soft`
+                                className: `bg-primary text-app-sm snap-center border-b-4 px-app-base py-app-xs 
+                                font-app-base flex-1 ${disabled && "pointer-events-none"}
+                                ${isActive ? "text-white border-white" : "text-white/50 border-primary active:brightness-soft"}
+                                flex items-center gap-app-xs`
                             }))}>
                     
                                 {!isNil(icon) && 
