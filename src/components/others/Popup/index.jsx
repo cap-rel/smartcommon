@@ -58,7 +58,7 @@ export const Popup = (props) => {
                                     buttonProps: {
                                         ...props.buttonProps,
                                         onClick: e => {
-                                            props.onClick(e);
+                                            props.buttonProps?.onClick(e);
                                             close();
                                         },
                                         className: `text-app-lg z-60 bg-soft-bg text-soft-text p-app-xs rounded-app-xl -mr-app-xs -mt-app-xs`
