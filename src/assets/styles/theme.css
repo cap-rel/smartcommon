@@ -19,10 +19,10 @@
 
   /* Colors */
   --color-primary           : #f72d40;
-  --color-secondary         : var(--color-pink-600);
+  --color-secondary         : #fccb4f;
   --color-success           : var(--color-green-600);
-  --color-error             : var(--color-red-600);
-  --color-warning           : var(--color-yellow-600);
+  --color-error             : #f72d40;
+  --color-warning           : #fccb4f;
 
   --color-soft-text         : var(--color-gray-400);
   --color-medium-text       : var(--color-gray-500);
@@ -69,8 +69,9 @@
   --spacing-app-xl          : calc(var(--spacing) * 12);
 
   /* duration */
-  --really-quick            : 50ms;
-  --quick                   : 100ms;
+  --instant                 : 50ms;
+  --really-quick            : 100ms;
+  --quick                   : 200ms;
   --medium                  : 300ms;
   --slow                    : 1000ms;
 

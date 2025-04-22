@@ -1,5 +1,8 @@
 import { propTypes } from "./props";
 import { useVariantToProps } from "../../../hooks";
+import { isNil } from "../../../globals";
+
+// TODO open or toggle
 
 export const Overlay = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("overlay", props);
@@ -9,10 +12,13 @@ export const Overlay = (props) => {
         <div { ...mergeProps("overlay", props => ({
             ...props,
             onClick: e => {
-                props.onClick(e);
+                const onClick = props.onClick;
+                if (!isNil(onClick)) {
+                    onClick(e);
+                }
                 close();
             },
-            className: `fixed z-40 bg-black/50 inset-0 duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`
+            className: `fixed z-40 bg-black/50 inset-0 duration-(--quick) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`
         }))} />
     );
 };

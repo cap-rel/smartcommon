@@ -15,7 +15,7 @@ export const Popup = (props) => {
         closeOnClickOverlay = true,
         closeButton,
         title,
-        close,
+        close = () => {},
         isOpen,
     } = variantProps;
     
@@ -30,18 +30,18 @@ export const Popup = (props) => {
             }
             <div { ...mergeProps("popupBackdrop", props => ({
                 ...props,
-                className: `z-50 fixed inset-0 flex justify-center items-center p-app-lg duration-(--medium) pointer-events-none`
+                className: `z-50 fixed inset-0 flex justify-center items-center p-app-lg pointer-events-none`
             }))}>
 
                 <div { ...mergeProps("popup", props => ({
                     ...props,
-                    className: `w-full max-h-full rounded-app-md p-app-base overflow-y-auto gap-app-base text-app-base flex flex-col bg-soft-bg ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`
+                    className: `w-full max-h-full duration-(--really-quick) rounded-app-md p-app-md pb-app-lg overflow-y-auto gap-app-base text-app-base flex flex-col bg-soft-bg ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`
                 }))}>
 
                     {(!isNil(title) || closeButton) &&
                         <div { ...mergeProps("titleAndButtonContainer", props => ({
                             ...props,
-                            className: `flex justify-between items-center gap-app-base`
+                            className: `flex justify-between items-center w-full gap-app-base`
                         }))}>
 
                             <div { ...mergeProps("title", props => ({
@@ -58,7 +58,10 @@ export const Popup = (props) => {
                                     buttonProps: {
                                         ...props.buttonProps,
                                         onClick: e => {
-                                            props.buttonProps?.onClick(e);
+                                            const onClick = props.buttonProps?.onClick;
+                                            if (!isNil(onClick)) {
+                                                onClick(e);
+                                            }
                                             close();
                                         },
                                         className: `text-app-lg z-60 bg-soft-bg text-soft-text p-app-xs rounded-app-xl -mr-app-xs -mt-app-xs`

@@ -87,7 +87,7 @@ export const Input = (props) => {
       <div { ...mergeProps("inputContainer", props => ({
         ...props,
         className: `min-w-0 w-full flex items-center rounded-app-md 
-          p-app-xs gap-app-xs bg-soft-bg border-border border duration-(--really-quick)
+          p-app-xs gap-app-xs bg-soft-bg border-border border duration-(--instant)
           has-[input:focus]:ring-primary has-[input:focus]:border-primary has-[input:focus]:ring-1 
           has-[input:disabled]:brightness-soft
         `

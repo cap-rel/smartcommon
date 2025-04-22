@@ -9,7 +9,7 @@ import { propTypes } from "./props";
 export const Button = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantToProps("button", props);
 
-    const { id, loading, icon, text, badge, children, buttonProps = {} } = variantProps;
+    const { id, loading, icon, badge, children, buttonProps = {} } = variantProps;
 
     const { disabled } = buttonProps;
 
@@ -18,8 +18,8 @@ export const Button = (props) => {
             ...props,
             className: `flex justify-center items-center 
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
-            text-white duration-(--quick) bg-primary
-            disabled:brightness-soft active:brightness-soft`,
+            text-white duration-(--really-quick) bg-primary
+            not-disabled:active:brightness-soft`,
             disabled: loading || disabled
         }))}>
             {loading &&
@@ -38,15 +38,6 @@ export const Button = (props) => {
                     className: `shrink-0`
                 }))}>
                     {icon}
-                </div>
-            }
-
-            {!isNil(text) &&
-                <div { ...mergeProps("text", props => ({
-                    ...props,
-                    className: `truncate`
-                }))}>
-                    {text}
                 </div>
             }
 

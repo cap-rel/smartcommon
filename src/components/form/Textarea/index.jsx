@@ -24,7 +24,7 @@ export const Textarea = (props) => {
         ...props,
         value: currentValue,
         onChange: handleTextareaOnChange,
-        className: `min-w-0 disabled:brightness-soft p-app-xs rounded-app-md border outline-none placeholder-soft-text border-border bg-soft-bg duration-(--quick) focus:ring-1 ring-primary focus:border-primary`
+        className: `min-w-0 disabled:brightness-soft p-app-xs rounded-app-md border outline-none placeholder-soft-text border-border bg-soft-bg duration-(--really-quick) focus:ring-1 ring-primary focus:border-primary`
       }))}>
       </textarea>
     </Label>

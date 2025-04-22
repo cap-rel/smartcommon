@@ -113,8 +113,8 @@ export const Panel = (props) => {
                 ...props,
                 ref: panelRef,
                 style: variables,
-                className: `rounded-t-app-lg fixed left-0 right-0 z-50 p-app-base
-                gap-app-base flex flex-col duration-(--medium) bg-soft-bg 
+                className: `rounded-t-app-lg fixed left-0 right-0 z-50 p-app-md
+                gap-app-base flex flex-col duration-(--quick) bg-soft-bg 
                 ${isOpen ? "bottom-0" : `-bottom-(--panel-height)`}`
             }))}>
                 {/* <div 
