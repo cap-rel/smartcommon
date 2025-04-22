@@ -3,7 +3,7 @@ import { Navbar, Sidebar } from "../../navigation";
 import { FaBook, FaSyncAlt } from "react-icons/fa";
 import { FaBell, FaDatabase, FaFilePen, FaGear, FaUser } from "react-icons/fa6";
 import { useApi, useStates } from "../../../hooks";
-import { Block } from "../../others";
+import { Block, Button, Popup } from "../../others";
 import { Calendar } from "../../list";
 import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
@@ -25,10 +25,25 @@ const HomePage = () => {
 
     const { states, set } = useStates({
         isSidebarOpen: false,
-        isGettingData: false
+        isGettingData: false,
+        isSyncPopupOpen: false,
+        isConfigSyncSuccess: false,
+        isMyInterventionsSyncSuccess: false,
+        isUrgentInterventionsSyncSuccess: false,
+        isUnassignedInterventionsSyncSuccess: false,
+        isUpdatesSyncSuccess: false
     });
 
-    const { isSidebarOpen, isGettingData } = states;
+    const { 
+        isSidebarOpen, 
+        isGettingData, 
+        isSyncPopupOpen, 
+        isConfigSyncSuccess,
+        isMyInterventionsSyncSuccess,
+        isUrgentInterventionsSyncSuccess,
+        isUnassignedInterventionsSyncSuccess,
+        isUpdatesSyncSuccess
+    } = states;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -50,6 +65,7 @@ const HomePage = () => {
     const updates = useSelector(state => state.updates);
 
     const sync = () => {
+        set("isSyncSuccess", false);
         set("isGettingData", true);
         if (1 === 2) {
             GET("home")
@@ -71,20 +87,71 @@ const HomePage = () => {
             interventionsTypes.forEach(type => getInterventions(type));
             
         }
-        set("isGettingData", false);
-    }
+        setTimeout(() => set("isGettingData", false), 1000);
+        ;
+    };
+
+    // const syncPart = [
+    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
+    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
+    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
+    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
+    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
+    // ]
     
     return (
-        <div className={`fixed inset-0 bg-medium-bg flex flex-col gap-app-base`}>            <Navbar
+        <div className={`fixed inset-0 bg-medium-bg flex flex-col gap-app-base`}>
+            <Popup
+                title={`Synchronisation serveur`}
+                closeButton
+                close={() => set("isSyncPopupOpen", false)}
+                isOpen={isSyncPopupOpen}
+                popupProps={{ className: "gap-app-md items-center" }}
+                Button={{
+                    buttonProps: {
+                        disabled: isGettingData
+                    }
+                }}
+            >
+                <div className="text-center">
+                    Pour synchroniser les données locales avec celles du serveur, appuyer ci-dessous.
+                </div>
+                {/* <div className={`flex flex-col gap-app-base text-medium-text italic font-semibold text-app-sm`}>
+                    {syncPart.map((part, PI) => 
+                        <div className="whitespace-nowrap flex gap-app-xs">
+                            <div>{part.label}</div>
+                            <div>(</div>
+                            <div className="text-secondary">{part.value}</div>
+                            <div>)</div>
+                        </div>
+                    )}
+                </div> */}
+                <Button
+                    icon={<FaSyncAlt />}
+                    iconProps={{
+                        className: `${isGettingData && "animate-spin"}`
+                    }}
+                    buttonProps={{
+                        onClick: () => sync(),
+                        className: "self-center text-5xl p-app-md"
+                    }}
+                />
+                {isGettingData &&
+                    <div className="text-soft-text italic">
+                        Synchronisation en cours ...
+                    </div>
+                }
+            </Popup>            
+            <Navbar
                 title={`Accueil`}
-                leftLinks={[{ icon: <FaSyncAlt /> }]}
+                leftLinks={[{ icon: <FaSyncAlt />, onClick: () => set("isSyncPopupOpen", true) }]}
                 rightLinks={[{ icon: <FaBell /> }]}
             />
                 <Block
                     title={"A syncrhoniser"} 
                     blockProps={{ className: "shadow-none" }}
                 >
-                    {!isEmpty(validatedUpdates)
+                    {/* {!isEmpty(validatedUpdates)
                         ?   validatedUpdates.map((update, UI) =>
                                 <div className={`flex items-center gap-app-xs text-soft-text`}>
                                     <FaDatabase className="text-primary text-xl"/>
@@ -95,7 +162,7 @@ const HomePage = () => {
                                 <FaDatabase className="text-primary text-xl"/>
                                 Aucune donnée
                             </div>
-                    }
+                    } */}
                 </Block>
                 <Block
                     title={"En cours"} 
