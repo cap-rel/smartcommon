@@ -1,13 +1,12 @@
-import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess, logoutSuccess } from "../../reduxStore/reducers/authSlice";
+import { useDispatch } from "react-redux";
+import { unsetUser } from "../../reduxStore/reducers/userSlice";
 // import { API_URL } from "../../globals/constants";
 import { useTranslation } from "react-i18next";
 import { useStates } from "../../hooks";
 
-export const useApi = (API_URL) => {
+export const useApi = (url, token = "") => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const user = useSelector(state => state.auth.user);
 
   const { states, set } = useStates({
     isLoggingIn: false,
@@ -18,7 +17,7 @@ export const useApi = (API_URL) => {
     let request = {
       method: method,
       headers: {
-        Authorization: `Bearer ${user ? user.token : ""}`,
+        Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
@@ -28,10 +27,10 @@ export const useApi = (API_URL) => {
       request = { ...request, body: JSON.stringify(body) };
     }
 
-    return await fetch(`${API_URL}${path}`, request).then(response => {
+    return await fetch(`${url}${path}`, request).then(response => {
       if (!response.ok) {
         if (response.status == 403 || response.status == 401) {
-          dispatch(logoutSuccess());
+          dispatch(unsetUser());
         }
         return response.json().then((json) => {
           throw new Error(json);
@@ -41,34 +40,34 @@ export const useApi = (API_URL) => {
     });
   };
 
-  const login = (body) => {
-    set("isLoggingIn", true);
-    fetchApi("/login", "POST", body)
-    .then((json) => {
-      set("isLoggingIn", false);
-      dispatch(loginSuccess(json.data));
-      toast.success(t("public.loginSuccess", { user: json.data.user }), { duration: 8000, name: "👋" });
-    })
-    .catch((error) => {
-      set("isLoggingIn", false);
-      console.error(error.message);
-      toast.error(t("public.loginError"));
-    });
-  }
+  // const login = (body) => {
+  //   set("isLoggingIn", true);
+  //   fetchApi("/login", "POST", body)
+  //   .then((json) => {
+  //     set("isLoggingIn", false);
+  //     dispatch(loginSuccess(json.data));
+  //     toast.success(t("public.loginSuccess", { user: json.data.user }), { duration: 8000, name: "👋" });
+  //   })
+  //   .catch((error) => {
+  //     set("isLoggingIn", false);
+  //     console.error(error.message);
+  //     toast.error(t("public.loginError"));
+  //   });
+  // }
 
-  const logout = (body) => {
-    set("isLoggingOut", true);
-    fetchApi("/logout", "POST")
-    .then(() => {
-      set("isLoggingOut", false);
-      dispatch(logoutSuccess());
-    })
-    .catch((error) => {
-      set("isLoggingOut", false);
-      console.error(error.message);
-      toast.error(t("public.logoutError"));
-    });
-  }
+  // const logout = (body) => {
+  //   set("isLoggingOut", true);
+  //   fetchApi("/logout", "POST")
+  //   .then(() => {
+  //     set("isLoggingOut", false);
+  //     dispatch(logoutSuccess());
+  //   })
+  //   .catch((error) => {
+  //     set("isLoggingOut", false);
+  //     console.error(error.message);
+  //     toast.error(t("public.logoutError"));
+  //   });
+  // }
 
   const GET = (path) => fetchApi(path);
 
@@ -78,5 +77,5 @@ export const useApi = (API_URL) => {
 
   const DELETE = (path, body) => fetchApi(path, "DELETE", body);
 
-  return { fetchApi, login, logout, GET, POST, PUT, DELETE, states };
+  return { fetchApi, GET, POST, PUT, DELETE, states };
 };
