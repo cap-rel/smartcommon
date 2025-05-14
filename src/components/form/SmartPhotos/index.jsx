@@ -3,7 +3,7 @@ import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../..
 import { Button, Overlay, Panel, Popup } from "../../others";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../globals";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Textarea } from "../Textarea";
 import { Input } from "../Input";
 import { Label } from "../Label";
@@ -224,11 +224,14 @@ export const SmartPhotos = (props) => {
                 <Button { ...mergeProps("DeleteButton", props => ({
                     icon: <FaTrashCan />,
                     ...props,
-                    className: `w-full`,
                     onClick: e => {
                         e.preventDefault();
                         deletePhoto(index);
                         applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                    },
+                    buttonProps: {
+                        ...props.buttonProps,
+                        className: `w-full`,
                     }
                 }))} >
                     Supprimer la photo

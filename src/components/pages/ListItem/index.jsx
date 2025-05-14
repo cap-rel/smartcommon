@@ -5,7 +5,7 @@ import { IoWarning } from "react-icons/io5";
 import { isNil } from "../../../globals";
 
 export const ListItem = (props) => {
-    const { intervention, type = "mine", ...containerProps } = props;
+    const { intervention, type = "mine", isSyncing, ...containerProps } = props;
     const { ref, label, priority, status } = intervention;
 
     const statusList = {
@@ -32,13 +32,13 @@ export const ListItem = (props) => {
     return (
         <div 
             { ...containerProps}
-            className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm active:brightness-soft duration-(--really-quick) bg-soft-bg`}
+            className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm ${isSyncing ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-soft-bg`}
         >
             <div
                 style={{ "--icon-color": `var(--color-${iconColor})` }}
                 className={`p-app-sm bg-(--icon-color)/10 rounded-app-md`}
             >
-                <Icon className={`text-(--icon-color) text-2xl`} /> 
+                <Icon className={`text-(--icon-color) text-2xl ${isSyncing && "animate-spin"}`} /> 
             </div>
             {/* <div>
                 {icon}

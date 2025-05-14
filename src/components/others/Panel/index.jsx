@@ -26,6 +26,7 @@ export const Panel = (props) => {
 
     const { 
         id,
+        zIndex = 40,
         children,
         overlay = true,
         closeOnClickOverlay = true,
@@ -105,6 +106,7 @@ export const Panel = (props) => {
         <>
             {overlay &&
                 <Overlay { ...mergeProps("Overlay", props => ({
+                    zIndex: zIndex,
                     ...props,
                     isOpen,
                     close: closeOnClickOverlay && close
@@ -113,8 +115,8 @@ export const Panel = (props) => {
             <div { ...mergeProps("panel", props => ({
                 ...props,
                 ref: panelRef,
-                style: variables,
-                className: `rounded-t-app-lg fixed left-0 right-0 bottom-0 z-50 p-app-base
+                style: { "--z-index": zIndex + 10, ...variables },
+                className: `rounded-t-app-lg fixed left-0 right-0 bottom-0 z-(--z-index) p-app-base
                 gap-app-base flex flex-col duration-(--medium) bg-soft-bg max-h-4/5
                 ${isOpen ? "translate-y-0" : "translate-y-full"}`
             }))}>

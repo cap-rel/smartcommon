@@ -8,6 +8,7 @@ import { useApi } from "../../../hooks";
 import { API_URL } from "../../../globals";
 import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import { Page } from "../../others/Page";
 
 export const SettingsPage = () => {
     const links = [
@@ -18,7 +19,7 @@ export const SettingsPage = () => {
         // { label: "Déconnexion", icon: <IoLogOut />, to: "/" },
     ];
 
-    const { POST } = useApi(API_URL, useSelector(state => state.user.data.token));
+    const { POST } = useApi(API_URL, useSelector(state => state.session.data.auth.token));
 
     const logout = () => {
         POST("logout")
@@ -40,7 +41,7 @@ export const SettingsPage = () => {
     }
 
     return (
-        <div className={`fixed inset-0 bg-medium-bg overflow-y-auto`}>
+        <Page>
             <Navbar
                 title={`Paramètres`}
                 leftLinks={[{ icon: <FaArrowRotateRight />, onClick: () => resetSettings() }]}
@@ -112,6 +113,6 @@ export const SettingsPage = () => {
             <Tabbar
                 links={links}
             />
-        </div>
+        </Page>
     );
 };

@@ -8,6 +8,7 @@ import { API_URL } from "../../../globals";
 import { setAuth } from "../../../reduxStore/reducers/sessionSlice";
 import { Button } from "../../others";
 import { Input } from "../../form";
+import { Page } from "../../others/Page";
 
 export const LoginPage = () => {
     const { states, set } = useStates({
@@ -56,7 +57,7 @@ export const LoginPage = () => {
     };
 
     return (
-        <div className={`fixed inset-0 bg-soft-bg`}>
+        <Page pageProps={{ className: "bg-soft-bg" }}>
             <div className={`p-app-xl flex flex-col gap-app-xl justify-center items-center h-full w-full`}>
                 <div className={`flex flex-col items-center gap-app-base`}>
                     <img 
@@ -101,6 +102,6 @@ export const LoginPage = () => {
                     </Button>
                 </form>
             </div>
-        </div>
+        </Page>
     );
 }

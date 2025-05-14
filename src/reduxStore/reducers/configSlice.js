@@ -12,7 +12,6 @@ const configSlice = createSlice({
     setConfig(state, action) {
       const newConfig = action.payload;
       state.data = newConfig;
-      console.log(newConfig);
       setLocalJSON("config", newConfig);
     },
     unsetConfig(state) {

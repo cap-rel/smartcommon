@@ -18,6 +18,7 @@ import { BsRocketFill } from "react-icons/bs";
 import { MdArrowForwardIos } from "react-icons/md";
 import { ListItem } from "../ListItem";
 import { setIsTokenChecked } from "../../../reduxStore/reducers/sessionSlice";
+import { Page } from "../../others/Page";
 
 const HomePage = () => {
     const links = [
@@ -39,7 +40,12 @@ const HomePage = () => {
         isUpdatesSyncSuccess: false,
         syncUpdateIndex: null,
 
-        isSyncing: false,
+
+
+        isConfigSyncing: false,
+        isMineInterventionsSyncing: false,
+        isUrgentInterventionsSyncing: false,
+        isUnassignedInterventionsSyncing: false,
     });
 
     const { 
@@ -53,7 +59,10 @@ const HomePage = () => {
         isUpdatesSyncSuccess,
         syncUpdateIndex,
 
-        isSyncing
+        isConfigSyncing,
+        isMineInterventionsSyncing,
+        isUrgentInterventionsSyncing,
+        isUnassignedInterventionsSyncing,
     } = states;
 
     const dispatch = useDispatch();
@@ -63,71 +72,72 @@ const HomePage = () => {
 
     const { POST, GET, PUT } = useApi(API_URL, session.auth.token);
 
-    const interventionsTypes = ["mine", "urgent", "unassigned"];
+    const isSyncing = isConfigSyncing || isMineInterventionsSyncing || isUrgentInterventionsSyncing || isUnassignedInterventionsSyncing;
 
-    const getInterventions = (type) => {
-        POST(`interventions/${type}`)
-            .then(json => {
-                console.log(`"${type}"interventions GET success"`)
-                dispatch(setInterventionsFromType(type, json))
-            })
-            .catch(err => {
-                console.error(`"${type}" interventions GET error`);
-                console.error(err);
-            });
+    const interventionsTypes = {
+        mine: { 
+            isSyncing: "isMineInterventionsSyncing",
+            toast: "Mise à jour des interventions à faire",
+        },
+        urgent: { 
+            isSyncing: "isUrgentInterventionsSyncing",
+            toast: "Mise à jour des interventions urgentes",
+        },
+        unassigned: { 
+            isSyncing: "isUnassignedInterventionsSyncing",
+            toast: "Mise à jour des interventions non assignées",
+        },
     };
 
-    const updates = useSelector(state => state.updates.data);
-
-    const toastStatus = {
-        config: {
-            loading: "Mise à jour de la configuration...",
-            success: "Mise à jour",
-            error: "Echec de la mise à jour"
-        },
-        updates:  {
-            loading: "Envoi des comptes-rendus d'interventions non-synchronisés...",
-            success: "Envoyés",
-            error: "Echec de l'envoi"
-        },
-        interventions: {
-            loading: "Mise à jour des interventions...",
-            success: "Mises à jour",
-            error: "Echec de la mise à jour"
-        },
+    const setToast = (toastId, isSyncing, toastText ,status = "success") => {
+        setTimeout(() => {
+            set(isSyncing, false);
+            toast.dismiss(toastId);
+            if (status === "error") {
+                toast.error(toastText);
+            } else {
+                toast.success(toastText);
+            }
+        }, 1000);
     }
 
-    const { config: configStatus, updates: updatesStatus, interventions: interventionsStatus } = toastStatus;
+    const POSTIntervention = (type) => {
+        const interventionType = interventionsTypes[type];
+        const interventionToast = toast.loading(`${interventionType.toast}...`);
+
+        POST(`interventions/${type}`)
+            .then(json => {
+                dispatch(setInterventionsFromType({ type, interventions: json }));
+                setToast(interventionToast, interventionType.isSyncing, interventionType.toast);
+                console.log(`"${type}" interventions GET success"`)
+            })
+            .catch(err => {
+                setToast(interventionToast, interventionType.isSyncing, interventionType.toast, "success");
+                console.error(`"${type}" interventions GET error`);
+                console.error(err);
+            })
+    }
 
     const sync = () => {
-        set("isSyncing", true);
+        set("isConfigSyncing", true);
 
-        const configToast = toast.loading(toast)
+        const configToast = toast.loading("Mise à jour de la configuration...");
+
         GET("home")
             .then(json => {
                 dispatch(setConfig(json.home));
-                console.log("Config GET success.")
+                setToast(configToast, "isConfigSyncing", "Mise à jour de la configuration");
+                console.log("Config GET success.");
             })
             .catch(err => {
+                setToast(configToast, "isConfigSyncing", "Mise à jour de la configuration", "error");
                 console.error("Config GET error");
                 console.error(err);
-            });
-
-        updates.forEach((update, UI) => {
-            PUT(`intervention/${update.data.rowid}`)
-                .then(() => {
-                    dispatch(removeUpdate(UI))
-                    console.log(`Update ${UI} synchronization PUT Success`);
-                })
-                .catch(err => {
-                    console.error(`Update ${UI} synchronization PUT Error`);
-                    console.error(err);
-                });
-        }),
-
-        interventionsTypes.forEach(type => getInterventions(type));
-
-        set("isSyncing", false);
+            })
+                
+            POSTIntervention("mine");
+            POSTIntervention("urgent");
+            POSTIntervention("unassigned");
     };
 
     const syncUpdate = (index) => {
@@ -135,16 +145,21 @@ const HomePage = () => {
         set("syncUpdateIndex", index);
         setTimeout(() => {
             PUT(`intervention/${update.data.rowid}`)
-                .then(json => dispatch(removeUpdate(index)))
+                .then(() => {
+                    dispatch(removeUpdate(index))
+                    toast.success(`Intervention ${update.data.ref}`)
+                    console.log(`Update { ref => ${update.data.ref}, index => ${index} } synchronization PUT Success`);
+                })
                 .catch(err => {
-                    console.log(err)
-                });
-            set("syncUpdateIndex", null);
-            toast.success("Intervention synchronisée");
+                    toast.error(`Intervention ${update.data.ref}`)
+                    console.error(`Update { ref => ${update.data.ref}, index => ${index} } synchronization PUT Error`);
+                    console.error(err);
+                })
+                .finally(() => {
+                    set("syncUpdateIndex", null);
+                })
         }, 1000)
     };
-
-    const drafts = useSelector(state => state.drafts.data);
 
     useEffect(() => {
         if (!session.isTokenChecked) {
@@ -160,11 +175,14 @@ const HomePage = () => {
         }
     }, []);
 
+    const updates = useSelector(state => state.updates.data);
+    const drafts = useSelector(state => state.drafts.data);
+
     return (
-        <div className={`fixed inset-0 bg-medium-bg overflow-y-auto`}>
+        <Page>
             <Overlay
                 isOpen={isSyncing}
-                overlayProps={{ className: "bg-transparent" }}
+                overlayProps={{ className: "" }}
             />
             {/* <Popup
                 title={`Synchronisation serveur`}
@@ -236,6 +254,7 @@ const HomePage = () => {
                                         key={`update${UI}`}
                                         type={`update`}
                                         intervention={{ ...update.data, status: "update" }}
+                                        onClick={() => syncUpdate(UI)}
                                     />
                                 )}
                             </div>
@@ -270,7 +289,7 @@ const HomePage = () => {
                     }
                 </Block> */}
                 <Tabbar links={links} />
-        </div>
+        </Page>
     );
 };
 

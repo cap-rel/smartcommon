@@ -19,18 +19,18 @@ export const useLabel = (props) => {
         helpProps: props.helpProps,
     }
 
-    delete props.label;
-    delete props.help;
-    delete props.prefix;
-    delete props.suffix;
-    delete props.containerProps;
-    delete props.labelContainerProps;
-    delete props.labelProps;
-    delete props.childrenContainerProps;
-    delete props.starProps;
-    delete props.prefixProps;
-    delete props.suffixProps;
-    delete props.helpProps
+    // delete props.label;
+    // delete props.help;
+    // delete props.prefix;
+    // delete props.suffix;
+    // delete props.containerProps;
+    // delete props.labelContainerProps;
+    // delete props.labelProps;
+    // delete props.childrenContainerProps;
+    // delete props.starProps;
+    // delete props.prefixProps;
+    // delete props.suffixProps;
+    // delete props.helpProps
 
     return { extractedLabelProps: labelProps, filteredProps: props };
 }

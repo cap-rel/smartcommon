@@ -109,7 +109,7 @@ export const Input = (props) => {
           ...props,
           ...mergeQuickProps(props, ["type", "placeholder", "required", "disabled", 
           "readOnly", "min", "max", "minLength", "maxLength", "name", "pattern", "size", "onBlur", "onFocus"]),
-          className: `outline-hidden min-w-0 grow placeholder-soft-text truncate`,
+          className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: handleInputOnChange,
           value: currentValue,
           type: isPassword ? (isPasswordVisible ? "text" : "password") : type

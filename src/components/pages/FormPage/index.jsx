@@ -10,6 +10,7 @@ import { API_URL, isArray, isNil, isUndefined } from "../../../globals";
 import { useEffect } from "react";
 import { setComponent } from "../../../globals/maps/component";
 import { SmartVideos } from "../../form/SmartVideos";
+import { Page } from "../../others/Page";
 
 // TODO do maybe an upper stepper
 
@@ -29,75 +30,55 @@ export const FormPage = () => {
 
     const config = useSelector(state => state.config.data) ?? {};
 
-    const initialDraft = Object.fromEntries(Object.entries(config).map(([attrKey, attr]) => {
-        let value;
-        if (!isNil(intervention?.[attrKey])) {
-            value = intervention[attrKey]
-        } else {
-            value = attr.defaultValue;
-        }
+    // const initialDraft = Object.fromEntries(Object.entries(config).map(([attrKey, attr]) => {
+    //     let value;
+    //     if (!isNil(intervention?.[attrKey])) {
+    //         value = intervention[attrKey]
+    //     } else {
+    //         value = attr.defaultValue;
+    //     }
 
-        return [attrKey, value];
-    }));
+    //     return [attrKey, value];
+    // }));
+
+    const formAttributes = Object.entries(config).reduce((acc, [attributeKey, attribute]) => {
+        const visible = attribute.visible;
+        if (isArray(visible) && visible.includes("update")) {
+            return { ...acc, [attributeKey]: attribute };
+        }
+        return acc;
+    }, {});
 
     const { states, set } = useStates({
         // formValues: draft ?? initialDraft,
-        isSearchbarOpen: false,
-        sign: false,
-        testValues: {
-            desc: "",
-            photos: [],
-        }
+        formValues: Object.entries(formAttributes).reduce((acc, [attributeKey, attribute]) => ({ ...acc, [attributeKey]: intervention?.[attributeKey] ?? attribute.defaultValue ?? (attribute.type === "photos" ? null : "") }), {})
     });
 
-    const { testValues, formValues, isSearchbarOpen, sign } = states;
+    const { formValues } = states;
 
-    const { desc, photos } = testValues;
 
-    useEffect(() => {
-        dispatch(saveDraft(formValues));
-    }, [formValues]);
+    // useEffect(() => {
+    //     console.log(formValues);
+    //     // dispatch(saveDraft(formValues));
+    // }, [formValues]);
 
-    const testConfig = {
-        ref: { visible: true, label: "Référence" },
-        description: { visible: false, label: "Description" },
-        note_public: { visible: true, label: "Note publique" },
-        date_inter: { visible: true, label: "Date d'intervention" },
-        event_typ: { visible: true, label: "Type d'évènement" },
-        event_ty: { visible: true, label: "Type d'évènement" },
-        event_t: { visible: true, label: "Type d'évènement" },
-        event_: { visible: true, label: "Type d'évènement" },
-        event: { visible: true, label: "Type d'évènement" },
-        even: { visible: true, label: "Type d'évènement" },
-        eve: { visible: true, label: "Type d'évènement" }
-    };
-
-    const test = () => {
-        set("sign", true)
-    };
-
-    const { PUT } = useApi(API_URL, useSelector(state => state.user.data.token));
+    const { PUT } = useApi(API_URL, useSelector(state => state.session.data.auth.token));
 
     const handleSubmit = e => {
         e.preventDefault();
-        PUT(`intervention/${id}`, { ...intervention, description: "Description modifiée" })
+        PUT(`intervention/${id}`, formValues)
             .then(json => {
                 console.log("Intervention PUT success.");
             })
             .catch(err => {
                 console.error("Intervention PUT error");
+                console.error(err);
             })
-        
-        // navigate(originLocation.to, originLocation);
+            .finally(() => navigate("/interventions"));
     };
 
-    // const test2 = [];
-
     return (
-        <div className={`fixed inset-0 bg-soft-bg text-app-sm text-strong-text`}>
-            {/* <Navbar>
-                Bonjour
-            </Navbar> */}
+        <Page>
             <div className={`p-app-base flex flex-col gap-app-base relative h-full overflow-y-auto`}>
                 <div className="flex flex-col gap-app-xs border-b border-border pb-app-base">
                     <div className="text-xl text-center uppercase text-strong-text font-app-semibold">
@@ -113,10 +94,11 @@ export const FormPage = () => {
                 })} */}
                 <form onSubmit={handleSubmit} className="flex flex-col gap-app-base">
 
-                    <SmartPhotos label={`Photos`} multiple />
+                    {/* <SmartPhotos label={`Photos`} multiple />
                     <SmartAudios label={`Audios`} multiple />
                     <SmartVideos label={`Videos`} multiple />
                     <Signature label={`Signature`} />
+                    <Duration/>
                     <Select 
                         label={`Select`}
                         multiple
@@ -125,26 +107,23 @@ export const FormPage = () => {
                     <Rating
                         label={`Rating`}
                         maxRating={6}
-                    />
+                    /> */}
 
-                    {!isNil(config) && Object.entries(config).map(([attributeKey, attribute], AI) => {
-                        const { type, visible } = attribute;
-                        // console.log(attribute);
+                    {Object.entries(formAttributes).map(([attributeKey, attribute], AI) => {
+                        const type = attribute.type;
 
-                        if (isArray(visible) && visible.includes("update")) {
-                            const Component = setComponent(type);
-                            // test2.push([Component, attribute]);
-                            // console.log(test2)
+                            const Component = setComponent(type === "html" ? "text" : type);
                             if (!isUndefined(Component)) {
                                 return (
                                     <Component
-                                        defaultValue={intervention?.[attributeKey] ?? attribute.defaultValue}
                                         { ...attribute}
+                                        value={formValues[attributeKey]}
+                                        onChange={value => set(`formValues.${attributeKey}`, value)}
                                     />
                                 );
                             }
                            
-                        }
+                        
                     })}
 
                     <Button
@@ -159,13 +138,13 @@ export const FormPage = () => {
 
             </div>
 
-            <Popup
+            {/* <Popup
                 isOpen={sign}
                 // closeOnClickOverlay={false}
                 close={() => set("sign", false)}
             >
                 <Signature />
-            </Popup>
+            </Popup> */}
             
            
            
@@ -187,7 +166,7 @@ export const FormPage = () => {
                     : "Rechercher"
                 } 
             </Button> */}
-        </div>
+        </Page>
     );
 };
 

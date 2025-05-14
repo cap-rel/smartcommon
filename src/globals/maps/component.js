@@ -1,6 +1,8 @@
 import { useMemo } from "react";
-import { Address, Array, Audios, Boolean, Check, ColorPicker, Duration, Editor, Files, GpsPoints, Input, Photos, Range, Rating, Select, Signature, Textarea, Videos } from "../../components";
+import { Address, Array, Audios, Boolean, Check, ColorPicker, Duration, Editor, Files, GpsPoints, Input, Photos, Range, Rating, Select, Signature, SmartPhotos, Textarea, Videos } from "../../components";
 import { isUndefined } from "../functions";
+import { SmartVideos } from "../../components/form/SmartVideos";
+import { SmartAudios } from "../../components/form/SmartAudios";
 
 export function setComponent(type) {
     const COMPONENTS_MAP = useMemo(() => ({
@@ -33,9 +35,9 @@ export function setComponent(type) {
         address      : Address,
         gpsPoints    : GpsPoints,
         files        : Files,
-        audios       : Audios,
-        videos       : Videos,
-        photos       : Photos,
+        audios       : SmartAudios,
+        videos       : SmartVideos,
+        photos       : SmartPhotos,
         signature    : Signature,
         // icon         : IconSelect,
         color        : ColorPicker,

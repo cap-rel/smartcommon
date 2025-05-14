@@ -165,7 +165,7 @@ export const Signature = (props) => {
             ...props,
             inputProps: {
               placeholder: "Nom du signataire",
-              ...props.inputProps
+              ...props.inputProps,
             }
           }))} />
                     {/* </div> */}

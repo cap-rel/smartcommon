@@ -4,7 +4,6 @@ import { twMerge } from "tailwind-merge";
 import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 
 import { durationPropTypes } from "./props";
-import { durationVariants } from "./variants";
 
 // id,
 // label,
@@ -40,7 +39,7 @@ import { durationVariants } from "./variants";
 // durationContainerProps,
 
 export const Duration = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("Duration", props);
+    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("duration", props);
 
     const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
@@ -82,14 +81,14 @@ export const Duration = (props) => {
         suffix: `:`,
         value: key === "days" ? secsToDuration(currentValue)[key] : formatUnit(secsToDuration(currentValue)[key]),
         onChange: value => handleInputOnChange(key, value),
-        inputProps: { className: `text-app-xl text-center` }, 
-        inputContainerProps: { className: `p-0 border-0 has-[input:focus]:ring-0` },
-        containerProps: { className: "gap-0 flex-1" },
-        labelContainerProps: { className: "self-center" },
-        labelProps: { className: "text-soft-text italic font-app-base text-app-sm" },
-        childrenContainerProps: { className: `justify-between items-center ${key === "days" && "border-r border-border"}` },
-        prefixProps: { className: "opacity-0" },
-        suffixProps: { className: `${(key === "seconds" || key === "days") && "opacity-0"}` },
+        inputProps: { ...props.inputProps, className: `text-app-xl text-center` }, 
+        inputContainerProps: { ...props.inputContainerProps, className: `p-0 border-0 has-[input:focus]:ring-0` },
+        containerProps: { ...props.containerProps, className: "gap-0 flex-1" },
+        labelContainerProps: { ...props.labelContainerProps, className: "self-center" },
+        labelProps: { ...props.labelProps, className: "text-soft-text italic font-app-base text-app-sm" },
+        childrenContainerProps: { ...props.childrenContainerProps, className: `flex justify-between items-center ${key === "days" && "border-r border-border"}` },
+        prefixProps: { ...props.prefixProps, className: "opacity-0" },
+        suffixProps: { ...props.suffixProps, className: `${(key === "seconds" || key === "days") && "opacity-0"}` },
     });
 
     return (
@@ -107,7 +106,7 @@ export const Duration = (props) => {
                 ...props,
                 className: `p-app-xs w-full rounded-app-md border flex items-center duration-(--instant) bg-soft-bg has-[input:focus]:ring-1 ring-primary has-[input:focus]:border-primary border-border`
             }))}>
-                <Input { ...mergeProps("DaysInput", props => inputPropsDependingOnUnit("days", units.days, props))} />
+                <Input { ...mergeProps("DaysInputs", props => inputPropsDependingOnUnit("days", units.days, props))} />
                 <Input { ...mergeProps("HoursInput", props => inputPropsDependingOnUnit("hours", units.hours, props))} />
                 <Input { ...mergeProps("MinutesInput", props => inputPropsDependingOnUnit("minutes", units.minutes, props))} />
                 <Input { ...mergeProps("SecondsInput", props => inputPropsDependingOnUnit("seconds", units.seconds, props))} />
