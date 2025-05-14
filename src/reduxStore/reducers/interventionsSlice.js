@@ -3,10 +3,12 @@ import { getLocalJSON, removeLocal, setLocalJSON } from "../../globals";
 
 // TODO init
 
-const initialState = getLocalJSON("interventions") ?? null;
+const initialState = {
+    data: getLocalJSON("interventions") ?? { mine: [], urgent: [], unassigned: [] }
+};
 
 function setNewInterventions(state, value) {
-    state = value;
+    state.data = value;
     setLocalJSON("interventions", value);
 }
 
@@ -19,24 +21,24 @@ const interventionsSlice = createSlice({
             setNewInterventions(state, interventions);
         },
         unsetInterventions(state) {
-            state = null;
+            state.data = { mine: [], urgent: [], unassigned: [] };
             removeLocal("interventions");
         },
         setInterventionsFromType(state, action) {
             const { type, interventions } = action.payload;
-            const newInterventions = { ...state, [type]: interventions };
+            const newInterventions = { ...state.data, [type]: interventions };
             setNewInterventions(state, newInterventions);
         },
         setMyInterventions(state, action) {
-            const myInterventions = { ...state, mine: action.payload };
+            const myInterventions = { ...state.data, mine: action.payload };
             setNewInterventions(state, myInterventions);
         },
         setUrgentInterventions(state, action) {
-            const urgentInterventions = { ...state, urgent: action.payload };
+            const urgentInterventions = { ...state.data, urgent: action.payload };
             setNewInterventions(state, urgentInterventions);
         },
         setUnassignedInterventions(state, action) {
-            const unassignedInterventions = { ...state, unassigned: action.payload };
+            const unassignedInterventions = { ...state.data, unassigned: action.payload };
             setNewInterventions(state, unassignedInterventions);
         }
     },

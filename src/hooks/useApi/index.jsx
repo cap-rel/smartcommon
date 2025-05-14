@@ -1,5 +1,5 @@
 import { useDispatch } from "react-redux";
-import { unsetUser } from "../../reduxStore/reducers/userSlice";
+import { unsetAuth } from "../../reduxStore/reducers/sessionSlice";
 // import { API_URL } from "../../globals/constants";
 import { useTranslation } from "react-i18next";
 import { useStates } from "../../hooks";
@@ -7,11 +7,6 @@ import { useStates } from "../../hooks";
 export const useApi = (url, token = "") => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-
-  const { states, set } = useStates({
-    isLoggingIn: false,
-    isLoggingOut: false
-  });
 
   const fetchApi = async (path, method = "GET", body = "") => {
     let request = {
@@ -29,9 +24,10 @@ export const useApi = (url, token = "") => {
 
     return await fetch(`${url}${path}`, request).then(response => {
       if (!response.ok) {
-        if (response.status == 403 || response.status == 401) {
-          dispatch(unsetUser());
+        if (response.status == 401) {
+          dispatch(unsetAuth());
         }
+
         return response.json().then((json) => {
           throw new Error(json);
         });
@@ -77,5 +73,5 @@ export const useApi = (url, token = "") => {
 
   const DELETE = (path, body) => fetchApi(path, "DELETE", body);
 
-  return { fetchApi, GET, POST, PUT, DELETE, states };
+  return { fetchApi, GET, POST, PUT, DELETE };
 };

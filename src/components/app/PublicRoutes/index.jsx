@@ -1,7 +1,9 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, Route } from "react-router-dom";
+import { isNil } from "../../../globals";
+import { useEffect } from "react";
 
 export const PublicRoutes = () => {
-    const user = useSelector(state => state.auth.user);
-    return user ? <Navigate to="/" replace/> : <Outlet />;
+    const auth = useSelector(state => state.session.data.auth);
+    return auth ? <Navigate to="/" replace/> : <Outlet />;
 };

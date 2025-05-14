@@ -19,10 +19,15 @@
 
   /* Colors */
   --color-primary           : #f72d40;
+  --color-strong-primary    : var(--color-red-700);
+  /* --color-primary           : var(--color-blue-600); */
   --color-secondary         : #fccb4f;
   --color-success           : var(--color-green-600);
+  --color-strong-success    : var(--color-green-700);
   --color-error             : #f72d40;
   --color-warning           : #fccb4f;
+  --color-strong-warning    : var(--color-yellow-600);
+  --color-neutral           : var(--color-gray-600);
 
   --color-soft-text         : var(--color-gray-400);
   --color-medium-text       : var(--color-gray-500);
@@ -34,10 +39,31 @@
 
   --color-border            : var(--color-gray-300);
 
+  --color-dark-primary      : #6d4aff;
+  --color-dark-secondary    : var(--color-pink-500);
+  --color-dark-success      : var(--color-green-500);
+  --color-dark-error        : var(--color-red-500);
+  --color-dark-warning      : var(--color-yellow-500);
+  --color-dark-neutral      : var(--color-gray-500);
+
+  --color-dark-soft-text    : var(--color-gray-400);
+  --color-dark-medium-text  : var(--color-gray-500);
+  --color-dark-strong-text  : var(--color-gray-900);
+
+  --color-dark-soft-bg      : white;
+  --color-dark-medium-bg    : var(--color-gray-100);
+  --color-dark-strong-bg    : var(--color-gray-200);
+
+  --color-dark-border       : var(--color-gray-300);
+
   /* filter-brightness */
   --brightness-soft         : 90%;
   --brightness-medium       : 80%;
   --brightness-strong       : 70%;
+
+  --brightness-dark-soft    : 120%;
+  --brightness-dark-medium  : 140%;
+  --brightness-dark-strong  : 160%;
 
   /* border-radius */
   --radius-app-base         : 0;
@@ -58,6 +84,10 @@
   --text-app-lg             : var(--text-xl);
   --text-app-xl             : var(--text-2xl);
   --text-app-2xl            : var(--text-3xl);
+  --text-app-3xl            : var(--text-4xl);
+  --text-app-4xl            : var(--text-5xl);
+  --text-app-5xl            : var(--text-6xl);
+  --text-app-6xl            : var(--text-7xl);
 
   /* spacing */
   --spacing-app-xxs         : calc(var(--spacing) * 1);
@@ -77,28 +107,52 @@
 
   /* leading, tracking, shadow, blur, border */
 
+  /* SmartInterventions colors */
+  --color-mine: var(--color-primary);
+  --color-update: var(--color-secondary);
+  --color-unassigned: var(--color-neutral);
+  --color-draft: var(--color-warning);
+  
+  --color-create: var(--color-primary);
+  --color-edit: var(--color-warning);
+  --color-delete: var(--color-error);
+
+  --color-strong-to-complete-status: var(--color-strong-warning);
+  --color-to-complete-status: var(--color-warning);
+
+  --color-strong-in-progress-status: var(--color-strong-primary);
+  --color-in-progress-status: var(--color-primary);
+
+  --color-done-status: var(--color-success);
+  --color-strong-done-status: var(--color-strong-success);
+
+  --color-draft-status: var(--color-warning);
+  --color-update-status: var(--color-primary);
+
+  --color-urgent: var(--color-error);
 }
 
 .dark {
-  --color-primary           : #6d4aff;
-  --color-secondary         : var(--color-pink-500);
-  --color-success           : var(--color-green-500);
-  --color-error             : var(--color-red-500);
-  --color-warning           : var(--color-yellow-500);
+  --color-primary           : var(--color-dark-primary);
+  --color-secondary         : var(--color-dark-secondary);
+  --color-success           : var(--color-dark-success);
+  --color-error             : var(--color-dark-error);
+  --color-warning           : var(--color-dark-warning);
+  --color-neutral           : var(--color-dark-neutral); 
 
-  --color-soft-text         : var(--color-gray-400);
-  --color-medium-text       : var(--color-gray-500);
-  --color-strong-text       : var(--color-gray-900);
+  --color-soft-text         : var(--color-dark-soft-text);
+  --color-medium-text       : var(--color-dark-medium-text);
+  --color-strong-text       : var(--color-dark-strong-text);
 
-  --color-soft-bg           : white;
-  --color-medium-bg         : var(--color-gray-100);
-  --color-strong-bg         : var(--color-gray-200);
+  --color-soft-bg           : var(--color-dark-soft-bg);
+  --color-medium-bg         : var(--color-dark-medium-bg);
+  --color-strong-bg         : var(--color-dark-strong-bg);
 
-  --color-border            : var(--color-gray-300);
+  --color-border            : var(--color-dark-border);
 
-  --brightness-soft         : 120%;
-  --brightness-medium       : 140%;
-  --brightness-strong       : 160%;
+  --brightness-soft         : var(--color-dark-soft);
+  --brightness-medium       : var(--color-dark-medium);
+  --brightness-strong       : var(--color-dark-strong);
 }
 
   
@@ -169,4 +223,3 @@
   @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
   
   @theme {  --color-mint-500: oklch(0.72 0.11 178);} */
-  

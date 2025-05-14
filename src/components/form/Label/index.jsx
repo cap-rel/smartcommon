@@ -1,4 +1,4 @@
-import { isEmpty, isNil, mergeProps } from "../../../globals/functions";
+import { isNil } from "../../../globals/functions";
 
 // IDEA Mini-popup for help
 
@@ -18,7 +18,7 @@ export const Label = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            className: `flex flex-col gap-app-xs`
+            className: `flex flex-col gap-app-sm min-w-0`
         }))}>
 
             {!isNil(label) && 
@@ -29,7 +29,7 @@ export const Label = (props) => {
 
                     <label { ...mergeProps("label", props => ({
                         ...props,
-                        className: `text-strong-text`,
+                        className: `font-app-semibold`,
                         htmlFor: id
                     }))}>
                         {label}
@@ -54,10 +54,7 @@ export const Label = (props) => {
             }))}>
 
                 {!isNil(prefix) &&
-                    <div { ...mergeProps("prefix", props => ({
-                        ...props,
-                        className: `text-strong-text`
-                    }))}>
+                    <div { ...mergeProps("prefix", props => props)}>
                         {prefix}
                     </div>
                 }
@@ -65,10 +62,7 @@ export const Label = (props) => {
                 {children}
 
                 {!isNil(suffix) &&
-                    <div { ...mergeProps("suffix", props => ({
-                        ...props,
-                        className: `text-strong-text`
-                    }))}>
+                    <div { ...mergeProps("suffix", props => props)}>
                         {suffix}
                     </div>
                 }

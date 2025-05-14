@@ -1,5 +1,5 @@
 import settingsReducer from "./reducers/settingsSlice";
-import authReducer from "./reducers/userSlice";
+import sessionReducer from "./reducers/sessionSlice";
 import configReducer from "./reducers/configSlice";
 import draftsReducer from "./reducers/draftsSlice";
 import updatesReducer from "./reducers/draftsSlice";
@@ -9,7 +9,7 @@ import { combineReducers } from "redux";
 import { configureStore } from "@reduxjs/toolkit";
 
 const rootReducer = combineReducers({
-  auth: authReducer,
+  session: sessionReducer,
   settings: settingsReducer,
   config: configReducer,
   updates: updatesReducer,

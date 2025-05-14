@@ -207,8 +207,19 @@ export const useVariantToProps = (componentKey, props) => {
             return mergeDefaultElementProps(mergedProps, props);
         }
     };
+
+    const mergeQuickProps = (props, quickPropsKeys = []) => {
+        return Object.fromEntries(quickPropsKeys.map(key => {
+
+            const quickProp = isArray(key) ? variantProps[key[0]] : variantProps[key];
+            const defaultProp = isArray(key) ? key[1] : undefined;
+            const currentKey = isArray(key) ? key[0] : key;
+
+            return [currentKey, quickProp ?? props[key] ?? defaultProp]
+        }))
+    };
     
-    return { variantProps, mergeProps, setParams };
+    return { variantProps, mergeProps, mergeQuickProps, setParams };
 };
 
 

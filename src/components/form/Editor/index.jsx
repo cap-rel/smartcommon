@@ -2,7 +2,7 @@ import { isNil } from "../../../globals/functions";
 import { Label, Textarea } from "../../form";
 // import MDEditor, { commands } from '@uiw/react-md-editor';
 import { propTypes } from "./props";
-import { useStates } from "../../../hooks";
+import { useStates, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEye, FaMarkdown } from "react-icons/fa6";
 import { Button } from "../../others";
@@ -34,6 +34,9 @@ export const Editor = ({
   htmlButtonLabelProps,
   ...props
 }) => {
+
+  const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("Editor", props);
+
   const textareaPs = { ...props, ...textareaProps };
   const { required, readOnly, disabled, id, value, defaultValue } = textareaPs;
 
@@ -69,7 +72,7 @@ export const Editor = ({
   };
 
   return (
-    <Label { ...allLabelPs}>
+    <Label { ...allLabelPs} mergeProps={mergeProps}>
       <div
         { ...textareaContainerProps} 
         className={twMerge(`rounded-md col`, textareaContainerProps?.className)}

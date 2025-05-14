@@ -10,12 +10,12 @@ export const Block = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            className: `flex flex-col gap-app-xs mx-app-base`
+            className: `flex flex-col gap-app-xs my-app-base`
         }))}>
             {!isNil(title) && 
                 <div { ...mergeProps("title", props => ({
                     ...props,
-                    className: `font-app-semibold text-strong-text text-app-base mx-app-xxs`
+                    className: `font-app-semibold text-strong-text text-app-base mx-app-base`
                 }))}>
                     {title}
                 </div>
@@ -31,7 +31,7 @@ export const Block = (props) => {
             {!isNil(children) &&
                 <div { ...mergeProps("block", props => ({
                     ...props,
-                    className: `flex flex-col gap-app-base bg-soft-bg p-app-base rounded-app-md
+                    className: `flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm rounded-app-md
                     border border-border text-strong-text shadow-md text-app-sm`
                 }))}>
                     {children}

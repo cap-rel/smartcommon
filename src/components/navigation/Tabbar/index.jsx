@@ -66,18 +66,18 @@ export const Tabbar = (props) => {
           <Link key={`link${LI}`} { ...mergeProps("link", props => ({
             ...props,
             ...link,
-            className: `flex-1 py-app-sm ${disabled && "pointer-events-none"}`
+            className: `flex-1 py-app-xs ${disabled && "pointer-events-none"}`
           }))}>
 
             <div { ...mergeProps("iconAndLabelContainer", props => ({
               ...props,
-              className: `w-full flex flex-col items-center gap-app-xxs`
+              className: `flex flex-col items-center gap-app-xxs`
             }))}>
 
               {!isNil(icon) && 
                 <div { ...mergeProps("icon", props => ({
                   ...props,
-                  className: `text-lg flex justify-center items-center ${active ? "text-primary" : "text-soft-text"}`
+                  className: `text-lg flex justify-center items-center py-app-xs px-app-md rounded-app-xl ${active ? "text-primary  bg-primary/20" : "text-soft-text"}`
                 }))}>
                   {currentIcon}
                 </div>

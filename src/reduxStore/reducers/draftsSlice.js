@@ -1,12 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getLocalJSON, removeLocal, setLocalJSON } from "../../globals";
+import { formatDate, getLocalJSON, removeLocal, setLocalJSON } from "../../globals";
 
 // TODO init
 
-const initialState = getLocalJSON("drafts") ?? null;
+const initialState = {
+    data: getLocalJSON("drafts") ?? []
+};
 
 function setNewDrafts(state, value) {
-    state = value;
+    state.data = value;
     setLocalJSON("drafts", value);
 };
 
@@ -19,15 +21,15 @@ const draftsSlice = createSlice({
             setNewDrafts(state, drafts);
         },
         unsetDrafts(state) {
-            state = null;
+            state.data = [];
             removeLocal("drafts");
         },
         saveDraft(state, action) {
-            const newDrafts = [...state, { updatedAt: formatDate(new Date), data: action.payload }];
+            const newDrafts = [...state.data, { updatedAt: formatDate(new Date), data: action.payload }];
             setNewDrafts(state, newDrafts);
         },
         removeDraft(state, action) {
-            const newDrafts = state.filter((draft, DI) => DI === action.payload);
+            const newDrafts = state.data.filter((draft, DI) => DI === action.payload);
             setNewDrafts(state, newDrafts);
         },
         removeAllDrafts(state) {

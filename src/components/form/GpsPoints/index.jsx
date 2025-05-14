@@ -1,10 +1,10 @@
 import toast from "react-hot-toast";
-import { isEmpty, isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "../../../globals/functions";
 import { Label } from "../Label";
 import { Button, Spinner } from "../../others";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { useStates } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
 
@@ -13,78 +13,78 @@ import { RiCloseLargeFill } from "react-icons/ri";
 // TODO Finish the location button
 // TODO Find a solution for multiGpsPoints
 
-export const GpsPoints = ({
-  label,
-  labelRow = false,
-  help,
-  multiple = false,
-  onValueChange = () => {},
+// label,
+// labelRow = false,
+// help,
+// multiple = false,
+// onValueChange = () => {},
 
-  containerProps,
-  labelContainerProps,
-  labelProps,
-  requiredStarProps,
-  helpProps,
-  inputContainerProps,
-  listProps,
-  listItemProps,
-  inputProps,
-  locationTypeIconProps,
-  latitudeProps,
-  longitudeProps,
-  deleteButtonProps,
-  deleteButtonIconProps,
-  buttonContainerProps,
-  locationButtonProps,
-  locationButtonIconProps,
-  locationButtonSpinnerProps,
-  locationButtonLabelProps,
-  mapButtonProps,
-  mapButtonIconProps,
-  mapButtonSpinnerProps,
-  mapButtonLabelProps,
-  ...props
-}) => {
-  const gpsPointsPs = { ...props, inputProps };
-  const { disabled, required, readOnly, id, value, defaultValue } = gpsPointsPs
+// containerProps,
+// labelContainerProps,
+// labelProps,
+// requiredStarProps,
+// helpProps,
+// inputContainerProps,
+// listProps,
+// listItemProps,
+// inputProps,
+// locationTypeIconProps,
+// latitudeProps,
+// longitudeProps,
+// deleteButtonProps,
+// deleteButtonIconProps,
+// buttonContainerProps,
+// locationButtonProps,
+// locationButtonIconProps,
+// locationButtonSpinnerProps,
+// locationButtonLabelProps,
+// mapButtonProps,
+// mapButtonIconProps,
+// mapButtonSpinnerProps,
+// mapButtonLabelProps,
+// ...props
 
-  const gpsPointsPsForLabel = { disabled, required, readOnly, id };
-  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...gpsPointsPsForLabel };
+export const GpsPoints = props => {
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("gpsPoints", props);
+  
+  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+
+  const { 
+    id,
+    icon,
+    loading,
+    hasCopyButton,
+    options,
+    multiple,
+    defaultValue,
+    value,
+    onChange = () => {},
+  } = filteredProps;
+
+  const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
   const { states, set } = useStates({
     isLocating: false,
-    localValue: defaultValue ?? (multiple ? [] : ["", ""])
   });
 
-  const { isLocating, localValue } = states;
+  const { isLocating } = states;
 
-  const realValue = value ?? localValue;
+  // const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue[0]);
 
-  const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue[0]);
-
-  const locate = (e) => {
-    e.preventDefault();
+  const geoLocate = () => {
     set("isLocating", true);
     setTimeout(() => {
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const coords = [position.coords.latitude, position.coords.longitude];
-          const newValue = multiple ? [...realValue, coords] : coords;
-          if (isNil(value)) {
-            set("localValue", newValue);
-          } else {
-            onValueChange(newValue);
-          }
-          console.log(`Geolocation success`, coords, position);
-          set("isLocating", false);
+      locate(
+        coords => {
+          setValue(coords);
           toast.success("Succès de la géolocalisation");
-        },
-        error => {
-          console.error(`Geolocation error`, error);
           set("isLocating", false);
-          toast.error("Erreur lors de la géolocalisation\n" + error.message);
+        },
+        err => {
+          toast.error("Erreur de la géolocalisation");
+          set("isLocating", false);
         }
-      );
+      )
       // const coords = [40.35536627, 56.66638387];
       // const newValue = multiple ? [...realValue, coords] : coords;
       // if (isNil(value)) {
@@ -100,64 +100,87 @@ export const GpsPoints = ({
     e.preventDefault();
     const newValue = multiple ? [...realValue.slice(0, index), ...realValue.slice(index + 1)] : ["", ""];
 
-    if (isNil(value)) {
-      set("localValue", newValue);
-    } else {
-      onValueChange(newValue);
-    }
+    setValue(newValue);
   };
 
-  const GpsPoints = (gpsPoints, index) => {
-    return (
-      <li 
-        { ...listItemProps}
-        className={twMerge(`first:rounded-t-md gap-4 p-2 text-soft-text row-v-center`, listItemProps?.className)}
-      >
-        <input
-          { ...gpsPointsPs}
-          onChange={() => {}}
-          value={gpsPoints[0]}
-          className={twMerge(`hidden`, gpsPointsPs?.className)}
-        />
-        <input
-          { ...gpsPointsPs}
-          onChange={() => {}}
-          value={gpsPoints[1]}
-          className={twMerge(`hidden`, gpsPointsPs?.className)}
-        />
-        <FaMapLocationDot
-          { ...locationTypeIconProps}
-          className={twMerge(`ml-2 text-xl text-primary`, locationTypeIconProps?.className)}
-        />
-        <div 
-          { ...latitudeProps}
-          className={twMerge(`truncate grow text-strong-text`, latitudeProps?.className)}
-        >
-          {gpsPoints[0]}
-        </div>
-        <div 
-          { ...longitudeProps}
-          className={twMerge(`truncate grow text-strong-text`, longitudeProps?.className)}
-        >
-          {gpsPoints[1]}
-        </div>
-        <Button
-          left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
-          { ...deleteButtonProps}
-          onClick={e => deleteGpsPoints(e, index)}
-          className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
-        />
-      </li>
-    );
-  }
+  // const GpsPoints = (gpsPoints, index) => {
+  //   return (
+  //     <li 
+  //       { ...listItemProps}
+  //       className={twMerge(`first:rounded-t-md gap-4 p-2 text-soft-text row-v-center`, listItemProps?.className)}
+  //     >
+  //       <input
+  //         { ...gpsPointsPs}
+  //         onChange={() => {}}
+  //         value={gpsPoints[0]}
+  //         className={twMerge(`hidden`, gpsPointsPs?.className)}
+  //       />
+  //       <input
+  //         { ...gpsPointsPs}
+  //         onChange={() => {}}
+  //         value={gpsPoints[1]}
+  //         className={twMerge(`hidden`, gpsPointsPs?.className)}
+  //       />
+  //       <FaMapLocationDot
+  //         { ...locationTypeIconProps}
+  //         className={twMerge(`ml-2 text-xl text-primary`, locationTypeIconProps?.className)}
+  //       />
+  //       <div 
+  //         { ...latitudeProps}
+  //         className={twMerge(`truncate grow text-strong-text`, latitudeProps?.className)}
+  //       >
+  //         {gpsPoints[0]}
+  //       </div>
+  //       <div 
+  //         { ...longitudeProps}
+  //         className={twMerge(`truncate grow text-strong-text`, longitudeProps?.className)}
+  //       >
+  //         {gpsPoints[1]}
+  //       </div>
+  //       <Button
+  //         left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
+  //         { ...deleteButtonProps}
+  //         onClick={e => deleteGpsPoints(e, index)}
+  //         className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}
+  //       />
+  //     </li>
+  //   );
+  // }
 
   return (
     <Label { ...allLabelPs}>
       <div 
         { ...inputContainerProps}
-        className={twMerge(`rounded-md bg-strong col`, inputContainerProps?.className)}
+        className={twMerge(`rounded-md bg-soft-bg flex items-center`, inputContainerProps?.className)}
       >
-        <ul 
+        <input
+          name={name}
+          onChange={() => {}}
+          value={gpsPoints[0]}
+          hidden
+        />
+        <input
+          name={name}
+          onChange={() => {}}
+          value={gpsPoints[1]}
+          hidden
+        />
+        <Button { ...mergeProps("LocateButton", props => ({
+          icon: <FaLocationDot />,
+          ...props,
+          loading: isLocating,
+          onClick: e => {
+            e.preventDefault();
+            geoLocate();
+            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+          }
+        }))}>
+          Géolocaliser
+        </Button>
+        <div>
+          {!isNil(currentValue) ? "Enregistrée" : "Aucune Localisation enregistrée"}
+        </div>
+        {/* <ul 
           { ...listProps}
           className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
         >
@@ -218,7 +241,7 @@ export const GpsPoints = ({
               Carte
             </div>
           </Button>
-        </div>
+        </div> */}
       </div>     
     </Label>
   );

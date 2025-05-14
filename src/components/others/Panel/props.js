@@ -11,4 +11,4 @@ export const propTypes = {
 
     Overlay: PropTypes.object,
     panelProps: PropTypes.object,
-}
+};

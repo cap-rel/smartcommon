@@ -7,3 +7,4 @@ export * from "./date";
 export * from "./others";
 export * from "./variant";
 export * from "./twMerge";
+export * from "./geolocation";

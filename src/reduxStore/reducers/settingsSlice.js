@@ -1,8 +1,8 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getLocalJSON, removeLocal, setLocalJSON } from "../../globals/functions/storage";
 
-const initialState = getLocalJSON("settings") ?? {
-
+const initialState = {
+  data: getLocalJSON("settings") ?? {}
 };
   // language: getLocalJSON("language") || navigator.languages[0],
   // devise
@@ -16,15 +16,15 @@ const settingsSlice = createSlice({
   reducers: {
     setSettings(state, action) {
       const settings = action.payload;
-      state = settings;
+      state.data = settings;
       setLocalJSON("settings", settings);
     },
     unsetSettings(state) {
-      state = null;
+      state.data = {};
       removeLocal("settings")
     },
     changeLanguage(state, action) {
-      state.language = action.payload;
+      state.data.language = action.payload;
       setLocalJSON("language", action.payload);
     },
   },

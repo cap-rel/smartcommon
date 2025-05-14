@@ -6,10 +6,11 @@ export const propTypes = {
     icon: PropTypes.node,
     loading: PropTypes.bool,
     badge: PropTypes.number,
-    text: PropTypes.string,
+    disabled: PropTypes.bool,
+    onClick: PropTypes.func,
+
     buttonProps: PropTypes.object,
     Spinner: PropTypes.object,
     iconProps: PropTypes.object,
     badgeProps: PropTypes.object,
-    textProps: PropTypes.object,
 }

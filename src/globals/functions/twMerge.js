@@ -41,6 +41,10 @@ export const twMerge = extendTailwindMerge({
                 "text-app-lg",
                 "text-app-xl",
                 "text-app-2xl",
+                "text-app-3xl",
+                "text-app-4xl",
+                "text-app-5xl",
+                "text-app-6xl",
             ],
         }
     }

@@ -1,4 +1,4 @@
-import { isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
 import { Label } from "../../form";
 import { useStates, useValue, useLabel, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
@@ -24,14 +24,23 @@ import { Button, Spinner } from "../../others";
 // TODO Change type attribute
 
 export const Input = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("input", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("input", props);
 
   const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
-  const { icon, hasCopyButton, loading, inputProps = {} } = filteredProps;
+  const { 
+    id,
+    icon,
+    loading,
+    hasCopyButton,
+    step,
+    defaultValue,
+    value,
+    onChange = () => {},
+    type,
+    disabled = false
+  } = filteredProps;
 
-  const { type, disabled, min, max, step, defaultValue, value, onChange = () => {} } = inputProps;
-        
   const { states, set } = useStates({
     isPasswordVisible: false,
     isCopied: false
@@ -51,25 +60,13 @@ export const Input = (props) => {
   //   }
   // }
 
-  const handleMinusButtonOnClick = e => {
-    e.preventDefault();
-    setValue(Number(currentValue) - step);
-  }
+  const removeStep = () => setValue(Number(currentValue) - step);
+  const addStep = () => setValue(Number(currentValue) + step);
 
-  const handlePlusButtonOnClick = e => {
-    e.preventDefault();
-    setValue(Number(currentValue) + step);
-  }
+  const togglePasswordVisibility = () => set("isPasswordVisible", !isPasswordVisible);
+  const resetCopyButton = () => set("isCopied", false);
 
-  const handlePasswordButtonOnClick = e => {
-    e.preventDefault();
-    set("isPasswordVisible", !isPasswordVisible);
-  };
-
-  const handleCopyButtonOnBlur = () => set("isCopied", false);
-
-  const handleCopyButtonOnClick = e => {
-    e.preventDefault();
+  const copy = () => {
     navigator.clipboard.writeText(currentValue)
       .then(() => {
         set("isCopied", true);
@@ -77,6 +74,8 @@ export const Input = (props) => {
       })
       .catch(() => toast.error("La copie a échouée, probablement non disponible sur votre navigateur"));
   };
+
+  const isPassword = type === "password";
 
   return (
 
@@ -86,10 +85,10 @@ export const Input = (props) => {
     >
       <div { ...mergeProps("inputContainer", props => ({
         ...props,
-        className: `min-w-0 w-full flex items-center rounded-app-md 
+        className: `min-w-0 flex items-center rounded-app-md 
           p-app-xs gap-app-xs bg-soft-bg border-border border duration-(--instant)
           has-[input:focus]:ring-primary has-[input:focus]:border-primary has-[input:focus]:ring-1 
-          has-[input:disabled]:brightness-soft
+          has-[input:disabled]:brightness-soft w-full
         `
         // has-[input:invalid]:ring-1 has-[input:invalid]:ring-error has-[input:invalid]:border-error 
       }))}>        
@@ -100,7 +99,7 @@ export const Input = (props) => {
         {(!isNil(icon) && !loading) &&
           <div { ...mergeProps("icon", props => ({
             ...props,
-            className: `text-lg shrink-0 text-medium-text`
+            className: `shrink-0 text-soft-text`
           }))}>
             {icon}
           </div>
@@ -108,11 +107,12 @@ export const Input = (props) => {
 
         <input { ...mergeProps("input", props => ({
           ...props,
+          ...mergeQuickProps(props, ["type", "placeholder", "required", "disabled", 
+          "readOnly", "min", "max", "minLength", "maxLength", "name", "pattern", "size", "onBlur", "onFocus"]),
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate`,
-          minLength: min,
-          maxLength: max,
           onChange: handleInputOnChange,
-          value: currentValue
+          value: currentValue,
+          type: isPassword ? (isPasswordVisible ? "text" : "password") : type
         }))} />
 
         {!isNil(step) &&
@@ -120,34 +120,46 @@ export const Input = (props) => {
             <Button { ...mergeProps("MinusButton", props => ({
               icon: <FaMinus />,
               ...props,
+              disabled: disabled,
+              onClick: e => {
+                e.preventDefault();
+                removeStep(e)
+                applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+              },
               buttonProps: {
                 ...props.buttonProps,
-                disabled: disabled,
-                onClick: handleMinusButtonOnClick,
                 className: `p-0 bg-transparent text-soft-text`
               }
             }))} />
             <Button { ...mergeProps("PlusButton", props => ({
               icon: <FaPlus />,
               ...props,
+              disabled: disabled,
+              onClick: e => {
+                e.preventDefault();
+                addStep(e)
+                applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+              },
               buttonProps: {
                 ...props.buttonProps,
-                disabled: disabled,
-                onClick: handlePlusButtonOnClick,
                 className: `p-0 bg-transparent text-soft-text`
               }
             }))} />
           </>
         }
 
-        {type === "password" &&
+        {isPassword &&
           <Button { ...mergeProps("PasswordButton", props => ({
             icon: isPasswordVisible ? <FaEyeSlash /> : <FaEye />,
             ...props,
+            disabled: disabled,
+            onClick: e => {
+              e.preventDefault();
+              togglePasswordVisibility(e)
+              applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+            },
             buttonProps: {
               ...props.buttonProps,
-              disabled: disabled,
-              onClick: handlePasswordButtonOnClick,
               className: `p-0 bg-transparent text-soft-text`
             }
           }))} />
@@ -157,11 +169,18 @@ export const Input = (props) => {
           <Button { ...mergeProps("CopyButton", props => ({
             icon: isCopied ? <FaClipboardCheck /> : <FaRegClipboard />,
             ...props,
+            disabled: disabled,
+            onClick: e => {
+              e.preventDefault();
+              copy(e)
+              applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+            },
+            onBlur: e => {
+              resetCopyButton(e);
+              applyFunctionIfNotNil(props.onBlur, props.buttonProps?.onBlur, e);
+            },            
             buttonProps: {
               ...props.buttonProps,
-              disabled: disabled,
-              onClick: handleCopyButtonOnClick,
-              onBlur: handleCopyButtonOnBlur,
               className: `p-0 bg-transparent ${isCopied ? "text-primary" : "text-soft-text"}`
             }
           }))} />

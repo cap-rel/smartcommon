@@ -1,65 +1,106 @@
+import icon from "../../../assets/images/icon.png";
+import logo from "../../../assets/images/logo.png";
+import { BsArrowRight } from "react-icons/bs";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../../reduxStore/reducers/authSlice";
-import { Input, Boolean } from "../../form";
-import { useApi, useStates } from "../../../hooks";
 import toast from "react-hot-toast";
+import { useApi, useStates } from "../../../hooks";
+import { API_URL } from "../../../globals";
+import { setAuth } from "../../../reduxStore/reducers/sessionSlice";
+import { Button } from "../../others";
+import { Input } from "../../form";
 
 export const LoginPage = () => {
+    const { states, set } = useStates({
+        loginData: {
+            email: "",
+            password: "",
+            rememberMe: false
+        },
+        isLoggingIn: false
+    })
+
+    const { loginData, isLoggingIn } = states;
+    const { email, password, rememberMe } = loginData;
+
     const dispatch = useDispatch();
-    const { fetchApi } = useApi();
 
-    const { values, set } = useStates({
-       isLoggingIn: false,
-    });
+    const { POST } = useApi(API_URL);
 
-    const handleSubmit = (e) => {
-        set("islLoggingIn", true);
-        const formData = new FormData(e.target);
+    const handleLoginFormOnSubmit = e => {
+        e.preventDefault();
+        set("isLoggingIn", true);
+        setTimeout(() => {
+            POST("login", loginData)
+            .then(json => {
+                toast.success(`Hello ${json.data.user}`);
+                dispatch(setAuth(json.data));
+            })
+            .catch(err => {
+                console.error(err);
+                toast.error("Erreur lors de la connexion");
+            })
+            set("isLoggingIn", false);
+        }, 1000);
+    };
 
-        const email = formData.get("email");
-        const password = formData.get("password");
-        const rememberMe = formData.get("rememberMe");
-
-        if (email && password) {
-            dispatch(loginSuccess({ email, password, rememberMe }));
-            fetchApi("/login", "POST", { email, password, rememberMe }) // { email: email, password: password }
-                .then((response) => {
-                    console.log(response.data)
-                    set("islLoggingIn", false);
-                })
-                .catch((error) => {
-                    set("islLoggingIn", false);
-                    console.log(error);
-                    toast.error("données non valides")
-                });
+    const inputLogin = {
+        labelProps: {
+            className: "uppercase text-soft-text font-app-bold tracking-widest text-app-xs"
+        },
+        inputContainerProps: {
+            className: "bg-strong-bg p-app-sm inset-shadow-sm has-[input:focus]:ring-0 border-none"
+        },
+        inputProps: {
+            className: "font-app-semibold"
         }
-    }
+    };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-4">
-            <Input
-                name="email"
-                label="Adresse Email"
-                type="email"
-                required
-            />
-            <Input
-                name="password"
-                help="Attention votre mot de passe doit faire plus de 4 caractères"
-                minLength={4}
-                label="Mot de passe"
-                type="password"
-                required
-            />
-            <Boolean
-                name="rememberMe"
-                labelRow
-                label="Garder la session ouverte"
-            />
-            <button>
-                Soumettre
-            </button>
-        </form>
+        <div className={`fixed inset-0 bg-soft-bg`}>
+            <div className={`p-app-xl flex flex-col gap-app-xl justify-center items-center h-full w-full`}>
+                <div className={`flex flex-col items-center gap-app-base`}>
+                    <img 
+                        src={icon}
+                        className={`size-32`}
+                    />
+                    <img 
+                        src={logo}
+                        className={`w-900`}
+                    />
+                </div>
+                <form onSubmit={handleLoginFormOnSubmit} className={`flex flex-col gap-app-lg w-full`}>
+                    <div className={`flex flex-col gap-app-md`}>
+                        <Input
+                            // type={`email`}
+                            onChange={value => set("loginData.email", value)}
+                            value={email}
+                            label={`Adresse Email`}
+                            placeholder={`address@email.com`}
+                            variant={inputLogin}
+                        />
+                        <Input
+                            onChange={value => set("loginData.password", value)}
+                            value={password}
+                            type={`password`}
+                            label={`Mot de passe`}
+                            placeholder={`●●●●●●●●`}
+                            variant={inputLogin}
+                        />
+                    </div>
+                    <Button
+                        icon={<BsArrowRight />}
+                        loading={isLoggingIn}
+                        buttonProps={{
+                            className: "flex-row-reverse text-app-md uppercase tracking-widest font-app-base rounded-app-xl"
+                        }}
+                        iconProps={{
+                            className: "text-app-xl"
+                        }}
+                    >
+                        Connexion
+                    </Button>
+                </form>
+            </div>
+        </div>
     );
-
 }

@@ -18,3 +18,4 @@ export * from "./Select";
 export * from "./Signature";
 export * from "./Textarea";
 export * from "./Videos";
+export * from "./SmartPhotos";

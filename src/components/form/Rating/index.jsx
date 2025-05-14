@@ -1,4 +1,4 @@
-import { useStates } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Label } from "../Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -10,81 +10,80 @@ import { CheckedIcon } from "../tools";
 
 // IDEA Add decimal rating system
 
-export const Rating = ({
-    label,
-    labelRow = false,
-    help,
-    variant = "star", // heart, like, smile
-    maxRating = 5,
-    onValueChange = () => {},
+// {
+//     label,
+//     labelRow = false,
+//     help,
+//     variant = "star", // heart, like, smile
+//     maxRating = 5,
+//     onValueChange = () => {},
 
-    containerProps,
-    labelContainerProps,
-    labelProps,
-    requiredStarProps,
-    helpProps,
-    inputProps,
-    ratingContainerProps,
-    iconProps,
-    ...props
-}) => {
-    const inputPs = { ...props, ...inputProps };
+//     containerProps,
+//     labelContainerProps,
+//     labelProps,
+//     requiredStarProps,
+//     helpProps,
+//     inputProps,
+//     ratingContainerProps,
+//     iconProps,
+//     ...props
+// }
 
-    const { required, readOnly, disabled, id, value, defaultValue } = inputPs;
+export const Rating = (props) => {
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("rating", props);
+      
+    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+    
+    const { 
+        id,
+        icon,
+        loading,
+        hasCopyButton,
+        iconRating,
+        maxRating,
+        name,
+        defaultValue,
+        value,
+        onChange = () => {},
+    } = filteredProps;
 
-    if (labelRow) {
-        containerProps = { ...containerProps, className: twMerge(`row-between-center bg-strong border border-soft-border p-2 rounded-md`, containerProps?.className) };
-        labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
-    }
+    const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
-    const inputPsForLabel = { required, readOnly, disabled, id };
-    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+    // const VARIANT_ICONS_MAP = useMemo(() => ({
+    //     star: { empty: FaRegStar, half: FaRegStarHalfStroke, full: FaStar },
+    //     heart: { empty: IoHeartOutline, half: IoHeartHalf, full: IoHeart },
+    //     like: { full: FaThumbsUp },
+    //     smile: { full: FaFaceSmile }
+    // }), []);
 
-    const { states, set } = useStates({
-        localValue: defaultValue ?? ""
-    });
+    const Icon = iconRating ?? FaStar; 
 
-    const { localValue } = states;
-
-    const realValue = value ?? localValue;
-
-    const VARIANT_ICONS_MAP = useMemo(() => ({
-        star: { empty: FaRegStar, half: FaRegStarHalfStroke, full: FaStar },
-        heart: { empty: IoHeartOutline, half: IoHeartHalf, full: IoHeart },
-        like: { full: FaThumbsUp },
-        smile: { full: FaFaceSmile }
-    }), []);
-
-    const Icon = VARIANT_ICONS_MAP[variant].full;
-
-    const handleOnClick = (index) => {
-        const newValue = realValue == Number(index) + 1  ? index : Number(index) + 1;
-        if (isNil(value)) {
-            set("localValue", newValue);
-        } else {
-            onValueChange(newValue);
-        }
+    const updateRating = (index) => {
+        const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
+        setValue(newValue);
     };
 
     return (
-        <Label { ...allLabelPs}>
+        <Label 
+            { ...extractedLabelProps}
+            mergeProps={mergeProps}
+        >
             <input
-                { ...inputPs}
+                name={name}
                 onChange={() => {}}
-                value={realValue}
-                className={twMerge(`hidden`, inputPs?.className)}
+                value={currentValue}
+                hidden
             />
-            <div 
-                { ...ratingContainerProps}
-                className={twMerge(`gap-2 row-v-center overflow-x-auto`, ratingContainerProps?.className)}
-            >
-                {Array(maxRating).fill("").map((step, SI) =>
+            <div { ...mergeProps("ratingContainer", props => ({
+                ...props,
+                className: `gap-app-xs flex items-center overflow-x-auto`
+            }))}>
+                {Array(maxRating).fill("").map((icon, II) =>
                     <CheckedIcon
-                        key={`icon${SI}`}
-                        { ...iconProps}
+                        key={`icon${II}`}
                         icon={<Icon />}
-                        checked={SI < realValue}
-                        onClick={() => handleOnClick(SI)}
+                        checked={II < currentValue}
+                        onClick={() => updateRating(II)}
                     />
                 )}
             </div>

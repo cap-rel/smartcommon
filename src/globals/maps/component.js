@@ -1,52 +1,52 @@
-import { isUndefined } from "../..";
+import { useMemo } from "react";
+import { Address, Array, Audios, Boolean, Check, ColorPicker, Duration, Editor, Files, GpsPoints, Input, Photos, Range, Rating, Select, Signature, Textarea, Videos } from "../../components";
+import { isUndefined } from "../functions";
 
 export function setComponent(type) {
-    const COMPONENTS_MAP = {
-        boolean      : "Boolean",
-        checkbox     : "Checkbox",
-        select       : "Select",
-        radio        : "Radio",
-        multiCheckbox: "Checkbox",
-        multiSelect  : "Select",
-        array        : "Array",
-        varchar      : "Input",
-        mail         : "Input",
-        password     : "Input",
-        phone        : "Input",
-        url          : "Input",
-        ip           : "Input",
-        link         : "Input",
-        timestamp    : "Input",
-        date         : "Input",
-        datetime     : "Input",
-        time         : "Input",
-        int          : "Stepper",
-        stock        : "Stepper",
-        reel         : "Stepper",
-        price        : "Stepper",
-        pricey       : "Stepper",
-        rating       : "Rating",
-        range        : "Range",
-        duration     : "Duration",
-        double       : "MultiNumber",
-        text         : "Textarea",
-        html         : "Editor",
-        address      : "Address",
-        gps          : "GpsPoints",
-        files        : "Files",
-        audios       : "Audios",
-        videos       : "Videos",
-        photos       : "Photos",
-        signature    : "Signature",
-        drawing      : "Drawing",
-        icon         : "IconSelect",
-        color        : "Checkbox",
-    };
+    const COMPONENTS_MAP = useMemo(() => ({
+        boolean      : Boolean,
+        check        : Check,
+        select       : Select,
+        array        : Array,
+        varchar      : Input,
+        email        : Input,
+        password     : Input,
+        phoneNumber  : Input,
+        url          : Input,
+        ip           : Input,
+        link         : Input,
+        timestamp    : Input,
+        date         : Input,
+        datetime     : Input,
+        time         : Input,
+        int          : Input,
+        stock        : Input,
+        reel         : Input,
+        price        : Input,
+        pricey       : Input,
+        double       : Input,
+        rating       : Rating,
+        range        : Range,
+        duration     : Duration,
+        text         : Textarea,
+        html         : Editor,
+        address      : Address,
+        gpsPoints    : GpsPoints,
+        files        : Files,
+        audios       : Audios,
+        videos       : Videos,
+        photos       : Photos,
+        signature    : Signature,
+        // icon         : IconSelect,
+        color        : ColorPicker,
+    }));
 
-    if (isUndefined(COMPONENTS_MAP[type])) {
-        console.error(`${type} n'est pas un type valide.`);
-        return;
-    }
+    // console.log(COMPONENTS_MAP[type])
+
+    // if (isUndefined(COMPONENTS_MAP[type])) {
+    //     console.error(`${type} is not a valid type.`);
+    //     return;
+    // }
 
     return COMPONENTS_MAP[type];
-};
+}

@@ -5,7 +5,7 @@ import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 import { propTypes } from "./props";
 
-// TODO interval
+// IDEA interval
 
 export const Calendar = (props) => {
   const { variantProps, mergeProps } = useVariantToProps("calendar", props);
@@ -13,14 +13,14 @@ export const Calendar = (props) => {
   const { id, yearsInterval, value, onChange } = variantProps;
 
   // Fonction pour obtenir le jour de la semaine d'une date donnée
-  function getDayOfWeek(dateString) {
+  const getDayOfWeek = (dateString) => {
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     const date = new Date(dateString);
     return daysOfWeek[date.getDay()];
   }
   
   // Fonction pour générer le calendrier pour une année
-  function generateYearCalendar(year) {
+  const generateYearCalendar = (year) => {
     const yearData = { year, months: [] };
   
     for (let month = 0; month < 12; month++) {
@@ -55,7 +55,7 @@ export const Calendar = (props) => {
   //   calendarData.push(generateYearCalendar(year));
   // }
 
-  const [year, setYear] = useState(2000);
+  const [year, setYear] = useState((new Date).getFullYear());
   
   const months = generateYearCalendar(year).months;
   
@@ -72,7 +72,7 @@ export const Calendar = (props) => {
   return (
     <div { ...mergeProps("container", props => ({
       ...props,
-      className: `flex flex-col bg-soft-bg shadow-md rounded-app-lg border border-border py-app-xs gap-app-xs mx-app-base`
+      className: `sticky top-0 z-30 flex flex-col bg-soft-bg shadow-md rounded-b-app-base py-app-xs gap-app-xs`
     }))}>
 
         <div { ...mergeProps("upperContainer", props => ({
@@ -89,7 +89,7 @@ export const Calendar = (props) => {
                 onClick: e => {
                   props.buttonProps?.onClick(e);
                   if (!isNil(monthBefore)) {
-                    set("month", monthBefore)
+                    set("month", monthBefore);
                   }
                 }
               }
@@ -154,7 +154,7 @@ export const Calendar = (props) => {
                 onClick: e => {
                   props.buttonProps?.onClick(e);
                   if (!isNil(monthAfter)) {
-                    set("month", monthAfter)
+                    set("month", monthAfter);
                   }
                 }
               }

@@ -7,16 +7,18 @@ import { propTypes } from "./props";
 // TODO badge
 
 export const Button = (props) => {
-    const { variantProps, mergeProps, setParams } = useVariantToProps("button", props);
+    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("button", props);
 
-    const { id, loading, icon, badge, children, buttonProps = {} } = variantProps;
+    const { id, loading, icon, badge, children, disabled } = variantProps;
 
-    const { disabled } = buttonProps;
+    // console.log(variantProps);
+    
 
     return (
         <button { ...mergeProps("button", props => ({
             ...props,
-            className: `flex justify-center items-center 
+            ...mergeQuickProps(props, ["onClick", "disabled", "onFocus", "onBlur"]),
+            className: `relative flex justify-center items-center 
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
             not-disabled:active:brightness-soft`,
@@ -38,6 +40,17 @@ export const Button = (props) => {
                     className: `shrink-0`
                 }))}>
                     {icon}
+                </div>
+            }
+
+            {!isNil(badge) &&
+                <div { ...mergeProps("badge", props => ({
+                    ...props,
+                    className: `absolute -translate-y-1/2 translate-x-1/2 top-0 right-0 
+                    rounded-app-xl bg-secondary tex-white text-app-xs font-app-semibold 
+                    flex justify-center items-center min-h-6 min-w-6 px-app-xxs`
+                }))}>
+                    {badge}
                 </div>
             }
 

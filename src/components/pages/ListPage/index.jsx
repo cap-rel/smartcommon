@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 // import { CheckboxDol, FormItemDol, IconDol, InputDol, LabelDol, SelectDol } from "../../components/dol";
 import { useApi, useStates } from "../../../hooks";
-import PrivateLayout from "../PrivateLayout";
+import PrivateLayout from "../InterventionsPage";
 import { cleanForComparison, isEmpty, isLast, isNull, isUndefined, print, sortArray, timestampToDate, timestampToDateTime } from "../../../globals";
 import config from "../config";
 import notes from "../notes";
@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 
 const ListPage = () => {
     const params = useParams();
-    const { logout } = useApi();
+    // const { logout } = useApi();
 
     const notesConfig = {
         all: {
@@ -174,7 +174,7 @@ const ListPage = () => {
                     />
                 </button>
                 <button 
-                    onClick={() => logout()}
+                    // onClick={() => logout()}
                     className={`p-10 font-semibold text-white uppercase rounded-full absolute-full-center bg-dol button-dol bg-error`}
                 >
                     Déconnexion

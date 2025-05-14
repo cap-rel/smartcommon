@@ -29,8 +29,11 @@ export const Sidebar = (props) => {
         ...props,
         panelProps: {
           ...props.panelProps,
-          className: `top-0 bottom-0 right-auto rounded-none rounded-r-app-base py-app-xs px-0 gap-0 ${isOpen ? "left-0" : `-left-(--panel-width)`}`
-        }
+          className: `top-0 right-auto translate-y-0 max-h-auto rounded-none rounded-r-app-base py-app-xs px-0 gap-0 ${isOpen ? "translate-x-0" : `-translate-x-full`}`
+        },
+        // Overlay: {
+        //   overlayProps: { className: "z-100" }
+        // }
       }))}>
 
         {links.map((link, LI) => {
@@ -97,7 +100,7 @@ export const Sidebar = (props) => {
                   open();
                 }
               },
-              className: `z-50 px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17`
+              className: `px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17`
             },
           }))} />
         }

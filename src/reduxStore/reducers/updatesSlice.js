@@ -3,10 +3,12 @@ import { getLocalJSON, removeLocal, setLocalJSON } from "../../globals";
 
 // TODO init
 
-const initialState = getLocalJSON("updates") ?? null;
+const initialState = {
+    data: getLocalJSON("updates") ?? []
+};
 
 function setNewUpdates(state, value) {
-    state = value;
+    state.data = value;
     setLocalJSON("updates", value);
 };
 
@@ -19,15 +21,15 @@ const updatesSlice = createSlice({
             setNewUpdates(state, updates);
         },
         unsetUpdates(state) {
-            state = null;
+            state.data = [];
             removeLocal("updates");
         },
         saveUpdate(state, action) {
-            const newUpdates = [...state, { updatedAt: formatDate(new Date), data: action.payload }];
+            const newUpdates = [...state.data, { updatedAt: formatDate(new Date), data: action.payload }];
             setNewUpdates(state, newUpdates);
         },
         removeUpdate(state, action) {
-            const newUpdates = state.filter((update, UI) => UI === action.payload);
+            const newUpdates = state.data.filter((update, UI) => UI === action.payload);
             setNewUpdates(state, newUpdates);
         },
         removeAllUpdates(state) {

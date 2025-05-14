@@ -1,24 +1,14 @@
-import { mergeProps } from "../../../../globals";
-
 export const CheckedIcon = ({
     checked,
     icon,
-    variants,
-    variant,
-
-    iconProps,
+    onClick,
     ...props
 }) => {
-    const iconPs = { ...props, ...iconProps };
-
-    const variantParams = { isChecked: checked };
-
     return (
-        <div
-            { ...mergeProps(
-                { transition: "color 200ms, filter 100ms" }, `text-2xl shrink-0 size-6 active:brightness-soft ${checked ? "text-primary" : "text-strong-bg"}`,
-                iconPs, variants, variant, "iconProps", variantParams
-            )}
+        <div 
+            style={{ transition: "color 200ms, filter 100ms" }}
+            className={`text-app-xl shrink-0 active:brightness-sof ${checked ? "text-primary" : "text-strong-bg"}`}
+            onClick={onClick}
         >
             {icon}
         </div>

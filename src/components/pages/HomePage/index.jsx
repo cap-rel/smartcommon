@@ -1,26 +1,31 @@
-import { IoHome, IoLogOut } from "react-icons/io5";
-import { Navbar, Sidebar } from "../../navigation";
+import { IoArrowForward, IoHome, IoLogOut } from "react-icons/io5";
+import { Navbar, Sidebar, Tabbar } from "../../navigation";
 import { FaBook, FaSyncAlt } from "react-icons/fa";
 import { FaBell, FaDatabase, FaFilePen, FaGear, FaUser } from "react-icons/fa6";
 import { useApi, useStates } from "../../../hooks";
-import { Block, Button, Popup } from "../../others";
+import { Block, Button, Overlay, Popup } from "../../others";
 import { Calendar } from "../../list";
 import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL, isEmpty, setLocalJSON } from "../../../globals";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
 import { setConfig } from "../../../reduxStore/reducers/configSlice";
 import { removeUpdate } from "../../../reduxStore/reducers/updatesSlice";
+import toast from "react-hot-toast";
+import { BsRocketFill } from "react-icons/bs";
+import { MdArrowForwardIos } from "react-icons/md";
+import { ListItem } from "../ListItem";
+import { setIsTokenChecked } from "../../../reduxStore/reducers/sessionSlice";
 
 const HomePage = () => {
     const links = [
         { label: "Accueil", icon: <IoHome />, to: "/" },
-        { label: "Interventions", icon: <FaBook />, to: "/interventions" },
-        { label: "Contacts", icon: <FaUser />, to: "/" },
-        { label: "Paramètres", icon: <FaGear />, to: "/" },
-        { label: "Déconnexion", icon: <IoLogOut />, to: "/" },
+        { label: "Interventions", icon: <BsRocketFill />, to: "/interventions" },
+        // { label: "Contacts", icon: <FaUser />, to: "/contacts" },
+        { label: "Paramètres", icon: <FaGear />, to: "/settings" },
+        // { label: "Déconnexion", icon: <IoLogOut />, to: "/" },
     ];
 
     const { states, set } = useStates({
@@ -31,7 +36,10 @@ const HomePage = () => {
         isMyInterventionsSyncSuccess: false,
         isUrgentInterventionsSyncSuccess: false,
         isUnassignedInterventionsSyncSuccess: false,
-        isUpdatesSyncSuccess: false
+        isUpdatesSyncSuccess: false,
+        syncUpdateIndex: null,
+
+        isSyncing: false,
     });
 
     const { 
@@ -42,66 +50,123 @@ const HomePage = () => {
         isMyInterventionsSyncSuccess,
         isUrgentInterventionsSyncSuccess,
         isUnassignedInterventionsSyncSuccess,
-        isUpdatesSyncSuccess
+        isUpdatesSyncSuccess,
+        syncUpdateIndex,
+
+        isSyncing
     } = states;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const { GET, PUT } = useApi(API_URL, "test");
+    const session = useSelector(state => state.session.data);
+
+    const { POST, GET, PUT } = useApi(API_URL, session.auth.token);
 
     const interventionsTypes = ["mine", "urgent", "unassigned"];
 
     const getInterventions = (type) => {
-        GET(type === "mine" ? "interventions" : `interventions/${type}`)
+        POST(`interventions/${type}`)
             .then(json => {
+                console.log(`"${type}"interventions GET success"`)
                 dispatch(setInterventionsFromType(type, json))
             })
             .catch(err => {
-                console.log(err)
+                console.error(`"${type}" interventions GET error`);
+                console.error(err);
             });
     };
 
-    const updates = useSelector(state => state.updates);
+    const updates = useSelector(state => state.updates.data);
+
+    const toastStatus = {
+        config: {
+            loading: "Mise à jour de la configuration...",
+            success: "Mise à jour",
+            error: "Echec de la mise à jour"
+        },
+        updates:  {
+            loading: "Envoi des comptes-rendus d'interventions non-synchronisés...",
+            success: "Envoyés",
+            error: "Echec de l'envoi"
+        },
+        interventions: {
+            loading: "Mise à jour des interventions...",
+            success: "Mises à jour",
+            error: "Echec de la mise à jour"
+        },
+    }
+
+    const { config: configStatus, updates: updatesStatus, interventions: interventionsStatus } = toastStatus;
 
     const sync = () => {
-        set("isSyncSuccess", false);
-        set("isGettingData", true);
-        if (1 === 2) {
-            GET("home")
-                .then(json => {
-                    dispatch(setConfig(json.home))
+        set("isSyncing", true);
+
+        const configToast = toast.loading(toast)
+        GET("home")
+            .then(json => {
+                dispatch(setConfig(json.home));
+                console.log("Config GET success.")
+            })
+            .catch(err => {
+                console.error("Config GET error");
+                console.error(err);
+            });
+
+        updates.forEach((update, UI) => {
+            PUT(`intervention/${update.data.rowid}`)
+                .then(() => {
+                    dispatch(removeUpdate(UI))
+                    console.log(`Update ${UI} synchronization PUT Success`);
                 })
+                .catch(err => {
+                    console.error(`Update ${UI} synchronization PUT Error`);
+                    console.error(err);
+                });
+        }),
+
+        interventionsTypes.forEach(type => getInterventions(type));
+
+        set("isSyncing", false);
+    };
+
+    const syncUpdate = (index) => {
+        const update = updates[index];
+        set("syncUpdateIndex", index);
+        setTimeout(() => {
+            PUT(`intervention/${update.data.rowid}`)
+                .then(json => dispatch(removeUpdate(index)))
                 .catch(err => {
                     console.log(err)
                 });
-
-            updates.forEach((update, UI) => {
-                PUT(`interventions/${update.data.rowid}`)
-                    .then(json => removeUpdate(UI))
-                    .catch(err => {
-                        console.log(err)
-                    });
-            });
-
-            interventionsTypes.forEach(type => getInterventions(type));
-            
-        }
-        setTimeout(() => set("isGettingData", false), 1000);
-        ;
+            set("syncUpdateIndex", null);
+            toast.success("Intervention synchronisée");
+        }, 1000)
     };
 
-    // const syncPart = [
-    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
-    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
-    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
-    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
-    //     { label: "Configuration générale", value: "12/03/2025 18:33" },
-    // ]
-    
+    const drafts = useSelector(state => state.drafts.data);
+
+    useEffect(() => {
+        if (!session.isTokenChecked) {
+            GET("ping")
+                .then(() => {
+                    dispatch(setIsTokenChecked(true));
+                    console.log("Token still valid.")
+                })
+                .catch(err => {
+                    toast.error("Votre session a expirée. Veuillez vous reconnecter.");
+                    console.error("Token expired. Must connect.");
+                });
+        }
+    }, []);
+
     return (
-        <div className={`fixed inset-0 bg-medium-bg flex flex-col gap-app-base`}>
-            <Popup
+        <div className={`fixed inset-0 bg-medium-bg overflow-y-auto`}>
+            <Overlay
+                isOpen={isSyncing}
+                overlayProps={{ className: "bg-transparent" }}
+            />
+            {/* <Popup
                 title={`Synchronisation serveur`}
                 closeButton
                 close={() => set("isSyncPopupOpen", false)}
@@ -116,16 +181,6 @@ const HomePage = () => {
                 <div className="text-center">
                     Pour synchroniser les données locales avec celles du serveur, appuyer ci-dessous.
                 </div>
-                {/* <div className={`flex flex-col gap-app-base text-medium-text italic font-semibold text-app-sm`}>
-                    {syncPart.map((part, PI) => 
-                        <div className="whitespace-nowrap flex gap-app-xs">
-                            <div>{part.label}</div>
-                            <div>(</div>
-                            <div className="text-secondary">{part.value}</div>
-                            <div>)</div>
-                        </div>
-                    )}
-                </div> */}
                 <Button
                     icon={<FaSyncAlt />}
                     iconProps={{
@@ -141,65 +196,80 @@ const HomePage = () => {
                         Synchronisation en cours ...
                     </div>
                 }
-            </Popup>            
+            </Popup>             */}
             <Navbar
                 title={`Accueil`}
-                leftLinks={[{ icon: <FaSyncAlt />, onClick: () => set("isSyncPopupOpen", true) }]}
+                leftLinks={[{ icon: <FaSyncAlt />, onClick: () => sync() }]}
                 rightLinks={[{ icon: <FaBell /> }]}
             />
                 <Block
-                    title={"A syncrhoniser"} 
-                    blockProps={{ className: "shadow-none" }}
+                    title={"Aujourd'hui"} 
+                    blockProps={{ className: "p-0 gap-0 border-none" }}
                 >
-                    {/* {!isEmpty(validatedUpdates)
-                        ?   validatedUpdates.map((update, UI) =>
-                                <div className={`flex items-center gap-app-xs text-soft-text`}>
-                                    <FaDatabase className="text-primary text-xl"/>
-                                    Aucune donnée
-                                </div>
-                            )
-                        :   <div className={`flex items-center gap-app-xs text-soft-text`}>
-                                <FaDatabase className="text-primary text-xl"/>
-                                Aucune donnée
-                            </div>
-                    } */}
-                </Block>
-                <Block
-                    title={"En cours"} 
-                    blockProps={{ className: "shadow-none" }}
-                >
-                    <div className={`flex items-center gap-app-xs text-soft-text`}>
-                        <FaFilePen className="text-primary text-xl"/>
-                        Aucune intervention
-                    </div>
-                </Block>
-                <Block
-                    title={"A faire"} 
-                    blockProps={{ className: "p-0 gap-0 shadow-none" }}
-                >
-                    <Calendar containerProps={{ className: "rounded-x-md rounded-t-md shadow-none" }}/>
-                    <div className={`flex flex-col divide-y divide-border`}>
-                        {["", "", "", ""].map(intervention => 
-                            <div className="p-3 flex justify-between items-center gap-2">
-                                <FaBook className="text-primary text-lg"/>
-                                Troisième intervention
-                                <div className="italic text-soft-text">18:10</div>
-                                <IoIosArrowForward />
+                    <Link to={`/interventions`}>
+                        {/* <Calendar containerProps={{ className: "rounded-x-md rounded-t-md shadow-none" }}/> */}
+                        <div 
+                            className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm bg-soft-bg active:brightness-soft`}
+                        >
+                            <div className="p-app-sm bg-primary/10 rounded-app-md">
+                                <BsRocketFill className={`text-primary text-2xl`} /> 
                             </div>
 
-                        )}
-                    </div>
+                            <div className="flex gap-app-sm items-center justify-between">
+                                <div className="text-strong-text">
+                                    Vous avez **** interventions à faire aujourd'hui... Y aller ?
+                                </div>
+                                <MdArrowForwardIos className="text-xl" />
+                            </div>
+                            
+                        </div>
+                    </Link>
                 </Block>
-            <Sidebar
-                id={"homeSidebar"}
-                toggleButton
-                open={() => set("isSidebarOpen", true)}
-                links={links}
-                Panel={{
-                    isOpen: isSidebarOpen,
-                    close: () => set("isSidebarOpen", false)
-                }}
-            />
+                <Block
+                    title={"A syncrhoniser"} 
+                    blockProps={{ className: "border-none p-0" }}
+                >
+                    {!isEmpty(updates) 
+                        ?   <div className="flex flex-col divide-y divide-border">
+                                {updates.map((update, UI) => 
+                                    <ListItem
+                                        key={`update${UI}`}
+                                        type={`update`}
+                                        intervention={{ ...update.data, status: "update" }}
+                                    />
+                                )}
+                            </div>
+                        :   <div className={`px-app-base py-app-sm`}>
+                                Aucune intervention à synchroniser
+                            </div>
+                    }
+                </Block>
+                {/* <Block
+                    title={"Brouillons"} 
+                    containerProps={{ className: "mb-22" }}
+                    blockProps={{ className: "border-none p-0" }}
+                >
+                    {!isEmpty(drafts) 
+                        ?   <div className="flex flex-col divide-y divide-border">
+                                {drafts.map((draft, DI) => 
+                                    <Link 
+                                        key={`draft${DI}`} 
+                                        to={`/intervention/${draft.data.rowid}`} 
+                                        state={{ draft: draft, originLocation: { to: "/" } }}
+                                    >
+                                        <ListItem
+                                            type={`draft`}
+                                            intervention={{ ...draft.data, status: "draft" }}
+                                        />
+                                    </Link>
+                                )}
+                            </div>
+                        :   <div className={`px-app-base py-app-sm`}>
+                                Aucun Brouillon
+                            </div>
+                    }
+                </Block> */}
+                <Tabbar links={links} />
         </div>
     );
 };

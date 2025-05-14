@@ -2,29 +2,34 @@ import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
 
 export const Textarea = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("textarea", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("textarea", props);
 
   const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
-  const { textareaProps = {} } = filteredProps;
+  const {
+    defaultValue,
+    onChange = () => {},
+    value
+   } = filteredProps;
 
-  const { value, defaultValue, onChange = () => {} } = textareaProps;
-
-  const { currentValue, setValue } = useValue(defaultValue, value, onChange);
-
-  const handleTextareaOnChange = e => setValue(e.target.value);
+  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
 
   return (
     <Label { ...extractedLabelProps} mergeProps={mergeProps}>
       <textarea { ...mergeProps("textarea", props => ({
-        rows: 5,
+        // rows: 5,
         ...props,
+        ...mergeQuickProps(props, ["placeholder", "required", "disabled", "readOnly",
+        ["rows", 5], "cols", "wrap", "minLength", "maxLength", "name"]),
         value: currentValue,
-        onChange: handleTextareaOnChange,
-        className: `min-w-0 disabled:brightness-soft p-app-xs rounded-app-md border outline-none placeholder-soft-text border-border bg-soft-bg duration-(--really-quick) focus:ring-1 ring-primary focus:border-primary`
+        onChange: e => setValue(e.target.value),
+        className: `min-w-0 w-full disabled:brightness-soft p-app-xs
+        rounded-app-md border outline-none placeholder-soft-text
+        border-border bg-soft-bg duration-(--instant) focus:ring-1 
+        ring-primary focus:border-primary`,
       }))}>
       </textarea>
     </Label>

@@ -75,3 +75,19 @@ export function isEmpty(value) {
 export function toArray(value){
     return isArray(value) ? value : [value];
 }
+
+export function applyFunctionIfNotNil(value, ...params) {
+    if (!isNil(value)) {
+        return value(params);
+    }
+
+    return undefined;
+}
+
+export function applyFunctionIfFunction(value, ...params) {
+    if (!isFunction(value)) {
+        return value(params);
+    }
+
+    return undefined;
+}
