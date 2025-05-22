@@ -19,12 +19,12 @@ import { Button, Spinner } from "../../others";
 
 // TODO All steppers
 // TODO Stepper
-// TODO Duration
+// TODO Timer
 // TODO Maybe give props for password icons
 // TODO Change type attribute
 
 export const Input = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("input", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Input", props);
 
   const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 

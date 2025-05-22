@@ -17,7 +17,7 @@ export const Page = (props) => {
     return (
         <div { ...mergeProps("page", props => ({
             ...props,
-            className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text, text-app-sm duration-(--really-quick) ${init ? "opacity-100" : "opacity-0"}`
+            className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text, text-app-sm duration-(--medium) ${init ? "opacity-100" : "opacity-0"}`
         }))}>
             {children}
         </div>

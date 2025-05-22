@@ -10,7 +10,7 @@ export const ListItem = () => {
 
     const {
       value,
-      type
+      type,
     } = props;
 
     switch (type) {

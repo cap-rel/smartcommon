@@ -4,6 +4,6 @@ import { Navigate, Outlet, Route } from "react-router-dom";
 import { isNil } from "../../../globals";
 
 export const PrivateRoutes = () => {
-    const auth = useSelector(state => state.session.data.auth);
-    return auth ? <Outlet /> : <Navigate to="/login" replace />;
+    const session = useSelector(state => state.session.data);
+    return session ? <Outlet /> : <Navigate to="/login" replace />;
 };

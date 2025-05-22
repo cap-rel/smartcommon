@@ -1,4 +1,4 @@
-import { isNil } from "./type";
+import { isArray, isNil } from "./type";
   
   export const secondsToTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -44,15 +44,27 @@ import { isNil } from "./type";
     const days = interval / (60 * 60 * 24);
     return days;
   };
+
+  export function cleanForComparison(value) {
+    return value.toString().toUpperCase().replace(/\s+/g, "");
+  } 
   
-  export const searchBarFilter = (label, value) => {
-    return label 
-    ? label
-    .toString()
-    .replace(/\s/g, "")
-    .toUpperCase()
-    .includes(value.replace(/\s/g, "").toUpperCase())
-    : false;
+  export const searchBarFilter = (searchedValues, search) => {
+    let isFiltered = false;
+
+    const filter = (value) => {
+      if (cleanForComparison(value).includes(cleanForComparison(search))) {
+        isFiltered = true;
+      }
+    }
+
+    if (isArray(searchedValues)) {
+      searchedValues.forEach(value => filter(value))
+    } else {
+      filter(searchedValues);
+    }
+
+    return isFiltered;
   };
   
   export const unsetObject = (obj) => {
@@ -63,13 +75,28 @@ import { isNil } from "./type";
     }
   };
   
-  export const sortArray = (array, input, sort = "ascending") => {
+  export const sortArrayByNumber = (array, prop, sort = "ascending") => {
     const compare = (a, b) => {
-      return  sort === "ascending" ? a[input] - b[input] : b[input] - a[input];
+      const valA = prop ? a[prop] : a;
+      const valB = prop ? b[prop] : b;
+      return  sort === "ascending" ? valA[prop] - valB[prop] : valA[prop] - valB[prop];
     };
   
     array.sort(compare);
     return array;
+  };
+
+  export const sortArrayByString = (array, prop, sort = "ascending") => {
+    const compare = (a, b) => {
+      const valA = (prop ? a[prop] : a)?.toLowerCase?.() ?? '';
+      const valB = (prop ? b[prop] : b)?.toLowerCase?.() ?? '';
+  
+      return sort === "ascending"
+        ? valA.localeCompare(valB)
+        : valB.localeCompare(valA);
+    };
+  
+    return array.sort(compare);
   };
   
   export const isArrayOfObjects = (array) => {
@@ -135,10 +162,6 @@ import { isNil } from "./type";
   
     return { seconds, minutes, hours, days };
   }
-  
-  export function cleanForComparison(value) {
-    return value.toString().toUpperCase().replace(/\s+/g, "");
-  } 
   
   export function generateRandomString(length, options) {
     const characterSets = {

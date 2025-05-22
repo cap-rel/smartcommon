@@ -25,7 +25,7 @@ import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../global
 // ...props
 
 export const Select = (props) => {
-   const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("select", props);
+   const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Select", props);
   
     const { extractedLabelProps, filteredProps } = useLabel(variantProps);
   
@@ -65,8 +65,8 @@ export const Select = (props) => {
             handleSelectOnChange(e);
             applyFunctionIfNotNil(props.onChange, e);
           },
-          className: `py-2 pr-7 pl-2 w-full rounded-app-md border border-border
-          outline-none active:brightness-soft duration-(--really-quick) bg-strong-bg`
+          className: `py-2 pr-7 pl-2 w-full truncate whitespace-nowrap overflow-hidden rounded-app-md border border-border truncate
+          outline-none active:brightness-soft duration-(--really-quick) bg-strong-bg inset-shadow-sm`
         }))}>
           {/* <option disabled { ...optionProps}>{placeholder}</option> */}
           {!isEmpty(options) && 
@@ -77,7 +77,8 @@ export const Select = (props) => {
               return (
                 <option key={`option${OI}`} { ...mergeProps("option", props => ({
                   ...props,
-                  value: optionValue
+                  value: optionValue,
+                  className: `truncate`
                 }))}>
                   {optionLabel}
                 </option>

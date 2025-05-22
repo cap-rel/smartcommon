@@ -12,3 +12,4 @@ export * from "./Panel";
 // export * from "./popupTest";
 export * from "./Spinner";
 export * from "./SearchBar";
+export * from "./Tag";

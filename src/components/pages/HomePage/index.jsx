@@ -1,13 +1,12 @@
 import { IoArrowForward, IoHome, IoLogOut } from "react-icons/io5";
-import { Navbar, Sidebar, Tabbar } from "../../navigation";
-import { FaBook, FaSyncAlt } from "react-icons/fa";
+import { Navbar, Sidebar, Tabbar, UpperNavbarLink } from "../../navigation";
+import { FaBook, FaCheckCircle, FaSyncAlt, FaTimesCircle } from "react-icons/fa";
 import { FaBell, FaDatabase, FaFilePen, FaGear, FaUser } from "react-icons/fa6";
 import { useApi, useStates } from "../../../hooks";
-import { Block, Button, Overlay, Popup } from "../../others";
-import { Calendar } from "../../list";
+import { Block, Button, Overlay, Popup, Spinner } from "../../others";
 import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { API_URL, isEmpty, setLocalJSON } from "../../../globals";
+import { API_URL, getSessionJSON, isEmpty, setLocalJSON, setSessionJSON } from "../../../globals";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
@@ -17,279 +16,348 @@ import toast from "react-hot-toast";
 import { BsRocketFill } from "react-icons/bs";
 import { MdArrowForwardIos } from "react-icons/md";
 import { ListItem } from "../ListItem";
-import { setIsTokenChecked } from "../../../reduxStore/reducers/sessionSlice";
 import { Page } from "../../others/Page";
+import { PrivateLayout } from "../PrivateLayout";
+import { DetailsPanel } from "../DetailsPanel";
+import { Duration } from "../../list/Duration";
+import { Address, Coordinates, Datetime, Email, PhoneNumber, Url } from "../../list";
 
 const HomePage = () => {
-    const links = [
-        { label: "Accueil", icon: <IoHome />, to: "/" },
-        { label: "Interventions", icon: <BsRocketFill />, to: "/interventions" },
-        // { label: "Contacts", icon: <FaUser />, to: "/contacts" },
-        { label: "Paramètres", icon: <FaGear />, to: "/settings" },
-        // { label: "Déconnexion", icon: <IoLogOut />, to: "/" },
-    ];
 
     const { states, set } = useStates({
-        isSidebarOpen: false,
-        isGettingData: false,
-        isSyncPopupOpen: false,
-        isConfigSyncSuccess: false,
-        isMyInterventionsSyncSuccess: false,
-        isUrgentInterventionsSyncSuccess: false,
-        isUnassignedInterventionsSyncSuccess: false,
+        selectedIntervention: null,
+
         isUpdatesSyncSuccess: false,
         syncUpdateIndex: null,
 
-
+        isSyncPopupOpen: false,
+        hasSyncStarted: false,
 
         isConfigSyncing: false,
         isMineInterventionsSyncing: false,
         isUrgentInterventionsSyncing: false,
         isUnassignedInterventionsSyncing: false,
+
+        isConfigSyncSuccess: false,
+        isMineInterventionsSyncSuccess: false,
+        isUrgentInterventionsSyncSuccess: false,
+        isUnassignedInterventionsSyncSuccess: false,
     });
 
     const { 
-        isSidebarOpen, 
-        isGettingData, 
-        isSyncPopupOpen, 
-        isConfigSyncSuccess,
-        isMyInterventionsSyncSuccess,
-        isUrgentInterventionsSyncSuccess,
-        isUnassignedInterventionsSyncSuccess,
+        selectedIntervention,
+
         isUpdatesSyncSuccess,
         syncUpdateIndex,
+
+        isSyncPopupOpen,
+        hasSyncStarted,
 
         isConfigSyncing,
         isMineInterventionsSyncing,
         isUrgentInterventionsSyncing,
         isUnassignedInterventionsSyncing,
+
+        isConfigSyncSuccess,
+        isMineInterventionsSyncSuccess,
+        isUrgentInterventionsSyncSuccess,
+        isUnassignedInterventionsSyncSuccess,
     } = states;
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const session = useSelector(state => state.session.data);
+    const { token, user } = useSelector(state => state.session.data);
 
-    const { POST, GET, PUT } = useApi(API_URL, session.auth.token);
+    const { POST, GET, PUT } = useApi(API_URL, token);
 
-    const isSyncing = isConfigSyncing || isMineInterventionsSyncing || isUrgentInterventionsSyncing || isUnassignedInterventionsSyncing;
+    const isOneSyncingAtLeast = isConfigSyncing || isMineInterventionsSyncing || isUrgentInterventionsSyncing || isUnassignedInterventionsSyncing;
 
-    const interventionsTypes = {
+    const syncRequests = {
+        config: { 
+            isSyncing: isConfigSyncing,
+            isSyncSuccess: isConfigSyncSuccess,
+            isSyncingPath: "isConfigSyncing",
+            isSyncSuccessPath: "isConfigSyncSuccess",
+            text: "Mise à jour de la configuration",
+        },
         mine: { 
-            isSyncing: "isMineInterventionsSyncing",
-            toast: "Mise à jour des interventions à faire",
+            isSyncing: isMineInterventionsSyncing,
+            isSyncSuccess: isMineInterventionsSyncSuccess,
+            isSyncingPath: "isMineInterventionsSyncing",
+            isSyncSuccessPath: "isMineInterventionsSyncSuccess",
+            text: "Mise à jour des interventions à faire",
         },
         urgent: { 
-            isSyncing: "isUrgentInterventionsSyncing",
-            toast: "Mise à jour des interventions urgentes",
+            isSyncing: isUrgentInterventionsSyncing,
+            isSyncSuccess: isUrgentInterventionsSyncSuccess,
+            isSyncingPath: "isUrgentInterventionsSyncing",
+            isSyncSuccessPath: "isUrgentInterventionsSyncSuccess",
+            text: "Mise à jour des interventions urgentes",
         },
         unassigned: { 
-            isSyncing: "isUnassignedInterventionsSyncing",
-            toast: "Mise à jour des interventions non assignées",
+            isSyncing: isUnassignedInterventionsSyncing,
+            isSyncSuccess: isUnassignedInterventionsSyncSuccess,
+            isSyncingPath: "isUnassignedInterventionsSyncing",
+            isSyncSuccessPath: "isUnassignedInterventionsSyncSuccess",
+            text: "Mise à jour des interventions non assignées",
         },
     };
 
-    const setToast = (toastId, isSyncing, toastText ,status = "success") => {
-        setTimeout(() => {
-            set(isSyncing, false);
-            toast.dismiss(toastId);
-            if (status === "error") {
-                toast.error(toastText);
-            } else {
-                toast.success(toastText);
-            }
-        }, 1000);
-    }
-
     const POSTIntervention = (type) => {
-        const interventionType = interventionsTypes[type];
-        const interventionToast = toast.loading(`${interventionType.toast}...`);
+        const { isSyncingPath, isSyncSuccessPath } = syncRequests[type];
+        // set(interventionType.isSyncing, true);
 
         POST(`interventions/${type}`)
             .then(json => {
                 dispatch(setInterventionsFromType({ type, interventions: json }));
-                setToast(interventionToast, interventionType.isSyncing, interventionType.toast);
-                console.log(`"${type}" interventions GET success"`)
+                set(isSyncingPath, false);
+                set(isSyncSuccessPath, true);
+                console.log(`POST 'interventions/${type} success`)
             })
             .catch(err => {
-                setToast(interventionToast, interventionType.isSyncing, interventionType.toast, "success");
-                console.error(`"${type}" interventions GET error`);
+                set(isSyncingPath, false);
+                console.error(`POST 'interventions/${type} error`);
                 console.error(err);
             })
     }
 
     const sync = () => {
-        set("isConfigSyncing", true);
+        set("hasSyncStarted", true);
+        Object.values(syncRequests).forEach(request => set(request.isSyncingPath, true));
 
-        const configToast = toast.loading("Mise à jour de la configuration...");
+        const { isSyncingPath, isSyncSuccessPath } = syncRequests.config;
 
-        GET("home")
-            .then(json => {
-                dispatch(setConfig(json.home));
-                setToast(configToast, "isConfigSyncing", "Mise à jour de la configuration");
-                console.log("Config GET success.");
-            })
-            .catch(err => {
-                setToast(configToast, "isConfigSyncing", "Mise à jour de la configuration", "error");
-                console.error("Config GET error");
-                console.error(err);
-            })
-                
+        setTimeout(() => {
+            GET("home")
+                .then(json => {
+                    dispatch(setConfig(json.home));
+                    set(isSyncingPath, false);
+                    set(isSyncSuccessPath, true);
+                    console.log("GET 'home' success");
+                })
+                .catch(err => {
+                    set(isSyncingPath, false);
+                    console.error("GET 'home' error");
+                    console.error(err);
+                });
+                    
             POSTIntervention("mine");
             POSTIntervention("urgent");
             POSTIntervention("unassigned");
+        }, 1000); 
     };
 
     const syncUpdate = (index) => {
         const update = updates[index];
         set("syncUpdateIndex", index);
         setTimeout(() => {
-            PUT(`intervention/${update.data.rowid}`)
+            const { rowid: id, ref } = update.data;
+            PUT(`intervention/${id}`)
                 .then(() => {
-                    dispatch(removeUpdate(index))
-                    toast.success(`Intervention ${update.data.ref}`)
-                    console.log(`Update { ref => ${update.data.ref}, index => ${index} } synchronization PUT Success`);
+                    dispatch(removeUpdate({ user, index }));
+                    toast.success(`Synchronisation intervention ${ref}`);
+                    console.log(`PUT 'intervention/${id}' success`);
                 })
                 .catch(err => {
-                    toast.error(`Intervention ${update.data.ref}`)
-                    console.error(`Update { ref => ${update.data.ref}, index => ${index} } synchronization PUT Error`);
+                    toast.error(`Synchronisation intervention ${ref}`);
+                    console.error(`PUT 'intervention/${id}' success`);
                     console.error(err);
-                })
-                .finally(() => {
-                    set("syncUpdateIndex", null);
                 })
         }, 1000)
     };
 
     useEffect(() => {
-        if (!session.isTokenChecked) {
+        if (!getSessionJSON("isTokenChecked")) {
             GET("ping")
                 .then(() => {
-                    dispatch(setIsTokenChecked(true));
-                    console.log("Token still valid.")
+                    setSessionJSON("isTokenChecked", true);
+                    console.log("GET 'ping' success");
+                    POSTIntervention("mine");
+                    POSTIntervention("urgent");
+                    POSTIntervention("unassigned");
                 })
                 .catch(err => {
-                    toast.error("Votre session a expirée. Veuillez vous reconnecter.");
-                    console.error("Token expired. Must connect.");
+                    console.error("GET 'ping' error");
+                    console.error(err);
                 });
         }
     }, []);
 
     const updates = useSelector(state => state.updates.data);
-    const drafts = useSelector(state => state.drafts.data);
+
+    const closePopup = () => {
+        set("isSyncPopupOpen", false);
+        set("hasSyncStarted", false);
+        Object.values(syncRequests).forEach(request => set(request.isSyncSuccessPath, false));
+    };
+
+    let filterText;
+
+    switch (useSelector(state => state.settings.data.interventionsFilterByDefault)) {
+        case "today": filterText = "aujourd'hui"; break;
+        case "week": filterText = "cette semaine"; break;
+        case "month": filterText = "ce mois"; break;
+    }
+
+    const syncText = (request) => {
+        const { isSyncing, isSyncSuccess, text } = request
+
+        return (
+            <div className={`flex gap-app-xs items-center`}>
+                {isSyncing
+                    ?   <Spinner size={5} />
+                    :   (isSyncSuccess
+                            ?   <FaCheckCircle className={`text-success text-app-lg`} />
+                            :   <FaTimesCircle className={`text-error text-app-lg`} />
+                        )
+                }
+                {text}
+            </div>
+        );
+    };
+
+    const interventions = Object.values(useSelector(state => state.interventions.data)).reduce((acc, interventionsGroup) => [...acc, ...interventionsGroup], []);
+
+    const interventionsToComplete = interventions.filter(intervention => intervention.status === "STATUS_TOCOMPLETE");
+    const interventionsInProgress = interventions.filter(intervention => intervention.status === "STATUS_INPROGRESS");
+
+    const closePanel = () => {
+        set("selectedIntervention", null);
+    };
 
     return (
-        <Page>
-            <Overlay
-                isOpen={isSyncing}
-                overlayProps={{ className: "" }}
+        <>
+            <DetailsPanel
+                intervention={selectedIntervention}
+                close={closePanel}
+                originLocation={{ to: "/interventions" }}
             />
-            {/* <Popup
+            <Popup
+                isOpen={isSyncPopupOpen}
+                close={closePopup}
                 title={`Synchronisation serveur`}
                 closeButton
-                close={() => set("isSyncPopupOpen", false)}
-                isOpen={isSyncPopupOpen}
-                popupProps={{ className: "gap-app-md items-center" }}
-                Button={{
-                    buttonProps: {
-                        disabled: isGettingData
-                    }
-                }}
+                popupProps={{ className: `items-center pb-app-md` }}
             >
-                <div className="text-center">
-                    Pour synchroniser les données locales avec celles du serveur, appuyer ci-dessous.
+                <div className={`text-justify`}>
+                    Pour synchroniser la configuration de l'application ainsi que les interventions, cliquez sur le bouton ci-dessous.
                 </div>
+
                 <Button
                     icon={<FaSyncAlt />}
-                    iconProps={{
-                        className: `${isGettingData && "animate-spin"}`
-                    }}
-                    buttonProps={{
-                        onClick: () => sync(),
-                        className: "self-center text-5xl p-app-md"
-                    }}
+                    onClick={sync}
+                    iconProps={{ className: `${isOneSyncingAtLeast && "animate-spin"} text-app-4xl` }}
+                    buttonProps={{ className: `rounded-full p-app-base` }}
                 />
-                {isGettingData &&
-                    <div className="text-soft-text italic">
-                        Synchronisation en cours ...
-                    </div>
-                }
-            </Popup>             */}
-            <Navbar
-                title={`Accueil`}
-                leftLinks={[{ icon: <FaSyncAlt />, onClick: () => sync() }]}
-                rightLinks={[{ icon: <FaBell /> }]}
-            />
-                <Block
-                    title={"Aujourd'hui"} 
-                    blockProps={{ className: "p-0 gap-0 border-none" }}
-                >
-                    <Link to={`/interventions`}>
-                        {/* <Calendar containerProps={{ className: "rounded-x-md rounded-t-md shadow-none" }}/> */}
-                        <div 
-                            className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm bg-soft-bg active:brightness-soft`}
-                        >
-                            <div className="p-app-sm bg-primary/10 rounded-app-md">
-                                <BsRocketFill className={`text-primary text-2xl`} /> 
-                            </div>
 
-                            <div className="flex gap-app-sm items-center justify-between">
-                                <div className="text-strong-text">
-                                    Vous avez **** interventions à faire aujourd'hui... Y aller ?
+                {/* {hasSyncStarted && */}
+                    <div className={`
+                        ${hasSyncStarted ? "scale-100 opacity-100 h-auto gap-app-sm" : "scale-0 opacity-0 h-0 gap-0"}
+                        duration-(--medium) flex flex-col
+                    `}>
+                        {Object.values(syncRequests).map(request => syncText(request))}
+                    </div>
+                {/* } */}
+
+            </Popup>
+            <Page pageProps={{ className: `mb-(--layoutTabbar-tabbar-height)` }}>   
+                <Navbar
+                    title={`Accueil`}
+                    upperLeftLinks={<UpperNavbarLink icon={<FaSyncAlt />} onClick={() => set("isSyncPopupOpen", true)} />}
+                    upperRightLinks={<UpperNavbarLink icon={<FaBell />} />}
+                />
+                    <Block
+                        title={"Aujourd'hui"} 
+                        blockProps={{ className: "p-0 gap-0" }}
+                    >
+                        <Link to={`/interventions`}>
+                            <div 
+                                className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm bg-soft-bg active:brightness-soft`}
+                            >
+                                <div className="p-app-sm bg-primary/10 rounded-app-md">
+                                    <BsRocketFill className={`text-primary text-2xl`} /> 
                                 </div>
-                                <MdArrowForwardIos className="text-xl" />
+
+                                <div className="flex gap-app-sm items-center justify-between">
+                                    <div className="text-strong-text">
+                                        Vous avez **** interventions à faire {filterText}... Y aller ?
+                                        <Datetime value={1747922976} />
+                                    </div>
+                                    <MdArrowForwardIos className="text-xl" />
+                                </div>
+                                
                             </div>
-                            
-                        </div>
-                    </Link>
-                </Block>
-                <Block
-                    title={"A syncrhoniser"} 
-                    blockProps={{ className: "border-none p-0" }}
-                >
-                    {!isEmpty(updates) 
-                        ?   <div className="flex flex-col divide-y divide-border">
-                                {updates.map((update, UI) => 
-                                    <ListItem
-                                        key={`update${UI}`}
-                                        type={`update`}
-                                        intervention={{ ...update.data, status: "update" }}
-                                        onClick={() => syncUpdate(UI)}
-                                    />
-                                )}
-                            </div>
-                        :   <div className={`px-app-base py-app-sm`}>
-                                Aucune intervention à synchroniser
-                            </div>
-                    }
-                </Block>
-                {/* <Block
-                    title={"Brouillons"} 
-                    containerProps={{ className: "mb-22" }}
-                    blockProps={{ className: "border-none p-0" }}
-                >
-                    {!isEmpty(drafts) 
-                        ?   <div className="flex flex-col divide-y divide-border">
-                                {drafts.map((draft, DI) => 
-                                    <Link 
-                                        key={`draft${DI}`} 
-                                        to={`/intervention/${draft.data.rowid}`} 
-                                        state={{ draft: draft, originLocation: { to: "/" } }}
-                                    >
+                        </Link>
+                    </Block>
+                    <PhoneNumber value={"0637872898"} />
+                    <Url value={`https://google.com`} />
+                    <Email value={`test@mail.com`} />
+                    <Address value={`Place Dassy`} />
+                    <Coordinates value={["-0.5805000", "44.8404400"]} />
+
+                    <Block
+                        title={"A syncrhoniser"} 
+                        blockProps={{ className: "p-0" }}
+                    >
+                        {!isEmpty(updates) 
+                            ?   <div className="flex flex-col divide-y divide-border">
+                                    {updates.map((update, UI) => 
                                         <ListItem
-                                            type={`draft`}
-                                            intervention={{ ...draft.data, status: "draft" }}
+                                            key={`update${UI}`}
+                                            type={`update`}
+                                            intervention={{ ...update.data, status: "update" }}
+                                            onClick={() => syncUpdate(UI)}
                                         />
-                                    </Link>
-                                )}
-                            </div>
-                        :   <div className={`px-app-base py-app-sm`}>
-                                Aucun Brouillon
-                            </div>
-                    }
-                </Block> */}
-                <Tabbar links={links} />
-        </Page>
+                                    )}
+                                </div>
+                            :   <div className={`px-app-base py-app-sm`}>
+                                    Aucune intervention à synchroniser
+                                </div>
+                        }
+                    </Block>
+                    <Block
+                        title={"En cours"} 
+                        blockProps={{ className: "p-0" }}
+                    >
+                        {!isEmpty(interventionsInProgress) 
+                            ?   <div className="flex flex-col divide-y divide-border">
+                                    {interventionsInProgress.map((intervention, II) => 
+                                        <ListItem
+                                            key={`intervention${II}`}
+                                            type={`intervention`}
+                                            onClick={() => set("selectedIntervention", intervention)}
+                                            intervention={intervention}
+                                        />
+                                    )}
+                                </div>
+                            :   <div className={`px-app-base py-app-sm`}>
+                                    Aucune intervention en cours
+                                </div>
+                        }
+                    </Block>
+                    <Block
+                        title={"A compléter"} 
+                        blockProps={{ className: "p-0" }}
+                    >
+                        {!isEmpty(interventionsToComplete) 
+                            ?   <div className="flex flex-col divide-y divide-border">
+                                    {interventionsToComplete.map((intervention, II) => 
+                                        <ListItem
+                                            key={`intervention${II}`}
+                                            type={`intervention`}
+                                            onClick={() => set("selectedIntervention", intervention)}
+                                            intervention={intervention}
+                                        />
+                                    )}
+                                </div>
+                            :   <div className={`px-app-base py-app-sm`}>
+                                    Aucune intervention en cours
+                                </div>
+                        }
+                    </Block>
+            </Page>
+        </>
     );
 };
 

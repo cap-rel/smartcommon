@@ -7,11 +7,11 @@ export const components = [
     {
         label: "Formulaire",
         slug: "form",
-        components: ["Address", "Array", "Audios", "Boolean", "Check", "ColorPicker", "Duration", "Editor", "Files", "GpsPoints", "Input", "Label", "Photos", "Range", "Rating", "Select", "Signature", "Textarea", "Videos"]
+        components: ["AddressInput", "Array", "Audios", "Boolean", "Checker", "ColorPicker", "Timer", "Editor", "FilesUploader", "gps", "Input", "Label", "Photos", "RangeInput", "Rater", "Select", "SignaturePad", "Textarea", "Videos"]
     }
 ];
 
 export const componentNames = [
     "Navbar", "Sidebar", "SidebarLink", "Tabbar", "TabbarButton" ,"TabbarLink",
-    "Address", "Array", "Audios", "Boolean", "Check", "ColorPicker", "Duration", "Editor", "Files", "GpsPoints", "Input", "Label", "Photos", "Range", "Rating", "Select", "Signature", "Textarea", "Videos",
+    "AddressInput", "Array", "Audios", "Boolean", "Checker", "ColorPicker", "Timer", "Editor", "FilesUploader", "gps", "Input", "Label", "Photos", "RangeInput", "Rater", "Select", "SignaturePad", "Textarea", "Videos",
 ];

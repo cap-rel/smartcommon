@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 // import { CheckboxDol, FormItemDol, IconDol, InputDol, LabelDol, SelectDol } from "../../components/dol";
 import { useApi, useStates } from "../../../hooks";
 import PrivateLayout from "../InterventionsPage";
-import { cleanForComparison, isEmpty, isLast, isNull, isUndefined, print, sortArray, timestampToDate, timestampToDateTime } from "../../../globals";
+import { cleanForComparison, isEmpty, isLast, isNull, isUndefined, print, timestampToDate, timestampToDateTime } from "../../../globals";
 import config from "../config";
 import notes from "../notes";
 import { useEffect } from "react";
@@ -45,7 +45,8 @@ const ListPage = () => {
 
     const setList = (searchValue, groupedBy, types, sort, interval) => {
         let groups = {};
-        sortArray(noteConfig.notes, groupedBy, sort).forEach(note => {
+        // sortArray(noteConfig.notes, groupedBy, sort).forEach(note => {
+            noteConfig.notes.forEach(note => {
             const date = timestampToDate(note[groupedBy]);
             if (types.includes(note.type)) { // && interval[0] <= date && interval[1] >= date
                 if (!isEmpty(searchValue)) {
@@ -205,7 +206,7 @@ const ListPage = () => {
                     </button>
                 </div>
                 <div className={`gap-4 px-4 py-6 col`}>
-                    <CheckboxDol
+                    <CheckerboxDol
                         label={`Groupé par`}
                         name={`groupedByFilter`}
                         options={[{ label: "Date création", value: "created_at" }, { label: "Date modification", value: "updated_at" }, { label: "Première lettre", value: "first_letter" }]}
@@ -224,14 +225,14 @@ const ListPage = () => {
                             onChange={value => set("filters.interval[1]", value)}
                         />
                     </LabelDol> */}
-                    <CheckboxDol
+                    <CheckerboxDol
                         label={`Ordre`}
                         name={`sortFilter`}
                         options={[{ label: "Croissant", value: "ascending" }, { label: "Décroissant", value: "decreasing" }]}
                         value={sort}
                         onChange={value => set("filters.sort", value)}
                     />
-                    <CheckboxDol
+                    <CheckerboxDol
                         label={`Types de note`}
                         name={`noteTypeFilter`}
                         multiple={true}

@@ -5,7 +5,7 @@ import { IoArrowDown, IoHome } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
 import { Tabbar } from "../../navigation";
 import { FaBook } from "react-icons/fa";
-import { Check, GpsPoints } from "../../form";
+import { Checker, Gps } from "../../form";
 import { Variables } from "./Variables";
 import { convertClassName, convertCSSVar } from "../../../globals/functions/variant";
 import { Components } from "./Components";
@@ -80,7 +80,7 @@ export const SmartPage = () => {
                         onChange={handleChange}
                         placeholder={`linkProps`}
                     ></textarea>
-                    <Check type="checkbox" options={["banane"]}/>
+                    <Checker type="checkbox" options={["banane"]}/>
                      {/* <textarea
                         rows={5}
                         className={`p-2 border-2 outline-none border-strong rounded-md focus:border-primary`}

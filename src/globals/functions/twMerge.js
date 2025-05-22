@@ -34,6 +34,7 @@ export const twMerge = extendTailwindMerge({
             ...mergedSpacing,
             ...mergedRadius,
             "font-size": [
+                "text-app-xxs",
                 "text-app-xs",
                 "text-app-sm",
                 "text-app-base",

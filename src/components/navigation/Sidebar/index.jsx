@@ -143,7 +143,7 @@ Sidebar.propTypes = propTypes;
       />
       <div
         { ...sidebarPs}
-        style={{ "--transitionDuration": "300ms", ...sidebarPs?.style }}
+        style={{ "--transitionTimer": "300ms", ...sidebarPs?.style }}
         className={twMerge(`fixed flex flex-col top-0 bottom-0 z-50 py-4 w-32 duration-(--transitionDuration) bg-soft-bg ${positionClass}`, sidebarPs?.className)}
       >
         {children}

@@ -1,61 +1,81 @@
 import { IoFilter, IoHome, IoLogOut, IoWarning } from "react-icons/io5";
-import { Navbar, Sidebar, Tabbar } from "../../navigation";
+import { LowerNavbarLink, Navbar, Sidebar, Tabbar, UpperNavbarLink } from "../../navigation";
 import { FaCalendarDays, FaGear, FaMagnifyingGlass } from "react-icons/fa6";
 import { FaBook, FaQuestion, FaUser } from "react-icons/fa";
 import { IoIosArrowForward, IoIosWarning } from "react-icons/io";
 import { Block, Button, Panel, Popup } from "../../others";
 import { useApi, useStates } from "../../../hooks";
 import { useEffect, useRef } from "react";
-import { Calendar } from "../../list";
-import { Input } from "../../form";
+import { Input, Calendar } from "../../form";
 import { RiCloseLargeFill, RiCloseLargeLine } from "react-icons/ri";
-import { API_URL, getLocalJSON, getVariable, isArray, isEmpty, isNil, isNull, isObject, isUndefined } from "../../../globals";
+import { API_URL, cleanForComparison, formatDate, getLocalJSON, getVariable, isArray, isEmpty, isNil, isNull, isObject, isUndefined, searchBarFilter, timestampToDate } from "../../../globals";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
 import { ListItem } from "../ListItem";
 import { Page } from "../../others/Page";
+import { DetailsPanel } from "../DetailsPanel";
 
 // TODO Edit or Start depends on status
+// TODO date interval
 
 const InterventionsPage = () => {
     const dispatch = useDispatch();
 
+    const dateNow = formatDate(new Date());
+
+    const { isInCalendarModeByDefault } = useSelector(state => state.settings.data);
+
     const { states, set } = useStates({
-        isSidebarOpen: false,
+        isInCalendarMode: isInCalendarModeByDefault,
         isSearchbarOpen: false,
-        searchbarValue: "",
+        search: "",
         selectedIntervention: null,
         interventionTypeFilter: "mine",
-        dateInterval: Math.round(Date.now() / 1000)
+        dateInterval: dateNow,
+        isGettingInterventions: false
     });
 
-    const { interventionTypeFilter, isSidebarOpen, isSearchbarOpen, searchbarValue, selectedIntervention, dateInterval } = states;
+    const { interventionTypeFilter, isSearchbarOpen, search, selectedIntervention, dateInterval, isInCalendarMode, isGettingIntervention } = states;
 
-    const { POST } = useApi(API_URL, useSelector(state => state.session.data.auth.token));
+    const { token } = useSelector(state => state.session.data);
+
+    const { POST } = useApi(API_URL, token);
+
+    const interventions = useSelector(state => state.interventions.data[interventionTypeFilter]);
+
+    const dateGroups = interventions.reduce((acc, intervention) => {
+        const { date_inter, label, ref } = intervention;
+        const dateGroup = formatDate(new Date(date_inter), "DD/MM/YYYY");
+        if (
+            searchBarFilter([ref, label], search)
+            // date_inter >= dateInterval[0] &&
+            // date_inter <= dateInterval[1]
+        ) {
+            if (isUndefined(acc[dateGroup])) {
+                acc[dateGroup] = [];
+            }
+            acc[dateGroup] = [...acc[dateGroup], intervention];
+        }
+        return acc;
+    }, {});
 
     useEffect(() => {
         if (interventionTypeFilter) {
+            set("isGettingInterventions", true);
             POST(`interventions/${interventionTypeFilter}`)
-            .then(interventions => {
-                console.log("Interventions GET success.");
-                dispatch(setInterventionsFromType({ type: interventionTypeFilter, interventions }))
-            })
-            .catch(err => console.error("Interventions GET error.", err));
-        }
+                .then(interventions => {
+                    dispatch(setInterventionsFromType({ type: interventionTypeFilter, interventions }));
+                    set("isGettingInterventions", false);
+                    console.log(`GET 'interventions/${interventionTypeFilter}' success`);
+                })
+                .catch(err => {
+                    set("isGettingInterventions", false);
+                    console.error(`GET 'interventions/${interventionTypeFilter}' error`)
+                    console.error(err);
+                });
+            }
     }, [interventionTypeFilter]);
-
-    console.log(useSelector(state => state.interventions.data));
-
-    const interventions = useSelector(state => state.interventions.data[interventionTypeFilter]);
-    // const config = useSelector(state => state.config);
-
-    const links = [
-        { label: "Accueil", icon: <IoHome />, to: "/" },
-        { label: "Interventions", icon: <FaBook />, to: "/interventions" },
-        // { label: "Contacts", icon: <FaUser />, to: "/contacts" },
-        { label: "Paramètres", icon: <FaGear />, to: "/settings" },
-    ];
 
     const navbarLinks = [
         { label: "Mes Interventions", icon: <FaBook />, onClick: () => set("interventionTypeFilter", "mine"), active: interventionTypeFilter === "mine" },
@@ -73,144 +93,112 @@ const InterventionsPage = () => {
     };
 
     const resetOrCloseSearchbar = () => {
-        if (!isEmpty(searchbarValue)) {
-            set("searchbarValue", "");
+        if (!isEmpty(search)) {
+            set("search", "");
         } else {
             set("isSearchbarOpen", false);
         }
     };
 
+    const closePanel = () => {
+        set("selectedIntervention", null);
+    };
+
     return (
-        <Page>
-            <Panel
-                isOpen={!isNil(selectedIntervention)}
-                close={() => set("selectedIntervention", null)}
-                zIndex={60}
-            >
-                <div className={`mx-auto w-app-xl h-app-xs bg-border rounded-full`} />
-                <div className="text-app-xl text-center font-app-bold">
-                    {selectedIntervention?.ref}
-                </div>
-                <div className={`overflow-y-auto flex flex-col border border-border divide-y divide-border rounded-md`}>
-                    {!isNil(config) && Object.entries(config).map(([attributeKey, attribute], AI) => {
-                        const { label, type, visible } = attribute;
-                        if (type === "object") {
-                            // return (
-                            //     <details>
-                            //         <summary className="flex font-app-bold px-4 py-3 first:rounded-t-md last:rounded-b-md even:bg-medium-bg">
-                            //             {label}
-                            //         </summary>
-                            //         <div className={`flex flex-col divide-y divide-border`}>
-                            //             {Object.entries(attribute).map(([objectAttributeKey, objectAttribute], AI) => {
-                            //                 const { label, visible } = objectAttribute
-                            //                 const test = ["type", "label", "position", "visible"];
-                            //                 if (isArray(visible) && visible.includes("read") && !test.includes(objectAttributeKey)) {
-                            //                     return (
-                            //                         <div className="flex divide-x divide-border first:rounded-t-md last:rounded-b-md even:bg-medium-bg">
-                            //                             <div className={`ml-app-base text-strong-text basis-1/2 px-4 py-3 font-app-semibold`}>
-                            //                                 {label}
-                            //                             </div>
-                            //                             <div className={`px-4 py-3 text-soft-text basis-1/2`}>
-                            //                                 {!isObject(selectedIntervention?.[attributeKey]?.[objectAttributeKey]) && selectedIntervention?.[attributeKey]?.[objectAttributeKey]}
-                            //                             </div>
-                            //                         </div>
-                            //                     );
-                            //                 }
-                            //             })}
-                            //         </div>
-                            //     </details>
-                            // );
-                        } else {
-                            const { visible } = attribute;
-                            if (isArray(visible) && visible.includes("read")) {
-                                return (
-                                    <div className="flex divide-x divide-border first:rounded-t-md last:rounded-b-md even:bg-medium-bg">
-                                        <div className={`text-strong-text basis-1/2 px-app-sm py-app-xs font-app-semibold`}>
-                                            {label}
-                                        </div>
-                                        <div className={`px-4 py-3 text-soft-text basis-1/2`}>
-                                            {!isObject(selectedIntervention?.[attributeKey]) && selectedIntervention?.[attributeKey]}
-                                        </div>
-                                    </div>
-                                )
-                            }                
-                        }
-                        // if (isArray(visible) && visible.includes("read")) {
-                        //     return (<div className="flex divide-x divide-border first:rounded-t-md last:rounded-b-md even:bg-medium-bg">
-                        //         <div className={`text-strong-text basis-1/2 px-4 py-3 font-app-semibold`}>
-                        //             {label}
-                        //         </div>
-                        //         <div className={`px-4 py-3 text-soft-text basis-1/2`}>
-                        //             {!isObject(selectedIntervention?.[attributeKey]) && selectedIntervention?.[attributeKey]}
-                        //         </div>
-                        //     </div>)
-                        // }                           
-                    })}
-                </div>
-                <Link to={`/intervention/${selectedIntervention?.rowid}`} state={{ originLocation: { to: "/interventions", state: { interventionTypeFilter } } }}>
-                    <Button
-                        buttonProps={{
-                            className: "w-full"
+        <>
+            <DetailsPanel
+                intervention={selectedIntervention}
+                close={closePanel}
+                originLocation={{ to: "/interventions", state: { interventionTypeFilter } }}
+            />
+
+            <Page pageProps={{ className: `mb-(--layoutTabbar-tabbar-height)` }}>
+                <Navbar
+                    id={`interventionsNavbar`}
+                    title={`Interventions`}
+                    lowerLinks={navbarLinks.map((link, LI) => 
+                        <LowerNavbarLink 
+                            key={`link${LI}`}
+                            { ...link}
+                            linkProps={{ className: `${isInCalendarMode && "border-none"}` }} 
+                        />
+                    )}
+                    upperLeftLinks={
+                        <UpperNavbarLink 
+                            icon={<FaCalendarDays />}
+                            onClick={e => { 
+                                e.preventDefault();
+                                set("isInCalendarMode", !isInCalendarMode); 
+                            }}
+                            iconProps={{ className: `${isInCalendarMode ? "text-white" : "text-soft-text"}` }}
+                        />
+                    }
+                    upperRightLinks={
+                        <UpperNavbarLink 
+                            icon={<FaMagnifyingGlass />}
+                            onClick={e => { 
+                                e.preventDefault();
+                                openSearchbar(); 
+                            }}
+                        />
+                    }
+                    navbarProps={{ className: "shadow-none" }}
+                />
+                <Calendar
+                    value={dateInterval}
+                    onChange={value => set("dateInterval", value)}
+                    containerProps={{ className: `top-(--interventionsNavbar-navbar-height) z-10 ${!isInCalendarMode && "absolute -translate-y-full"} duration-(--medium)` }}
+                />
+
+                <Block 
+                    blockProps={{ className: `bg-transparent shadow-none flex justify-center items-center p-0` }}
+                >
+                    hey
+                </Block>
+
+                {!isEmpty(dateGroups) &&
+                    Object.entries(dateGroups).map(([date, group], GI) => 
+                        <Block
+                            title={date}
+                            blockProps={{ className: `p-0 gap-0 ${isInCalendarMode && "shadow-none bg-transparent"}` }}
+                        >
+                            <div className={`flex flex-col ${isInCalendarMode ? "gap-app-xs" : "divide-y divide-border"}`}>
+                                {group.map((intervention, II) => 
+                                    <ListItem
+                                        isInCalendarMode={isInCalendarMode}
+                                        type={"intervention"}
+                                        key={`intervention${II}`}
+                                        onClick={() => set("selectedIntervention", intervention)}
+                                        intervention={intervention}
+                                    />
+                                )}
+                            </div>
+                        </Block>
+                    )
+                }
+                    
+                <div className={`z-30 flex -mx-app-xs text-app-lg items-center ${isSearchbarOpen ? "translate-y-0" : "-translate-y-full"} p-app-base duration-(--quick) fixed top-0 left-0 h-(--interventionsNavbar-upper-navbar-height) right-0 bg-soft-bg text-soft-text`}>
+                    <Input
+                        icon={<FaMagnifyingGlass />}
+                        value={search}
+                        onChange={value => set("search", value)}
+                        placeholder={`Rechercher ...`}
+                        containerProps={{ className: "grow" }}
+                        inputContainerProps={{ className: "border-none has-[input:focus]:ring-0" }}
+                        inputProps={{
+                            ref: searchbarInputRef,
+                            className: "text-app-base"
                         }}
-                    >
-                        Commencer l'intervention
-                    </Button>
-                </Link>
-            </Panel>
-            <Navbar
-                id={`interventionsNavbar`}
-                title={`Interventions`}
-                bottomLinks={navbarLinks}
-                leftLinks={[{ icon: <FaCalendarDays /> }]}
-                rightLinks={[{ icon: <FaMagnifyingGlass />, onClick: (e) => { e.preventDefault(); openSearchbar(); } }]}
-                navbarProps={{ className: "shadow-none" }}
-                bottomLinkProps={{
-                    className: " border-none"
-                }}
-            />
-            <Calendar
-                // containerProps={{ className: "mt-app-base" }}
-            />
+                    />
+                    <Button
+                        icon={<RiCloseLargeLine />}
+                        onClick={() => resetOrCloseSearchbar()}
+                        buttonProps={{ className: "bg-soft-bg text-app-lg text-soft-text p-app-xs rounded-app-xl" }}
+                    />
+                </div>
 
-            {!isNil(interventions) && !isEmpty(interventions) 
-                &&  <Block
-                        title={"Interventions"}
-                        blockProps={{ className: "border-none p-0 gap-0" }}
-                    >
-                        <div className="flex flex-col divide-y divide-border">
-                            {interventions.map((intervention, II) => 
-                                <ListItem
-                                    onClick={() => set("selectedIntervention", intervention)}
-                                    intervention={intervention}
-                                />
-                            )}
-                        </div>
-                    </Block>
-            }
-                
-            <div className={`z-30 flex items-center ${isSearchbarOpen ? "translate-y-0" : "-translate-y-full"} p-app-base duration-(--quick) fixed top-0 left-0 h-(--interventionsNavbar-upper-navbar-height) right-0 bg-soft-bg text-soft-text`}>
-                <Input
-                    value={searchbarValue}
-                    onChange={value => set("searchbarValue", value)}
-                    placeholder={`Rechercher ...`}
-                    containerProps={{ className: "grow" }}
-                    inputContainerProps={{ className: "border-none has-[input:focus]:ring-0" }}
-                    inputProps={{
-                        ref: searchbarInputRef,
-                        className: "text-app-base"
-                    }}
-                />
-                <Button
-                    icon={<RiCloseLargeLine />}
-                    onClick={() => resetOrCloseSearchbar()}
-                    buttonProps={{ className: "bg-soft-bg text-soft-text p-app-xs rounded-app-extrabold" }}
-                />
-            </div>
-
-            <Tabbar
-                links={links}
-            />  
-        </Page>
+            </Page>
+        </>
     );
 }
 

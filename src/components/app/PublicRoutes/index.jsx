@@ -4,6 +4,6 @@ import { isNil } from "../../../globals";
 import { useEffect } from "react";
 
 export const PublicRoutes = () => {
-    const auth = useSelector(state => state.session.data.auth);
-    return auth ? <Navigate to="/" replace/> : <Outlet />;
+    const session = useSelector(state => state.session.data);
+    return session ? <Navigate to="/" replace/> : <Outlet />;
 };

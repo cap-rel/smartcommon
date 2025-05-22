@@ -9,7 +9,7 @@ import { useEffect, useRef } from "react";
 export const Navbar = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantToProps("navbar", props);
 
-    const { id, children, leftLinks, rightLinks, bottomLinks, title } = variantProps;
+    const { id, children, upperLeftLinks, upperRightLinks, lowerLinks, title } = variantProps;
 
     // useEffect(() => {
     //     setParams()
@@ -70,135 +70,43 @@ export const Navbar = (props) => {
             <div { ...mergeProps("upperNavbar", props => ({
                 ...props,
                 ref: upperNavbarRef,
-                className: `p-app-xs flex justify-between items-center ${!isNil(bottomLinks) ? "rounded-b-none" :  "rounded-b-app-base"}`
+                className: `p-app-xs flex justify-between items-center ${!isNil(lowerLinks) ? "rounded-b-none" :  "rounded-b-app-base"}`
             }))}>
 
-            {!isNil(leftLinks) &&
-                <div { ...mergeProps("leftLinks", props => ({
-                    ...props,
-                    className: `flex gap-app-xs min-w-9`
-                }))}>
-                    
-                    {leftLinks?.map((link, LI) => {
-                        const { icon, disabled, label } = link;
-                                                            
-                        return (
-                            <Link key={`link${LI}`} { ...mergeProps("leftLink", props => ({
-                                ...props,
-                                ...link,
-                                className: `flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled && "pointer-events-none"}`
-                            }))}>
-                    
-                                {!isNil(icon) && 
-                                    <div { ...mergeProps("leftIcon", props => props)}>
-                                        {icon}
-                                    </div>
-                                }
-                
-                                {!isNil(label) &&
-                                    <div { ...mergeProps("leftLabel", props => props)}>
-                                        {label}
-                                    </div>
-                                }
-                
-                            </Link>
-                        );
-                    })}
-
-                </div>
-            }
+                {!isNil(upperLeftLinks) &&
+                    <div { ...mergeProps("upperLeftLinks", props => ({
+                        ...props,
+                        className: `flex gap-app-xs min-w-9`
+                    }))}>
+                        {upperLeftLinks}
+                    </div>
+                }
 
                 {!isNil(title) && 
                     <div { ...mergeProps("title", props => ({
                         ...props,
-                        className: `truncate text-white font-app-semibold text-app-md py-app-xs`
+                        className: `text-center truncate text-white font-app-semibold text-app-md py-app-xs`
                     }))}>
                         {title}
                     </div>
                 }
             
-                {!isNil(leftLinks) &&
-
-                    <div { ...mergeProps("rightLinks", props => ({
+                {!isNil(upperRightLinks) &&
+                    <div { ...mergeProps("upperRightLinks", props => ({
                         ...props,
                         className: `flex gap-app-xs min-w-9`
                     }))}>
-                        
-                        {rightLinks?.map((link, LI) => {
-                            const { icon, disabled, label } = link;
-                                                                
-                            return (
-                                <Link key={`link${LI}`} { ...mergeProps("rightLink", props => ({
-                                    ...props,
-                                    ...link,
-                                    className: `bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled && "pointer-events-none"}`
-                                }))}>
-                    
-                                    {!isNil(label) &&
-                                        <div { ...mergeProps("rightLabel", props => props)}>
-                                            {label}
-                                        </div>
-                                    }
-
-                                    {!isNil(icon) && 
-                                        <div { ...mergeProps("rightIcon", props => props)}>
-                                            {icon}
-                                        </div>
-                                    }
-                    
-                                </Link>
-                            );
-
-                        })}
-
+                        {upperRightLinks}
                     </div>
                 }
-
-                {children}
-
             </div>
 
-            {!isNil(bottomLinks) &&
-                <div { ...mergeProps("bottomLinks", props => ({
+            {!isNil(lowerLinks) &&
+                <div { ...mergeProps("lowerLinks", props => ({
                     ...props,
                     className: `snap-x flex items-center bg-primary text-app-base overflow-x-auto`
                 }))}>
-                    
-                    {bottomLinks.map((link, LI) => {
-                        const { to, icon, activeIcon, disabled, label, active: isActiveManually } = link;
-                                            
-                        const isActive = !isNil(isActiveManually) ? isActiveManually : `${location.pathname}${location.search}` === to;
-                        const currentIcon = isActive ? (!isNil(activeIcon) ? activeIcon : icon) : icon;
-                
-                        return (
-                            <Link key={`link${LI}`} { ...mergeProps("bottomLink", props => ({
-                                ...props,
-                                ...link,
-                                style: { transition: `filter var(--really-quick), color var(--medium), border-color var(--medium)` },
-                                className: `bg-primary text-app-sm snap-center px-app-base py-app-xs border-b-4
-                                font-app-base flex-1 ${disabled && "pointer-events-none"} whitespace-nowrap rounded-app-base border-primary
-                                ${isActive ? "text-white border-white font-app-semibold" : "font-app-base text-soft-text border-primary active:brightness-soft"}
-                                flex justify-center items-center gap-app-xs`
-                            }))}>
-                                {/* border-b-4 */}
-                    
-                                {!isNil(icon) && 
-                                    <div { ...mergeProps("bottomIcon", props => props)}>
-                                        {currentIcon}
-                                    </div>
-                                }
-                
-                                {!isNil(label) &&
-                                    <div { ...mergeProps("bottomLabel", props => props)}>
-                                        {label}
-                                    </div>
-                                }
-                                    
-                            </Link>
-                        );
-
-                    })}
-
+                    {lowerLinks}
                 </div>
             }
 

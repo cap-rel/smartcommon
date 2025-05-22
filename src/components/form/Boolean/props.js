@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 
-export const booleanPropTypes = {
+export const propTypes = {
     label: PropTypes.string, 
     labelRow: PropTypes.bool,
     help: PropTypes.string,

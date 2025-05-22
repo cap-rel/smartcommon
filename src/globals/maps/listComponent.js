@@ -1,0 +1,57 @@
+import { useMemo } from "react";
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader } from "../../components";
+import { isUndefined } from "../functions";
+import { VideosUploader } from "../../components/form/VideosUploader";
+import { AudiosUploader } from "../../components/form/AudiosUploader";
+
+export function setListComponent(type) {
+    const LIST_COMPONENTS_MAP = useMemo(() => ({
+        boolean      : <Boolean readOnly label/>,
+        check        : Checker,
+        select       : Select,
+        array        : Array,
+        varchar      : Input,
+        email        : Input,
+        password     : Input,
+        phoneNumber  : Input,
+        url          : Input,
+        ip           : Input,
+        // link         : Input,
+        timestamp    : Input,
+        date         : Input,
+        datetime     : Input,
+        time         : Input,
+        int          : Input,
+        float        : Input,
+
+        // stock        : Input,
+        // reel         : Input,
+        // price        : Input,
+        // pricey       : Input,
+        // double       : Input,
+
+        rating       : Rater,
+        range        : RangeInput,
+        duration     : Timer,
+        text         : Textarea,
+        html         : Editor,
+        address      : AddressInput,
+        gpsPoints    : gps,
+        files        : FilesUploader,
+        audios       : AudiosUploader,
+        videos       : VideosUploader,
+        photos       : PhotosUploader,
+        signature    : SignaturePad,
+        // icon         : IconSelect,
+        color        : ColorPicker,
+    }));
+
+    // console.log(COMPONENTS_MAP[type])
+
+    // if (isUndefined(COMPONENTS_MAP[type])) {
+    //     console.error(`${type} is not a valid type.`);
+    //     return;
+    // }
+
+    return LIST_COMPONENTS_MAP[type];
+}

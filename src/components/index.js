@@ -4,6 +4,7 @@ export * from "./item";
 export * from "./navigation";
 export * from "./others";
 export * from "./pages";
+export * from "./list";
 
 // classes
     // divider => hr avec un text à l'interieur au début, au milieu, à la fin

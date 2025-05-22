@@ -3,12 +3,12 @@ import { Block } from "../../others/Block";
 import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
-import { Calendar, List } from "../../list";
+import { List } from "../../test";
 import { Button, Popup, Spinner } from "../../others";
 import { useEffect } from "react";
 import { useStates } from "../../../hooks";
 import { useLocation } from "react-router-dom";
-import { Address, Array, Audios, Boolean, Check, ColorPicker, Duration, Editor, Files, GpsPoints, Input, Photos, Range, Rating, Select, Signature, Textarea, Videos } from "../../form";
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../form";
 
 export const DevPage = () => {
     // mb-20 for tabbar and mb- for sidebar
@@ -29,16 +29,16 @@ export const DevPage = () => {
 
     const location = useLocation();
 
-    const getGpsPoints = (value) => {
+    const getgps = (value) => {
         return value.map(gpsPoint => Number(gpsPoint));
     };
 
-    const getMultipleGpsPoints = (value) => {
-        let multipleGpsPoints = [];
+    const getMultiplegps = (value) => {
+        let multiplegps = [];
         for (let i = 0; i < value.length; i += 2) {
-            multipleGpsPoints.push([Number(value[i]), Number(value[i + 1])]);
+            multiplegps.push([Number(value[i]), Number(value[i + 1])]);
         }
-        return multipleGpsPoints;
+        return multiplegps;
     };
 
     const getMedia = (value) => {
@@ -124,8 +124,8 @@ export const DevPage = () => {
                                 // console.log(formData.get("timestamp"));
                                 // console.log(formData.get("textarea"));
                                 // console.log(formData.get("address"));
-                                // console.log(getGpsPoints(formData.getAll("gps")));
-                                // console.log(getMultipleGpsPoints(formData.getAll("multipleGps")));
+                                // console.log(getgps(formData.getAll("gps")));
+                                // console.log(getMultiplegps(formData.getAll("multipleGps")));
                                 // console.log(formData.has("booleanSwitch"));
                                 // console.log(formData.has("booleanCheckbox"));
                                 // console.log(formData.has("booleanRadio"));
@@ -165,16 +165,16 @@ export const DevPage = () => {
                             >
                                 Entrée de donnée
                             </Button> */}
-                            {/* <Range
+                            {/* <RangeInput
                                 label={`Range`}
                                 name={`range`}
                             />
-                            <Check
+                            <Checker
                                 label={`Case à cocher`}
                                 name={`check`}
                                 options={["pomme", "banane", "fraise"]}
                             />
-                            <Check
+                            <Checker
                                 label={`Cases à cocher`}
                                 name={`checks`}
                                 options={["pomme", "banane", "fraise"]}
@@ -223,15 +223,15 @@ export const DevPage = () => {
                                 label={"Textarea"}
                                 name={`textarea`}
                             />
-                            <Address
+                            <AddressInput
                                 label={`Adresse`}
                                 name={`address`}
                             />
-                            <GpsPoints
+                            <gps
                                 label={`Localisation`}
                                 name={`gps`}
                             />
-                            <GpsPoints 
+                            <gps 
                                 label={`Localisation multiple`}
                                 name={`multipleGps`}
                                 multiple
@@ -269,7 +269,7 @@ export const DevPage = () => {
                                 multiple
                                 options={["pomme", "banane", "fraise"]}
                             />
-                            <Signature
+                            <SignaturePad
                                 label={`Signature`}
                                 name={`signature`}
                             />
@@ -277,7 +277,7 @@ export const DevPage = () => {
                                 label={`Editeur Markdown`}
                                 name={`editor`}
                             />
-                            <Duration
+                            <Timer
                                 label={`Durée`}
                                 name={`duration`}
                             />
@@ -285,7 +285,7 @@ export const DevPage = () => {
                                 label={`Tableau`}
                                 name={`array`}
                             />
-                            <Rating
+                            <Rater
                                 label={`Note`}
                                 labelRow
                                 name={`rating`}
@@ -308,20 +308,20 @@ export const DevPage = () => {
                                 name={`audios`}
                                 multiple
                             />
-                            <Videos
+                            <VideosUploader
                                 label={`Video`}
                                 name={`video`}
                             />
-                            <Videos
+                            <VideosUploader
                                 label={`Videos`}
                                 name={`videos`}
                                 multiple
                             />
-                            <Files
+                            <FilesUploader
                                 label={`Fichier`}
                                 name={`file`}
                             />
-                            <Files
+                            <FilesUploader
                                 label={`Fichiers`}
                                 name={`files`}
                                 multiple

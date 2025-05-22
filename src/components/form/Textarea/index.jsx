@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
 
 export const Textarea = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("textarea", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Textarea", props);
 
   const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 

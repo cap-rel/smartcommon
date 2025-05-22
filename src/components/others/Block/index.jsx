@@ -23,7 +23,7 @@ export const Block = (props) => {
             {!isNil(header) && 
                 <div { ...mergeProps("header", props => ({
                     ...props,
-                    className: `text-soft-text text-app-sm mx-app-xxs`
+                    className: `text-soft-text text-app-sm mx-app-base`
                 }))}>
                     {header}
                 </div>
@@ -31,8 +31,8 @@ export const Block = (props) => {
             {!isNil(children) &&
                 <div { ...mergeProps("block", props => ({
                     ...props,
-                    className: `flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm rounded-app-md
-                    border border-border text-strong-text shadow-md text-app-sm`
+                    className: `flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm
+                    text-strong-text shadow-md text-app-sm`
                 }))}>
                     {children}
                 </div>

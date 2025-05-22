@@ -67,18 +67,26 @@ import { isNil } from "./type";
 // Intl.Segmenter
 
 export function formatDate(date, format) {  
+    if (isNil(format)) {
+      return date;
+    }
+
+    const time      =         date.getTime();
+
+    if (format.toLowerCase() === "milliseconds-timestamp") {
+      return time
+    }
+
+    if (format.toLowerCase() === "seconds-timestamp") {
+      return Math.round(time / 1000);
+    }
+
     const year      =         date.getFullYear()             ;
     const month     = ("0" + (date.getMonth() + 1)).slice(-2);
     const dayNumber = ("0" +  date.getDate()      ).slice(-2);
     const hours     = ("0" +  date.getHours()     ).slice(-2);
     const minutes   = ("0" +  date.getMinutes()   ).slice(-2);
     const seconds   = ("0" +  date.getSeconds()   ).slice(-2);
-    
-    const time      =         date.getTime();
-  
-    if (isNil(format) || format.toLowerCase() === "timestamp") {
-      return Math.round(time / 1000);
-    }
   
     const formattedDate = format
       .replace("YYYY", year)

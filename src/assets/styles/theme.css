@@ -22,12 +22,13 @@
   --color-strong-primary    : var(--color-red-700);
   /* --color-primary           : var(--color-blue-600); */
   --color-secondary         : #fccb4f;
+  --color-strong-secondary  : var(--color-yellow-600);
   --color-success           : var(--color-green-600);
   --color-strong-success    : var(--color-green-700);
   --color-error             : #f72d40;
   --color-warning           : #fccb4f;
   --color-strong-warning    : var(--color-yellow-600);
-  --color-neutral           : var(--color-gray-600);
+  --color-neutral           : var(--color-gray-500);
 
   --color-soft-text         : var(--color-gray-400);
   --color-medium-text       : var(--color-gray-500);
@@ -77,6 +78,7 @@
   --font-weight-app-bold    : var(--font-weight-extrabold);
 
   /* font-size */
+  --text-app-xxs             : 10px;
   --text-app-xs             : var(--text-xs);
   --text-app-sm             : var(--text-sm);
   --text-app-base           : var(--text-base);
@@ -109,7 +111,7 @@
 
   /* SmartInterventions colors */
   --color-mine: var(--color-primary);
-  --color-update: var(--color-secondary);
+  --color-update: var(--color-primary);
   --color-unassigned: var(--color-neutral);
   --color-draft: var(--color-warning);
   

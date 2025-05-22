@@ -9,6 +9,7 @@ import HomePage from "./components/pages/HomePage";
 import InterventionsPage from "./components/pages/InterventionsPage";
 import { SettingsPage } from "./components/pages/settingsPage";
 import { FormPage } from "./components/pages/FormPage";
+import { PrivateLayout } from "./components/pages/PrivateLayout";
 
 export const Router = () => {
     return (
@@ -18,10 +19,12 @@ export const Router = () => {
                 {/* <Route path={`/2`} element={<DevPage />} /> */}
             </Route>
             <Route element={<PrivateRoutes />}>
-                <Route path={`/`} element={<HomePage />} />
-                <Route path={`/interventions`} element={<InterventionsPage />} />
-                <Route path={`/settings`} element={<SettingsPage />} />
-                <Route path={`/intervention/:id`} element={<FormPage />} />
+                <Route element={<PrivateLayout />}>
+                    <Route path={`/`} element={<HomePage />} />
+                    <Route path={`/interventions`} element={<InterventionsPage />} />
+                    <Route path={`/settings`} element={<SettingsPage />} />
+                    <Route path={`/intervention/:id`} element={<FormPage />} />
+                </Route>
                 {/* {componentNames.map((component, CI) => 
                     <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
                 )} */}

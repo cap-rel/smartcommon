@@ -1,31 +1,25 @@
-import { mergeProps } from "../../../../globals";
+import { applyFunctionIfNotNil } from "../../../../globals";
 
-export const Switch = ({
-    checked,
-    variants,
-    variant,
-
-    switchProps,
-    switchCircleProps,
-    ...props
-}) => {
-    const switchPs = { ...props, ...switchProps };
-
-    const variantParams = { isChecked: checked };
+export const Switch = (props) => {
+    const {
+        checked,
+        onClick,
+        mergeProps,
+    } = props;
 
     return (
-        <div
-            { ...mergeProps(
-                { transition: "background-color 200ms, filter 100ms" }, `relative rounded-full w-11 h-6 shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-bg"}`,
-                switchPs, variants, variant, "switchProps", variantParams
-            )}
-        >
-            <div 
-                { ...mergeProps(
-                    {}, `absolute top-1 left-1 rounded-full size-4 duration-200 bg-soft-bg ${checked && "translate-x-5"}`,
-                    switchCircleProps, variants, variant, "switchCircleProps", variantParams
-                )}
-            />
+        <div { ...mergeProps("switch", props => ({
+            ...props,
+            onClick: e => {
+                applyFunctionIfNotNil(onClick ?? props.onClick, e);
+            },
+            style: { transition: "background-color 200ms, filter 100ms" },
+            className: `relative rounded-full w-11 h-6 shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-bg inset-shadow-sm"}`
+        }))}>
+            <div { ...mergeProps("switchCircle", props => ({
+                ...props,
+                className: `absolute top-1 left-1 rounded-full size-4 duration-(--quick) bg-soft-bg ${checked ? "translate-x-5" : "shadow-md"}`
+            }))} />
         </div>
     );
 };

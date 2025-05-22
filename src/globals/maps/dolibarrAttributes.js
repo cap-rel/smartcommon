@@ -26,7 +26,7 @@ export const COMPONENTS_MAP = {
     text         : "text",           // return("text")
     html         : "html",           // return("html")
     point        : "gpsPoints",      // return([longitude, latitude])
-    multipts     : "multiGpsPoints", // return([[loingitude, latitude], [...]])
+    multipts     : "multigps", // return([[loingitude, latitude], [...]])
     icon         : "icon",           // return("fa fa-user fa-xl")
     
     range        : "range",          // TODO à développer sur DOLIBARR ?

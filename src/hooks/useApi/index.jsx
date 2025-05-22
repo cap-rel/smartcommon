@@ -1,8 +1,9 @@
 import { useDispatch } from "react-redux";
-import { unsetAuth } from "../../reduxStore/reducers/sessionSlice";
+import { unsetSession } from "../../reduxStore/reducers/sessionSlice";
 // import { API_URL } from "../../globals/constants";
 import { useTranslation } from "react-i18next";
 import { useStates } from "../../hooks";
+import toast from "react-hot-toast";
 
 export const useApi = (url, token = "") => {
   const dispatch = useDispatch();
@@ -25,7 +26,9 @@ export const useApi = (url, token = "") => {
     return await fetch(`${url}${path}`, request).then(response => {
       if (!response.ok) {
         if (response.status == 401) {
-          dispatch(unsetAuth());
+          dispatch(unsetSession());
+          toast.error("Votre session a expirée. Veuillez vous reconnecter.");
+          console.error("Token expired. Must connect.");
         }
 
         return response.json().then((json) => {
