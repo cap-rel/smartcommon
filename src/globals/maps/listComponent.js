@@ -1,12 +1,10 @@
 import { useMemo } from "react";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader } from "../../components";
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader } from "../../components";
 import { isUndefined } from "../functions";
-import { VideosUploader } from "../../components/form/VideosUploader";
-import { AudiosUploader } from "../../components/form/AudiosUploader";
 
 export function setListComponent(type) {
     const LIST_COMPONENTS_MAP = useMemo(() => ({
-        boolean      : <Boolean readOnly label/>,
+        boolean      : Boolean,
         check        : Checker,
         select       : Select,
         array        : Array,
