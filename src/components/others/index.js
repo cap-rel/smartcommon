@@ -13,3 +13,4 @@ export * from "./Panel";
 export * from "./Spinner";
 export * from "./SearchBar";
 export * from "./Tag";
+export * from "./Page";
