@@ -53,10 +53,22 @@ export const Checker = (props) => {
     };
 
     const errors = {
-        required: { condition: required && isEmpty(currentValue), message: "Une case doit être cochée." },
-        min: { condition: multiple && currentValue.length < min, message: `${min} cases doivent être cochées au minimum.` },
-        max: { condition: multiple && currentValue.length > max, message: `${max} cases doivent être cochées au maximum.` },
-        exact: { condition: multiple && currentValue.length !== exact, message: `Exactement ${exact} cases doivent être cochées.` },
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Une case doit être cochée."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `${min} cases doivent être cochées au minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `${max} cases doivent être cochées au maximum.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Exactement ${exact} cases doivent être cochées.`
+        },
     };
 
     useEffect(() => {

@@ -69,9 +69,18 @@ export const Timer = (props) => {
     });
 
     const errors = {
-        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
-        min: { condition: currentValue < min, message: `La durée doit être de ${formatDuration(min)} au minimum.` },
-        max: { condition: currentValue > max, message: `La valeur doit être de ${formatDuration(max)} au maximum.` },
+        required: {
+            condition: required && isEmpty(currentValue),
+            message: "Ce champ est requis." 
+        },
+        min: {
+            condition: !isNil(min) && currentValue < min,
+            message: `La durée doit être de ${formatDuration(min)} au minimum.`
+        },
+        max: {
+            condition: !isNil(max) && currentValue > max,
+            message: `La valeur doit être de ${formatDuration(max)} au maximum.`
+        },
     };
 
     useEffect(() => {

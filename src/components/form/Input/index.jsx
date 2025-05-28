@@ -1,4 +1,4 @@
-import { applyFunctionIfNotNil, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, secsToDuration } from "../../../globals/functions";
+import { applyFunctionIfNotNil, datetimeFormat, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, minutesToTime, secsToDuration, timeToMinutes } from "../../../globals/functions";
 import { Label } from "../../form";
 import { useStates, useValue, useLabel, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
@@ -9,21 +9,13 @@ import { propTypes } from "./props";
 import toast from "react-hot-toast";
 import { Button, Spinner } from "../../others";
 import { useEffect } from "react";
-import * as yup from "yup";
 
-// IDEA Prefix / suffix
-// IDEA Select (phone, ...)
-// IDEA Default pattern, min, length, ...
-// IDEA Default Icons
 // IDEA Types week, month, year
 // IDEA Clipboard
 // IDEA Random id for label and input
 
 // TODO All steppers
 // TODO Stepper
-// TODO Timer
-// TODO Maybe give props for password icons
-// TODO Change type attribute
 
 export const Input = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Input", props);
@@ -67,36 +59,33 @@ export const Input = (props) => {
 
   const { currentValue, setValue } = useValue(defaultValue, value, onChange);
 
+  const currentValueFormat = {
+    time: minutesToTime(currentValue)
+  };
+
   const stringTypes = ["text", "email", "password", "url", "tel", "search"];
-  const timestampTypes = ["date", "datetime-local"];
+  const datetimeTypes = ["date", "datetime-local"];
   const numberTypes = ["number"];
-  const secondsTypes = ["time"];
+  const timeTypes = ["time"];
 
   const handleInputOnChange = e => {
-    let value = e.target.value;
     if (!disabled && !readOnly) {
+      let value = e.target.value;
+
       if (numberTypes.includes(type)) {
         value = Number(value);
-      } else if (timestampTypes.includes(type)) {
-        value = formatDate(new Date(value), "seconds-timestamp");
-      } else if (secondsTypes.includes(type)) {
-        value = formatTime(`${value}:00`);
+      } else if (datetimeTypes.includes(type)) {
+        value = (new Date(value)).getTime();
+      } else if (timeTypes.includes(type)) {
+        value = timeToMinutes(value);
       }
+
       setValue(value);
     }
   };
 
-  // const setValueVerifyingMinMax = (newValue) => {
-  //   if (newValue >= min && newValue <= max) {
-  //     setValue(newValue);
-  //   } else {
-  //     toast(`${label ? `${label} doit` : "Doit"} être compris entre ${min} et ${max}...`)
-  //   }
-  // }
-
   const removeStep = () => setValue(Number(currentValue) - step);
   const addStep = () => setValue(Number(currentValue) + step);
-
   const togglePasswordVisibility = () => set("isPasswordVisible", !isPasswordVisible);
   // const resetCopyButton = () => set("isCopied", false);
 
@@ -112,16 +101,16 @@ export const Input = (props) => {
   const isPassword = type === "password";
 
   const typeMap = {
-    "text": { type: "text" },
-    "email": { type: "text", inputMode: "email" },
-    "password" : { type: isPasswordVisible ? "text" : "password" },
-    "tel": { type: "text", inputMode: "tel" },
-    "number": { type: "number" },
-    "search": { type: "text", inputMode: "search" },
-    "url": { type: "text", inputMode: "url" },
-    "date": { type: "date" },
+    text: { type: "text" },
+    email: { type: "text", inputMode: "email" },
+    password : { type: isPasswordVisible ? "text" : "password" },
+    tel: { type: "text", inputMode: "tel" },
+    number: { type: "number" },
+    search: { type: "text", inputMode: "search" },
+    url: { type: "text", inputMode: "url" },
+    date: { type: "date" },
     "datetime-local": { type: "datetime-local" },
-    "time": { type: "time" },
+    time: { type: "time" },
   };
 
   const errors = {
@@ -145,28 +134,28 @@ export const Input = (props) => {
       condition: required && isEmpty(currentValue),
       message: "Ce champ est requis." 
     },
-    minSeconds: { 
-      condition: secondsTypes.includes(type) && currentValue < min,
-      message: `L'heure doit être après ${formatSeconds(min)}:.`
+    minTime: { 
+      condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
+      message: `L'heure doit être après ${datetimeFormat((new Date().setHours(minutesToTime(min ?? 0, "units").hours, minutesToTime(min ?? 0, "units").minutes)), { timeStyle: "short" })}.`
     },
-    maxSeconds: { 
-      condition: secondsTypes.includes(type) && currentValue > max,
-      message: `L'heure doit être avant ${formatSeconds(max)}.`
+    maxTime: {
+      condition: !isNil(max) && timeTypes.includes(type) && currentValue > max,
+      message: `L'heure doit être avant ${datetimeFormat((new Date().setHours(minutesToTime(max ?? 0, "units").hours, minutesToTime(max ?? 0, "units").minutes)), { timeStyle: "short" })}.`
     },
-    minTimestamp: { 
-      condition: timestampTypes.includes(type) && currentValue < min,
-      message: `La date doit être après ${new Intl.DateTimeFormat("default", {}).format(new Date(min))}.`
+    minDateTime: { 
+      condition: !isNil(min) && datetimeTypes.includes(type) && currentValue < min,
+      message: `La date doit être après ${datetimeFormat(!isNil(min) ? min * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
     },
-    maxTimestamp: { 
-      condition: timestampTypes.includes(type) && currentValue > max,
-      message: `La date doit être avant ${formatDate(new Date(max), "DD/MM/YYYY HH:mm")}.`
+    maxDatetime: { 
+      condition: !isNil(max) && datetimeTypes.includes(type) && currentValue > max,
+      message: `La date doit être avant ${datetimeFormat(!isNil(max) ? max * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
     },
     minNumber: { 
-      condition: numberTypes.includes(type) && currentValue < min,
+      condition: !isNil(min) && numberTypes.includes(type) && currentValue < min,
       message: `La valeur doit être de ${min} minimum.`
     },
     maxNumber: { 
-      condition: numberTypes.includes(type) && currentValue > max,
+      condition: !isNil(max) && numberTypes.includes(type) && currentValue > max,
       message: `La valeur doit être de ${max} maximum.`
     },
     minLength: { 
@@ -228,7 +217,7 @@ export const Input = (props) => {
             handleInputOnChange(e);
             applyFunctionIfNotNil(props.onChange, e);
           },
-          value: currentValue,
+          value: currentValueFormat[type],
           ...typeMap[type] ?? {},
         }))} />
 

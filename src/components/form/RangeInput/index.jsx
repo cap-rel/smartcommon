@@ -37,9 +37,18 @@ export const RangeInput = (props) => {
     };
 
     const errors = {
-        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
-        min: { condition: currentValue < min, message: `La valeur doit être de ${min} au minimum.` },
-        max: { condition: currentValue > max, message: `La valeur doit être de ${max} au minimum.` },
+        required: {
+            condition: required && isEmpty(currentValue),
+            message: "Ce champ est requis."
+        },
+        min: {
+            condition: !isNil(min) && currentValue < min,
+            message: `La valeur doit être de ${min} au minimum.`
+        },
+        max: {
+            condition: !isNil(max) && currentValue > max,
+            message: `La valeur doit être de ${max} au minimum.`
+        },
     };
 
     useEffect(() => {

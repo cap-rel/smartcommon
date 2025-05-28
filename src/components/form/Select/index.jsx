@@ -4,6 +4,7 @@ import { propTypes } from "./props";
 import { IoIosArrowDown } from "react-icons/io";
 import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../globals/functions";
+import { useEffect } from "react";
 
 // TODO Add attributes to options like disabled, maybe props
 
@@ -40,10 +41,22 @@ export const Select = (props) => {
   };
 
   const errors = {
-    required: { condition: required && isEmpty(currentValue), message: "1 élément doit être sélectionné au minimum." },
-    min: { condition: multiple && currentValue.length < min, message: `${min} éléments doivent être sélectionnés au minimum.` },
-    max: { condition: multiple && currentValue.length > max, message: `${max} éléments doivent être sélectionnés au maximum.` },
-    exact: { condition: multiple && currentValue.length !== exact, message: `Exactement ${exact} éléments doivent être sélectionnés.` },
+    required: {
+      condition: required && isEmpty(currentValue),
+      message: "1 élément doit être sélectionné au minimum."
+    },
+    min: {
+      condition: !isNil(min) && multiple && currentValue.length < min,
+      message: `${min} éléments doivent être sélectionnés au minimum.`
+    },
+    max: {
+      condition: !isNil(max) && multiple && currentValue.length > max,
+      message: `${max} éléments doivent être sélectionnés au maximum.`
+    },
+    exact: {
+      condition: !isNil(exact) && multiple && currentValue.length !== exact,
+      message: `Exactement ${exact} éléments doivent être sélectionnés.`
+    },
   };
 
   useEffect(() => {

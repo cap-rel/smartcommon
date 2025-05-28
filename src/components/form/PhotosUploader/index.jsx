@@ -9,28 +9,28 @@ import { Input } from "../Input";
 import { Label } from "../tools/Label";
 import toast from "react-hot-toast";
 
-// TODO GPS points
-
 export const PhotosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("PhotosUploader", props);
 
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
     const {
-        label, help, icon, hasCopyButton, loading,
+        id,
+        name,
+        value,
+        defaultValue,
+        onChange = () => {},
 
         required,
         disabled,
         readOnly,
-        max,
         min,
+        exact,
+        max,
+
         multiple,
-        accept,
-        name,
-        defaultValue,
-        value,
-        onChange = () => {}
-    } = filteredProps;
+        accept = "image/*",
+
+        onError = () => {},
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
@@ -59,72 +59,104 @@ export const PhotosUploader = (props) => {
     };
 
     const deletePhoto = index => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
-            set("selectedPhotoIndex", null);
-        } else {
-            newValue = null;
-            set("isPhotoSelected", false);
+            if (multiple) {
+                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                set("selectedPhotoIndex", null);
+            } else {
+                newValue = null;
+                set("isPhotoSelected", false);
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue);
     }
 
     const selectPhoto = index => {
-        if (multiple) {
-            set("selectedPhotoIndex", index);
-        } else {
-            set("isPhotoSelected", true);
+        if (!disabled && !readOnly) {
+            if (multiple) {
+                set("selectedPhotoIndex", index);
+            } else {
+                set("isPhotoSelected", true);
+            }
         }
     };
 
     const { resizeImage } = useFile();
 
     const addPhoto = async file => {
-        set("isPhotoLoading", true);
-        // setTimeout(() => {
-            // const file = e.target.files[0];
-            // const url = URL.createObjectURL(file);
-            const base64 = await resizeImage(file);
-        
-            // if (isNull(selectedPhotoIndex)) {
-            let gpsPoints = [null, null];
+        if (!disabled && !readOnly) {
+            set("isPhotoLoading", true);
+            // setTimeout(() => {
+                // const file = e.target.files[0];
+                // const url = URL.createObjectURL(file);
+                const base64 = await resizeImage(file);
+            
+                // if (isNull(selectedPhotoIndex)) {
+                let gpsPoints = [null, null];
 
-            if (isInputInCaptureMode) {
-                locate(
-                    coords => { gpsPoints = coords },
-                    error => toast.error("Echec de géolocatisation de la capture.")
-                );
-            }
+                if (isInputInCaptureMode) {
+                    locate(
+                        coords => { gpsPoints = coords },
+                        error => toast.error("Echec de géolocatisation de la capture.")
+                    );
+                }
 
-            const newPhoto = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-            const newValue = multiple ? [...currentValue, newPhoto] : newPhoto;
-            setValue(newValue);
-            // set("selectedPhotoIndex", localValue.length);                    
-            // } else {
-            //     const newPhotos = [...localValue];>
-            //     newPhotos[selectedPhotoIndex].url = url;
-            //     set("localValue", newPhotos);    
-            // }
-            set("isPhotoLoading", false);
-            // return () => URL.revokeObjectURL(url);
-        // }, 1000);
+                const newPhoto = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
+                const newValue = multiple ? [...currentValue, newPhoto] : newPhoto;
+                setValue(newValue);
+                // set("selectedPhotoIndex", localValue.length);                    
+                // } else {
+                //     const newPhotos = [...localValue];>
+                //     newPhotos[selectedPhotoIndex].url = url;
+                //     set("localValue", newPhotos);    
+                // }
+                set("isPhotoLoading", false);
+                // return () => URL.revokeObjectURL(url);
+            // }, 1000);
+        }
     };
 
     const updatePhotoInfo = (prop, value) => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue];
-            newValue[selectedPhotoIndex][prop] = value;
-        } else {
-            newValue = { ...currentValue, [prop]: value };
+            if (multiple) {
+                newValue = [...currentValue];
+                newValue[selectedPhotoIndex][prop] = value;
+            } else {
+                newValue = { ...currentValue, [prop]: value };
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue)
     };
+
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez prendre au moins 1 photo."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez prendre ${min} photos minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez prendre exactement ${exact} photos.`
+        },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
+
 
     const Photo = (photo, index) => {
         return (
@@ -160,8 +192,8 @@ export const PhotosUploader = (props) => {
                         selectPhoto(index);
                         applyFunctionIfNotNil(props.onClick, e);
                     },
-                    className: `self-start max-w-30 flex flex-col gap-app-xs
-                    rounded-app-md bg-strong-bg p-app-sm active:brightness-soft duration-100`
+                    className: `self-start max-w-30 flex flex-col gap-app-xs ${!disabled && "active:brightness-soft"}
+                    rounded-app-md bg-strong-bg p-app-sm duration-(--quick)`
                 }))}>
                     <img { ...mergeProps("img", props => ({
                         ...props,
@@ -242,11 +274,12 @@ export const PhotosUploader = (props) => {
     
     return (
         <Label
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input
-                accept={accept ?? "image/*"} // let the dev choose an image type
+                accept={accept} // let the dev choose an image type
                 ref={inputRef}
                 type={`file`}
                 capture={isInputInCaptureMode}
@@ -286,7 +319,7 @@ export const PhotosUploader = (props) => {
             }))}>
                 <div { ...mergeProps("photosContainer", props => ({
                     ...props,
-                    className: `flex flex-wrap gap justify-center gap-app-xs p-app-xs
+                    className: `flex flex-wrap gap justify-center gap-app-xs p-app-xs ${disabled && "brightness-soft"}
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)
@@ -312,11 +345,11 @@ export const PhotosUploader = (props) => {
                         icon: <FaCamera />,
                         loading: isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: isPhotoLoading,
+                        disabled: disabled || isPhotoLoading,
                         onClick: e => {
                             e.preventDefault();
                             capturePhoto();
-                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                            applyFunctionIfNotNil(props.onClick, e);
                         },
                         buttonProps: {
                             ...props.buttonProps,
@@ -327,11 +360,11 @@ export const PhotosUploader = (props) => {
                         icon: <FaFileImport />,
                         loading: !isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: isPhotoLoading,
+                        disabled: disabled || isPhotoLoading,
                         onClick: e => {
                             e.preventDefault();
                             importPhoto();
-                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                            applyFunctionIfNotNil(props.onClick, e);
                         },
                         buttonProps: {
                             ...props.buttonProps,

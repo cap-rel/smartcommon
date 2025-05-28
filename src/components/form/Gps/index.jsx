@@ -47,17 +47,21 @@ import { RiCloseLargeFill } from "react-icons/ri";
 // TODO multiple
 
 export const Gps = props => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Gps", props);
+  const { variantProps, mergeProps } = useVariantToProps("Gps", props);
   
-  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
   const { 
     id,
     name,
-    defaultValue,
     value,
+    defaultValue,
     onChange = () => {},
-  } = filteredProps;
+
+    required,
+    disabled,
+    readOnly,
+
+    onError = () => {},
+  } = variantProps;
 
   const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
@@ -70,28 +74,30 @@ export const Gps = props => {
   // const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue[0]);
 
   const geoLocate = () => {
-    set("isLocating", true);
-    setTimeout(() => {
-      locate(
-        coords => {
-          setValue(coords);
-          toast.success("Succès de la géolocalisation");
-          set("isLocating", false);
-        },
-        err => {
-          toast.error("Erreur de la géolocalisation");
-          set("isLocating", false);
-        }
-      )
-      // const coords = [40.35536627, 56.66638387];
-      // const newValue = multiple ? [...realValue, coords] : coords;
-      // if (isNil(value)) {
-      //   set("localValue", newValue);
-      // } else {
-      //   onValueChange(newValue);
-      // }
-      // toast.success("Succès de la géolocalisation");
-    }, 1000);
+    if (!disabled && !readOnly) {
+      set("isLocating", true);
+      setTimeout(() => {
+        locate(
+          coords => {
+            setValue(coords);
+            toast.success("Succès de la géolocalisation");
+            set("isLocating", false);
+          },
+          err => {
+            toast.error("Erreur de la géolocalisation");
+            set("isLocating", false);
+          }
+        )
+        // const coords = [40.35536627, 56.66638387];
+        // const newValue = multiple ? [...realValue, coords] : coords;
+        // if (isNil(value)) {
+        //   set("localValue", newValue);
+        // } else {
+        //   onValueChange(newValue);
+        // }
+        // toast.success("Succès de la géolocalisation");
+      }, 1000);
+    }
   };
 
   const deleteGpsPoints = (e, index) => {
@@ -100,6 +106,17 @@ export const Gps = props => {
 
     setValue(newValue);
   };
+
+  const errors = {
+    required: { 
+      condition: required && isEmpty(currentValue),
+      message: "Vous devez géolocaliser."
+    },
+  };
+
+  useEffect(() => {
+    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+  }, [currentValue]);
 
   // const gps = (gpsPoints, index) => {
   //   return (
@@ -146,11 +163,15 @@ export const Gps = props => {
   // }
 
   return (
-    <Label { ...allLabelPs}>
-      <div 
-        { ...inputContainerProps}
-        className={twMerge(`rounded-md bg-soft-bg flex items-center`, inputContainerProps?.className)}
-      >
+    <Label 
+      { ...variantProps}
+      errors={errors}
+      mergeProps={mergeProps}
+    >
+      <div { ...mergeProps("buttonContainer", props => ({
+        ...props,
+        className: `rounded-md bg-soft-bg flex items-center gap-app-xs`
+      }))}>
         <input
           name={name}
           onChange={() => {}}
@@ -167,15 +188,16 @@ export const Gps = props => {
           icon: <FaLocationDot />,
           ...props,
           loading: isLocating,
+          disabled: disabled,
           onClick: e => {
             e.preventDefault();
             geoLocate();
-            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+            applyFunctionIfNotNil(props.onClick, e);
           }
         }))}>
           Géolocaliser
         </Button>
-        <div>
+        <div { ...mergeProps("location", props => props)}>
           {!isNil(currentValue) ? "Enregistrée" : "Aucune Localisation enregistrée"}
         </div>
         {/* <ul 

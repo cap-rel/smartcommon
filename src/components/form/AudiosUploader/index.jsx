@@ -3,7 +3,7 @@ import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../..
 import { Button, Overlay, Panel, Popup } from "../../others";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../globals";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Textarea } from "../Textarea";
 import { Input } from "../Input";
 import { Label } from "../tools/Label";
@@ -14,23 +14,25 @@ import toast from "react-hot-toast";
 export const AudiosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("AudiosUploader", props);
 
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
     const {
-        label, help, icon, hasCopyButton, loading,
+        id,
+        name,
+        value,
+        defaultValue,
+        onChange = () => {},
 
         required,
         disabled,
         readOnly,
-        max,
         min,
+        exact,
+        max,
+
         multiple,
-        accept,
-        name,
-        defaultValue,
-        value,
-        onChange = () => {}
-    } = filteredProps;
+        accept = "audio/*",
+
+        onError = () => {},
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
@@ -59,61 +61,69 @@ export const AudiosUploader = (props) => {
     };
 
     const deleteAudio = index => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
-            set("selectedAudioIndex", null);
-        } else {
-            newValue = null;
-            set("isAudioSelected", false);
+            if (multiple) {
+                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                set("selectedAudioIndex", null);
+            } else {
+                newValue = null;
+                set("isAudioSelected", false);
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue);
     }
 
     const selectAudio = index => {
-        if (multiple) {
-            set("selectedAudioIndex", index);
-        } else {
-            set("isAudioSelected", true);
+        if (!disabled && !readOnly) {
+            if (multiple) {
+                set("selectedAudioIndex", index);
+            } else {
+                set("isAudioSelected", true);
+            }
         }
     };
 
     const { resizeImage } = useFile();
 
     const addAudio = async file => {
-        set("isAudioLoading", true);
+        if (!disabled && !readOnly) {
+            set("isAudioLoading", true);
 
-        // const base64 = await resizeImage(file);
-        const base64 = null;
-    
-        let gpsPoints = [null, null];
+            // const base64 = await resizeImage(file);
+            const base64 = null;
+        
+            let gpsPoints = [null, null];
 
-        if (isInputInCaptureMode) {
-            locate(
-                coords => { gpsPoints = coords },
-                error => toast.error("Echec de géolocatisation de la capture.")
-            );
+            if (isInputInCaptureMode) {
+                locate(
+                    coords => { gpsPoints = coords },
+                    error => toast.error("Echec de géolocatisation de la capture.")
+                );
+            }
+
+            const newAudio = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
+            const newValue = multiple ? [...currentValue, newAudio] : newAudio;
+            setValue(newValue);
+            set("isAudioLoading", false);
         }
-
-        const newAudio = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-        const newValue = multiple ? [...currentValue, newAudio] : newAudio;
-        setValue(newValue);
-        set("isAudioLoading", false);
     };
 
     const updateAudioInfo = (prop, value) => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue];
-            newValue[selectedAudioIndex][prop] = value;
-        } else {
-            newValue = { ...currentValue, [prop]: value };
+            if (multiple) {
+                newValue = [...currentValue];
+                newValue[selectedAudioIndex][prop] = value;
+            } else {
+                newValue = { ...currentValue, [prop]: value };
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue)
     };
 
     const closePopup = (index) => {
@@ -126,7 +136,31 @@ export const AudiosUploader = (props) => {
             audioRefs.current.currentTime = 0;
             set("isAudioSelected", false);
         }
-    }
+    };
+
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez enregistrer au moins 1 audio."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez enregistrer ${min} audios minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez enregistrer exactement ${exact} audios.`
+        },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
+    
 
     const Audio = (audio, index) => {
         return (
@@ -158,7 +192,6 @@ export const AudiosUploader = (props) => {
                 <div { ...mergeProps("audio", props => ({
                     ...props,
                     onClick: e => {
-                        e.preventDefault();
                         selectAudio(index);
                         applyFunctionIfNotNil(props.onClick, e);
                     },

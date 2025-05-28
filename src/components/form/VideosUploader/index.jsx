@@ -14,23 +14,25 @@ import toast from "react-hot-toast";
 export const VideosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("VideosUploader", props);
 
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
     const {
-        label, help, icon, hasCopyButton, loading,
+        id,
+        name,
+        value,
+        defaultValue,
+        onChange = () => {},
 
         required,
         disabled,
         readOnly,
-        max,
         min,
+        exact,
+        max,
+
         multiple,
-        accept,
-        name,
-        defaultValue,
-        value,
-        onChange = () => {}
-    } = filteredProps;
+        accept = "video/*",
+
+        onError = () => {},
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
@@ -59,61 +61,69 @@ export const VideosUploader = (props) => {
     };
 
     const deleteVideo = index => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
-            set("selectedVideoIndex", null);
-        } else {
-            newValue = null;
-            set("isVideoSelected", false);
+            if (multiple) {
+                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                set("selectedVideoIndex", null);
+            } else {
+                newValue = null;
+                set("isVideoSelected", false);
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue);
     }
 
     const selectVideo = index => {
-        if (multiple) {
-            set("selectedVideoIndex", index);
-        } else {
-            set("isVideoSelected", true);
+        if (!disabled && !readOnly) {
+            if (multiple) {
+                set("selectedVideoIndex", index);
+            } else {
+                set("isVideoSelected", true);
+            }
         }
     };
 
     const { resizeImage } = useFile();
 
     const addVideo = async file => {
-        set("isVideoLoading", true);
+        if (!disabled && !readOnly) {
+            set("isVideoLoading", true);
 
-        // const base64 = await resizeImage(file);
-        const base64 = null;
-    
-        let gpsPoints = [null, null];
+            // const base64 = await resizeImage(file);
+            const base64 = null;
+        
+            let gpsPoints = [null, null];
 
-        if (isInputInCaptureMode) {
-            locate(
-                coords => { gpsPoints = coords },
-                error => toast.error("Echec de géolocatisation de la capture.")
-            );
+            if (isInputInCaptureMode) {
+                locate(
+                    coords => { gpsPoints = coords },
+                    error => toast.error("Echec de géolocatisation de la capture.")
+                );
+            }
+
+            const newVideo = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
+            const newValue = multiple ? [...currentValue, newVideo] : newVideo;
+            setValue(newValue);
+            set("isVideoLoading", false);
         }
-
-        const newVideo = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-        const newValue = multiple ? [...currentValue, newVideo] : newVideo;
-        setValue(newValue);
-        set("isVideoLoading", false);
     };
 
     const updateVideoInfo = (prop, value) => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = [...currentValue];
-            newValue[selectedVideoIndex][prop] = value;
-        } else {
-            newValue = { ...currentValue, [prop]: value };
+            if (multiple) {
+                newValue = [...currentValue];
+                newValue[selectedVideoIndex][prop] = value;
+            } else {
+                newValue = { ...currentValue, [prop]: value };
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue)
     };
 
     const closePopup = (index) => {
@@ -126,7 +136,30 @@ export const VideosUploader = (props) => {
             videosRef.current.currentTime = 0;
             set("isVideoSelected", false);
         }
-    }
+    };
+    
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez enregistrer au moins 1 vidéo."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez prendre ${min} vidéos minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez prendre exactement ${exact} vidéos.`
+        },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     const Video = (video, index) => {
         return (

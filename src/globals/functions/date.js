@@ -1,7 +1,7 @@
 /*-----------------  Objet Date  ------------------*/
 
 import { secsToDuration } from "./others";
-import { isNil } from "./type";
+import { isNil, isObject, isString } from "./type";
 
 // new Date();
 // new Date(value);
@@ -130,4 +130,44 @@ export function formatSeconds(seconds, format) {
   const formattedMinutes = ("0" +  minutes).slice(-2);
 
   return `${formattedHours}:${formattedMinutes}`;
+}
+
+export function secondsToDuration(seconds) {
+  const secs = seconds % 60;
+  const minutes = Math.floor((seconds % 3600) / 60);
+  const hours = Math.floor((seconds % 86400) / 3600);
+  const days = Math.floor(seconds / 86400);
+
+  return { secs, minutes, hours, days };
+}
+
+export function timeToMinutes(time) {
+  const [hrs, mins] = time.split(":").map(Number);
+  return hrs * 60 + mins;
+}
+
+export function minutesToTime(minutes, format = "time") {
+  const mins = minutes % 60;
+  const hrs = Math.floor((minutes / 60));
+  if (format === "time") {
+    return `${("0" + hrs).slice(-2)}:${("0" + mins).slice(-2)}`;
+  } else if (format === "units") {
+    return { hours: hrs, minutes: mins };
+  }
+}
+
+export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle: 'short' }, locale = "default") {
+  if (isNil(date)) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat(locale, options).format(new Date(date));
+}
+
+export function durationFormat() {
+
+}
+
+export function relativeTimeFormat() {
+
 }

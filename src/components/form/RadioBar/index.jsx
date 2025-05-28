@@ -21,7 +21,7 @@ export const RadioBar = (props) => {
         options = [],
 
         onError = () => {}
-    } = filteredProps;
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
 
@@ -33,7 +33,10 @@ export const RadioBar = (props) => {
     };
 
     const errors = {
-        required: { condition: required && isEmpty(currentValue), message: "1 élément doit être sélectionné." },
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "1 élément doit être sélectionné."
+        },
     };
 
     useEffect(() => {

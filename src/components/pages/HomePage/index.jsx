@@ -6,7 +6,7 @@ import { useApi, useStates } from "../../../hooks";
 import { Block, Button, Overlay, Popup, Spinner } from "../../others";
 import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { API_URL, getSessionJSON, isEmpty, setLocalJSON, setSessionJSON } from "../../../globals";
+import { API_URL, getSessionJSON, isEmpty, setLocalJSON, setSessionJSON, timeToMinutes } from "../../../globals";
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
@@ -156,22 +156,22 @@ const HomePage = () => {
     };
 
     const syncUpdate = (index) => {
-        const update = updates[index];
-        set("syncUpdateIndex", index);
-        setTimeout(() => {
-            const { rowid: id, ref } = update.data;
-            PUT(`intervention/${id}`)
-                .then(() => {
-                    dispatch(removeUpdate({ user, index }));
-                    toast.success(`Synchronisation intervention ${ref}`);
-                    console.log(`PUT 'intervention/${id}' success`);
-                })
-                .catch(err => {
-                    toast.error(`Synchronisation intervention ${ref}`);
-                    console.error(`PUT 'intervention/${id}' success`);
-                    console.error(err);
-                })
-        }, 1000)
+        // const update = updates[index];
+        // set("syncUpdateIndex", index);
+        // setTimeout(() => {
+        //     const { rowid: id, ref } = update.data;
+        //     PUT(`intervention/${id}`)
+        //         .then(() => {
+        //             dispatch(removeUpdate({ user, index }));
+        //             toast.success(`Synchronisation intervention ${ref}`);
+        //             console.log(`PUT 'intervention/${id}' success`);
+        //         })
+        //         .catch(err => {
+        //             toast.error(`Synchronisation intervention ${ref}`);
+        //             console.error(`PUT 'intervention/${id}' success`);
+        //             console.error(err);
+        //         })
+        // }, 1000)
     };
 
     useEffect(() => {
@@ -374,32 +374,6 @@ const HomePage = () => {
                     }
                 </Block>
                 
-                <form onSubmit={handleSubmit} className={`flex flex-col gap-app-base`}>
-                    <Boolean 
-                        id={"Boolean"}
-                        label={"bonjour"}
-                        help={"Vous devez cocher ce point pour continuer."}
-                        required
-                        formSubmitted={isFormSubmitted}
-                        onError={handleError}
-                        icon={<FaUser />}
-                    />
-                    <Input
-                        id={"Input"}
-                        label={"Bonjour"}
-                        minLength={4}
-                        min={4}
-                        required
-                        type={"datetime-local"}
-                        formSubmitted={isFormSubmitted}
-                        // inputMode={"numeric"}
-                        onError={handleError}
-                        // help={"Aidez-moi"}
-                    />
-                    <Button>
-                        Soumettre formulaire
-                    </Button>
-                </form>
             </Page>
         </>
     );

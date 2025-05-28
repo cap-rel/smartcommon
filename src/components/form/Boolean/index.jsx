@@ -26,7 +26,7 @@ export const Boolean = (props) => {
         checkedIcon,
         type,
 
-        onError = {},
+        onError = () => {},
     } = variantProps;
 
     // if (labelRow) {
@@ -43,7 +43,10 @@ export const Boolean = (props) => {
     };
 
     const errors = {
-        required: { condition: required && !currentValue, message: "Ce champ doit être coché." }
+        required: { 
+            condition: required && !currentValue,
+            message: "Ce champ doit être coché."
+        }
     };
 
     useEffect(() => {

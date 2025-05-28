@@ -34,7 +34,10 @@ export const ColorPicker = (props) => {
     };
 
     const errors = {
-        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Ce champ est requis."
+        },
     };
     
     useEffect(() => {

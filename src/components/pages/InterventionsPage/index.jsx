@@ -48,7 +48,7 @@ const InterventionsPage = () => {
         const { date_inter, label, ref } = intervention;
         const dateGroup = formatDate(new Date(date_inter), "DD/MM/YYYY");
         if (
-            searchBarFilter([ref, label], search)
+            searchBarFilter([ref ?? "", label ?? ""], search)
             // date_inter >= dateInterval[0] &&
             // date_inter <= dateInterval[1]
         ) {
@@ -149,12 +149,6 @@ const InterventionsPage = () => {
                     onChange={value => set("dateInterval", value)}
                     containerProps={{ className: `top-(--interventionsNavbar-navbar-height) z-10 ${!isInCalendarMode && "absolute -translate-y-full"} duration-(--medium)` }}
                 />
-
-                <Block 
-                    blockProps={{ className: `bg-transparent shadow-none flex justify-center items-center p-0` }}
-                >
-                    hey
-                </Block>
 
                 {!isEmpty(dateGroups) &&
                     Object.entries(dateGroups).map(([date, group], GI) => 
