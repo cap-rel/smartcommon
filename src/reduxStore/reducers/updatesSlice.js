@@ -47,9 +47,7 @@ const updatesSlice = createSlice({
         saveUpdate(state) {
             const { user, update } = action.payload;
 
-            const newUpdates = [...state.data];
-
-            newUpdates = [...newUpdates, { updatedAt: formatDate(new Date, "seconds-timestamp"), data: update }]
+            const newUpdates = [...state.data, { updatedAt: formatDate(new Date, "seconds-timestamp"), data: update }]
 
             state.data = newUpdates;
             setNewUpdates(user, newUpdates);
