@@ -48,7 +48,7 @@ const draftsSlice = createSlice({
         saveDraft(state, action) {
             const { user, index = null, draft } = action.payload;
 
-            const newDrafts = [...state.data];
+            let newDrafts = [...state.data];
 
             const updatedAt = formatDate(new Date, "seconds-timestamp");
 
