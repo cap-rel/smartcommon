@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { applyFunctionIfNotNil, isObject } from "../../../globals";
 import { useLabel, useValue, useVariantToProps } from "../../../hooks";
 import { Label } from "../tools/Label";
@@ -6,8 +7,6 @@ import { propTypes } from "./props";
 export const RadioBar = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("RadioBar", props);
 
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
     const {
         id,
         name,
@@ -15,37 +14,46 @@ export const RadioBar = (props) => {
         defaultValue,
         onChange = () => {},
 
-        options,
-        multiple
+        required,
+        disabled,
+        readOnly,
+
+        options = [],
+
+        onError = () => {}
     } = filteredProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? false, value, onChange);
+    const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
 
     const handleOnClick = (optionValue) => {
-        let newValue;
-
-        if (multiple) {
-            newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
-        } else {
-            newValue = currentValue === optionValue ? "" : optionValue;
+        if (!disabled && !readOnly) {    
+            let newValue = currentValue === optionValue ? "" : optionValue;
+            setValue(newValue);
         }
-
-        setValue(newValue);
     };
+
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "1 élément doit être sélectionné." },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <div { ...mergeProps("optionsContainer", props => ({
                 ...props,
-                className: `bg-strong-bg flex flex-wrap items-center p-app-xxs gap-app-xxs inset-shadow-sm rounded-app-md`
+                className: `bg-strong-bg flex flex-wrap items-center p-app-xxs gap-app-xxs inset-shadow-sm rounded-app-md ${disabled && "brightness-soft"}`
             }))}>
                 {options.map((option, OI) => {
                     const optionValue = isObject(option) ? option.value : option;
                     const optionLabel = isObject(option) ? option.label : option;
-                    const isChecked = multiple ? currentValue.includes(optionValue) : currentValue === optionValue;
+                    const isChecked = currentValue === optionValue;
 
                     return (
                         <>
@@ -64,7 +72,7 @@ export const RadioBar = (props) => {
                                     applyFunctionIfNotNil(props.onClick, e);
                                 },
                                 style: { transition: "background-color 300ms, color 300ms, filter 100ms" },
-                                className: `rounded-app-md px-app-xs py-app-xxs ${isChecked ? "bg-soft-bg text-strong-text shadow-md" : "bg-strong-bg text-soft-text active:brightness-soft"}`
+                                className: `rounded-app-md px-app-xs py-app-xxs ${isChecked ? "bg-soft-bg text-strong-text shadow-md" : `bg-strong-bg text-soft-text ${!disabled && "active:brightness-soft"}`}`
                             }))}>
                                 {optionLabel}
                             </div>

@@ -6,12 +6,11 @@ import { isNil } from "../../../globals/functions";
 
 import { propTypes } from "./props";
 import { mergeProps } from "../../../globals/functions";
+import { useEffect } from "react";
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("Boolean", props);
-
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
     const {
         id,
@@ -20,10 +19,15 @@ export const Boolean = (props) => {
         defaultValue,
         onChange = () => {},
 
-        icon,
+        required,
+        disabled,
+        readOnly,
+
+        checkedIcon,
         type,
 
-    } = filteredProps;
+        onError = {},
+    } = variantProps;
 
     // if (labelRow) {
     //     containerProps = { ...containerProps, className: twMerge(`row-between-center bg-soft-bg border border-border p-2 rounded-md`, containerProps?.className) };
@@ -32,11 +36,24 @@ export const Boolean = (props) => {
 
     const { currentValue, setValue } = useValue(defaultValue ?? false, value, onChange);
 
-    const handleOnClick = () => setValue(!currentValue);
+    const handleOnClick = () => {
+        if (!disabled && !readOnly) {
+            setValue(!currentValue);
+        }
+    };
+
+    const errors = {
+        required: { condition: required && !currentValue, message: "Ce champ doit être coché." }
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input
@@ -46,32 +63,35 @@ export const Boolean = (props) => {
                 name={name}
                 hidden
             />
-            {type === "switch" ?
-                <Switch
-                    mergeProps={mergeProps}
-                    onClick={handleOnClick}
-                    checked={currentValue}
-                />
-            : type === "checkbox" ?
+            {type === "checkbox" ?
                 <Checkbox
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
                     checked={currentValue}
+                    disabled={disabled}
                 />
             : type === "radio" ?
                 <Radio
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
                     checked={currentValue}
+                    disabled={disabled}
                 />
             : type === "icon" ?
                 <Icon
-                    icon={icon}
+                    icon={checkedIcon}
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
                     checked={currentValue}
+                    disabled={disabled}
                 />
-            : ""}
+            :   <Switch
+                    mergeProps={mergeProps}
+                    onClick={handleOnClick}
+                    checked={currentValue}
+                    disabled={disabled}
+                />
+            }
       
         </Label>
     );

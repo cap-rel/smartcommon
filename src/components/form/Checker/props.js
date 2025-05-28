@@ -1,25 +1,57 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    id: PropTypes.string,
+
     label: PropTypes.string,
-    labelRow: PropTypes.bool,
     help: PropTypes.string,
-    variant: PropTypes.oneOf(["switch", "checkbox", "radio", "icon"]),
     icon: PropTypes.node,
+    prefix: PropTypes.node,
+    suffix: PropTypes.node,
+    
+    type: PropTypes.oneOf(["switch", "checkbox", "icon", "radio"]),
+    checkedIcon: PropTypes.node,
+
+    required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    min: PropTypes.number,
+    exact: PropTypes.number,
+    max: PropTypes.number,
+    multiple: PropTypes.bool,
     options: PropTypes.array,
-    onValueChange: PropTypes.func,
+
+    name: PropTypes.string,
+    value: PropTypes.bool,
+    onChange: PropTypes.func,
+    defaultValue: PropTypes.bool,
+
+    formSubmitted: PropTypes.bool,
+    onError: PropTypes.func,
 
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
+    iconProps: PropTypes.object,
     labelProps: PropTypes.object,
-    requiredStarProps: PropTypes.object,
+    starProps: PropTypes.object,
+    childrenContainerProps: PropTypes.object,
     helpProps: PropTypes.object,
-    listProps: PropTypes.object,
-    listItemProps: PropTypes.object,
-    inputProps: PropTypes.object,
+    prefixProps: PropTypes.object,
+    suffixProps: PropTypes.object,
+    footerProps: PropTypes.object,
+    helpIconProps: PropTypes.object,
+    helpAndErrorsContainerProps: PropTypes.object,
+    helpProps: PropTypes.object,
+    errorProps: PropTypes.object,
+    
+    optionsContainerProps: PropTypes.object,
+    optionProps: PropTypes.object,
     optionLabelProps: PropTypes.object,
     switchProps: PropTypes.object,
+    switchCircleProps: PropTypes.object,
     checkboxProps: PropTypes.object,
+    checkboxIconProps: PropTypes.object,
+    childrenContainerProps: PropTypes.object,
     radioProps: PropTypes.object,
-    iconProps: PropTypes.object,
-}
+    checkedIconProps: PropTypes.object,
+};

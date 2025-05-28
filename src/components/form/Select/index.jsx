@@ -7,50 +7,53 @@ import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../global
 
 // TODO Add attributes to options like disabled, maybe props
 
-// label,
-// labelRow = false,
-// help,
-// onValueChange = () => {},
-// options = [],
-
-// containerProps,
-// labelContainerProps,
-// labelProps,
-// requiredStarProps,
-// helpProps,
-// selectContainerProps,
-// selectProps,
-// optionProps,
-// iconProps,
-// ...props
-
 export const Select = (props) => {
-   const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Select", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Select", props);
   
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-  
-    const { 
-      id,
-      icon,
-      loading,
-      hasCopyButton,
-      options,
-      multiple,
-      defaultValue,
-      value,
-      onChange = () => {},
-    } = filteredProps;
+  const { 
+    id,
+    name,
+    value,
+    defaultValue,
+    onChange = () => {},
 
-    const { currentValue, setValue } = useValue(defaultValue, value, onChange);
-  
+    required,
+    disabled,
+    readOnly,
+    min,
+    exact,
+    max,
+
+    multiple,
+    options = [],
+
+    onError = () => {},
+  } = variantProps;
+
+  const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
+
   const handleSelectOnChange = e => {
-    const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
-    setValue(newValue);
+    if (!disabled && !readOnly) {
+      const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
+      setValue(newValue);
+    }
   };
+
+  const errors = {
+    required: { condition: required && isEmpty(currentValue), message: "1 élément doit être sélectionné au minimum." },
+    min: { condition: multiple && currentValue.length < min, message: `${min} éléments doivent être sélectionnés au minimum.` },
+    max: { condition: multiple && currentValue.length > max, message: `${max} éléments doivent être sélectionnés au maximum.` },
+    exact: { condition: multiple && currentValue.length !== exact, message: `Exactement ${exact} éléments doivent être sélectionnés.` },
+  };
+
+  useEffect(() => {
+    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+  }, [currentValue]);
 
   return (
     <Label 
-      { ...extractedLabelProps}
+      { ...variantProps}
+      errors={errors}
       mergeProps={mergeProps}
     >
       {/* <div 
@@ -59,7 +62,7 @@ export const Select = (props) => {
       > */}
         <select { ...mergeProps("select", props => ({
           ...props,
-          ...mergeQuickProps(props, ["multiple", "name", "disabled", "required", "readOnly", "onBlur", "onFocus"]),
+          ...mergeQuickProps(["name", "multiple", "disabled", "readOnly", "onBlur", "onFocus"]),
           value: currentValue,
           onChange: e => {
             handleSelectOnChange(e);

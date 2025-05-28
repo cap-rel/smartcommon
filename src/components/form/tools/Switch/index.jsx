@@ -4,6 +4,7 @@ export const Switch = (props) => {
     const {
         checked,
         onClick,
+        disabled,
         mergeProps,
     } = props;
 
@@ -11,10 +12,10 @@ export const Switch = (props) => {
         <div { ...mergeProps("switch", props => ({
             ...props,
             onClick: e => {
-                applyFunctionIfNotNil(onClick ?? props.onClick, e);
+                applyFunctionIfNotNil(onClick, e);
             },
             style: { transition: "background-color 200ms, filter 100ms" },
-            className: `relative rounded-full w-11 h-6 shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-bg inset-shadow-sm"}`
+            className: `relative rounded-full w-11 h-6 shrink-0 ${checked ? "bg-primary" : "bg-strong-bg inset-shadow-sm"} ${disabled ? "brightness-soft" : "active:brightness-soft"}`
         }))}>
             <div { ...mergeProps("switchCircle", props => ({
                 ...props,

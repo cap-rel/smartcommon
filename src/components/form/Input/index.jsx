@@ -1,4 +1,4 @@
-import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, secsToDuration } from "../../../globals/functions";
 import { Label } from "../../form";
 import { useStates, useValue, useLabel, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
@@ -8,6 +8,8 @@ import { propTypes } from "./props";
 
 import toast from "react-hot-toast";
 import { Button, Spinner } from "../../others";
+import { useEffect } from "react";
+import * as yup from "yup";
 
 // IDEA Prefix / suffix
 // IDEA Select (phone, ...)
@@ -26,31 +28,63 @@ import { Button, Spinner } from "../../others";
 export const Input = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Input", props);
 
-  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
   const { 
     id,
-    icon,
-    loading,
-    hasCopyButton,
-    step,
+    name,
     defaultValue,
     value,
     onChange = () => {},
-    type,
-    disabled = false
-  } = filteredProps;
+
+    required,
+    disabled,
+    readOnly,
+
+    type = "text",
+    min,
+    max,
+    minLength,
+    length,
+    maxLength,
+    pattern,
+    patternError,
+
+    loading,
+    inputIcon,
+    size,
+    placeholder,
+    step,
+    inputMode,
+
+    onError = () => {}
+  } = variantProps;
 
   const { states, set } = useStates({
     isPasswordVisible: false,
-    isCopied: false
+    // isCopied: false
   });
 
-  const { isPasswordVisible, isCopied } = states;
+  const { isPasswordVisible } = states; // isCopied
 
   const { currentValue, setValue } = useValue(defaultValue, value, onChange);
 
-  const handleInputOnChange = e => setValue(e.target.value);
+  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
+  const timestampTypes = ["date", "datetime-local"];
+  const numberTypes = ["number"];
+  const secondsTypes = ["time"];
+
+  const handleInputOnChange = e => {
+    let value = e.target.value;
+    if (!disabled && !readOnly) {
+      if (numberTypes.includes(type)) {
+        value = Number(value);
+      } else if (timestampTypes.includes(type)) {
+        value = formatDate(new Date(value), "seconds-timestamp");
+      } else if (secondsTypes.includes(type)) {
+        value = formatTime(`${value}:00`);
+      }
+      setValue(value);
+    }
+  };
 
   // const setValueVerifyingMinMax = (newValue) => {
   //   if (newValue >= min && newValue <= max) {
@@ -64,23 +98,104 @@ export const Input = (props) => {
   const addStep = () => setValue(Number(currentValue) + step);
 
   const togglePasswordVisibility = () => set("isPasswordVisible", !isPasswordVisible);
-  const resetCopyButton = () => set("isCopied", false);
+  // const resetCopyButton = () => set("isCopied", false);
 
-  const copy = () => {
-    navigator.clipboard.writeText(currentValue)
-      .then(() => {
-        set("isCopied", true);
-        toast("Copié dans le presse-papier")
-      })
-      .catch(() => toast.error("La copie a échouée, probablement non disponible sur votre navigateur"));
-  };
+  // const copy = () => {
+  //   navigator.clipboard.writeText(currentValue)
+  //     .then(() => {
+  //       set("isCopied", true);
+  //       toast("Copié dans le presse-papier")
+  //     })
+  //     .catch(() => toast.error("La copie a échouée, probablement non disponible sur votre navigateur"));
+  // };
 
   const isPassword = type === "password";
+
+  const typeMap = {
+    "text": { type: "text" },
+    "email": { type: "text", inputMode: "email" },
+    "password" : { type: isPasswordVisible ? "text" : "password" },
+    "tel": { type: "text", inputMode: "tel" },
+    "number": { type: "number" },
+    "search": { type: "text", inputMode: "search" },
+    "url": { type: "text", inputMode: "url" },
+    "date": { type: "date" },
+    "datetime-local": { type: "datetime-local" },
+    "time": { type: "time" },
+  };
+
+  const errors = {
+    // email: { 
+    //   condition: type === "email" && !yup.email().isValidSync(currentValue),
+    //   message: "Veuillez rentrer une addresse email valide." 
+    // },
+    // tel: { 
+    //   condition: type === "email" && !yup.email().isValidSync(currentValue),
+    //   message: "Ce champ est requis." 
+    // },
+    // url: { 
+    //   condition: required && isEmpty(currentValue),
+    //   message: "Ce champ est requis." 
+    // },
+    number: { 
+      condition: type === "number" && isNumber(currentValue),
+      message: "Veuillez rentrer un nombre valide." 
+    },
+    required: { 
+      condition: required && isEmpty(currentValue),
+      message: "Ce champ est requis." 
+    },
+    minSeconds: { 
+      condition: secondsTypes.includes(type) && currentValue < min,
+      message: `L'heure doit être après ${formatSeconds(min)}:.`
+    },
+    maxSeconds: { 
+      condition: secondsTypes.includes(type) && currentValue > max,
+      message: `L'heure doit être avant ${formatSeconds(max)}.`
+    },
+    minTimestamp: { 
+      condition: timestampTypes.includes(type) && currentValue < min,
+      message: `La date doit être après ${new Intl.DateTimeFormat("default", {}).format(new Date(min))}.`
+    },
+    maxTimestamp: { 
+      condition: timestampTypes.includes(type) && currentValue > max,
+      message: `La date doit être avant ${formatDate(new Date(max), "DD/MM/YYYY HH:mm")}.`
+    },
+    minNumber: { 
+      condition: numberTypes.includes(type) && currentValue < min,
+      message: `La valeur doit être de ${min} minimum.`
+    },
+    maxNumber: { 
+      condition: numberTypes.includes(type) && currentValue > max,
+      message: `La valeur doit être de ${max} maximum.`
+    },
+    minLength: { 
+      condition: !isNil(minLength) && stringTypes.includes(type) && currentValue?.length < minLength,
+      message: `La longueur doit être de ${minLength} caractères au minimum.`
+    },
+    length: { 
+      condition: !isNil(length) && stringTypes.includes(type) && currentValue?.length !== length,
+      message: `La longueur doit être de ${length} caractères exactement.`
+    },
+    maxLength: { 
+      condition: !isNil(maxLength) && stringTypes.includes(type) && currentValue?.length > maxLength,
+      message: `La valeur doit être de ${maxLength} au maximum.`
+    },
+    pattern: { 
+      condition: !isNil(pattern) && stringTypes.includes(type) && !pattern.test(currentValue),
+      message: patternError 
+    },
+  };
+
+  useEffect(() => {
+    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+  }, [currentValue]);
 
   return (
 
     <Label 
-      { ...extractedLabelProps}
+      { ...variantProps}
+      errors={errors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("inputContainer", props => ({
@@ -96,23 +211,25 @@ export const Input = (props) => {
           <Spinner { ...mergeProps("Spinner", props => props)} />
         }
 
-        {(!isNil(icon) && !loading) &&
-          <div { ...mergeProps("icon", props => ({
+        {(!isNil(inputIcon) && !loading) &&
+          <div { ...mergeProps("inputIcon", props => ({
             ...props,
             className: `shrink-0 text-soft-text`
           }))}>
-            {icon}
+            {inputIcon}
           </div>
         }
 
         <input { ...mergeProps("input", props => ({
           ...props,
-          ...mergeQuickProps(props, ["type", "placeholder", "required", "disabled", 
-          "readOnly", "min", "max", "minLength", "maxLength", "name", "pattern", "size", "onBlur", "onFocus"]),
+          ...mergeQuickProps(["placeholder", "disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
-          onChange: handleInputOnChange,
+          onChange: e => {
+            handleInputOnChange(e);
+            applyFunctionIfNotNil(props.onChange, e);
+          },
           value: currentValue,
-          type: isPassword ? (isPasswordVisible ? "text" : "password") : type
+          ...typeMap[type] ?? {},
         }))} />
 
         {!isNil(step) &&
@@ -124,7 +241,7 @@ export const Input = (props) => {
               onClick: e => {
                 e.preventDefault();
                 removeStep(e)
-                applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+                applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
                 ...props.buttonProps,
@@ -138,7 +255,7 @@ export const Input = (props) => {
               onClick: e => {
                 e.preventDefault();
                 addStep(e)
-                applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+                applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
                 ...props.buttonProps,
@@ -156,7 +273,7 @@ export const Input = (props) => {
             onClick: e => {
               e.preventDefault();
               togglePasswordVisibility(e)
-              applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+              applyFunctionIfNotNil(props.onClick, e);
             },
             buttonProps: {
               ...props.buttonProps,
@@ -165,7 +282,7 @@ export const Input = (props) => {
           }))} />
         }
 
-        {hasCopyButton &&
+        {/* {hasCopyButton &&
           <Button { ...mergeProps("CopyButton", props => ({
             icon: isCopied ? <FaClipboardCheck /> : <FaRegClipboard />,
             ...props,
@@ -173,7 +290,7 @@ export const Input = (props) => {
             onClick: e => {
               e.preventDefault();
               copy(e)
-              applyFunctionIfNotNil(props.onCLick ?? props.buttonProps?.onClick, e);
+              applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
             },
             onBlur: e => {
               resetCopyButton(e);
@@ -184,7 +301,7 @@ export const Input = (props) => {
               className: `p-0 bg-transparent ${isCopied ? "text-primary" : "text-soft-text"}`
             }
           }))} />
-        }
+        } */}
       </div>
     </Label>
   )

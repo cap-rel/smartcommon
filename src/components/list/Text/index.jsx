@@ -9,7 +9,7 @@ export const Text = (props) => {
     return (
         <div { ...mergeProps("text", props => ({
             ...props,
-            className: `border border-border overflow-y-auto max-h-50 p-app-sm`
+            className: `overflow-y-auto max-h-50`
         }))}>
             {value}
         </div>

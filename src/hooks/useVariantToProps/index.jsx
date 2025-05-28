@@ -215,7 +215,7 @@ export const useVariantToProps = (componentKey, props) => {
             const defaultProp = isArray(key) ? key[1] : undefined;
             const currentKey = isArray(key) ? key[0] : key;
 
-            return [currentKey, quickProp ?? props[key] ?? defaultProp]
+            return [currentKey, quickProp ?? defaultProp]
         }))
     };
     

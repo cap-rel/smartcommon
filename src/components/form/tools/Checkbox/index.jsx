@@ -5,6 +5,7 @@ export const Checkbox = (props) => {
     const {
         checked,
         onClick,
+        disabled,
         mergeProps,
     } = props;
 
@@ -12,14 +13,14 @@ export const Checkbox = (props) => {
         <div { ...mergeProps("checkbox", props => ({
             ...props,
             onClick: e => {
-                applyFunctionIfNotNil(onClick ?? props.onClick, e);
+                applyFunctionIfNotNil(onClick, e);
             },
             style: { transition: "background-color 200ms, filter 100ms" },
-            className: `relative size-6 rounded-md shrink-0 active:brightness-soft ${checked ? "bg-primary" : "bg-strong-bg inset-shadow-sm"}`
+            className: `relative size-6 rounded-md shrink-0 ${checked ? "bg-primary" : "bg-strong-bg inset-shadow-sm"} ${disabled ? "brightness-soft" : "active:brightness-soft"}`
         }))}>
             <FaCheck { ...mergeProps("checkboxIcon", props => ({
                 ...props,
-                className: `size-4 absolute left-1 duration-200 text-white ${checked ? "bottom-1 opacity-100" : "bottom-0 opacity-0"}`
+                className: `size-4 absolute left-1 duration-(--quick) text-white ${checked ? "bottom-1 opacity-100" : "bottom-0 opacity-0"}`
             }))} />
         </div>
     );

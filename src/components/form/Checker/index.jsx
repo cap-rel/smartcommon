@@ -4,13 +4,14 @@ import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, Icon } from "../tools";
 import { twMerge } from "tailwind-merge";
 import { isEmpty, isNil, isObject, mergeProps } from "../../../globals/functions";
+import { useEffect } from "react";
+import { FaStar } from "react-icons/fa6";
 
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
+// TODO Add attributes to options like disabled, color, maybe props
 
 export const Checker = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("Checker", props);
-
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
 
     const {
         id,
@@ -19,50 +20,67 @@ export const Checker = (props) => {
         defaultValue,
         onChange = () => {},
 
-        icon,
-        multiple,
-        type,
-        options,
+        required,
+        disabled,
+        readOnly,
+        min,
+        exact,
+        max,
 
-    } = filteredProps;
+        multiple,
+        options = [],
+
+        checkedIcon = <FaStar />,
+        type,
+
+        onError = () => {},
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
 
-
     const handleOnClick = (optionValue) => {
-        let newValue;
+        if (!disabled && !readOnly) {
+            let newValue;
 
-        if (multiple) {
-            newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
-        } else {
-            newValue = currentValue === optionValue ? "" : optionValue;
+            if (multiple) {
+                newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
+            } else {
+                newValue = currentValue === optionValue ? "" : optionValue;
+            }
+
+            setValue(newValue);
         }
-
-        setValue(newValue);
     };
+
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "Une case doit être cochée." },
+        min: { condition: multiple && currentValue.length < min, message: `${min} cases doivent être cochées au minimum.` },
+        max: { condition: multiple && currentValue.length > max, message: `${max} cases doivent être cochées au maximum.` },
+        exact: { condition: multiple && currentValue.length !== exact, message: `Exactement ${exact} cases doivent être cochées.` },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             {!isEmpty(options) &&
                 <div { ...mergeProps("optionsContainer", props => ({
                     ...props,
                     className: `flex flex-col gap-app-sm`
-                }))}
-                    { ...mergeProps(
-                        {}, `col rounded-md border border-border divide-y divide-border`,
-                        listProps, {}, variant, "listProps", {}
-                    )}
-                >
+                }))}>
                     {options.map((option, OI) => {
                         const optionValue = isObject(option) ? option.value : option;
                         const optionLabel = isObject(option) ? option.label : option;
                         const checked = multiple ? currentValue.includes(optionValue) : currentValue === optionValue;
 
                         return (
-                            <div key={`option${OI}`} { ...mergeProps("optionContainer", props => ({
+                            <div key={`option${OI}`} { ...mergeProps("option", props => ({
                                 ...props,
                                 className: `flex items-center gap-app-xs`
                             }))}>
@@ -74,38 +92,41 @@ export const Checker = (props) => {
                                     name={name}
                                     hidden                                    
                                 />
-                                <div { ...mergeProps("optionLabel", props => ({
-                                    ...props,
-                                    className: `text-strong-text truncate`
-                                }))}>
-                                    {optionLabel}
-                                </div>
-                                {type === "switch" ?
-                                    <Switch
-                                        mergeProps={mergeProps}
-                                        onClick={() => handleOnClick(optionValue)}
-                                        checked={checked}
-                                    />
-                                : type === "checkbox" ?
+                                {type === "checkbox" ?
                                     <Checkbox
                                         mergeProps={mergeProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
+                                        disabled={disabled}
                                     />
                                 : type === "radio" ?
                                     <Radio
                                         mergeProps={mergeProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
+                                        disabled={disabled}
                                     />
                                 : type === "icon" ?
                                     <Icon
                                         mergeProps={mergeProps}
-                                        icon={icon}
+                                        icon={checkedIcon}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
+                                        disabled={disabled}
                                     />
-                                : ""}
+                                :   <Switch
+                                        mergeProps={mergeProps}
+                                        onClick={() => handleOnClick(optionValue)}
+                                        checked={checked}
+                                        disabled={disabled}
+                                    />
+                                }
+                                <div { ...mergeProps("optionLabel", props => ({
+                                    ...props,
+                                    className: `text-strong-text truncate`
+                                }))}>
+                                    {optionLabel}
+                                </div>
                             </div>
                         );
                     })}

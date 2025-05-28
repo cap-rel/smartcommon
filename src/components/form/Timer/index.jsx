@@ -1,55 +1,30 @@
-import { applyFunctionIfNotNil, isNil, isNumber, secsToDuration } from "../../../globals/functions";
+import { applyFunctionIfNotNil, formatDuration, isNil, isNumber, secsToDuration } from "../../../globals/functions";
 import { Input, Label } from "../../form";
 import { twMerge } from "tailwind-merge";
 import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 
 import { propTypes } from "./props";
-
-// id,
-// label,
-// help,
-// icon,
-// prefix,
-// suffix,
-// hasCopyButton = false,
-// required,
-// readOnly,
-// disabled,
-// pattern,
-// patternMessage,
-// min,
-// max,
-
-// name,
-// defaultValue,
-// value,
-// onValueChange = () => {},
-
-// variant,
-
-// containerProps,
-// labelContainerProps,
-// labelProps,
-// requiredStarProps,
-// helpProps,
-// childrenContainerProps,
-// prefixProps,
-// suffixProps,
-// inputsProps,
-// durationContainerProps,
+import { useEffect } from "react";
 
 export const Timer = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("Timer", props);
-
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+    const { variantProps, mergeProps } = useVariantToProps("Timer", props);
 
     const {
         id,
         name,
-        value,
         defaultValue,
-        onChange,
-    } = filteredProps;
+        value,
+        onChange = () => {},
+
+        required,
+        disabled,
+        readOnly,
+
+        min,
+        max,
+
+        onError = () => {}
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? 0, value, onChange);
 
@@ -65,12 +40,14 @@ export const Timer = (props) => {
     };
 
     const handleInputOnChange = (unitKey, unitValue) => {
-        const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0; 
-        const unit = units[unitKey];
-        if (numberValue <= unit.max) {
-            const unitLastValue = secsToDuration(currentValue)[unitKey] * unit.seconds;
-            const newValue = currentValue - unitLastValue + numberValue * unit.seconds; 
-            setValue(newValue);
+        if (!disabled && !readOnly) {
+            const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0; 
+            const unit = units[unitKey];
+            if (numberValue <= unit.max) {
+                const unitLastValue = secsToDuration(currentValue)[unitKey] * unit.seconds;
+                const newValue = currentValue - unitLastValue + numberValue * unit.seconds; 
+                setValue(newValue);
+            }
         }
     };
 
@@ -91,9 +68,20 @@ export const Timer = (props) => {
         suffixProps: { ...props.suffixProps, className: `${(key === "seconds" || key === "days") && "opacity-0"}` },
     });
 
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
+        min: { condition: currentValue < min, message: `La durée doit être de ${formatDuration(min)} au minimum.` },
+        max: { condition: currentValue > max, message: `La valeur doit être de ${formatDuration(max)} au maximum.` },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
+
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input

@@ -1,5 +1,6 @@
 /*-----------------  Objet Date  ------------------*/
 
+import { secsToDuration } from "./others";
 import { isNil } from "./type";
 
 // new Date();
@@ -100,3 +101,33 @@ export function formatDate(date, format) {
   
     return formattedDate;
 };
+
+export function formatTime(time, format) {
+  const [hours, minutes, seconds] = time.split(':');
+
+  const secondsTotal = hours * 60 * 60 + minutes * 60 + seconds;
+ 
+  return secondsTotal;
+}
+
+export function formatDuration(duration) {
+  const { days, hours, minutes, seconds } = secsToDuration(duration);
+
+  const formattedDays = days !== 0 ? `${days} jour(s) ` : "";
+  const formattedHours = (hours !== 0 || days !== 0) ? `${hours} h ` : "";
+  const formattedMinutes = (minutes !== 0 || hours !== 0 || days !== 0) ? `${minutes} min ` : "";
+  const formattedSeconds = (seconds !== 0 || minutes !== 0 || hours !== 0 || days !== 0) ? `${seconds} s` : "";
+
+  const formattedDuration = `${formattedDays}${formattedHours}${formattedMinutes}${formattedSeconds}`;
+
+  return formattedDuration;
+}
+
+export function formatSeconds(seconds, format) {
+  const { hours, minutes } = secsToDuration(seconds);
+
+  const formattedHours = ("0" +  hours).slice(-2);
+  const formattedMinutes = ("0" +  minutes).slice(-2);
+
+  return `${formattedHours}:${formattedMinutes}`;
+}

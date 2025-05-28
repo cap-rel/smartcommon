@@ -119,7 +119,7 @@ export const AddressInput = (props) => {
           ...props,
           // variant varchar
           loading: isSearching,
-          icon: <FaSearchLocation />,
+          inputIcon: <FaSearchLocation />,
           placeholder: `Rechercher une adresse...`,
           onChange: value => {
             handleInputOnChange(value)

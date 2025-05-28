@@ -1,19 +1,24 @@
+import { isEmpty, isNil } from "../../../../globals";
+import { IoMdInformationCircleOutline } from "react-icons/io";
+
 // IDEA Mini-popup for help
-
-import { isNil } from "../../../../globals";
-
-// TODO help
 
 export const Label = (props) => {
     const { 
         mergeProps,
-        id,
+        // id,
         label,
+        icon,
+        help,
         prefix,
         suffix,
         required,
+        formSubmitted,
+        errors = {},
         children,
-    } = props
+    } = props;
+
+    const currentErrors = Object.values(errors).filter(error => error.condition);
 
     return (
         <div { ...mergeProps("container", props => ({
@@ -27,10 +32,19 @@ export const Label = (props) => {
                     className: `gap-app-xs flex items-center`
                 }))}>
 
+                    {!isNil(icon) && 
+                        <div { ...mergeProps("icon", props => ({
+                            ...props,
+                            className: ``
+                        }))}>
+                            {icon}
+                        </div>
+                    }
+
                     <label { ...mergeProps("label", props => ({
                         ...props,
                         className: `font-app-semibold`,
-                        htmlFor: id
+                        // htmlFor: id
                     }))}>
                         {label}
                     </label>
@@ -68,6 +82,36 @@ export const Label = (props) => {
                 }
 
             </div>
+
+            {(help || (!isEmpty(currentErrors) && formSubmitted)) &&
+                <div { ...mergeProps("footer", props => ({
+                    ...props,
+                    className: `${(formSubmitted && !isEmpty(currentErrors)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
+                }))}>
+                    <IoMdInformationCircleOutline { ...mergeProps("helpIcon", props => ({
+                        ...props,
+                        className: `text-app-md`
+                    }))} />
+                    <div { ...mergeProps("helpAndErrorsContainer", props => ({
+                        ...props,
+                        className: `flex flex-col`
+                    }))}>
+                        <div { ...mergeProps("help", props => props)}>{help}</div>
+                        {formSubmitted &&
+                            currentErrors.map((error, EI) => {
+                                const { condition, message } = error;
+                                if (condition) {
+                                    return (
+                                        <div key={`error${EI}`} { ...mergeProps("error", props => props)}>
+                                            {message}
+                                        </div>
+                                    );
+                                }
+                            })
+                        }
+                    </div>
+                </div>
+            }
 
         </div>
     );

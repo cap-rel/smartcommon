@@ -1,5 +1,5 @@
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useStates, useVariantToProps } from "../../../hooks";
 
 export const Signature = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Signature", props);
@@ -8,19 +8,24 @@ export const Signature = (props) => {
 
     const { signature, signer, coordinates, signedAt } = value;
 
+    const { states, set } = useStates({
+        isPopupOpen: false
+    });
+
+    const { isOpen } = states;
+
     return (
         <>
             <img { ...mergeProps("img", props => ({
                 src: signature,
                 ...props,
             }))} />
-             {/* <div { ...mergeProps("Signature", props => ({
+            <Popup { ...mergeProps("Popup", props => ({
                 ...props,
-                ...mergeQuickProps(props, ["value", "icon"]),
-                readOnly: true,
+                className: "",
             }))}>
 
-            </div> */}
+            </Popup>
         </>
        
     );

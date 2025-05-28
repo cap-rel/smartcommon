@@ -21,6 +21,7 @@ import { PrivateLayout } from "../PrivateLayout";
 import { DetailsPanel } from "../DetailsPanel";
 import { Duration } from "../../list/Duration";
 import { Address, Coordinates, Datetime, Email, PhoneNumber, Url } from "../../list";
+import { Boolean, Input } from "../../form";
 
 const HomePage = () => {
 
@@ -42,6 +43,9 @@ const HomePage = () => {
         isMineInterventionsSyncSuccess: false,
         isUrgentInterventionsSyncSuccess: false,
         isUnassignedInterventionsSyncSuccess: false,
+
+        isFormSubmitted: false,
+        errors: null,
     });
 
     const { 
@@ -62,6 +66,9 @@ const HomePage = () => {
         isMineInterventionsSyncSuccess,
         isUrgentInterventionsSyncSuccess,
         isUnassignedInterventionsSyncSuccess,
+
+        isFormSubmitted,
+        errors
     } = states;
 
     const dispatch = useDispatch();
@@ -226,6 +233,22 @@ const HomePage = () => {
         set("selectedIntervention", null);
     };
 
+    const handleError = (error, value) => {
+        set(`errors.${error}`, value);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        set("isFormSubmitted", true);
+        if (!Object.values(errors).some(error => error)) {
+            toast.success("Tous les champs formulaire sont valides");
+        } else {
+            toast.error("Vérifier les champs du formulaire");
+        }
+    }
+
+    useEffect(() => console.log(errors), [errors]);
+
     return (
         <>
             <DetailsPanel
@@ -267,98 +290,122 @@ const HomePage = () => {
                     upperLeftLinks={<UpperNavbarLink icon={<FaSyncAlt />} onClick={() => set("isSyncPopupOpen", true)} />}
                     upperRightLinks={<UpperNavbarLink icon={<FaBell />} />}
                 />
-                    <Block
-                        title={"Aujourd'hui"} 
-                        blockProps={{ className: "p-0 gap-0" }}
-                    >
-                        <Link to={`/interventions`}>
-                            <div 
-                                className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm bg-soft-bg active:brightness-soft`}
-                            >
-                                <div className="p-app-sm bg-primary/10 rounded-app-md">
-                                    <BsRocketFill className={`text-primary text-2xl`} /> 
-                                </div>
-
-                                <div className="flex gap-app-sm items-center justify-between">
-                                    <div className="text-strong-text">
-                                        Vous avez **** interventions à faire {filterText}... Y aller ?
-                                        <Datetime value={1747922976} />
-                                    </div>
-                                    <MdArrowForwardIos className="text-xl" />
-                                </div>
-                                
+                <Block
+                    title={"Aujourd'hui"} 
+                    blockProps={{ className: "p-0 gap-0" }}
+                >
+                    <Link to={`/interventions`}>
+                        <div 
+                            className={`flex items-center gap-app-sm text-soft-text px-app-base py-app-sm bg-soft-bg active:brightness-soft`}
+                        >
+                            <div className="p-app-sm bg-primary/10 rounded-app-md">
+                                <BsRocketFill className={`text-primary text-2xl`} /> 
                             </div>
-                        </Link>
-                    </Block>
-                    <PhoneNumber value={"0637872898"} />
-                    <Url value={`https://google.com`} />
-                    <Email value={`test@mail.com`} />
-                    <Address value={`Place Dassy`} />
-                    <Coordinates value={["-0.5805000", "44.8404400"]} />
 
-                    <Block
-                        title={"A syncrhoniser"} 
-                        blockProps={{ className: "p-0" }}
-                    >
-                        {!isEmpty(updates) 
-                            ?   <div className="flex flex-col divide-y divide-border">
-                                    {updates.map((update, UI) => 
-                                        <ListItem
-                                            key={`update${UI}`}
-                                            type={`update`}
-                                            intervention={{ ...update.data, status: "update" }}
-                                            onClick={() => syncUpdate(UI)}
-                                        />
-                                    )}
+                            <div className="flex gap-app-sm items-center justify-between">
+                                <div className="text-strong-text">
+                                    Vous avez **** interventions à faire {filterText}... Y aller ?
                                 </div>
-                            :   <div className={`px-app-base py-app-sm`}>
-                                    Aucune intervention à synchroniser
-                                </div>
-                        }
-                    </Block>
-                    <Block
-                        title={"En cours"} 
-                        blockProps={{ className: "p-0" }}
-                    >
-                        {!isEmpty(interventionsInProgress) 
-                            ?   <div className="flex flex-col divide-y divide-border">
-                                    {interventionsInProgress.map((intervention, II) => 
-                                        <ListItem
-                                            key={`intervention${II}`}
-                                            type={`intervention`}
-                                            onClick={() => set("selectedIntervention", intervention)}
-                                            intervention={intervention}
-                                        />
-                                    )}
-                                </div>
-                            :   <div className={`px-app-base py-app-sm`}>
-                                    Aucune intervention en cours
-                                </div>
-                        }
-                    </Block>
-                    <Block
-                        title={"A compléter"} 
-                        blockProps={{ className: "p-0" }}
-                    >
-                        {!isEmpty(interventionsToComplete) 
-                            ?   <div className="flex flex-col divide-y divide-border">
-                                    {interventionsToComplete.map((intervention, II) => 
-                                        <ListItem
-                                            key={`intervention${II}`}
-                                            type={`intervention`}
-                                            onClick={() => set("selectedIntervention", intervention)}
-                                            intervention={intervention}
-                                        />
-                                    )}
-                                </div>
-                            :   <div className={`px-app-base py-app-sm`}>
-                                    Aucune intervention en cours
-                                </div>
-                        }
-                    </Block>
+                                <MdArrowForwardIos className="text-xl" />
+                            </div>
+                            
+                        </div>
+                    </Link>
+                </Block>
+
+                <Block
+                    title={"A syncrhoniser"} 
+                    blockProps={{ className: "p-0" }}
+                >
+                    {!isEmpty(updates) 
+                        ?   <div className="flex flex-col divide-y divide-border">
+                                {updates.map((update, UI) => 
+                                    <ListItem
+                                        key={`update${UI}`}
+                                        type={`update`}
+                                        intervention={{ ...update.data, status: "update" }}
+                                        onClick={() => syncUpdate(UI)}
+                                    />
+                                )}
+                            </div>
+                        :   <div className={`px-app-base py-app-sm`}>
+                                Aucune intervention à synchroniser
+                            </div>
+                    }
+                </Block>
+                <Block
+                    title={"En cours"} 
+                    blockProps={{ className: "p-0" }}
+                >
+                    {!isEmpty(interventionsInProgress) 
+                        ?   <div className="flex flex-col divide-y divide-border">
+                                {interventionsInProgress.map((intervention, II) => 
+                                    <ListItem
+                                        key={`intervention${II}`}
+                                        type={`intervention`}
+                                        onClick={() => set("selectedIntervention", intervention)}
+                                        intervention={intervention}
+                                    />
+                                )}
+                            </div>
+                        :   <div className={`px-app-base py-app-sm`}>
+                                Aucune intervention en cours
+                            </div>
+                    }
+                </Block>
+                <Block
+                    title={"A compléter"} 
+                    blockProps={{ className: "p-0" }}
+                >
+                    {!isEmpty(interventionsToComplete) 
+                        ?   <div className="flex flex-col divide-y divide-border">
+                                {interventionsToComplete.map((intervention, II) => 
+                                    <ListItem
+                                        key={`intervention${II}`}
+                                        type={`intervention`}
+                                        onClick={() => set("selectedIntervention", intervention)}
+                                        intervention={intervention}
+                                    />
+                                )}
+                            </div>
+                        :   <div className={`px-app-base py-app-sm`}>
+                                Aucune intervention en cours
+                            </div>
+                    }
+                </Block>
+                
+                <form onSubmit={handleSubmit} className={`flex flex-col gap-app-base`}>
+                    <Boolean 
+                        id={"Boolean"}
+                        label={"bonjour"}
+                        help={"Vous devez cocher ce point pour continuer."}
+                        required
+                        formSubmitted={isFormSubmitted}
+                        onError={handleError}
+                        icon={<FaUser />}
+                    />
+                    <Input
+                        id={"Input"}
+                        label={"Bonjour"}
+                        minLength={4}
+                        min={4}
+                        required
+                        type={"datetime-local"}
+                        formSubmitted={isFormSubmitted}
+                        // inputMode={"numeric"}
+                        onError={handleError}
+                        // help={"Aidez-moi"}
+                    />
+                    <Button>
+                        Soumettre formulaire
+                    </Button>
+                </form>
             </Page>
         </>
     );
 };
 
 export default HomePage;
+
+
+// const { errors } = useForm(config, formValues)

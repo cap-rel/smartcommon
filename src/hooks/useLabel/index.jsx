@@ -1,21 +1,24 @@
-export const useLabel = (props) => {
+export const useLabel = (props, idKey) => {
     const labelProps = {
         label: props.label,
         help: props.help,
+        icon: props.icon,
         prefix: props.prefix,
         suffix: props.suffix,
-        id: props.inputProps?.id,
-        required: props.required ?? props.inputProps?.required,
-        disabled: props.disabled ?? props.inputProps?.disabled,
-        readOnly: props.readOnly ?? props.inputProps?.readOnly,
-        variant: props.variant,
+        // id: props[idKey]?.id,
+        required: props.required,
+        disabled: props.disabled,
+        readOnly: props.readOnly,
         containerProps: props.containerProps,
         labelContainerProps: props.labelContainerProps,
+        iconProps: props.iconProps,
         labelProps: props.labelProps,
         starProps: props.starProps,
         childrenContainerProps: props.childrenProps,
         prefixProps: props.prefixProps,
         suffixProps: props.suffixProps,
+        helpContainerProps: props.suffixProps,
+        helpIconProps: props.helpIconProps,
         helpProps: props.helpProps,
     }
 

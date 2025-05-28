@@ -1,49 +1,55 @@
 import { Label } from "..";
 import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
-import { isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 
-// {
-//     label,
-//     labelRow = false,
-//     help,
-//     onValueChange = () => {},
-  
-//     containerProps,
-//     labelContainerProps,
-//     labelProps,
-//     requiredStarProps,
-//     helpProps,
-//     inputContainerProps,
-//     inputProps,
-//     valueProps,
-//     ...props
-//   }
-
 export const RangeInput = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("RangeInput", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("RangeInput", props);
     
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-
     const {
         id,
         name,
         defaultValue,
         value,
-        onChange
-    } = filteredProps;
+        onChange = () => {},
+
+        required,
+        disabled,
+        readOnly,
+
+        min,
+        max,
+
+        rangeMin = 0,
+        rangeMax = 100,
+
+        onError = () => {}
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
     const handleColorOnChange = (e) => {
-        const newValue = e.target.value;
-        setValue(newValue);
+        if (!disabled && !readOnly) {
+            const newValue = e.target.value;
+            setValue(newValue);
+        }
     };
+
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
+        min: { condition: currentValue < min, message: `La valeur doit être de ${min} au minimum.` },
+        max: { condition: currentValue > max, message: `La valeur doit être de ${max} au minimum.` },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <div { ...mergeProps("rangeContainer", props => ({
@@ -51,12 +57,17 @@ export const RangeInput = (props) => {
                 className: `gap-2 row-v-center`
             }))}>
                 <input { ...mergeProps("input", props => ({
-                    name: name,
+                    min: rangeMin,
+                    max: rangeMax,
                     ...props,
+                    ...mergeQuickProps(["name", "disabled", "readOnly", "onFocus", "onBlur"]),
                     type: "range",
-                    onChange: handleColorOnChange,
+                    onChange: e => {
+                        handleColorOnChange(e);
+                        applyFunctionIfNotNil(props.onChange, e);
+                    },
                     value: currentValue,
-                    className: `flex-grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize`,
+                    className: `grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize ${disabled && "brightness-soft"}`,
                 }))} />
                 <div { ...mergeProps("value", props => props)}>
                     {currentValue}

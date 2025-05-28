@@ -340,8 +340,8 @@ export const DevPage = () => {
                                 label={"Bonjour"}
                                 variant={"int"}
                                 // loading
-                                icon={<FaEnvelope />}
-                                iconProps={{ className: "text-success" }}
+                                inputIcon={<FaEnvelope />}
+                                inputIconProps={{ className: "text-success" }}
                                 inputProps={{ required: false, step: 2 }}
                                 Spinner={{
                                     // size: 8,

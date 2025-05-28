@@ -2,7 +2,7 @@ import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { IoHeart, IoHeartHalf, IoHeartOutline } from "react-icons/io5";
 import { FaFaceSmile, FaRegStar, FaRegStarHalfStroke, FaStar, FaThumbsUp } from "react-icons/fa6";
 import { isNil } from "../../../globals/functions";
@@ -10,59 +10,52 @@ import { Icon } from "../tools";
 
 // IDEA Add decimal rating system
 
-// {
-//     label,
-//     labelRow = false,
-//     help,
-//     variant = "star", // heart, like, smile
-//     maxRating = 5,
-//     onValueChange = () => {},
-
-//     containerProps,
-//     labelContainerProps,
-//     labelProps,
-//     requiredStarProps,
-//     helpProps,
-//     inputProps,
-//     ratingContainerProps,
-//     iconProps,
-//     ...props
-// }
-
 export const Rater = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Rater", props);
-      
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
-    
+    const { variantProps, mergeProps } = useVariantToProps("Rater", props);
+          
     const { 
         id,
-        icon = FaStar,
-        maxRating,
         name,
         defaultValue,
         value,
         onChange = () => {},
-    } = filteredProps;
+
+        required,
+        disabled,
+        readOnly,
+
+        min,
+        max,
+
+        ratingIcon = <FaStar />,
+        ratingMax = 5,
+
+        onError = () => {}
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
-    // const VARIANT_ICONS_MAP = useMemo(() => ({
-    //     star: { empty: FaRegStar, half: FaRegStarHalfStroke, full: FaStar },
-    //     heart: { empty: IoHeartOutline, half: IoHeartHalf, full: IoHeart },
-    //     like: { full: FaThumbsUp },
-    //     smile: { full: FaFaceSmile }
-    // }), []);
-
-    const IconComponent = icon; 
-
     const updateRating = (index) => {
-        const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
-        setValue(newValue);
+        if (!disabled && !readOnly) {
+            const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
+            setValue(newValue);
+        }
     };
+
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
+        min: { condition: currentValue < min, message: `La notation doit être de ${min} au minimum.` },
+        max: { condition: currentValue > max, message: `La notation doit être de ${max} au minimum.` },
+    };
+
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input
@@ -75,12 +68,14 @@ export const Rater = (props) => {
                 ...props,
                 className: `gap-app-xs flex items-center overflow-x-auto`
             }))}>
-                {Array(maxRating).fill("").map((icon, II) =>
+                {Array(ratingMax).fill("").map((icon, II) =>
                     <Icon
                         key={`icon${II}`}
-                        icon={<IconComponent />}
+                        mergeProps={mergeProps}
+                        icon={ratingIcon}
                         checked={II < currentValue}
                         onClick={() => updateRating(II)}
+                        disabled={disabled}
                     />
                 )}
             </div>

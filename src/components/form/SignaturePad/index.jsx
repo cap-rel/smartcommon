@@ -161,7 +161,7 @@ export const SignaturePad = (props) => {
             }))} />
           </div>
           <Input { ...mergeProps("SignerInput", props => ({
-            icon: <FaUser />,
+            inputIcon: <FaUser />,
             ...props,
             inputProps: {
               placeholder: "Nom du signataire",

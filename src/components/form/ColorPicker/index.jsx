@@ -2,45 +2,62 @@ import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
+import { useEffect } from "react";
 
 // TODO tailwind color
 
 export const ColorPicker = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("ColorPicker", props);
-
-    const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("ColorPicker", props);
 
     const {
         id,
         name,
         defaultValue,
         value,
-        onChange
-    } = filteredProps;
+        onChange,
+
+        required,
+        disabled,
+        readOnly,
+
+        onError = () => {},
+    } = variantProps;
 
     const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
     const handleColorOnChange = (e) => {
-        const newValue = e.target.value;
-        setValue(newValue);
+        if (!disabled && !readOnly) {
+            const newValue = e.target.value;
+            setValue(newValue);
+        }
     };
+
+    const errors = {
+        required: { condition: required && isEmpty(currentValue), message: "Ce champ est requis." },
+    };
+    
+    useEffect(() => {
+        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+    }, [currentValue]);
 
     return (
         <Label 
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input { ...mergeProps("input", props => ({
-                name: name,
                 ...props,
+                ...mergeQuickProps(["name", "disabled", "readOnly", "onFocus", "onBlur"]),
                 type: "color",
-                onChange: handleColorOnChange,
+                onChange: e => {
+                    handleColorOnChange(e);
+                    applyFunctionIfNotNil(props.onChange, e);
+                },
                 value: currentValue,
-                className: `size-6 border-border`,
-            }))}
-               
-            />
+                className: `size-6 border-border duration-(--really-quick) ${disabled ? "brightness-soft" : "active:brightness-soft"}`,
+            }))} />
         </Label>
     );
 };
