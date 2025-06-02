@@ -1,10 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { isNil } from "../../../globals";
 import { useVariantToProps } from "../../../hooks";
 
 export const TabbarLink = (props) => {
-    const location = useLocation();
-
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("tabbarLink", props);
 
     const { badge, icon, activeIcon, disabled, label, active: activeManually, to } = variantProps;

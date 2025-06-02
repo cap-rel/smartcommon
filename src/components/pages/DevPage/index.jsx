@@ -7,7 +7,6 @@ import { List } from "../../test";
 import { Button, Popup, Spinner } from "../../others";
 import { useEffect } from "react";
 import { useStates } from "../../../hooks";
-import { useLocation } from "react-router-dom";
 import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../form";
 
 export const DevPage = () => {
@@ -26,8 +25,6 @@ export const DevPage = () => {
     });
 
     const { init, isPopupOpen } = states;
-
-    const location = useLocation();
 
     const getgps = (value) => {
         return value.map(gpsPoint => Number(gpsPoint));

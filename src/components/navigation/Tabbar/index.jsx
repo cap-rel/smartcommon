@@ -1,6 +1,6 @@
 import { propTypes } from "./props";
 import { useStates, useVariantToProps } from "../../../hooks";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { isNil, setVariable } from "../../../globals";
 import { useEffect, useRef } from "react";
 
@@ -13,8 +13,6 @@ export const Tabbar = (props) => {
   const { variantProps, mergeProps, setParams } = useVariantToProps("tabbar", props);
 
   const { id, children, hideOnScroll } = variantProps;
-
-  const location = useLocation();
 
   const tabbarRef = useRef();
 

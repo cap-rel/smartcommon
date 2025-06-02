@@ -1,13 +1,13 @@
 import { FaReact } from "react-icons/fa6";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { components } from "../components";
 
 export const Components = () => {
-    const location = useLocation();
+    // const location = useLocation();
 
     return (
         <div className={`col w-50 shrink-0 h-full relative border-r border-soft bg-softest`}>   
-            <div className={`sticky top-0 p-4 font-semibold uppercase text-lg row justify-center items-center bg-primary text-white`}>
+            {/* <div className={`sticky top-0 p-4 font-semibold uppercase text-lg row justify-center items-center bg-primary text-white`}>
                 Composants
             </div>
             <div className={`grow col overflow-y-auto py-4 gap-4 text-sm`}>
@@ -35,7 +35,7 @@ export const Components = () => {
                         </div>
                     </div>
                 )}
-            </div>
+            </div> */}
         </div>
     );
 }
