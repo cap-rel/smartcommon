@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
 import { isNil } from "../../../globals";
 import { useVariantToProps } from "../../../hooks";
 
 export const LowerNavbarLink = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("lowerNavbarLinks", props);
 
-    const { icon, activeIcon, disabled, label, active: activeManually } = variantProps;
+    const { icon, activeIcon, disabled, label, active: activeManually, Link } = variantProps;
                                                 
     const isActive = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
     const currentIcon = isActive ? (!isNil(activeIcon) ? activeIcon : icon) : icon;

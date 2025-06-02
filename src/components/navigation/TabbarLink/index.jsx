@@ -1,11 +1,10 @@
-import { Link } from "react-router-dom";
 import { isNil } from "../../../globals";
 import { useVariantToProps } from "../../../hooks";
 
 export const TabbarLink = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("tabbarLink", props);
 
-    const { badge, icon, activeIcon, disabled, label, active: activeManually, to } = variantProps;
+    const { badge, icon, activeIcon, disabled, label, active: activeManually, to, Link } = variantProps;
           
     const active = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
     const currentIcon = active ? (!isNil(activeIcon) ? activeIcon : icon) : icon;

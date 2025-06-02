@@ -1,13 +1,12 @@
-import { Link } from "react-router-dom";
 import { useVariantToProps } from "../../../hooks";
 import { isNil } from "../../../globals";
 
 // TODO badge
 
 export const UpperNavbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("upperNavbarLink", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("UpperNavbarLink", props);
     
-    const { badge, icon, disabled, label } = variantProps;
+    const { badge, icon, disabled, label, Link } = variantProps;
                                                                             
     return (
         <Link { ...mergeProps("link", props => ({
