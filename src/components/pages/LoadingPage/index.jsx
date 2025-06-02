@@ -4,7 +4,6 @@ import { API_URL } from "../../../globals";
 import { useEffect } from "react";
 import { setInterventions, setInterventionsFromType, setMyInterventions, setUrgentInterventions } from "../../../reduxStore/reducers/interventionsSlice";
 import { setConfig } from "../../../reduxStore/reducers/configSlice";
-import { useNavigate } from "react-router-dom";
 import { removeUpdate } from "../../../reduxStore/reducers/updatesSlice";
 
 // TODO Conditions get home

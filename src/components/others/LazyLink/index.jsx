@@ -1,4 +1,4 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { propTypes } from './props';
 import { isNil } from '../../../globals/functions';
 import { useVariantToProps } from '../../../hooks';
@@ -12,14 +12,14 @@ export const LazyLink = (props) => {
 
   const { to, onClick } = linkProps;
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleLinkOnClick = e => {
     e.preventDefault();
     if (!isNil(onClick)) {
       onClick();
     }
-    setTimeout(() => navigate(to, { ...linkProps }), duration);
+    // setTimeout(() => navigate(to, { ...linkProps }), duration);
   };
 
   return (

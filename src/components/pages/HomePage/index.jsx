@@ -8,7 +8,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL, getSessionJSON, isEmpty, setLocalJSON, setSessionJSON, timeToMinutes } from "../../../globals";
 import { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
 import { setConfig } from "../../../reduxStore/reducers/configSlice";
 import { removeUpdate } from "../../../reduxStore/reducers/updatesSlice";
@@ -72,7 +72,7 @@ const HomePage = () => {
     } = states;
 
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
 
     const { token, user } = useSelector(state => state.session.data);
 

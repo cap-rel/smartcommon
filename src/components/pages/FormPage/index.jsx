@@ -2,7 +2,7 @@ import { FaArrowLeft, FaCalendar, FaFileLines, FaPen } from "react-icons/fa6";
 import { Button, Checker, Timer, Input, Navbar, Panel, Popup, Rater, Select, SignaturePad, PhotosUploader, Textarea, UpperNavbarLink } from "../..";
 import { useApi, useStates } from "../../../hooks";
 import { AudiosUploader } from "../../form/AudiosUploader";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { saveDraft } from "../../../reduxStore/reducers/draftsSlice";
 import { API_URL, formatDate, isArray, isNil, isUndefined, sortArrayByNumber } from "../../../globals";
@@ -17,7 +17,7 @@ import { Tag } from "../../others/Tag";
 
 export const FormPage = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+    // const navigate = useNavigate();
     
     const params = useParams();
     const { id } = params;
@@ -77,13 +77,13 @@ export const FormPage = () => {
             .then(json => {
                 toast.success("Compte-rendu d'intervention sauvegardé.")
                 console.error(`PUT 'intervention/${id}' success`);
-                navigate("/interventions")
+                // navigate("/interventions")
             })
             .catch(err => {
                 toast.error("Echec de la sauvegarde du compte-rendu d'intervention. Veuillez le synchroniser ultérieurement.")
                 console.error(`PUT 'intervention/${id}' error`);
                 console.error(err);
-                navigate("/interventions")
+                // navigate("/interventions")
             })
     };
 
