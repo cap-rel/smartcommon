@@ -179,13 +179,13 @@ export const AudiosUploader = (props) => {
                 />
                 <input
                     name={name}
-                    value={audio?.gpsPoints[0]}
+                    value={audio?.gpsPoints?.[0]}
                     onChange={() => {}}
                     hidden
                 />
                 <input
                     name={name}
-                    value={audio?.gpsPoints[1]}
+                    value={audio?.gpsPoints?.[1]}
                     onChange={() => {}}
                     hidden
                 />

@@ -175,13 +175,13 @@ export const PhotosUploader = (props) => {
                 />
                 <input
                     name={name}
-                    value={photo?.gpsPoints[0]}
+                    value={photo?.gpsPoints?.[0]}
                     onChange={() => {}}
                     hidden
                 />
                 <input
                     name={name}
-                    value={photo?.gpsPoints[1]}
+                    value={photo?.gpsPoints?.[1]}
                     onChange={() => {}}
                     hidden
                 />

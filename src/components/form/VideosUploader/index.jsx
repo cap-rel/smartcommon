@@ -178,13 +178,13 @@ export const VideosUploader = (props) => {
                 />
                 <input
                     name={name}
-                    value={video?.gpsPoints[0]}
+                    value={video?.gpsPoints?.[0]}
                     onChange={() => {}}
                     hidden
                 />
                 <input
                     name={name}
-                    value={video?.gpsPoints[1]}
+                    value={video?.gpsPoints?.[1]}
                     onChange={() => {}}
                     hidden
                 />
