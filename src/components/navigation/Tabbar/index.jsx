@@ -1,6 +1,6 @@
 import { propTypes } from "./props";
 import { useStates, useVariantToProps } from "../../../hooks";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { isNil, setVariable } from "../../../globals";
 import { useEffect, useRef } from "react";
 

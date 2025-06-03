@@ -2,7 +2,7 @@ import { FaArrowLeft, FaCalendar, FaFileLines, FaPen } from "react-icons/fa6";
 import { Button, Checker, Timer, Input, Navbar, Panel, Popup, Rater, Select, SignaturePad, PhotosUploader, Textarea, UpperNavbarLink } from "../..";
 import { useApi, useStates } from "../../../hooks";
 import { AudiosUploader } from "../../form/AudiosUploader";
-import { useLocation, useParams } from "react-router-dom";
+
 import { useDispatch, useSelector } from "react-redux";
 import { saveDraft } from "../../../reduxStore/reducers/draftsSlice";
 import { API_URL, formatDate, isArray, isNil, isUndefined, sortArrayByNumber } from "../../../globals";
@@ -19,11 +19,12 @@ export const FormPage = () => {
     const dispatch = useDispatch();
     // const navigate = useNavigate();
     
-    const params = useParams();
-    const { id } = params;
+    // const params = useParams();
+    // const { id } = params;
+    const id = 2;
 
-    const location = useLocation();
-    const { draft, originLocation } = location.state ?? {};
+    // const location = useLocation();
+    // const { draft, originLocation } = location.state ?? {};
 
     const interventions = useSelector(state => state.interventions.data);
 

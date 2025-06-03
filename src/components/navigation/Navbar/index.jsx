@@ -1,7 +1,7 @@
 import { useStates, useVariantToProps } from "../../../hooks";
 import { isNil, setVariable } from "../../../globals/functions";
 import { propTypes } from "./props";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { useEffect, useRef } from "react";
 
 // TODO when there is not left or right, adjust the justify-between

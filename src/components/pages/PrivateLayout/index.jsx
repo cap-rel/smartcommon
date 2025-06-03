@@ -2,7 +2,7 @@ import { IoHome } from "react-icons/io5";
 import { Tabbar, TabbarLink } from "../../navigation";
 import { FaGear } from "react-icons/fa6";
 import { BsRocketFill } from "react-icons/bs";
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
 
 export const PrivateLayout = () => {
     const links = [
@@ -13,7 +13,7 @@ export const PrivateLayout = () => {
 
     return (
         <>
-            <Outlet />
+            {/* <Outlet /> */}
             <Tabbar id={"layoutTabbar"}>
                 {links.map((link, LI) =>
                     <TabbarLink

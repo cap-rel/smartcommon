@@ -1,5 +1,5 @@
 import { FaReact } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { components } from "../components";
 
 export const Components = () => {

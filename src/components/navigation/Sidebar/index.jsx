@@ -3,7 +3,7 @@ import { Panel } from "../../others";
 import { Button } from "../../others";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
 import { propTypes } from "./props";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { isNil } from "../../../globals";
 
 // TODO badge for link
@@ -12,6 +12,10 @@ import { isNil } from "../../../globals";
 // TODO button position with app variables
 // TODO global variables
 // TODO id automatique dans le useVariantToProps
+
+const Link = () => {
+  return null;
+}
 
 export const Sidebar = (props) => {
   const { variantProps, mergeProps } = useVariantToProps("sidebar", props);

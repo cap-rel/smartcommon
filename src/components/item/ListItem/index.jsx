@@ -1,8 +1,12 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { timestampToDate } from "../../../globals/functions";
 import { Boolean } from "../../form";
 
 const Icon = () => {
+  return null;
+}
+
+const Link = () => {
   return null;
 }
 

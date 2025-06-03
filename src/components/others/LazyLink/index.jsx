@@ -1,7 +1,11 @@
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import { propTypes } from './props';
 import { isNil } from '../../../globals/functions';
 import { useVariantToProps } from '../../../hooks';
+
+const Link = () => {
+  return null;
+}
 
 export const LazyLink = (props) => {
   const { variantProps, mergeProps } = useVariantToProps("lazyLink", props);

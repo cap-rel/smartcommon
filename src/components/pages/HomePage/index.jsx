@@ -8,7 +8,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { API_URL, getSessionJSON, isEmpty, setLocalJSON, setSessionJSON, timeToMinutes } from "../../../globals";
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
 import { setConfig } from "../../../reduxStore/reducers/configSlice";
 import { removeUpdate } from "../../../reduxStore/reducers/updatesSlice";
@@ -22,6 +22,11 @@ import { DetailsPanel } from "../DetailsPanel";
 import { Duration } from "../../list/Duration";
 import { Address, Coordinates, Datetime, Email, PhoneNumber, Url } from "../../list";
 import { Boolean, Input } from "../../form";
+import NumberSelector from "../NumberTest";
+
+const Link = () => {
+  return null;
+}
 
 const HomePage = () => {
 
@@ -312,6 +317,8 @@ const HomePage = () => {
                         </div>
                     </Link>
                 </Block>
+
+                <NumberSelector />
 
                 <Block
                     title={"A syncrhoniser"} 

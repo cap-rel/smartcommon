@@ -10,7 +10,7 @@ import { Input, Calendar } from "../../form";
 import { RiCloseLargeFill, RiCloseLargeLine } from "react-icons/ri";
 import { API_URL, cleanForComparison, formatDate, getLocalJSON, getVariable, isArray, isEmpty, isNil, isNull, isObject, isUndefined, searchBarFilter, timestampToDate } from "../../../globals";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { setInterventionsFromType } from "../../../reduxStore/reducers/interventionsSlice";
 import { ListItem } from "../ListItem";
 import { Page } from "../../others/Page";
@@ -22,12 +22,12 @@ import { DetailsPanel } from "../DetailsPanel";
 const InterventionsPage = () => {
     const dispatch = useDispatch();
 
-    const dateNow = formatDate(new Date());
+    const dateNow = Math.floor(Date.now() / 1000);
 
     const { isInCalendarModeByDefault } = useSelector(state => state.settings.data);
 
     const { states, set } = useStates({
-        isInCalendarMode: isInCalendarModeByDefault,
+        isInCalendarMode: true, // isInCalendarModeByDefault
         isSearchbarOpen: false,
         search: "",
         selectedIntervention: null,

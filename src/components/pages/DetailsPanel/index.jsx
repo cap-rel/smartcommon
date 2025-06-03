@@ -1,10 +1,14 @@
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Button, Panel, Tag } from "../../others";
 import { useSelector } from "react-redux";
 import { isArray, isNil, isObject } from "../../../globals";
 import { BsRocketFill } from "react-icons/bs";
 import { Datetime, String, Text } from "../../list";
 import { FaBook, FaClock, FaTag } from "react-icons/fa6";
+
+const Link = () => {
+  return null;
+}
 
 export const DetailsHeaderItem = (props) => {
     const { icon, label, children } = props;
