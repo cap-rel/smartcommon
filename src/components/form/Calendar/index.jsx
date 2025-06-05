@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyFunctionIfNotNil, formatDate, isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, formatDate, isArray, isNil, isNumber } from "../../../globals/functions";
 import { useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
@@ -10,8 +10,6 @@ import { propTypes } from "./props";
 export const Calendar = (props) => {
   const { variantProps, mergeProps } = useVariantToProps("calendar", props);
 
-  const dateNow = formatDate(new Date(Date.now()), "seconds-timestamp");
-
   const { 
     id,
     yearsInterval = [2000, 2030],
@@ -21,28 +19,19 @@ export const Calendar = (props) => {
     onChange
   } = variantProps;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? dateNow, value, onChange);
+  const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
 
   const allYears = [];
   for (let year = yearsInterval[0]; year <= yearsInterval[1]; year++) {
     allYears.push(year);
   }
 
-  // Fonction pour obtenir le jour de la semaine d'une date donnée
-  const getDayOfWeek = (dateString) => {
-    // const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const daysOfWeek = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-    const date = new Date(dateString);
-    return daysOfWeek[date.getDay()];
-  }
-  
   // Fonction pour générer le calendrier pour une année
   const generateYearCalendar = (year) => {
     const yearData = { year, months: [] };
   
     for (let month = 0; month < 12; month++) {
       const firstDayOfMonth = new Date(year, month, 1);
-      // const firstDayOfWeek = getDayOfWeek(firstDayOfMonth.toISOString().split('T')[0]); // Jour de la semaine pour le premier jour du mois
       const daysInMonth = new Date(year, month + 1, 0).getDate(); // Nombre de jours dans le mois
   
       const monthData = {
@@ -56,7 +45,7 @@ export const Calendar = (props) => {
         const date = new Date(year, month, day);
         monthData.days.push({
           number: day,
-          weekday: getDayOfWeek(date.toISOString().split('T')[0])
+          weekday: date.toLocaleDateString('default', { weekday: 'long' })
         });
       }
   
@@ -66,14 +55,33 @@ export const Calendar = (props) => {
     return yearData;
   }
 
-  const dateValue = new Date(currentValue * 1000);
+  const dateNow = new Date(Date.now());
 
-  const { states, set } = useStates({
-    year: dateValue.getFullYear(),
-    month: dateValue.getMonth() + 1,
-  });
+  const initialStates = () => {
+    let year = dateNow.getFullYear();
+    let month = dateNow.getMonth() + 1;
+    let origin = null;
 
-  const { year, month } = states;
+    if (isNumber(currentValue)) {
+      const date = new Date(currentValue * 1000);
+
+      year = date.getFullYear();
+      month = date.getMonth() + 1;
+      origin = currentValue;
+    } else if (isArray(currentValue)) {
+      const date = new Date(currentValue[0] * 1000);
+
+      year = date.getFullYear();
+      month = date.getMonth() + 1;
+      origin = currentValue[0];
+    }
+
+    return { year, month, origin };
+  }
+
+  const { states, set } = useStates(initialStates());
+
+  const { year, month, origin } = states;
   
   const months = useMemo(() => generateYearCalendar(year).months, [year]);
 
@@ -114,8 +122,17 @@ export const Calendar = (props) => {
 
   useEffect(() => {  
     const lowerContainer = lowerContainerRef.current;
-    if (!isNil(lowerContainer) && month - 1 === dateValue.getMonth() && year === dateValue.getFullYear()) {
-      const selectedDay = lowerContainer.querySelector(`[data-number='${dateValue.getDate()}']`);
+    let scrollDate = dateNow;
+    
+    if (isNumber(currentValue)) {
+      scrollDate = new Date(currentValue * 1000);
+    } else if (isArray(currentValue)) {
+      scrollDate = new Date(currentValue[0] * 1000);
+    }
+
+    
+    if (!isNil(lowerContainer) && month - 1 === scrollDate.getMonth() && year === scrollDate.getFullYear()) {
+      const selectedDay = lowerContainer.querySelector(`[data-number='${scrollDate.getDate()}']`);
   
       const offset = selectedDay.offsetLeft - lowerContainer.offsetLeft;
       const scroll = offset - (lowerContainer.clientWidth / 2) + (selectedDay.clientWidth / 2);
@@ -123,6 +140,47 @@ export const Calendar = (props) => {
       lowerContainer.scrollTo({ left: scroll, behavior: 'auto' });
     }
   }, [month, year, currentValue]);
+
+   const handleNumberOnClick = (date) => {
+    if (isNil(currentValue)) {
+      set("origin", date);
+      setValue(date);
+    } else if (isNumber(currentValue)) { // isNumber
+      if (currentValue !== date) {
+        const newInterval = [Math.min(currentValue, date), Math.max(currentValue, date)];
+        set("origin", currentValue); // on garde le point de départ
+        setValue(newInterval);
+      } else {
+        set("origin", null);
+        setValue(null);
+      }
+    } else if (isArray(currentValue)) {
+      const [start, end] = currentValue;
+
+      // Si on clique sur le point d'origine ou l'autre extrémité, on reset à un seul nombre
+      if (date === start || date === end) {
+        set("origin", date);
+        setValue(date);
+      } else {
+        // On garde le point d'origine pour ajuster l’autre extrémité
+        const newInterval = [Math.min(origin, date), Math.max(origin, date)];
+        setValue(newInterval);
+        // origin reste inchangé
+      }
+    }
+  };
+  
+  const isSelected = (date) => {
+    if (isNumber(currentValue)) {
+      return currentValue === day;
+    }
+
+    if (isArray(currentValue)) {
+      return day >= currentValue[0] && day <= currentValue[1];
+    }
+
+    return false;
+  };
 
   return (
     <div { ...mergeProps("container", props => ({
@@ -229,7 +287,7 @@ export const Calendar = (props) => {
         
           {months[month - 1].days.map((day, DI) => {
             const { number, weekday } = day;
-            const isSelected = number === dateValue.getDate() && month - 1 === dateValue.getMonth() && year === dateValue.getFullYear()
+            const date = Math.floor((new Date(year, month - 1, number)).getTime() / 1000)
             return (
               <div key={`day${DI}`} { ...mergeProps("weekDayAndNumberContainer", props => ({
                 ...props,
@@ -242,15 +300,15 @@ export const Calendar = (props) => {
                 }))}>
                   {weekday.slice(0, 1)}
                 </div>
-                <div { ...mergeProps("day", props => ({
+                <div { ...mergeProps("number", props => ({
                     ...props,
                     ref: isSelected ? dayRef : null,
                     onClick: e => {
-                      setValue(formatDate(new Date(year, month - 1, number), "seconds-timestamp"));
+                      handleNumberOnClick(date)
                       applyFunctionIfNotNil(props.onClick, e);
                     },
                     className: `size-8 flex justify-center items-center rounded-app-md text-soft-text font-app-semibold
-                    ${isSelected ? "bg-primary text-white" : "bg-soft-bg text-strong-text active:brightness-soft"}`
+                    ${isSelected(date) ? "bg-primary text-white" : "bg-soft-bg text-strong-text active:brightness-soft"}`
                 }))}> 
                     {number}
                 </div>
