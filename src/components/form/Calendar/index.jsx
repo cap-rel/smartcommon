@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyFunctionIfNotNil, formatDate, isArray, isNil, isNumber } from "../../../globals/functions";
+import { applyFunctionIfNotNil, formatDate, formatDateToISO, isArray, isNil, isNumber } from "../../../globals/functions";
 import { useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
@@ -55,7 +55,7 @@ export const Calendar = (props) => {
     return yearData;
   }
 
-  const dateNow = new Date(Date.now());
+  const dateNow = new Date();
 
   const initialStates = () => {
     let year = dateNow.getFullYear();
@@ -63,13 +63,13 @@ export const Calendar = (props) => {
     let origin = null;
 
     if (isNumber(currentValue)) {
-      const date = new Date(currentValue * 1000);
+      const date = new Date(currentValue);
 
       year = date.getFullYear();
       month = date.getMonth() + 1;
       origin = currentValue;
     } else if (isArray(currentValue)) {
-      const date = new Date(currentValue[0] * 1000);
+      const date = new Date(currentValue[0]);
 
       year = date.getFullYear();
       month = date.getMonth() + 1;
@@ -125,9 +125,9 @@ export const Calendar = (props) => {
     let scrollDate = dateNow;
     
     if (isNumber(currentValue)) {
-      scrollDate = new Date(currentValue * 1000);
+      scrollDate = new Date(currentValue);
     } else if (isArray(currentValue)) {
-      scrollDate = new Date(currentValue[0] * 1000);
+      scrollDate = new Date(currentValue[0]);
     }
 
     
@@ -172,11 +172,11 @@ export const Calendar = (props) => {
   
   const isSelected = (date) => {
     if (isNumber(currentValue)) {
-      return currentValue === day;
+      return currentValue === date;
     }
 
     if (isArray(currentValue)) {
-      return day >= currentValue[0] && day <= currentValue[1];
+      return date >= currentValue[0] && date <= currentValue[1];
     }
 
     return false;
@@ -189,7 +189,13 @@ export const Calendar = (props) => {
     }))}>
         <input
           name={name}
-          value={currentValue}
+          value={isArray(currentValue) ? currentValue[0] : null}
+          onChange={() => {}}
+          hidden
+        />
+        <input
+          name={name}
+          value={isArray(currentValue) ? currentValue[1] : null}
           onChange={() => {}}
           hidden
         />
@@ -287,7 +293,7 @@ export const Calendar = (props) => {
         
           {months[month - 1].days.map((day, DI) => {
             const { number, weekday } = day;
-            const date = Math.floor((new Date(year, month - 1, number)).getTime() / 1000)
+            const date = formatDateToISO(new Date(year, month - 1, number));
             return (
               <div key={`day${DI}`} { ...mergeProps("weekDayAndNumberContainer", props => ({
                 ...props,
