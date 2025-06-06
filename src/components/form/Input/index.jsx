@@ -134,14 +134,14 @@ export const Input = (props) => {
       condition: required && isEmpty(currentValue),
       message: "Ce champ est requis." 
     },
-    minTime: { 
-      condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
-      message: `L'heure doit être après ${datetimeFormat((new Date().setHours(minutesToTime(min ?? 0, "units").hours, minutesToTime(min ?? 0, "units").minutes)), { timeStyle: "short" })}.`
-    },
-    maxTime: {
-      condition: !isNil(max) && timeTypes.includes(type) && currentValue > max,
-      message: `L'heure doit être avant ${datetimeFormat((new Date().setHours(minutesToTime(max ?? 0, "units").hours, minutesToTime(max ?? 0, "units").minutes)), { timeStyle: "short" })}.`
-    },
+    // minTime: { 
+    //   condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
+    //   message: `L'heure doit être après ${datetimeFormat((new Date().setHours(minutesToTime(min ?? 0, "units").hours, minutesToTime(min ?? 0, "units").minutes)), { timeStyle: "short" })}.`
+    // },
+    // maxTime: {
+    //   condition: !isNil(max) && timeTypes.includes(type) && currentValue > max,
+    //   message: `L'heure doit être avant ${datetimeFormat((new Date()).setHours(minutesToTime(max ?? 0, "units").hours, minutesToTime(max ?? 0, "units").minutes)), { timeStyle: "short" })}.`
+    // },
     minDateTime: { 
       condition: !isNil(min) && datetimeTypes.includes(type) && currentValue < min,
       message: `La date doit être après ${datetimeFormat(!isNil(min) ? min * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
