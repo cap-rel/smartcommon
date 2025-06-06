@@ -82,7 +82,7 @@ export const Select = (props) => {
             applyFunctionIfNotNil(props.onChange, e);
           },
           className: `py-2 pr-7 pl-2 w-full truncate whitespace-nowrap overflow-hidden rounded-app-md border border-border truncate
-          outline-none active:brightness-soft duration-(--really-quick) bg-strong-bg inset-shadow-sm`
+          outline-none ${disabled ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-strong-bg inset-shadow-sm`
         }))}>
           {/* <option disabled { ...optionProps}>{placeholder}</option> */}
           {!isEmpty(options) && 
