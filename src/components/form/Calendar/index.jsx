@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyFunctionIfNotNil, formatDate, formatDateToISO, isArray, isNil, isNumber } from "../../../globals/functions";
+import { applyFunctionIfNotNil, formatDate, formatDateToISO, isArray, isNil, isNumber, isString } from "../../../globals/functions";
 import { useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
@@ -15,6 +15,7 @@ export const Calendar = (props) => {
     yearsInterval = [2000, 2030],
     name,
     defaultValue,
+    items = [],
     value,
     onChange
   } = variantProps;
@@ -61,27 +62,30 @@ export const Calendar = (props) => {
     let year = dateNow.getFullYear();
     let month = dateNow.getMonth() + 1;
     let origin = null;
+    let lastSelected = null;
 
-    if (isNumber(currentValue)) {
+    if (isString(currentValue)) {
       const date = new Date(currentValue);
 
       year = date.getFullYear();
       month = date.getMonth() + 1;
       origin = currentValue;
+      lastSelected = currentValue;
     } else if (isArray(currentValue)) {
       const date = new Date(currentValue[0]);
 
       year = date.getFullYear();
       month = date.getMonth() + 1;
       origin = currentValue[0];
+      lastSelected = currentValue[0];
     }
 
-    return { year, month, origin };
+    return { year, month, origin, lastSelected };
   }
 
   const { states, set } = useStates(initialStates());
 
-  const { year, month, origin } = states;
+  const { year, month, origin, lastSelected } = states;
   
   const months = useMemo(() => generateYearCalendar(year).months, [year]);
 
@@ -124,12 +128,15 @@ export const Calendar = (props) => {
     const lowerContainer = lowerContainerRef.current;
     let scrollDate = dateNow;
     
-    if (isNumber(currentValue)) {
-      scrollDate = new Date(currentValue);
-    } else if (isArray(currentValue)) {
-      scrollDate = new Date(currentValue[0]);
-    }
+    // if (isString(currentValue)) {
+    //   scrollDate = new Date(currentValue);
+    // } else if (isArray(currentValue)) {
+    //   scrollDate = new Date(currentValue[0]);
+    // }
 
+    if (!isNil(lastSelected)) {
+      scrollDate = new Date(lastSelected);
+    }
     
     if (!isNil(lowerContainer) && month - 1 === scrollDate.getMonth() && year === scrollDate.getFullYear()) {
       const selectedDay = lowerContainer.querySelector(`[data-number='${scrollDate.getDate()}']`);
@@ -139,44 +146,98 @@ export const Calendar = (props) => {
 
       lowerContainer.scrollTo({ left: scroll, behavior: 'auto' });
     }
-  }, [month, year, currentValue]);
+  }, [lastSelected]);
 
    const handleNumberOnClick = (date) => {
-    if (isNil(currentValue)) {
+    if (isNil(currentValue)) {      
+      // set("lastSelected", date);
       set("origin", date);
       setValue(date);
-    } else if (isNumber(currentValue)) { // isNumber
+    } else if (isString(currentValue)) {
       if (currentValue !== date) {
-        const newInterval = [Math.min(currentValue, date), Math.max(currentValue, date)];
-        set("origin", currentValue); // on garde le point de départ
+        const currentValueDate = new Date(currentValue);
+        const dateDate = new Date(date);
+
+        const newInterval = [
+          formatDateToISO(new Date(Math.min(currentValueDate.getTime(), dateDate.getTime()))),
+          formatDateToISO(new Date(Math.max(currentValueDate.getTime(), dateDate.getTime()))),
+        ];
+
+        set("origin", currentValue);
+        // set("lastSelected", date);
         setValue(newInterval);
       } else {
         set("origin", null);
+        // set("lastSelected", null);
         setValue(null);
       }
     } else if (isArray(currentValue)) {
       const [start, end] = currentValue;
-
-      // Si on clique sur le point d'origine ou l'autre extrémité, on reset à un seul nombre
+      
       if (date === start || date === end) {
         set("origin", date);
         setValue(date);
       } else {
-        // On garde le point d'origine pour ajuster l’autre extrémité
-        const newInterval = [Math.min(origin, date), Math.max(origin, date)];
+        const originDate = new Date(origin);
+        const dateDate = new Date(date);
+
+        const newInterval = [
+          formatDateToISO(new Date(Math.min(originDate.getTime(), dateDate.getTime()))),
+          formatDateToISO(new Date(Math.max(originDate.getTime(), dateDate.getTime()))),
+        ];
+
         setValue(newInterval);
         // origin reste inchangé
       }
     }
+
+    set("lastSelected", date);
   };
   
-  const isSelected = (date) => {
-    if (isNumber(currentValue)) {
+  // const isSelected = (date) => {
+  //   if (isString(currentValue)) {
+  //     return currentValue === date;
+  //   }
+
+  //   if (isArray(currentValue)) {
+  //     return date >= currentValue[0] && date <= currentValue[1];
+  //   }
+
+  //   return false;
+  // };
+
+  const isFirst = (date) => {
+    if (isString(currentValue)) {
       return currentValue === date;
     }
 
     if (isArray(currentValue)) {
-      return date >= currentValue[0] && date <= currentValue[1];
+      return date === currentValue[0];
+    }
+
+    return false;
+  };
+
+
+  const isLast = (date) => {
+    if (isString(currentValue)) {
+      return currentValue === date;
+    }
+
+    if (isArray(currentValue)) {
+      return date === currentValue[1];
+    }
+
+    return false;
+  };
+
+  const isLimit = (date) => {
+    return isLast(date) || isFirst(date);
+  };
+
+  const isSelected = (date) => {
+    if (isArray(currentValue)) {
+      return date > currentValue[0] && date < currentValue[1];
     }
 
     return false;
@@ -288,12 +349,13 @@ export const Calendar = (props) => {
         <div { ...mergeProps("lowerContainer", props => ({
             ...props,
             ref: lowerContainerRef,
-            className: `flex items-center gap-app-xs overflow-x-auto text-app-sm mx-app-xs`
+            className: `flex items-center overflow-x-auto text-app-sm mx-app-xs`
         }))}>
         
           {months[month - 1].days.map((day, DI) => {
             const { number, weekday } = day;
             const date = formatDateToISO(new Date(year, month - 1, number));
+            const badge = items.filter(item => item === date).length;
             return (
               <div key={`day${DI}`} { ...mergeProps("weekDayAndNumberContainer", props => ({
                 ...props,
@@ -309,14 +371,22 @@ export const Calendar = (props) => {
                 <div { ...mergeProps("number", props => ({
                     ...props,
                     ref: isSelected ? dayRef : null,
-                    onClick: e => {
+                    onClick: e => {                      
                       handleNumberOnClick(date)
                       applyFunctionIfNotNil(props.onClick, e);
                     },
-                    className: `size-8 flex justify-center items-center rounded-app-md text-soft-text font-app-semibold
-                    ${isSelected(date) ? "bg-primary text-white" : "bg-soft-bg text-strong-text active:brightness-soft"}`
+                    className: `relative h-8 w-10 flex justify-center items-center text-soft-text font-app-semibold duration-(--really-quick)
+                    ${isLimit(date) ? `bg-primary text-white ${isFirst(date) && "rounded-l-app-md"} ${isLast(date) && "rounded-r-app-md"}` : isSelected(date) ? "bg-primary/50 text-white" : "bg-soft-bg text-strong-text active:brightness-soft rounded-app-md"}`
                 }))}> 
                     {number}
+                    {badge !== 0 &&
+                      <div { ...mergeProps("badge", props => ({
+                        ...props,
+                        className: `absolute top-0 right-0 -translate-y-1/2 translate-x-1/2 flex justify-center items-center size-5 text-app-xs rounded-full bg-secondary z-10 text-white`
+                      }))}>
+                        {badge}
+                      </div>
+                    }
                 </div>
                 {/* className={`font-semibold size-9 flex justify-center items-center rounded-md ${day.day === test ? "bg-primary text-white" : "bg-strong text-strong-text"}`}> */}
               </div>
