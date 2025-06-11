@@ -1,14 +1,6 @@
-import { useDispatch } from "react-redux";
-import { unsetSession } from "../../reduxStore/reducers/sessionSlice";
-// import { API_URL } from "../../globals/constants";
-import { useTranslation } from "react-i18next";
-import { useStates } from "../../hooks";
-import toast from "react-hot-toast";
+import { isFunction, isNil } from "../../globals";
 
-export const useApi = (url, token = "") => {
-  const dispatch = useDispatch();
-  const { t } = useTranslation();
-
+export const useApi = (url, token = "", errors = {}) => {
   const fetchApi = async (path, method = "GET", body = "") => {
     let request = {
       method: method,
@@ -23,50 +15,23 @@ export const useApi = (url, token = "") => {
       request = { ...request, body: JSON.stringify(body) };
     }
 
-    return await fetch(`${url}${path}`, request).then(response => {
-      if (!response.ok) {
-        if (response.status == 401) {
-          dispatch(unsetSession());
-          toast.error("Votre session a expirée. Veuillez vous reconnecter.");
-          console.error("Token expired. Must connect.");
-        }
+    const response = await fetch(`${url}${path}`, request);
+    const json = await response.json();
 
-        return response.json().then((json) => {
-          throw new Error(json);
-        });
+    const { ok, status } = response;
+
+    if (!ok) {
+      const errorAction = errors[status];
+
+      if (isFunction(errorAction)) {
+        errorAction();
       }
-      return response.json();
-    });
-  };
 
-  // const login = (body) => {
-  //   set("isLoggingIn", true);
-  //   fetchApi("/login", "POST", body)
-  //   .then((json) => {
-  //     set("isLoggingIn", false);
-  //     dispatch(loginSuccess(json.data));
-  //     toast.success(t("public.loginSuccess", { user: json.data.user }), { duration: 8000, name: "👋" });
-  //   })
-  //   .catch((error) => {
-  //     set("isLoggingIn", false);
-  //     console.error(error.message);
-  //     toast.error(t("public.loginError"));
-  //   });
-  // }
+      throw new Error(json);
+    }
 
-  // const logout = (body) => {
-  //   set("isLoggingOut", true);
-  //   fetchApi("/logout", "POST")
-  //   .then(() => {
-  //     set("isLoggingOut", false);
-  //     dispatch(logoutSuccess());
-  //   })
-  //   .catch((error) => {
-  //     set("isLoggingOut", false);
-  //     console.error(error.message);
-  //     toast.error(t("public.logoutError"));
-  //   });
-  // }
+    return json;
+  };    
 
   const GET = (path) => fetchApi(path);
 
