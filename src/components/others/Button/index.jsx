@@ -17,7 +17,7 @@ export const Button = (props) => {
     return (
         <button { ...mergeProps("button", props => ({
             ...props,
-            ...mergeQuickProps(props, ["onClick", "disabled", "onFocus", "onBlur"]),
+            ...mergeQuickProps(props, ["onClick", "disabled", "onFocus", "onBlur", "type"]),
             className: `relative flex justify-center items-center 
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
