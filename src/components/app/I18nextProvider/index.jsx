@@ -18,12 +18,10 @@
  */
 
 import { I18nextProvider as Provider } from "react-i18next";
-import { useSelector } from "react-redux";
 import { useEffect } from "react";
 
 export const I18nextProvider = (props) => {
-  const { i18n, children } = props;
-  const language = useSelector(state => state.settings.language);
+  const { i18n, children, language } = props;
 
   useEffect(() => {
     i18n.changeLanguage(language);
