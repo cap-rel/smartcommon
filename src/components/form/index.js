@@ -20,5 +20,6 @@ export * from "./VideosUploader";
 export * from "./AudiosUploader";
 export * from "./RadioBar";
 export * from "./Calendar";
+export * from "./SignaturePad";
 
 // TODO Array Editor IconSelect AddressInput Calendar FilesUploader

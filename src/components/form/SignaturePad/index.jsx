@@ -2,56 +2,18 @@ import { Button } from "../../others";
 import { Label } from "../tools/Label";
 import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
-import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isNil, locate } from "../../../globals/functions";
 import toast from "react-hot-toast";
 
 import { propTypes } from "./props";
 import { Input } from "../Input";
 import { AddressInput } from "../AddressInput";
 
-// TODO faire le required
-// TODO faire le disabled
-
-// TODO Settings prop
-
-// id,
-// label,
-// placeholder = "Signer ici...",
-// penColor = "black",
-// help,
-// icon,
-// required,
-// readOnly,
-// disabled,
-// compressionOptions,
-
-// name,
-// defaultValue,
-// value,
-// onChangeValue = () => {},
-
-// variant = "smart",
-
-// containerProps,
-// labelContainerProps,
-// labelProps,
-// requiredStarProps,
-// helpProps,
-// headerAndSignaturePadContainerProps,
-// headerProps,
-// clearButtonProps,
-// titleProps,
-// validateButtonProps,
-// signatureContainerProps,
-// signatureProps,
-
 export const SignaturePad = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("SignaturePad", props);
-
-  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+  const { variantProps, mergeProps } = useVariantToProps("SignaturePad", props);
 
   const {
     id,
@@ -59,91 +21,156 @@ export const SignaturePad = (props) => {
     defaultValue,
     value,
     onChange,
-  } = filteredProps; 
 
-  const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
+    disabled,
+    required,
+    readOnly,
+
+    onError = () => {},
+  } = variantProps; 
+
+  const { currentValue, setValue } = useValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange);
+
+  const { states, set } = useStates({
+    isSignatureValidated: false
+  });
+
+  const { isSignatureValidated } = states;
 
   const padRef = useRef(null);
 
-  const validateCanvas = () => {
+  const blocked = disabled || readOnly;
+
+  useEffect(() => {
+    if (!isNil(padRef.current) && blocked) {
+      padRef.current.off();
+    }
+  }, [padRef.current, blocked]);
+
+  const validateCanvas = async () => {
+    if (isSignatureValidated) {
+      return toast("La signature est déjà validée... Pour refaire la signature cliquez sur la gomme")
+    }
+
     if (padRef.current.isEmpty()) {
       return toast("La signature est vide...");
     }
 
-    setValue(padRef.current.toDataURL());
+    if (!blocked) {
+      padRef.current.off();
+      set("isSignatureValidated", true);
 
-    toast.success("Signature validée...");
-    padRef.current.off();
+      setValue({ ...currentValue, src: padRef.current.toDataURL() });
+      toast.success("Signature validée...");
+
+      locate(
+        coords => setValue({ ...currentValue, gpsPoints: coords }),
+        error => toast.error("Echec de géolocatisation de la capture.")
+      );
+
+    }
   };
 
   const eraseCanvas = () => {
-    padRef.current.on();
-    setValue("");
+    if (isSignatureValidated) {
+      set("isSignatureValidated", false);
+      padRef.current.on();
+      setValue({ ...currentValue, src: "" });
+    }
+    
     padRef.current.clear();
   };
 
+  const errors = {
+    required: { 
+      condition: required && isEmpty(currentValue.src),
+      message: "Ce champ est requis." 
+    },
+  };
+
+  useEffect(() => {
+    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
+  }, [currentValue]);
+
   return (
     <Label 
-      { ...extractedLabelProps}
+      { ...variantProps}
+      errors={errors}
       mergeProps={mergeProps}
     >
       <input
         name={name}
         onChange={() => {}}
-        value={currentValue}
+        value={currentValue.src}
         hidden
       />
-      <div { ...mergeProps("header", props => ({
+      <input
+        name={name}
+        onChange={() => {}}
+        value={currentValue.signer}
+        hidden
+      />
+      <input
+        name={name}
+        onChange={() => {}}
+        value={currentValue.gpsPoints[0]}
+        hidden
+      />
+      <input
+        name={name}
+        onChange={() => {}}
+        value={currentValue.gpsPoints[1]}
+        hidden
+      />
+
+      <div { ...mergeProps("mainContainer", props => ({
         ...props,
         className: `rounded-md flex flex-col gap-app-base border border-border bg-soft-bg p-app-base`
       }))}>
-        {/* <div 
-          { ...signatureContainerProps}
-          className={twMerge(`relative`, signatureContainerProps?.className)}
-        > */}
+    
+        <div { ...mergeProps("header", props => ({
+          ...props,
+          className: `flex justify-between items-center -m-app-xs`
+        }))}>
 
-          <div { ...mergeProps("header", props => ({
+          <Button { ...mergeProps("EraseButton", props => ({
+            icon: <FaEraser />,
             ...props,
-            className: `flex justify-between items-center -m-app-xs`
+            disabled: blocked,
+            buttonProps: {
+              ...props.buttonProps,
+              className: `bg-soft-bg text-error text-app-lg rounded-app-xl p-app-xs`
+            },
+            onClick: e => {
+              e.preventDefault();
+              eraseCanvas();
+              applyFunctionIfNotNil(props.onClick, e); 
+            }
+          }))} />
+
+          <div { ...mergeProps("title", props => ({
+            ...props,
+            className: `font-app-semibold text-strong-text`
           }))}>
-
-            <Button { ...mergeProps("EraseButton", props => ({
-              icon: <FaEraser />,
-              ...props,
-              buttonProps: {
-                ...props.buttonProps,
-                className: `bg-soft-bg text-error text-app-lg rounded-app-xl p-app-xs`
-              },
-              onClick: e => {
-                e.preventDefault();
-                eraseCanvas();
-                applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
-              }
-            }))} />
-
-            <div { ...mergeProps("title", props => ({
-              ...props,
-              className: `font-app-semibold text-strong-text`
-            }))}>
-              Signature
-            </div>
-
-            <Button { ...mergeProps("ValidateButton", props => ({
-              icon: <FaSignature />,
-              ...props,
-              buttonProps: {
-                ...props.buttonProps,
-                className: `bg-soft-bg text-success text-app-lg p-app-xs rounded-app-xl`
-              },
-              onClick: e => {
-                e.preventDefault();
-                validateCanvas();
-                applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
-              }
-            }))} />
-           
+            Signature
           </div>
-          {/* <div className="flex flex-col gap-app-base"> */}
+
+          <Button { ...mergeProps("ValidateButton", props => ({
+            icon: <FaSignature />,
+            ...props,
+            disabled: blocked,
+            buttonProps: {
+              ...props.buttonProps,
+              className: `bg-soft-bg text-success text-app-lg p-app-xs rounded-app-xl`
+            },
+            onClick: e => {
+              e.preventDefault();
+              validateCanvas();
+              applyFunctionIfNotNil(props.onClick, e);
+            },
+          }))} />
+          
+        </div>
 
           <div { ...mergeProps("signatureContainer", props => ({
             ...props,
@@ -152,6 +179,7 @@ export const SignaturePad = (props) => {
             <SignatureCanvas { ...mergeProps("Pad", props => ({
               backgroundColor: `transparent`,
               penColor: `black`,
+              clearOnResize: false,
               ...props,
               ref: padRef,
               canvasProps: {
@@ -161,55 +189,24 @@ export const SignaturePad = (props) => {
             }))} />
           </div>
           <Input { ...mergeProps("SignerInput", props => ({
-            inputIcon: <FaUser />,
+            // inputIcon: <FaUser />,
+            placeholder: "Nom du signataire",
             ...props,
+            required: props.required ?? required,
+            disabled: props.disabled ?? disabled,
+            readOnly: props.readOnly ?? readOnly,
+            value: currentValue.signer,
+            onChange: value => setValue({ ...currentValue, signer: value }),
+            inputContainerProps: {
+              ...props.inputContainerProps,
+              className: `rounded-none border-0 border-b-2 has-[input:focus]:ring-0 pt-0`
+            },
             inputProps: {
-              placeholder: "Nom du signataire",
               ...props.inputProps,
+              className: `text-center`
             }
           }))} />
-                    {/* </div> */}
-            
-          
-        {/* </div> */}
-        {/* <div
-          { ...buttonContainerProps}
-          className={twMerge(`row-v-center rounded-b-md rounded-t-none`, buttonContainerProps?.className)}
-        >
-          <Button
-            { ...clearButtonProps}
-            onClick={clear}
-            className={twMerge(`flex-1 p-2 rounded-none rounded-bl-md bg-error col-h-center gap-1 rounded-tl-none`, clearButtonProps?.className)}
-          >
-            <FaEraser
-              { ...clearButtonIconProps}
-              className={twMerge(`text-3xl`, clearButtonIconProps?.className)}
-            />
-            <div
-              { ...clearButtonLabelProps}
-              className={twMerge(`italic font-semibold`, clearButtonLabelProps?.className)}
-            >
-              Effacer
-            </div>
-          </Button>
-          <Button
-            { ...validateButtonProps}
-            disabled={isSignatureValidated}
-            onClick={validate}
-            className={twMerge(`flex-1 p-2 rounded-none rounded-br-md bg-success col-full-center gap-1 rounded-tr-none`, validateButtonProps?.className)}
-          >
-            <FaSignature
-              { ...validateButtonIconProps}
-              className={twMerge(`text-3xl`, validateButtonIconProps?.className)}
-            />
-            <div
-              { ...validateButtonLabelProps}
-              className={twMerge(`italic font-semibold`, validateButtonLabelProps?.className)}
-            >
-              Valider
-            </div>
-          </Button>
-        </div> */}
+  
       </div>
     </Label>
   )
