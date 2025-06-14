@@ -210,8 +210,9 @@ export const Input = (props) => {
         }
 
         <input { ...mergeProps("input", props => ({
+          placeholder, 
           ...props,
-          ...mergeQuickProps(["placeholder", "disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
+          ...mergeQuickProps(["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {
             handleInputOnChange(e);
