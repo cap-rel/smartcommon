@@ -1,10 +1,8 @@
 import { Navbar, Sidebar, Tabbar } from "../../navigation";
-import { Block } from "../../others/Block";
 import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
-import { List } from "../../test";
-import { Button, Popup, Spinner } from "../../others";
+import { Button, Page, Popup, Spinner, Block } from "../../others";
 import { useEffect } from "react";
 import { useStates } from "../../../hooks";
 import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../form";
@@ -97,6 +95,8 @@ export const DevPage = () => {
                 className={`divide-y divide-soft-border`}
             />  */}
             {/* <Calendar /> */}
+
+            <Page pageProps={{ className: "p-app-base" }}>
 
               <form 
                 
@@ -333,52 +333,9 @@ export const DevPage = () => {
                             />
                             <Photos name={`photos`} /> */}
 
-                            <Input
-                                label={"Bonjour"}
-                                variant={"int"}
-                                // loading
-                                inputIcon={<FaEnvelope />}
-                                inputIconProps={{ className: "text-success" }}
-                                inputProps={{ required: false, step: 2 }}
-                                Spinner={{
-                                    // size: 8,
-                                    spinnerProps: { className: "border-success" }
-                                }}
-                                MinusButton={{
-                                    loading: true,
-                                    Spinner: {
-                                        // size: 10,
-                                        spinnerProps: { className: "border-primary border-l-primary/30" }
-                                    }
-                                }}
-                            />
-
-                            <Popup
-                                isOpen={isPopupOpen}
-                                close={() => set("isPopupOpen", false)}
-                            >
-                                Bonjour
-                            </Popup>
-                            
-                            <Button
-                                // ignoreTheme
-                                variant={["error", "squared", "rounded", "success"]}
-                                // loading
-                                icon={<FaEnvelope/>}
-                                buttonProps={{ 
-                                    className: "",
-                                    onClick: () => set("isPopupOpen", true)
-                                }}
-                                Spinner={{
-                                    size: 8,
-                                    spinnerProps: { className: "border-red-500" } 
-                                }}
-                                // iconProps={{ className: "text-xl" }}
-                            >
-                              Ouvrir la Popup
-                            </Button>
                             {/* <Spinner /> */}
                         </form>
+                    </Page>
                 
             {/* <Tabbar>
                 <TabbarLink
