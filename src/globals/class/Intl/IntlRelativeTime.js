@@ -1,5 +1,4 @@
-import { isArray, isNumber } from "../../functions";
-import { isDate } from "../functions";
+import { isNumber, isString } from "../../functions";
 
 /**
  * @param {number} value
@@ -50,7 +49,7 @@ export class IntlRelativeTime {
   get unit() {
     return this.unit;
   }
-  
+
   get locales() {
     return this.locales;
   }
