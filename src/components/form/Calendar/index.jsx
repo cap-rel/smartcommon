@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { applyFunctionIfNotNil, formatDate, formatDateToISO, isArray, isNil, isNumber, isString } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isArray, isNil, isNumber, ISOFormat, isString } from "../../../globals/functions";
 import { useStates, useValue, useVariantToProps } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
@@ -159,8 +159,8 @@ export const Calendar = (props) => {
         const dateDate = new Date(date);
 
         const newInterval = [
-          formatDateToISO(new Date(Math.min(currentValueDate.getTime(), dateDate.getTime()))),
-          formatDateToISO(new Date(Math.max(currentValueDate.getTime(), dateDate.getTime()))),
+          ISOFormat(new Date(Math.min(currentValueDate.getTime(), dateDate.getTime())), "date"),
+          ISOFormat(new Date(Math.max(currentValueDate.getTime(), dateDate.getTime())), "date"),
         ];
 
         set("origin", currentValue);
@@ -182,8 +182,8 @@ export const Calendar = (props) => {
         const dateDate = new Date(date);
 
         const newInterval = [
-          formatDateToISO(new Date(Math.min(originDate.getTime(), dateDate.getTime()))),
-          formatDateToISO(new Date(Math.max(originDate.getTime(), dateDate.getTime()))),
+          ISOFormat(new Date(Math.min(originDate.getTime(), dateDate.getTime())), "date"),
+          ISOFormat(new Date(Math.max(originDate.getTime(), dateDate.getTime())), "date"),
         ];
 
         setValue(newInterval);
@@ -354,7 +354,7 @@ export const Calendar = (props) => {
         
           {months[month - 1].days.map((day, DI) => {
             const { number, weekday } = day;
-            const date = formatDateToISO(new Date(year, month - 1, number));
+            const date = ISOFormat(new Date(year, month - 1, number), "date");
             const badge = items.filter(item => item === date).length;
             return (
               <div key={`day${DI}`} { ...mergeProps("weekDayAndNumberContainer", props => ({
