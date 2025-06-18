@@ -1,29 +1,144 @@
+export function isNumber(value, options) {
+     const {
+        min,
+        max,
+        integer = false,
+        equals,
+        allowedValues,    
+        func    
+    } = options;
+
+    if (typeof value !== "number") {
+        return false;
+    }
+
+    if (integer && !Number.isInteger(value)) {
+        return false;
+    }
+
+    if (typeof equals === "number" && equals !== value) {
+        return false;
+    }
+
+    if (typeof min === "number" && value <= min) {
+        return false;
+    }
+
+    if (typeof max === "number" && value >= max) {
+        return false;
+    }
+
+    if (Array.isArray(allowedValues) && !allowedValues.includes(value)) {
+        return false;
+    }
+
+    if (typeof func === "function" && !func(value)) {
+        return false;
+    }
+
+    return true;
+}
+
 export function isString(value) {
-    return typeof value === "string";
+    const {
+        minLength,
+        maxLength,
+        length,
+        pattern,
+        allowedValues,
+        startsWith,
+        endsWith,
+        includes,
+        func
+    } = options;
+
+    if (typeof value !== "string") {
+        return false;
+    }
+
+    if (typeof length === 'number' && value.length !== length) {
+        return false;
+    }
+
+    if (typeof minLength === 'number' && value.length <= minLength) {
+        return false;
+    }
+
+    if (typeof maxLength === 'number' && value.length >= maxLength) {
+        return false;
+    }
+
+    if (pattern instanceof RegExp && !pattern.test(value)) {
+        return false;
+    }
+
+    if (Array.isArray(allowedValues) && !allowedValues.includes(value)) {
+        return false;
+    }
+
+    if (typeof startsWith === "string" && !value.startsWith(startsWith)) {
+        return false;
+    }
+
+    if (typeof endsWith === "string" && !value.endsWith(endsWith)) {
+        return false;
+    }
+
+    if (typeof includes === "string" && !value.includes(includes)) {
+        return false;
+    }
+
+    if (typeof func === "function" && !func(value)) {
+        return false;
+    }
+
+    return true;
 }
 
-// export function isString(value) {
-//     return isStringStrict(value) || isNumberStrict(value);
-// }
-
-export function isNumber(value) {
-    return typeof value === "number" && !Number.isNaN(value);  
-}
-  
-// export function isNumber(value) {
-//     return isNumberStrict(value) || (isStringStrict(value) && isNumberStrict(parseFloat(value.trim())));
-// }
-  
 export function isBoolean(value) {
     return typeof value === "boolean";
 }
 
-// export function isBoolean(value) {
-//     return isBooleanStrict(value) || value === 1 || value === 0 || value.trim() === "1" || value.trim() === "0" || value.trim() === "true" || value.trim() === "false";
-// }
+export function isDate(value) {
+    return value instanceof Date && !isNan(value);
+}
   
-export function isArray(value) {
-    return Array.isArray(value);
+export function isArray(value, options) {
+    const {
+        length,
+        minLength,
+        maxLength,
+        type,
+        allowedValues,
+        func
+    } = options;
+
+    if (!Array.isArray(value)) {
+        return false;
+    }
+
+    if (typeof length === 'number' && value.length !== length) {
+        return false;
+    }
+
+    if (typeof minLength === 'number' && value.length <= minLength) {
+        return false;
+    }
+
+    if (typeof maxLength === 'number' && value.length >= maxLength) {
+        return false;
+    }
+
+    if (Array.isArray(allowedValues)) {
+        if (!value.every(item => allowedValues.includes(item))) {
+            return false;
+        }
+    }
+
+    if (typeof func === "function" && !func(value)) {
+        return false;
+    }
+
 }
 
 export function isObject(value) {
@@ -48,8 +163,7 @@ export function isNil(value) {
   
 export function isInvalid(value) {
     return isNil(value) || Number.isNaN(value);
-}
-  
+} 
   
 export function isEmpty(value) {
     if (isInvalid(value)) {
