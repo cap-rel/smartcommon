@@ -1,7 +1,7 @@
 /*-----------------  Objet Date  ------------------*/
 
 import { secsToDuration } from "./others";
-import { isNil, isObject, isString } from "./type";
+import { isDate, isNil, isObject, isString } from "./type";
 
 // new Date();
 // new Date(value);
@@ -156,26 +156,96 @@ export function minutesToTime(minutes, format = "time") {
   }
 }
 
-export function formatDateToISO(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  
-  return `${year}-${month}-${day}`;
-}
-
-export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle: 'short' }, locale = "default") {
-  if (isNil(date)) {
+/**
+ * @param {Date} date
+ * @param {object} format
+ * 
+ * @example
+ * const date1 = { };
+ * const date2 = { };
+ * 
+ * durationFormat(duration1, {}, 'en'); // In 2 days 
+ * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+*/
+export function ISOFormat(date, format) {
+  if (isNil(date) || !isDate(date)) {
     return null;
   }
 
-  return new Intl.DateTimeFormat(locale, options).format(new Date(date));
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+
+
+  switch (format) {
+    case "date": return `${year}-${month}-${day}`;
+    case "time": return `${hours}:${minutes}`;
+    default: return `${year}-${month}-${day}T${hours}:${minutes}`;
+  }
 }
 
-export function durationFormat() {
+/**
+ * @param {Date} date
+ * @param {object} options default => { style: 'medium', timeStyle: 'short' }
+ * @param {string} locales default => 'default'
+ * 
+ * @see for the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
+ * 
+ * @example
+ * const date1 = { };
+ * const date2 = { };
+ * 
+ * durationFormat(duration1, {}, 'en'); // In 2 days 
+ * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+*/
+export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle: 'short' }, locales = "default") {
+  if (isNil(date) || !isDate(date)) {
+    return null;
+  }
 
+  return new Intl.DateTimeFormat(locales, options).format(date);
 }
 
-export function relativeTimeFormat() {
+/**
+ * @param {object} duration
+ * @param {object} options default => { style: 'narrow' }
+ * @param {string} locales default => 'default'
+ * 
+ * @see for the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat/DurationFormat
+ * 
+ * @example
+ * const duration1 = { };
+ * const duration2 = { };
+ * 
+ * durationFormat(duration1, {}, 'en'); // In 2 days 
+ * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+*/
+export function durationFormat(duration, options = { style: "narrow" }, locales = "default") {
+  if (isNil(duration)) {
+    return null;
+  }
 
+  return new Intl.DurationFormat(locales, options).format(duration);
+}
+
+/**
+ * @param {number} value
+ * @param {string} unit
+ * @param {object} options default = {}
+ * @param {string} locales default = 'default'
+ * 
+ * @see for the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/RelativeTimeFormat/RelativeTimeFormat
+ * 
+ * @example
+ * relativeTimeFormat(2, 'day', {}, 'en'); // In 2 days 
+ * relativeTimeFormat(-3, 'hour', {}, 'fr'); // Il y a 3 heures 
+*/
+export function relativeTimeFormat(value, unit, options = {}, locales = "default") {
+  if (isNil(value) || isNil(unit)) {
+    return null;
+  }
+
+  return new Intl.RelativeTimeFormat(locales, options).format(value, unit);
 }
