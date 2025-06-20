@@ -1,11 +1,12 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Head, I18nextProvider, ReduxProvider, ThemesProvider, Toaster, VariantsProvider } from "./components/app";
-import { useWindow } from "./hooks";
+import { useStates, useWindow } from "./hooks";
 import { Router } from "./Router";
 import { store } from "./reduxStore";
 import { i18n } from "./i18n";
 import { variants } from "./variants";
 import { themes } from "./themes";
+import { Calendar, Page, SignaturePad } from "./components";
 
 export const App = () => {
 //   const { darkMode } = useWindow()
@@ -29,16 +30,19 @@ export const App = () => {
             </svg> */}
 
   return (
-    <ReduxProvider store={store}>
+    // <ReduxProvider store={store}>
       <I18nextProvider i18n={i18n}>
           <VariantsProvider variants={variants}>
             <ThemesProvider themes={themes} theme={"SmartInterventions"}>
-            <Head />
-            <Router />
-            <Toaster />
+              <Head />
+              {/* <Router /> */}
+              <Page>
+                
+              </Page>
+              <Toaster />
             </ThemesProvider>
           </VariantsProvider>
       </I18nextProvider>
-    </ReduxProvider>
+    // </ReduxProvider>
   );
 };
