@@ -39,7 +39,7 @@ export function isNumber(value, options) {
     return true;
 }
 
-export function isString(value) {
+export function isString(value, options) {
     const {
         minLength,
         maxLength,
