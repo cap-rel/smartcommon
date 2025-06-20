@@ -35,7 +35,7 @@ export const Textarea = (props) => {
 
   const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
 
-  const handleValueOnChange = () => {
+  const handleValueOnChange = (e) => {
     if (!disabled && !readOnly) {
       setValue(e.target.value);
     }
