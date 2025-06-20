@@ -56,15 +56,15 @@ export function isString(value) {
         return false;
     }
 
-    if (typeof length === 'number' && value.length !== length) {
+    if (typeof length === "number" && value.length !== length) {
         return false;
     }
 
-    if (typeof minLength === 'number' && value.length <= minLength) {
+    if (typeof minLength === "number" && value.length <= minLength) {
         return false;
     }
 
-    if (typeof maxLength === 'number' && value.length >= maxLength) {
+    if (typeof maxLength === "number" && value.length >= maxLength) {
         return false;
     }
 
@@ -100,7 +100,7 @@ export function isBoolean(value) {
 }
 
 export function isDate(value) {
-    return value instanceof Date && !isNan(value);
+    return value instanceof Date && !isNaN(value);
 }
   
 export function isArray(value, options) {
@@ -117,16 +117,28 @@ export function isArray(value, options) {
         return false;
     }
 
-    if (typeof length === 'number' && value.length !== length) {
+    if (typeof length === "number" && value.length !== length) {
         return false;
     }
 
-    if (typeof minLength === 'number' && value.length <= minLength) {
+    if (typeof minLength === "number" && value.length <= minLength) {
         return false;
     }
 
-    if (typeof maxLength === 'number' && value.length >= maxLength) {
+    if (typeof maxLength === "number" && value.length >= maxLength) {
         return false;
+    }
+
+    if (typeof type === "string") {
+        if (!value.every(item => typeof item === type)) {
+            return false;
+        }
+    }
+
+    if (typeof type === "object") {
+        if (!value.every(item => item instanceof type)) {
+            return false;
+        }
     }
 
     if (Array.isArray(allowedValues)) {
