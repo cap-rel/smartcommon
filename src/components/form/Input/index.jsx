@@ -59,9 +59,9 @@ export const Input = (props) => {
 
   const { currentValue, setValue } = useValue(defaultValue, value, onChange);
 
-  const currentValueFormat = {
-    time: minutesToTime(currentValue)
-  };
+  // const currentValueFormat = {
+  //   time: minutesToTime(currentValue)
+  // };
 
   const stringTypes = ["text", "email", "password", "url", "tel", "search"];
   const datetimeTypes = ["date", "datetime-local"];
@@ -218,7 +218,7 @@ export const Input = (props) => {
             handleInputOnChange(e);
             applyFunctionIfNotNil(props.onChange, e);
           },
-          value: currentValueFormat[type],
+          value: currentValue,
           ...typeMap[type] ?? {},
         }))} />
 
