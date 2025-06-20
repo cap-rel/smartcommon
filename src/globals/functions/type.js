@@ -1,4 +1,4 @@
-export function isNumber(value, options) {
+export function isNumber(value, options = {}) {
      const {
         min,
         max,
@@ -39,7 +39,7 @@ export function isNumber(value, options) {
     return true;
 }
 
-export function isString(value, options) {
+export function isString(value, options = {}) {
     const {
         minLength,
         maxLength,
@@ -103,7 +103,7 @@ export function isDate(value) {
     return value instanceof Date && !isNaN(value);
 }
   
-export function isArray(value, options) {
+export function isArray(value, options = {}) {
     const {
         length,
         minLength,
