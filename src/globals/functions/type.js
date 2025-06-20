@@ -151,6 +151,7 @@ export function isArray(value, options = {}) {
         return false;
     }
 
+    return true;
 }
 
 export function isObject(value) {
