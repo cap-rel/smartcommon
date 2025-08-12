@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Head, I18nextProvider, ReduxProvider, ThemesProvider, Toaster, VariantsProvider } from "./components/app";
 import { useStates, useWindow } from "./hooks";
 import { Router } from "./Router";
-import { store } from "./reduxStore";
+//! import { store } from "./reduxStore"; 
 import { i18n } from "./i18n";
 import { variants } from "./variants";
 import { themes } from "./themes";

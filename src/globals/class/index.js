@@ -1,4 +1,4 @@
-import { isArray } from "../../functions";
+import { isArray } from "../functions";
 import { isDate } from "../functions";
 
 export class IntlDatetime {
