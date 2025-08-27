@@ -1,7 +1,7 @@
-import { isFunction, isNil } from "../../globals";
+import { isFunction } from "../../globals";
 
 export const useApi = (url, token = "", errors = {}) => {
-  const fetchApi = async (path, method = "GET", body = "") => {
+  const fetchApi = async (path, method = "GET", body = null, requestErrors = {}, requestRest = {}) => {
     let request = {
       method: method,
       headers: {
@@ -15,13 +15,13 @@ export const useApi = (url, token = "", errors = {}) => {
       request = { ...request, body: JSON.stringify(body) };
     }
 
-    const response = await fetch(`${url}${path}`, request);
+    const response = await fetch(`${url}${path}`,  { ...request, ...requestRest });
     const json = await response.json();
 
     const { ok, status } = response;
 
     if (!ok) {
-      const errorAction = errors[status];
+      const errorAction = requestErrors[status] ?? errors[status];
 
       if (isFunction(errorAction)) {
         errorAction();
@@ -33,13 +33,13 @@ export const useApi = (url, token = "", errors = {}) => {
     return json;
   };    
 
-  const GET = (path) => fetchApi(path);
+  const GET = (path, requestErrors, requestRest) => fetchApi(path, "GET", null, requestErrors, requestRest);
 
-  const POST = (path, body) => fetchApi(path, "POST", body);
+  const POST = (path, body, requestErrors, requestRest) => fetchApi(path, "POST", body, requestErrors, requestRest);
 
-  const PUT = (path, body) => fetchApi(path, "PUT", body);
+  const PUT = (path, body, requestErrors, requestRest) => fetchApi(path, "PUT", body, requestErrors, requestRest);
 
-  const DELETE = (path, body) => fetchApi(path, "DELETE", body);
+  const DELETE = (path, body, requestErrors, requestRest) => fetchApi(path, "DELETE", body, requestErrors, requestRest);
 
   return { fetchApi, GET, POST, PUT, DELETE };
 };
