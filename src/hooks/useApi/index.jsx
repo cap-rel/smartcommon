@@ -1,7 +1,7 @@
 import { isFunction } from "../../globals";
 
 export const useApi = (url, token = "", errors = {}) => {
-  const fetchApi = async (path, method = "GET", body = null, requestErrors = {}, requestRest = {}) => {
+  const fetchApi = async (path, method = "GET", requestRest = {}, requestErrors = {}) => {
     let request = {
       method: method,
       headers: {
@@ -33,13 +33,13 @@ export const useApi = (url, token = "", errors = {}) => {
     return json;
   };    
 
-  const GET = (path, requestErrors, requestRest) => fetchApi(path, "GET", null, requestErrors, requestRest);
+  const GET = (path, requestRest, requestErrors) => fetchApi(path, "GET", null, requestRest, requestErrors);
 
-  const POST = (path, body, requestErrors, requestRest) => fetchApi(path, "POST", body, requestErrors, requestRest);
+  const POST = (path, body, requestRest, requestErrors) => fetchApi(path, "POST", body, requestRest, requestErrors);
 
-  const PUT = (path, body, requestErrors, requestRest) => fetchApi(path, "PUT", body, requestErrors, requestRest);
+  const PUT = (path, body, requestRest, requestErrors) => fetchApi(path, "PUT", body, requestRest, requestErrors);
 
-  const DELETE = (path, body, requestErrors, requestRest) => fetchApi(path, "DELETE", body, requestErrors, requestRest);
+  const DELETE = (path, body, requestRest, requestErrors) => fetchApi(path, "DELETE", body, requestRest, requestErrors);
 
   return { fetchApi, GET, POST, PUT, DELETE };
 };
