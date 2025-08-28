@@ -6,12 +6,12 @@ import { isNil } from "../../../globals";
 export const UpperNavbarLink = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("UpperNavbarLink", props);
     
-    const { badge, icon, disabled, label, Link } = variantProps;
+    const { badge, icon, disabled, label } = variantProps;
                                                                             
     return (
-        <Link { ...mergeProps("link", props => ({
+        <div { ...mergeProps("link", props => ({
             ...props,
-            ...mergeQuickProps(props, ["to", "state", "replace", "disabled", "onClick"]),
+            ...mergeQuickProps(props, ["onClick"]),
             className: `flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled && "pointer-events-none"}`
         }))}>
 
@@ -27,6 +27,6 @@ export const UpperNavbarLink = (props) => {
                 </div>
             }
 
-        </Link>
+        </div>
     );
 }
