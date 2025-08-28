@@ -1,7 +1,7 @@
 import { isFunction } from "../../globals";
 
 export const useApi = (url, token = "", errors = {}) => {
-  const fetchApi = async (path, method = "GET", requestRest = {}, requestErrors = {}) => {
+  const fetchApi = async (path, method = "GET", body, requestRest = {}, requestErrors = {}) => {
     let request = {
       method: method,
       headers: {
