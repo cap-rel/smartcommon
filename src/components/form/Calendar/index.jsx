@@ -17,7 +17,9 @@ export const Calendar = (props) => {
     defaultValue,
     items = [],
     value,
-    onChange
+    onChange,
+    onMonthChange,
+    onYearChange
   } = variantProps;
 
   const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
@@ -242,6 +244,9 @@ export const Calendar = (props) => {
 
     return false;
   };
+
+  useEffect(() => onMonthChange(month), [month]);
+  useEffect(() => onMonthChange(year), [year]);
 
   return (
     <div { ...mergeProps("container", props => ({
