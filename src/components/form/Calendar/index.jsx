@@ -292,7 +292,7 @@ export const Calendar = (props) => {
 
                 {months[month - 1].name}
 
-                <select { ...mergeProps("monthSelect"), props => ({
+                <select { ...mergeProps("monthSelect", props => ({
                   ...props,
                   onChange: e => {
                     set("month", Number(e.target.value));
@@ -300,7 +300,7 @@ export const Calendar = (props) => {
                   },
                   value: month,
                   className: `absolute opacity-0 inset-0 text-strong-text`
-                })}>
+                }))}>
                   {months.map((month, OI) =>
                     <option 
                       key={`month${OI}`} 
@@ -319,7 +319,7 @@ export const Calendar = (props) => {
               }))}>
 
                 {year}
-                <select { ...mergeProps("yearSelect"), props => ({
+                <select { ...mergeProps("yearSelect", props => ({
                   ...props,
                   onChange: e => {
                     set("year", Number(e.target.value));
@@ -327,7 +327,7 @@ export const Calendar = (props) => {
                   },
                   value: year,
                   className: `absolute opacity-0 inset-0 text-strong-text`
-                })}>
+                }))}>
                   {allYears.map((year, OI) =>
                     <option key={`year${OI}`}>{year}</option>
                   )}
