@@ -29,6 +29,7 @@
   --color-warning           : #fccb4f;
   --color-strong-warning    : var(--color-yellow-600);
   --color-neutral           : var(--color-gray-500);
+  --color-strong-neutral    : var(--color-gray-600);
 
   --color-soft-text         : var(--color-gray-400);
   --color-medium-text       : var(--color-gray-500);
@@ -127,6 +128,9 @@
 
   --color-done-status: var(--color-success);
   --color-strong-done-status: var(--color-strong-success);
+
+  --color-strong-to-do-status: var(--color-strong-neutral);
+  --color-to-do-status: var(--color-neutral);
 
   --color-draft-status: var(--color-warning);
   --color-update-status: var(--color-primary);
