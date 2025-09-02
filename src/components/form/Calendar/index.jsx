@@ -292,11 +292,15 @@ export const Calendar = (props) => {
 
                 {months[month - 1].name}
 
-                <select 
-                  onChange={e => set("month", Number(e.target.value))} 
-                  value={month} 
-                  className={`absolute opacity-0 inset-0 text-strong-text`} 
-                >
+                <select { ...mergeProps("monthSelect"), props => ({
+                  ...props,
+                  onChange: e => {
+                    set("month", Number(e.target.value));
+                    applyFunctionIfNotNil(props.onChange, e);
+                  },
+                  value: month,
+                  className: `absolute opacity-0 inset-0 text-strong-text`
+                })}>
                   {months.map((month, OI) =>
                     <option 
                       key={`month${OI}`} 
@@ -315,12 +319,15 @@ export const Calendar = (props) => {
               }))}>
 
                 {year}
-
-                <select 
-                  onChange={e => set("year", Number(e.target.value))} 
-                  value={year} 
-                  className={`absolute opacity-0 inset-0 text-strong-text`}
-                >
+                <select { ...mergeProps("yearSelect"), props => ({
+                  ...props,
+                  onChange: e => {
+                    set("year", Number(e.target.value));
+                    applyFunctionIfNotNil(props.onChange, e);
+                  },
+                  value: year,
+                  className: `absolute opacity-0 inset-0 text-strong-text`
+                })}>
                   {allYears.map((year, OI) =>
                     <option key={`year${OI}`}>{year}</option>
                   )}
