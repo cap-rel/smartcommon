@@ -79,7 +79,7 @@ import { isArray, isNil } from "./type";
     const compare = (a, b) => {
       const valA = prop ? a[prop] : a;
       const valB = prop ? b[prop] : b;
-      return  sort === "ascending" ? valA[prop] - valB[prop] : valB[prop] - valA[prop];
+      return  sort === "ascending" ? valA - valB : valB - valA;
     };
   
     array.sort(compare);
