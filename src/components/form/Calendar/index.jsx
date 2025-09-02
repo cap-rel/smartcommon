@@ -246,7 +246,7 @@ export const Calendar = (props) => {
   };
 
   useEffect(() => onMonthChange(month), [month]);
-  useEffect(() => onMonthChange(year), [year]);
+  useEffect(() => onYearChange(year), [year]);
 
   return (
     <div { ...mergeProps("container", props => ({
