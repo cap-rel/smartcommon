@@ -301,8 +301,7 @@ export const Calendar = (props) => {
                   ...props,
                   onChange: e => {
                     set("month", Number(e.target.value));
-                    const test = e.target.value;
-                    applyFunctionIfNotNil(props.onChange, test);
+                    applyFunctionIfNotNil(props.onChange, e);
                   },
                   value: month,
                   className: `absolute opacity-0 inset-0 text-strong-text`
@@ -329,8 +328,7 @@ export const Calendar = (props) => {
                   ...props,
                   onChange: e => {
                     set("year", Number(e.target.value));
-                    const test = e.target.value;
-                    applyFunctionIfNotNil(props.onChange, test);
+                    applyFunctionIfNotNil(props.onChange, e);
                   },
                   value: year,
                   className: `absolute opacity-0 inset-0 text-strong-text`
