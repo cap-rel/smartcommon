@@ -1,70 +1,29 @@
-# SmartBoot
-
-mobile
-    public
-        images
-        .htaccess
-    src
-        assets
-            styles (juste un index.css, voir si on peut importer les classes)
-        components
-            index.jsx
-            app
-                ... tous composants app
-            pages
-                LoginPage.comp
-                HomePage.comp
-        globals
-            functions
-                index.js
-            constants
-                vite.js
-                index.js
-        hooks
-            index.jsx
-        i18n
-            languages
-                en.json
-                fr.json
-            index.js
-        reduxStore
-            reducers
-                authSlice.js
-            index.js
-        App.comp (peut-être avec un SmartProvider)
-        main.jsx
-    tailwind-extend
-        index.js
-    .env.example
-    .eslintrc.cjs
-    index.html
-    postcss.config.js
-    tailwind.config.js
-    vite.config.js
-    package-lock.json
-    package.json
-    .gitignore
-    README.md
-
 # SmartCommon
 
-    public
-        images
-        .htaccess
-    src
-        assets
-            styles
-        components
-        globals
-        hooks
-        index.js
-    tailwind-extend
-    test-interface (à développer)
-    .eslintrc.cjs
-    postcss.config.js
-    tailwind.config.js
-    vite.config.js
-    package-lock.json
-    package.json
-    .gitignore
-    README.md
+That project include all dolibarr objects in native version for mobile devices.
+
+For example you can find a `Calendar` object defined into `src/components/form/Calendar`
+
+## npm package
+
+SmartCommon is available as a npm package, you can add it with :
+
+1. add cap-rel registry into your `.npmrc` file
+
+```
+@cap-rel:registry=https://inligit.fr/api/v4/projects/197/packages/npm/
+```
+
+2. then add it into your `package.json` like other packages :
+
+```
+  "dependencies": {
+    .../...
+    "@cap-rel/smartcommon": "^1.0.47",
+    .../...
+  }
+```
+
+That package is auto build thanks to gitlab CI/CD https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/pipelines
+
+and then is auto published on gitlab registry https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/packages
