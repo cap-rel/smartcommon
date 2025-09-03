@@ -24,3 +24,6 @@ SmartCommon is available as a npm package, you can add it with :
   }
 ```
 
+That package is auto build thanks to gitlab CI/CD https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/pipelines
+
+and then is auto published on gitlab registry https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/packages
