@@ -6,7 +6,7 @@ import { isNil } from "../../../globals";
 export const UpperNavbarLink = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("UpperNavbarLink", props);
     
-    const { badge, icon, disabled, label } = variantProps;
+    const { badge, icon, disabled, label, children } = variantProps;
                                                                             
     return (
         <div { ...mergeProps("link", props => ({
@@ -26,6 +26,8 @@ export const UpperNavbarLink = (props) => {
                     {label}
                 </div>
             }
+
+            {children}
 
         </div>
     );
