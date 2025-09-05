@@ -21,7 +21,7 @@ export const Button = (props) => {
             className: `relative flex justify-center items-center 
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
-            not-disabled:active:brightness-soft`,
+            not-disabled:active:brightness-soft disabled:brightness-soft`,
             disabled: loading || disabled
         }))}>
             {loading &&
