@@ -5,7 +5,7 @@ import SignatureCanvas from 'react-signature-canvas'
 import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
-import { applyFunctionIfNotNil, isNil, locate } from "../../../globals/functions";
+import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate } from "../../../globals/functions";
 import toast from "react-hot-toast";
 
 import { propTypes } from "./props";
@@ -72,11 +72,11 @@ export const SignaturePad = (props) => {
   };
 
   const eraseCanvas = () => {
-    if (isSignatureValidated) {
-      set("isSignatureValidated", false);
-      padRef.current.on();
-      setValue({ ...currentValue, src: "" });
-    }
+    // if (isSignatureValidated) {
+    //   set("isSignatureValidated", false);
+    //   padRef.current.on();
+    //   setValue({ ...currentValue, src: "" });
+    // }
     
     padRef.current.clear();
   };
@@ -161,12 +161,13 @@ export const SignaturePad = (props) => {
             disabled: blocked,
             buttonProps: {
               ...props.buttonProps,
-              className: `bg-soft-bg text-success text-app-lg p-app-xs rounded-app-xl`
+              // className: `bg-soft-bg text-success text-app-lg p-app-xs rounded-app-xl`
+              className: "opacity-0"
             },
             onClick: e => {
               e.preventDefault();
-              validateCanvas();
-              applyFunctionIfNotNil(props.onClick, e);
+              // validateCanvas();
+              // applyFunctionIfNotNil(props.onClick, e);
             },
           }))} />
           
@@ -185,6 +186,9 @@ export const SignaturePad = (props) => {
               canvasProps: {
                 ...props.canvasProps,
                 className: `size-full`
+              },
+              onEnd: () => {
+                setValue({ ...currentValue, src: padRef.current.toDataURL() });
               }
             }))} />
           </div>
