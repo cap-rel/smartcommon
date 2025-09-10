@@ -5,7 +5,7 @@ import SignatureCanvas from 'react-signature-canvas'
 import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
-import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate } from "../../../globals/functions";
+import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate, isEmpty } from "../../../globals/functions";
 import toast from "react-hot-toast";
 
 import { propTypes } from "./props";
