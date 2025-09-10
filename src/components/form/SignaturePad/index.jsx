@@ -79,6 +79,7 @@ export const SignaturePad = (props) => {
     // }
     
     padRef.current.clear();
+    setValue({ ...currentValue, src: "" });
   };
 
   const errors = {
@@ -162,7 +163,7 @@ export const SignaturePad = (props) => {
             buttonProps: {
               ...props.buttonProps,
               // className: `bg-soft-bg text-success text-app-lg p-app-xs rounded-app-xl`
-              className: "opacity-0"
+              className: "opacity-0 text-app-lg p-app-xs"
             },
             onClick: e => {
               e.preventDefault();
