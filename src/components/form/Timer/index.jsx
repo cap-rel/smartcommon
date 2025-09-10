@@ -70,7 +70,7 @@ export const Timer = (props) => {
 
     const errors = {
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && currentValue == 0,
             message: "Ce champ est requis." 
         },
         min: {
