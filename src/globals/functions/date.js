@@ -168,7 +168,7 @@ export function minutesToTime(minutes, format = "time") {
  * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
 */
 export function ISOFormat(date, format) {
-  if (isNil(date) || !isDate(date)) {
+  if (!isDate(date)) {
     return null;
   }
 
