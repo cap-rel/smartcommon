@@ -9,7 +9,7 @@ export const Head = () => {
             <meta name="theme-color" content={"#f72d40"} />
             <meta name="background-color" content={"#fff"} />
             <link rel="apple-touch-icon" href={""} sizes="192x192" />
-            <link rel="manifest" href="manifest.webmanifest" crossorigin="use-credentials" /> 
+            <link rel="manifest" href="manifest.webmanifest" crossOrigin="use-credentials" /> 
             <title>SmartMaker</title>
         </Helmet>
     );
