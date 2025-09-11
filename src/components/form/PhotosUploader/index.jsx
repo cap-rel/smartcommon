@@ -319,7 +319,7 @@ export const PhotosUploader = (props) => {
             }))}>
                 <div { ...mergeProps("photosContainer", props => ({
                     ...props,
-                    className: `flex flex-wrap gap justify-center gap-app-xs p-app-xs ${disabled && "brightness-soft"}
+                    className: `flex flex-wrap justify-center gap-app-xs p-app-xs ${disabled && "brightness-soft"}
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)
