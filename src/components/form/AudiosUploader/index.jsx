@@ -272,7 +272,7 @@ export const AudiosUploader = (props) => {
                         applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                     }
                 }))} >
-                    Supprimer l'audio
+                    Supprimer l&lsquo;audio
                 </Button>
             </Popup>
         );
