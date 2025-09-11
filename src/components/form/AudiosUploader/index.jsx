@@ -280,7 +280,8 @@ export const AudiosUploader = (props) => {
     
     return (
         <Label
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input
