@@ -50,7 +50,11 @@ import { twMerge } from 'tailwind-merge';
 export const AddressInput = (props) => {
   const { variantProps, mergeProps } = useVariantToProps("AddressInput", props);
 
-  const { extractedLabelProps, filteredProps } = useLabel(variantProps);
+  const { 
+    defaultValue,
+    value,
+    onChange,
+  } = variantProps;
 
   const { states, set } = useStates({
     suggestions: [],
@@ -59,7 +63,7 @@ export const AddressInput = (props) => {
 
   const { suggestions, isSearching } = states;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onValueChange);
+  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
@@ -106,9 +110,12 @@ export const AddressInput = (props) => {
     set("suggestions", []);
   };
 
+  const errors = {};
+
   return (
     <Label
-      { ...extractedLabelProps}
+      { ...variantProps}
+      errors={errors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("relativeContainer", props => ({
