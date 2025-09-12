@@ -72,7 +72,7 @@ export const Gps = props => {
 
   const { isLocating } = states;
 
-  // const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue[0]);
+  // const isRealValueEmpty = multiple ? isEmpty(currentValue) : isEmpty(currentValue[0]);
 
   const geoLocate = () => {
     if (!disabled && !readOnly) {
@@ -90,7 +90,7 @@ export const Gps = props => {
           }
         )
         // const coords = [40.35536627, 56.66638387];
-        // const newValue = multiple ? [...realValue, coords] : coords;
+        // const newValue = multiple ? [...currentValue, coords] : coords;
         // if (isNil(value)) {
         //   set("localValue", newValue);
         // } else {
@@ -103,7 +103,7 @@ export const Gps = props => {
 
   const deleteGpsPoints = (e, index) => {
     e.preventDefault();
-    const newValue = multiple ? [...realValue.slice(0, index), ...realValue.slice(index + 1)] : ["", ""];
+    const newValue = multiple ? [...currentValue.slice(0, index), ...currentValue.slice(index + 1)] : ["", ""];
 
     setValue(newValue);
   };
@@ -176,13 +176,13 @@ export const Gps = props => {
         <input
           name={name}
           onChange={() => {}}
-          value={gpsPoints[0]}
+          value={currentValue[0]}
           hidden
         />
         <input
           name={name}
           onChange={() => {}}
-          value={gpsPoints[1]}
+          value={currentValue[1]}
           hidden
         />
         <Button { ...mergeProps("LocateButton", props => ({
@@ -207,8 +207,8 @@ export const Gps = props => {
         >
           {
             multiple 
-              ? !isEmpty(realValue) && realValue.map((gpsPoints, GPI) => gps(gpsPoints, GPI))
-              : !isEmpty(realValue[0]) && gps(realValue)
+              ? !isEmpty(currentValue) && currentValue.map((gpsPoints, GPI) => gps(gpsPoints, GPI))
+              : !isEmpty(currentValue[0]) && gps(currentValue)
               
           }
         </ul>
