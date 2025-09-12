@@ -40,7 +40,6 @@ export const propTypes = {
   labelProps: PropTypes.object,
   starProps: PropTypes.object,
   childrenContainerProps: PropTypes.object,
-  helpProps: PropTypes.object,
   prefixProps: PropTypes.object,
   suffixProps: PropTypes.object,
   footerProps: PropTypes.object,
@@ -51,7 +50,7 @@ export const propTypes = {
   
   inputContainerProps: PropTypes.object,
   Spinner: PropTypes.object,
-  inputIcon: PropTypes.object,
+  inputIconProps: PropTypes.object,
   inputProps: PropTypes.object,
   MinusButton: PropTypes.object,
   PlusButton: PropTypes.object,
