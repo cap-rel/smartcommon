@@ -61,6 +61,8 @@ export const Gps = props => {
     disabled,
     readOnly,
 
+    multiple,
+
     onError = () => {},
   } = variantProps;
 
