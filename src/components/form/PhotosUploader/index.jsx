@@ -253,21 +253,36 @@ export const PhotosUploader = (props) => {
                         applyFunctionIfNotNil(props.onChange, value);
                     }
                 }))} />
-                <Button { ...mergeProps("DeleteButton", props => ({
-                    icon: <FaTrashCan />,
-                    ...props,
-                    onClick: e => {
-                        e.preventDefault();
-                        deletePhoto(index);
-                        applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
-                    },
-                    buttonProps: {
-                        ...props.buttonProps,
-                        className: `w-full`,
-                    }
-                }))} >
-                    Supprimer la photo
-                </Button>
+                <div className="flex gap-app-xs items-center">
+                    <Button { ...mergeProps("DeleteButton", props => ({
+                        icon: <FaTrashCan />,
+                        ...props,
+                        onClick: e => {
+                            e.preventDefault();
+                            deletePhoto(index);
+                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                        },
+                        buttonProps: {
+                            ...props.buttonProps,
+                            className: `grow`,
+                        }
+                    }))} >
+                        Supprimer la photo
+                    </Button>
+                    <Button
+                        icon={<FaCamera />}
+                        onClick={() => {
+                            if (multiple) {
+                                set("selectedPhotoIndex", null);
+                            } else {
+                                set("isPhotoSelected", false);
+                            }
+                                }}
+                        buttonProps={{ className: "bg-success" }}
+                    >
+                        Valider
+                    </Button>
+                </div>
             </Popup>
         );
     }
