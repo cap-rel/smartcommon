@@ -29,9 +29,9 @@ export function DateTimeFormatter(locales = "default", options = { dateStyle: 'm
 }
 
 export function datetimeFormatRange(startDate, startEnd, options = { dateStyle: 'medium', timeStyle: 'short' }, locales = "default") {
-  if (!isArray(date, { length: 2, type: Date })) {
-    return null;
-  }
+  // if (!isArray(date, { length: 2, type: Date })) {
+  //   return null;
+  // }
 
   return new Intl.DateTimeFormat(locales, options).formatRange(startDate, startEnd);
 }
