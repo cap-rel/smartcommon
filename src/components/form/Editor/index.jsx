@@ -78,7 +78,7 @@ export const Editor = ({
         className={twMerge(`rounded-md col`, textareaContainerProps?.className)}
       >
         <Textarea
-          placeholder={`${label}...` ?? ""}
+          placeholder={label ? `${label}...` : ""}
           { ...textareaPs}
           id={`textarea`}
           onValueChange={handleTextareaOnChange}
