@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader } from "../../components";
 import { isUndefined } from "../functions";
 
-export function setListComponent(type) {
+export function SetListComponent(type) {
     const LIST_COMPONENTS_MAP = useMemo(() => ({
         boolean      : Boolean,
         check        : Checker,
