@@ -2,7 +2,7 @@ import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { applyFunctionIfNotNil, isNil } from "../../../globals/functions";
+import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../globals/functions";
 import { useEffect } from "react";
 
 // TODO tailwind color
