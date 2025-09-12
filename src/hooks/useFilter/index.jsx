@@ -51,7 +51,7 @@ export const useFilter = (attributes) => {
     return values.map(value => cleanForComparison(value));
   }
 
-  const searchBarFilter = (list, searchBarValue) => {
+  const searchBarFilter = (list, searchBarValue, filteredValue) => {
     const filteredSearchBarValue = cleanForComparison(searchBarValue);
     if (!filteredValue) return list;
     return list.filter((item) => {
