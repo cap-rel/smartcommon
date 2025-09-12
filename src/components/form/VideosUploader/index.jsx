@@ -3,7 +3,7 @@ import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../..
 import { Button, Overlay, Panel, Popup } from "../../others";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../globals";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Textarea } from "../Textarea";
 import { Input } from "../Input";
 import { Label } from "../tools/Label";
@@ -276,7 +276,8 @@ export const VideosUploader = (props) => {
     
     return (
         <Label
-            { ...extractedLabelProps}
+            { ...variantProps}
+            errors={errors}
             mergeProps={mergeProps}
         >
             <input
