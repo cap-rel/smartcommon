@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader } from "../../components";
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader, AudiosUploader } from "../../components";
 import { isUndefined } from "../functions";
 
 export function SetListComponent(type) {
@@ -34,7 +34,7 @@ export function SetListComponent(type) {
         text         : Textarea,
         html         : Editor,
         address      : AddressInput,
-        gpsPoints    : gps,
+        gpsPoints    : Gps,
         files        : FilesUploader,
         audios       : AudiosUploader,
         videos       : VideosUploader,
