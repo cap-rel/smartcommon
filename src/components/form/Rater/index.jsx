@@ -5,7 +5,7 @@ import { twMerge } from "tailwind-merge";
 import { useEffect, useMemo } from "react";
 import { IoHeart, IoHeartHalf, IoHeartOutline } from "react-icons/io5";
 import { FaFaceSmile, FaRegStar, FaRegStarHalfStroke, FaStar, FaThumbsUp } from "react-icons/fa6";
-import { isNil } from "../../../globals/functions";
+import { isEmpty, isNil } from "../../../globals/functions";
 import { Icon } from "../tools";
 
 // IDEA Add decimal rating system
