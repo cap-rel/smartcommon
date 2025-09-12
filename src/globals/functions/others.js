@@ -69,7 +69,7 @@ import { isArray, isEmpty, isNil } from "./type";
   
   export const unsetObject = (obj) => {
     for (let key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (key in obj) {
         obj[key] = "";
       }
     }
