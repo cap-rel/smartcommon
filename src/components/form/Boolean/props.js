@@ -30,7 +30,6 @@ export const propTypes = {
     labelProps: PropTypes.object,
     starProps: PropTypes.object,
     childrenContainerProps: PropTypes.object,
-    helpProps: PropTypes.object,
     prefixProps: PropTypes.object,
     suffixProps: PropTypes.object,
     footerProps: PropTypes.object,
@@ -43,7 +42,6 @@ export const propTypes = {
     switchCircleProps: PropTypes.object,
     checkboxProps: PropTypes.object,
     checkboxIconProps: PropTypes.object,
-    childrenContainerProps: PropTypes.object,
     radioProps: PropTypes.object,
     checkedIconProps: PropTypes.object,
 };
