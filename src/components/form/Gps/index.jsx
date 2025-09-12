@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
+import { useEffect } from "react";
 
 // IDEA Add location via map
 
