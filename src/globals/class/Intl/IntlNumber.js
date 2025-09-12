@@ -7,7 +7,7 @@ export class IntlNumber {
     options = { dateStyle: "medium", timeStyle: "short" },
     locales = "default"
   }) {
-    const isSingleNumber = isNumber(date);
+    const isSingleNumber = isNumber(number);
     const isRange = isArray(number, { length: 2, type: "number" });
 
     if (!isSingleNumber && !isRange) {
