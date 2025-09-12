@@ -17,7 +17,7 @@ export const Tags = (props) => {
                 ?   value.map((tag, TI) => {
                         const tagColor = options.find(tag => tag.value = tag).color;
                         return (
-                            <Tag { ...mergeProps("Tag", props => ({
+                            <Tag key={`tag${TI}`} { ...mergeProps("Tag", props => ({
                                 ...props,
                                 color: tagColor ?? color ?? "primary"
                             }))}>
@@ -25,7 +25,7 @@ export const Tags = (props) => {
                             </Tag>
                         );
                     })
-                :   <Tag { ...mergeProps("Tag", props => ({
+                :   <Tag key={`tag${TI}`} { ...mergeProps("Tag", props => ({
                         ...props,
                         color: color ?? "primary"
                     }))}>
