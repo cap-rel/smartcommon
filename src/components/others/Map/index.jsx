@@ -6,6 +6,7 @@ import { mToKm, secsToTime } from "../../../globals/functions";
  * @param {*} onChange (function) Ecoute le changement dans la map
  */
 export const Map = (props) => {
+  const L = {};
   useEffect(() => {
     const map = L.map("map", {
       center: props.center || [46.6031, 1.8883],
