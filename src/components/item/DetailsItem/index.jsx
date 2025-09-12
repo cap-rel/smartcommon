@@ -10,7 +10,7 @@ const Link = () => {
   return null;
 }
 
-export const DetailsItem = () => {
+export const DetailsItem = (props) => {
 
     const {
       value,
