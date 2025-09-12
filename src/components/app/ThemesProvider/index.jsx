@@ -1,7 +1,6 @@
-import { createContext, useEffect } from "react";
-import { getVariable, isNil, setVariable } from "../../../globals";
-
-export const ThemesContext = createContext(null);
+import { useEffect } from "react";
+import { setVariable } from "../../../globals";
+import { ThemesContext } from "./ThemesContext";
 
 export const ThemesProvider = (props) => {
     const { themes, theme, children } = props;

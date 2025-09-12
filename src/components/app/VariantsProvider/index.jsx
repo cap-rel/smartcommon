@@ -1,6 +1,4 @@
-import { createContext } from "react";
-
-export const VariantsContext = createContext(null);
+import { VariantsContext } from "./VariantsContext";
 
 export const VariantsProvider = (props) => {
     const { variants, children } = props;
