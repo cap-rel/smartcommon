@@ -68,7 +68,7 @@ export function mergeStyle(props, defaultStyle = {}) {
 }
 
 export function mergePropsPlus(props, variants, variant) {
-    const currentVariant = isString(variant) ? (!isNil(variants[variant]) ? variants[variant][elementKey] : {}) : variant;
+    // const currentVariant = isString(variant) ? (!isNil(variants[variant]) ? variants[variant][elementKey] : {}) : variant;
 }
 
 // export function mergeProps(elementStyle, elementClassName, elementProps, defaultVariants, variant, elementKey, params = {}) {
