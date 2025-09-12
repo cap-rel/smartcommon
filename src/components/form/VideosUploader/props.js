@@ -33,7 +33,6 @@ export const propTypes = {
     labelProps: PropTypes.object,
     starProps: PropTypes.object,
     childrenContainerProps: PropTypes.object,
-    helpProps: PropTypes.object,
     prefixProps: PropTypes.object,
     suffixProps: PropTypes.object,
     footerProps: PropTypes.object,
