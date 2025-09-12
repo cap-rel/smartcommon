@@ -42,8 +42,8 @@ export const FilterTagItem = (props) => {
       case "stepper"         : return value; // TODO
       case "note"            : return value; // TODO
   
-      // default: return "" TODO à voir avec ERIC
+      default: return ""
     };
 
-    return FILTER_TAG_MAP[type];
+    // return FILTER_TAG_MAP[type];
   };
