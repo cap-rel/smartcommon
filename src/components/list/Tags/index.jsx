@@ -25,7 +25,7 @@ export const Tags = (props) => {
                             </Tag>
                         );
                     })
-                :   <Tag key={`tag${TI}`} { ...mergeProps("Tag", props => ({
+                :   <Tag { ...mergeProps("Tag", props => ({
                         ...props,
                         color: color ?? "primary"
                     }))}>
