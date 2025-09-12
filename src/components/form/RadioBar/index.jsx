@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { applyFunctionIfNotNil, isObject } from "../../../globals";
+import { applyFunctionIfNotNil, isEmpty, isObject } from "../../../globals";
 import { useLabel, useValue, useVariantToProps } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
