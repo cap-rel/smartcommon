@@ -8,7 +8,6 @@ export * from "./Files";
 export * from "./Icon";
 export * from "./Number";
 export * from "./PhoneNumber";
-export * from "./Rating";
 export * from "./Signature";
 export * from "./String";
 export * from "./Tags";
