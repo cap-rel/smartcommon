@@ -1,6 +1,7 @@
 import { propTypes } from "./props";
 import { useVariantToProps } from "../../../hooks";
 import { isNil } from "../../../globals";
+import { FaCalendarDays } from "react-icons/fa6";
 
 export const Datetime = (props) => {
     const { variantProps, mergeProps } = useVariantToProps("Datetime", props);
@@ -18,12 +19,24 @@ export const Datetime = (props) => {
     }
 
     return (
-        <div { ...mergeProps("datetime", props => ({
+        <a { ...mergeProps("link", props => ({
+            href: `mailto:${value}`,
             ...props,
-            className: `italic`
-        }))} >
-            {formattedDatetime}
-        </div>
+            className: `flex items-center gap-app-xs active:brightness-soft active:underline`,
+        }))}>
+            <div { ...mergeProps("icon", props => ({
+                ...props,
+                className: ``
+            }))}>
+                <FaCalendarDays />
+            </div>
+            <div { ...mergeProps("datetime", props => ({
+                ...props,
+                className: `italic`
+            }))}>
+                {value}
+            </div>
+        </a>
     );
 };
 
