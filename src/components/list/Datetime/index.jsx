@@ -20,7 +20,7 @@ export const Datetime = (props) => {
 
     return (
         <a { ...mergeProps("link", props => ({
-            href: `mailto:${value}`,
+            // href: `mailto:${value}`,
             ...props,
             className: `flex items-center gap-app-xs active:brightness-soft active:underline`,
         }))}>
