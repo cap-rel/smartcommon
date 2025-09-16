@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { VariantsContext } from "../../components";
+import { VariantsContext } from "../../components/app/VariantsProvider/VariantsContext";
 import { isNil } from "../../globals";
 
 export const useVariants = (componentKey) => {

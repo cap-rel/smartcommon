@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { isArray, isNil, toArray } from "../../globals";
-import { ThemesContext } from "../../components";
+import { ThemesContext } from "../../components/app/ThemesProvider/ThemesContext";
 
 export const useThemes = (componentKey) => {
   const context = useContext(ThemesContext);
