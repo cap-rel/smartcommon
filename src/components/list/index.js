@@ -1,14 +1,18 @@
+export * from "./Address";
 export * from "./Color";
+export * from "./Coordinates";
+export * from "./Datetime";
 export * from "./Duration";
+export * from "./Email";
+export * from "./Files";
+export * from "./Icon";
+export * from "./Number";
+export * from "./PhoneNumber";
+export * from "./Rating";
+export * from "./Signature";
+export * from "./String";
 export * from "./Tags";
 export * from "./Text";
-export * from "./String";
-export * from "./Datetime";
-export * from "./Rating";
 export * from "./Url";
-export * from "./PhoneNumber";
-export * from "./Email";
-export * from "./Address";
-export * from "./Coordinates";
 
 // TODO Icon
