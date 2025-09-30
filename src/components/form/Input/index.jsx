@@ -102,12 +102,12 @@ export const Input = (props) => {
 
   const typeMap = {
     text: { type: "text" },
-    email: { type: "text", inputMode: "email" },
+    email: { type: "email" },
     password : { type: isPasswordVisible ? "text" : "password" },
-    tel: { type: "text", inputMode: "tel" },
+    tel: { type: "tel" },
     number: { type: "number" },
-    search: { type: "text", inputMode: "search" },
-    url: { type: "text", inputMode: "url" },
+    search: { type: "search" },
+    url: { type: "url" },
     date: { type: "date" },
     "datetime-local": { type: "datetime-local" },
     time: { type: "time" },
