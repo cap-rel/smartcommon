@@ -29,6 +29,8 @@ export const PhotosUploader = (props) => {
         multiple,
         accept = "image/*",
 
+        compressOptions,
+
         onError = () => {},
     } = variantProps;
 
@@ -92,7 +94,7 @@ export const PhotosUploader = (props) => {
             // setTimeout(() => {
                 // const file = e.target.files[0];
                 // const url = URL.createObjectURL(file);
-                const base64 = await resizeImage(file);
+                const base64 = await resizeImage(file, compressOptions);
             
                 // if (isNull(selectedPhotoIndex)) {
                 let gpsPoints = [null, null];

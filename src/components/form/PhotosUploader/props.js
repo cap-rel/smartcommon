@@ -19,6 +19,8 @@ export const propTypes = {
     max: PropTypes.number,
     multiple: PropTypes.bool,
 
+    compressOptions: PropTypes.object,
+
     name: PropTypes.string,
     value: PropTypes.bool,
     onChange: PropTypes.func,

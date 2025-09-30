@@ -49,9 +49,10 @@ import { useState } from "react";
 import Resizer from "react-image-file-resizer";
 
 export const useFile = (props) => {
-  const resizeImage = (image) => {
+  const resizeImage = (image, options = {}) => {
+    const { maxWidth = 3840, maxHeight = 2160, quality = 90 } = options;
     return new Promise((resolve) =>
-      Resizer.imageFileResizer(image, 3840, 2160, "JPEG", 90, 0, (uri) => resolve(uri), "base64")
+      Resizer.imageFileResizer(image, maxWidth, maxHeight, "JPEG", quality, 0, (uri) => resolve(uri), "base64")
     );
   };
   // await resizeFile(file).then(base64 => base64);
