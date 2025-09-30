@@ -10,9 +10,9 @@ export const Router = () => {
     return (
         <ReactRouter>
             <Route path={`/dev`} element={<DevPage />}/>
-                {/* {componentNames.map((component, CI) => 
+                {/* {componentNames.map((component, CI) =>
                     <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
                 )} */}
         </ReactRouter>
-    );        
+    );
 };
