@@ -1,7 +1,4 @@
-export * from "./SearchBar";
-
-
-// const useVariantToPropstest = (componentKey, props) => {
+// const useVariantMergertest = (componentKey, props) => {
 //     const { states, set } = useStates({
 //         params: {}
 //     })

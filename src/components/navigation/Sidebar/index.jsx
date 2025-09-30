@@ -1,4 +1,4 @@
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { Panel } from "../../others";
 import { Button } from "../../others";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
@@ -11,14 +11,14 @@ import { isNil } from "../../../globals";
 // TODO duration
 // TODO button position with app variables
 // TODO global variables
-// TODO id automatique dans le useVariantToProps
+// TODO id automatique dans le useVariantMerger
 
 const Link = () => {
   return null;
 }
 
 export const Sidebar = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("sidebar", props);
+  const { variantProps, mergeProps } = useVariantMerger("sidebar", props);
 
   const { id, toggleButton, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
 

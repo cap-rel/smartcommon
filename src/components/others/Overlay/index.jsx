@@ -1,11 +1,11 @@
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil } from "../../../globals";
 
 // TODO open or toggle
 
 export const Overlay = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("overlay", props);
+    const { variantProps, mergeProps } = useVariantMerger("overlay", props);
     const { id, isOpen, close = () => {}, onClick = () => {}, zIndex = 40 } = variantProps;
 
     return (

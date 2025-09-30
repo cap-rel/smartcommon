@@ -4,7 +4,7 @@ import { Label } from "../tools/Label";
 import { Button, Spinner } from "../../others";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { useEffect } from "react";
@@ -48,7 +48,7 @@ import { useEffect } from "react";
 // TODO multiple
 
 export const Gps = props => {
-  const { variantProps, mergeProps } = useVariantToProps("Gps", props);
+  const { variantProps, mergeProps } = useVariantMerger("Gps", props);
   
   const { 
     id,

@@ -1,6 +1,6 @@
 import { applyFunctionIfNotNil, datetimeFormat, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, minutesToTime, secsToDuration, timeToMinutes } from "../../../globals/functions";
 import { Label } from "../../form";
-import { useStates, useValue, useLabel, useVariantToProps } from "../../../hooks";
+import { useStates, useValue, useLabel, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaClipboardCheck, FaEye, FaEyeSlash, FaMinus, FaPlus, FaRegClipboard } from "react-icons/fa6";
 
@@ -18,7 +18,7 @@ import { useEffect } from "react";
 // TODO Stepper
 
 export const Input = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Input", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Input", props);
 
   const { 
     id,

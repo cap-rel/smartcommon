@@ -1,8 +1,8 @@
 import { getVariable, isNil } from "../../../globals";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 
 export const LowerNavbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("lowerNavbarLinks", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("lowerNavbarLinks", props);
 
     const { to, icon, activeIcon, disabled, label, active: activeManually, Link } = variantProps;
                                                 

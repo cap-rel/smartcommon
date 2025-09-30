@@ -1,4 +1,4 @@
-import { useStates, useVariantToProps } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
 import { isNil, setVariable } from "../../../globals/functions";
 import { propTypes } from "./props";
 // import { Link } from "react-router-dom";
@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 // TODO when there is not left or right, adjust the justify-between
 
 export const Navbar = (props) => {
-    const { variantProps, mergeProps, setParams } = useVariantToProps("navbar", props);
+    const { variantProps, mergeProps, setParams } = useVariantMerger("navbar", props);
 
     const { id, children, upperLeftLinks, upperRightLinks, lowerLinks, title } = variantProps;
 

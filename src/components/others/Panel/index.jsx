@@ -1,5 +1,5 @@
 import { Overlay } from "../Overlay";
-import { useStates, useVariantToProps } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 import { useEffect, useRef } from "react";
 
@@ -22,7 +22,7 @@ import { useEffect, useRef } from "react";
 // }
 
 export const Panel = (props) => {
-    const { variantProps, mergeProps, setParams } = useVariantToProps("Panel", props);
+    const { variantProps, mergeProps, setParams } = useVariantMerger("Panel", props);
 
     const { 
         id,

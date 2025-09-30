@@ -1,10 +1,10 @@
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { isNil } from "../../../globals";
 
 // TODO badge
 
 export const UpperNavbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("UpperNavbarLink", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("UpperNavbarLink", props);
     
     const { badge, icon, disabled, label, children } = variantProps;
                                                                             

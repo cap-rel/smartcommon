@@ -1,11 +1,11 @@
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { isEmpty, secsToDuration } from "../../../globals";
 
 // TODO Intl DurationFormat
 
 export const Duration = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Duration", props);
+    const { variantProps, mergeProps } = useVariantMerger("Duration", props);
 
     const { value } = variantProps;
 

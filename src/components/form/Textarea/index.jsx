@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -6,7 +6,7 @@ import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../globals/function
 import { useEffect } from "react";
 
 export const Textarea = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Textarea", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Textarea", props);
 
   const {
     id,
@@ -44,7 +44,7 @@ export const Textarea = (props) => {
   const errors = {
     required: { 
       condition: required && isEmpty(currentValue),
-      message: "Ce champ est requis." 
+      message: "Ce champ est requis."
     },
     minLength: { 
       condition: !isNil(minLength) && currentValue?.length < minLength,
@@ -68,7 +68,6 @@ export const Textarea = (props) => {
     Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
   }, [currentValue]);
 
-  
   return (
     <Label 
       { ...variantProps}

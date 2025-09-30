@@ -35,10 +35,10 @@ export const App = () => {
           <VariantsProvider variants={variants}>
             <ThemesProvider themes={themes} theme={"SmartInterventions"}>
               <Head />
-              {/* <Router /> */}
-              <Page>
+              <Router />
+              {/* <Page>
                 
-              </Page>
+              </Page> */}
               <Toaster />
             </ThemesProvider>
           </VariantsProvider>

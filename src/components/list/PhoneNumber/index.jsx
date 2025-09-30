@@ -1,9 +1,9 @@
 import { FaPhoneFlip } from "react-icons/fa6";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 
 export const PhoneNumber = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("PhoneNumber", props);
+    const { variantProps, mergeProps } = useVariantMerger("PhoneNumber", props);
 
     const { value } = variantProps;
 

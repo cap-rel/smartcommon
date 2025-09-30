@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -11,7 +11,7 @@ import { Icon } from "../tools";
 // IDEA Add decimal rating system
 
 export const Rater = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Rater", props);
+    const { variantProps, mergeProps } = useVariantMerger("Rater", props);
           
     const { 
         id,

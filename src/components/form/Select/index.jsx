@@ -2,14 +2,14 @@ import { twMerge } from "tailwind-merge";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { IoIosArrowDown } from "react-icons/io";
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../globals/functions";
 import { useEffect } from "react";
 
 // TODO Add attributes to options like disabled, maybe props
 
 export const Select = (props) => {
-  const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("Select", props);
+  const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Select", props);
   
   const { 
     id,

@@ -1,5 +1,5 @@
 import { propTypes } from "./props";
-import { useStates, useVariantToProps } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
 import { isNil, setVariable } from "../../../globals";
 import { useEffect, useRef } from "react";
@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 // TODO Fix label truncate not working
 
 export const Tabbar = (props) => {
-  const { variantProps, mergeProps, setParams } = useVariantToProps("tabbar", props);
+  const { variantProps, mergeProps, setParams } = useVariantMerger("tabbar", props);
 
   const { id, children, hideOnScroll } = variantProps;
 

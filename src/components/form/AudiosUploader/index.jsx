@@ -1,5 +1,5 @@
 import { FaCamera, FaFileAudio, FaFileImage, FaFileImport, FaMicrophoneLines, FaTrash, FaTrashCan } from "react-icons/fa6";
-import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Button, Overlay, Panel, Popup } from "../../others";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../globals";
@@ -12,7 +12,7 @@ import toast from "react-hot-toast";
 // TODO GPS points
 
 export const AudiosUploader = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("AudiosUploader", props);
+    const { variantProps, mergeProps } = useVariantMerger("AudiosUploader", props);
 
     const {
         id,

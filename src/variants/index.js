@@ -4,4 +4,4 @@ import * as input from "./input";
 export const variants = {
     button,
     input
-}
+};

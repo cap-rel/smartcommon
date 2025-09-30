@@ -1,9 +1,9 @@
 import { FaLocationDot } from "react-icons/fa6";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 
 export const Address = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Address", props);
+    const { variantProps, mergeProps } = useVariantMerger("Address", props);
 
     const { value } = variantProps;
 

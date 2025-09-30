@@ -1,8 +1,8 @@
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 
 export const Spinner = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("spinner", props);
+  const { variantProps, mergeProps } = useVariantMerger("spinner", props);
 
   const { size = 4 } = variantProps;
 

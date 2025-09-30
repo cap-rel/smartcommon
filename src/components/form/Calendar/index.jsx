@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { applyFunctionIfNotNil, isArray, isNil, isNumber, ISOFormat, isString } from "../../../globals/functions";
-import { useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Button } from "../../others";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 import { propTypes } from "./props";
@@ -8,7 +8,7 @@ import { propTypes } from "./props";
 // IDEA interval
 
 export const Calendar = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("calendar", props);
+  const { variantProps, mergeProps } = useVariantMerger("calendar", props);
 
   const { 
     id,

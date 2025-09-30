@@ -1,12 +1,12 @@
 import { Label } from "..";
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../globals/functions";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { useEffect } from "react";
 
 export const RangeInput = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("RangeInput", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("RangeInput", props);
     
     const {
         id,

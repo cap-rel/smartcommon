@@ -1,10 +1,10 @@
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { isNil } from "../../../globals";
 import { FaCalendarDays } from "react-icons/fa6";
 
 export const Datetime = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Datetime", props);
+    const { variantProps, mergeProps } = useVariantMerger("Datetime", props);
 
     const { value, locale = "default", options = {} } = variantProps;
 

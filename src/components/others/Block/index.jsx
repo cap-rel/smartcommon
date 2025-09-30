@@ -1,9 +1,9 @@
 import { isNil } from "../../../globals/functions";
 import { propTypes } from "./props";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 
 export const Block = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("block", props);
+    const { variantProps, mergeProps } = useVariantMerger("block", props);
 
     const { id, title, header, footer, children } = variantProps;
 

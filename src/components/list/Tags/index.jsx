@@ -1,10 +1,10 @@
 import { isArray } from "../../../globals";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { Tag } from "../../others/Tag";
 import { propTypes } from "./props";
 
 export const Tags = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Tags", props);
+    const { variantProps, mergeProps } = useVariantMerger("Tags", props);
 
     const { options, value, color } = variantProps;
 

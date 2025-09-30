@@ -1,13 +1,13 @@
 import { applyFunctionIfNotNil, formatDuration, isNil, isNumber, secsToDuration } from "../../../globals/functions";
 import { Input, Label } from "../../form";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 
 import { propTypes } from "./props";
 import { useEffect } from "react";
 
 export const Timer = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Timer", props);
+    const { variantProps, mergeProps } = useVariantMerger("Timer", props);
 
     const {
         id,

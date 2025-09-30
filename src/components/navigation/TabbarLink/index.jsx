@@ -1,8 +1,8 @@
 import { isNil } from "../../../globals";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 
 export const TabbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("tabbarLink", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("tabbarLink", props);
 
     const { badge, icon, activeIcon, disabled, label, active: activeManually, to, Link } = variantProps;
           

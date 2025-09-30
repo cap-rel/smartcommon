@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -8,7 +8,7 @@ import { useEffect } from "react";
 // TODO tailwind color
 
 export const ColorPicker = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantToProps("ColorPicker", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("ColorPicker", props);
 
     const {
         id,

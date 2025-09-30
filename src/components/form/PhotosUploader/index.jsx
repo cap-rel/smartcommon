@@ -1,5 +1,5 @@
 import { FaCamera, FaFileImage, FaFileImport, FaTrash, FaTrashCan } from "react-icons/fa6";
-import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Button, Overlay, Panel, Popup } from "../../others";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../globals";
@@ -10,7 +10,7 @@ import { Label } from "../tools/Label";
 import toast from "react-hot-toast";
 
 export const PhotosUploader = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("PhotosUploader", props);
+    const { variantProps, mergeProps } = useVariantMerger("PhotosUploader", props);
 
     const {
         id,

@@ -1,8 +1,8 @@
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 
 export const Text = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Text", props);
+    const { variantProps, mergeProps } = useVariantMerger("Text", props);
 
     const { value } = variantProps;
 

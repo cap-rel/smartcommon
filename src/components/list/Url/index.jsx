@@ -1,9 +1,9 @@
 import { FaLink, FaPhoneFlip } from "react-icons/fa6";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 
 export const Url = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Url", props);
+    const { variantProps, mergeProps } = useVariantMerger("Url", props);
 
     const { value } = variantProps;
 

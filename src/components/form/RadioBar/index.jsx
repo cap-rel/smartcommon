@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { applyFunctionIfNotNil, isEmpty, isObject } from "../../../globals";
-import { useLabel, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 
 export const RadioBar = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("RadioBar", props);
+    const { variantProps, mergeProps } = useVariantMerger("RadioBar", props);
 
     const {
         id,

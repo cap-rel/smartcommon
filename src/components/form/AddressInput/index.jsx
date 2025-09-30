@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLabel, useStates, useValue, useVariantToProps } from '../../../hooks';
+import { useLabel, useStates, useValue, useVariantMerger } from '../../../hooks';
 import { Spinner } from '../../others';
 import { Input, Label } from '../../form';
 import { applyFunctionIfNotNil, isEmpty, isNil } from '../../../globals/functions';
@@ -48,7 +48,7 @@ import { twMerge } from 'tailwind-merge';
 // }
 
 export const AddressInput = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("AddressInput", props);
+  const { variantProps, mergeProps } = useVariantMerger("AddressInput", props);
 
   const { 
     defaultValue,

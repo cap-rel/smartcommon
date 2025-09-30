@@ -1,5 +1,5 @@
 import { Overlay } from "../Overlay";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
 import { Button } from "../Button";
 import { RiCloseLargeLine } from "react-icons/ri";
@@ -8,7 +8,7 @@ import { applyFunctionIfNotNil, isNil } from "../../../globals";
 // TODO z-index prop
 
 export const Popup = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("popup", props);
+    const { variantProps, mergeProps } = useVariantMerger("popup", props);
 
     const { 
         id,

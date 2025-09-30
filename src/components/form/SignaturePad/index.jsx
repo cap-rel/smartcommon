@@ -2,7 +2,7 @@ import { Button } from "../../others";
 import { Label } from "../tools/Label";
 import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
-import { useFile, useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
 import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate, isEmpty } from "../../../globals/functions";
@@ -13,7 +13,7 @@ import { Input } from "../Input";
 import { AddressInput } from "../AddressInput";
 
 export const SignaturePad = (props) => {
-  const { variantProps, mergeProps } = useVariantToProps("SignaturePad", props);
+  const { variantProps, mergeProps } = useVariantMerger("SignaturePad", props);
 
   const {
     id,

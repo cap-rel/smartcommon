@@ -1,5 +1,5 @@
 import { isNil } from "../../../globals/functions";
-import { useVariantToProps } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { Spinner } from "../Spinner";
 
 import { propTypes } from "./props";
@@ -7,7 +7,7 @@ import { propTypes } from "./props";
 // TODO badge
 
 export const Button = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantToProps("button", props);
+    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("button", props);
 
     const { id, loading, icon, badge, children, disabled } = variantProps;
 

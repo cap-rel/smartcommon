@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantToProps } from "../../../hooks";
+import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, Icon } from "../tools";
@@ -11,7 +11,7 @@ import { FaStar } from "react-icons/fa6";
 // TODO Add attributes to options like disabled, color, maybe props
 
 export const Checker = (props) => {
-    const { variantProps, mergeProps } = useVariantToProps("Checker", props);
+    const { variantProps, mergeProps } = useVariantMerger("Checker", props);
 
     const {
         id,
