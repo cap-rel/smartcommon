@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Head, I18nextProvider, ReduxProvider, ThemesProvider, Toaster, VariantsProvider } from "./components/app";
+import { Head, I18nextProvider, ReduxProvider, Toaster } from "./components/app";
 import { useStates, useWindow } from "./hooks";
 import { Router } from "./Router";
 //! import { store } from "./reduxStore"; 
@@ -32,16 +32,12 @@ export const App = () => {
   return (
     // <ReduxProvider store={store}>
       <I18nextProvider i18n={i18n}>
-          <VariantsProvider variants={variants}>
-            <ThemesProvider themes={themes} theme={"SmartInterventions"}>
               <Head />
               <Router />
               {/* <Page>
                 
               </Page> */}
               <Toaster />
-            </ThemesProvider>
-          </VariantsProvider>
       </I18nextProvider>
     // </ReduxProvider>
   );
