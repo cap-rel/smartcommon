@@ -5,5 +5,3 @@ export * from "./ReduxProvider";
 export * from "./PrivateRoutes";
 export * from "./PublicRoutes";
 export * from "./ReactRouter";
-export * from "./VariantsProvider";
-export * from "./ThemesProvider";
