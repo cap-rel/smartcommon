@@ -1,13 +1,10 @@
-import { useContext } from "react";
-import { VariantsContext } from "../../components/app/VariantsProvider/VariantsContext";
 import { isNil } from "../../globals";
+import { variants } from "../../variants";
 
 export const useVariants = (componentKey) => {
-    const context = useContext(VariantsContext);
-
-    if (isNil(context)) {
-      throw new Error('useVariants doit être utilisé avec le VariantsProvider');
+    if (isNil(variants)) {
+      throw new Error("Il n'y a pas de variants");
     }
 
-    return context[componentKey];
+    return variants[componentKey];
 };

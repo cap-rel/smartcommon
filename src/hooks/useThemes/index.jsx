@@ -1,17 +1,14 @@
-import { useContext } from "react";
-import { isArray, isNil, toArray } from "../../globals";
-import { ThemesContext } from "../../components/app/ThemesProvider/ThemesContext";
+import { isNil, toArray } from "../../globals";
+import { themes } from "../../themes";
 
 export const useThemes = (componentKey) => {
-  const context = useContext(ThemesContext);
+  if (isNil(themes)) {
+      throw new Error("Il n'y a pas de variants");
+    }
 
-  if (isNil(context)) {
-    throw new Error('useThemes doit être utilisé avec le ThemesProvider');
-  }
+  const { theme, th = {} } = themes;
 
-  const { theme, themes = {} } = context;
-
-  const themeVariant = themes?.[theme]?.[componentKey];
+  const themeVariant = th?.[theme]?.[componentKey];
 
   return isNil(themeVariant) ? [] : toArray(themeVariant);
 };
