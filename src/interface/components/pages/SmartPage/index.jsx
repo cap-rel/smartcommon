@@ -1,13 +1,10 @@
 import { useEffect, useRef } from "react";
-import { useStates } from "../../../hooks";
 import { FaReact } from "react-icons/fa6";
 import { IoArrowDown, IoHome } from "react-icons/io5";
 import { IoIosArrowDown } from "react-icons/io";
-import { Tabbar } from "../../navigation";
+import { useStates, Tabbar, convertCSSVar, convertClassName, Checker, Gps } from "../../../../lib";
 import { FaBook } from "react-icons/fa";
-import { Checker, Gps } from "../../form";
 import { Variables } from "./Variables";
-import { convertClassName, convertCSSVar } from "../../../globals/functions/variant";
 import { Components } from "./Components";
 import { Radio } from "./Radio";
 import { twMerge } from "tailwind-merge";

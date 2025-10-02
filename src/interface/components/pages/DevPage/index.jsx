@@ -1,11 +1,8 @@
-import { Navbar, Sidebar, Tabbar } from "../../navigation";
+import { Navbar, Sidebar, Tabbar, Button, Page, Popup, Spinner, Block, useStates, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
 import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
-import { Button, Page, Popup, Spinner, Block } from "../../others";
 import { useEffect } from "react";
-import { useStates } from "../../../hooks";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../form";
 
 export const DevPage = () => {
     // mb-20 for tabbar and mb- for sidebar

@@ -1,18 +1,16 @@
-// import { Route } from "react-router-dom";
-import { PrivateRoutes } from "./components/app/PrivateRoutes";
-import { PublicRoutes } from "./components/app/PublicRoutes";
-import { componentNames } from "./components/pages/SmartPage/components";
-import { DevPage, SmartPage } from "./components";
-import { ReactRouter } from "./components/app/ReactRouter";
-import { Route } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { componentNames } from "../../pages/SmartPage/components";
+import { DevPage, SmartPage } from "../../pages";
 
 export const Router = () => {
     return (
-        <ReactRouter>
-            <Route path={`/dev`} element={<DevPage />}/>
+        <BrowserRouter>
+            <Routes>
+                <Route path={`/`} element={<DevPage />}/>
                 {/* {componentNames.map((component, CI) =>
                     <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
                 )} */}
-        </ReactRouter>
+            </Routes>
+        </BrowserRouter>
     );
 };

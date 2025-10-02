@@ -25,10 +25,12 @@ import { useSelector } from "react-redux";
 export const I18nextProvider = (props) => {
   const { children } = props;
 
-  const reduxSettings = useSelector(state => state.settings.data) ?? {};
-  const { lng: reduxLng } = reduxSettings;
+  // const reduxSettings = useSelector(state => state.settings.data) ?? {};
+  // const { lng: reduxLng } = reduxSettings;
 
-  const lng = reduxLng ?? localStorage.getItem("lng") ?? "en";
+  // const lng = reduxLng ?? localStorage.getItem("lng") ?? "en";
+
+  const lng = "en";
 
   useEffect(() => {
     i18n.changeLanguage(lng);

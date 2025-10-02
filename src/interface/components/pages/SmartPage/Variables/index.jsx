@@ -1,11 +1,9 @@
 import { useEffect } from "react";
-import { useStates } from "../../../../hooks";
+import { useStates, convertCSSVar, isEmpty } from "../../../../../lib";
 import { MdOutlineReplay } from "react-icons/md";
-import { isEmpty } from "../../../../globals/functions";
 import { Resizable } from "re-resizable";
 import { FaClipboardCheck, FaRegClipboard } from "react-icons/fa6";
 import { FaRegSave, FaSave } from "react-icons/fa";
-import { convertCSSVar } from "../../../../globals/functions/variant";
 
 // TODO Use var() for variables
 

@@ -1,9 +1,6 @@
 import { useRef } from "react";
-import { isEmpty } from "../../../globals/functions";
-import { useStates } from "../../../hooks";
-import { Button } from "../../others";
+import { isEmpty, useStates, Button, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
 import { useEffect } from "react";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../form";
 import { FaEnvelope, FaRegStar, FaStar } from "react-icons/fa6";
 
 export const SearchBar = ({

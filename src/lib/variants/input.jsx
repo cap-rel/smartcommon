@@ -1,5 +1,5 @@
 import { FaRegCalendarDays, FaRegEnvelope } from "react-icons/fa6";
-import { formatDate } from "../globals";
+import { formatDate } from "../utils";
 
 //   const inputs = {
 //     varchar      : { inputType: "text", defaultValue: "" },

@@ -4,12 +4,12 @@ import { Toaster } from "../lib";
 
 export const App = () => {
   return (
-    <ReduxProvider>
+    // <ReduxProvider>
       <I18nextProvider>
         <Head />
         <Router />
         <Toaster />
       </I18nextProvider>
-    </ReduxProvider>
+    // </ReduxProvider>
   );
 };

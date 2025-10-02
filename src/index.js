@@ -1,3 +1,3 @@
-import ".lib/assets/style/export.css";
+import ".lib/assets/styles/export.css";
 
 export * from "./lib/export";

@@ -5,7 +5,7 @@ export const ReduxProvider = (props) => {
   const { children } = props;
 
   return (
-    <Provider store={redux}>
+    <Provider> {/* store={redux} */}
       {children}
     </Provider>
   );
