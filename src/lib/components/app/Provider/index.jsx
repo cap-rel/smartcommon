@@ -1,5 +1,12 @@
-  export const Provider = () => {
-    return null;
+import { LibConfigContext as Context } from "../../contexts/LibConfigContext";
+  export const Provider = (props) => {
+    const { children, mergedClass, config, variants, themes, theme, i18n } = props;
+    
+    return (
+      <Context.Provider value={{ mergedClass, config, variants, themes, theme, i18n }}>
+        {children}
+      </Context.Provider>
+    );
   };
   
   
