@@ -1,0 +1,1 @@
+export const format = (prefixes, variables) => Object.fromEntries(prefixes.map(type => [type, variables.map(variable => `${type}-${variable}`)]));
