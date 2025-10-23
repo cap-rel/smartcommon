@@ -1,6 +1,6 @@
-export const defaultDuration = { style: "narrow" };
-export const defaultDateTime = { dateStyle: 'medium', timeStyle: 'short' };
-export const defaultRelativeTime = {};
+export const DEFAULT_DURATION_FORMAT = { style: "narrow" };
+export const DEFAULT_DATETIME_FORMAT = { dateStyle: 'medium', timeStyle: 'short' };
+export const DEFAULT_RELATIVE_TIME_FORMAT = {};
 
 // Useful
 
