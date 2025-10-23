@@ -9,8 +9,6 @@ export * from "./useLib";
 export * from "./useListDnD";
 export * from "./useNavigator";
 export * from "./useStates";
-export * from "./useThemes";
 export * from "./useValue";
 export * from "./useVariantMerger";
-export * from "./useVariants";
 export * from "./useWindow";

@@ -1,7 +1,6 @@
 import { isArray, isFunction, isNil, isObject, isString, isUndefined, toArray, twMerge } from "../../utils";
 import { useStates } from "../useStates";
-import { useVariants } from "../useVariants";
-import { useThemes } from "../useThemes";
+import { useLib } from "../../hooks";
 
 function verifyFunction(func, params = {}){
     return isFunction(func) ? func(params) : func;
@@ -66,9 +65,23 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    const variant = [...useThemes(componentKey), ...toArray(props.variant)].map(variant => {
+    const { theme, themes, variants } = useLib() ?? {}; // TODO
+
+    if (isNil(themes)) {
+        throw new Error("No themes provided");
+    }
+
+    const themeVariant = themes?.[theme]?.[componentKey];
+
+    const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
+
+    if (isNil(variants)) {
+      throw new Error("No variants provided");
+    }
+
+    const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
         if (isString(variant)) {
-            return useVariants(componentKey)?.[variant] || {}
+            return variants[componentKey]?.[variant] || {};
         } else {
             return variant || {};
         }
