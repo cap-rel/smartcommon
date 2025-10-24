@@ -67,27 +67,31 @@ export const useVariantMerger = (componentKey, props) => {
 
     const { theme, themes, variants } = useLib() ?? {}; // TODO
 
-    if (isNil(themes)) {
-        throw new Error("No themes provided");
-    }
+    // if (isNil(themes)) {
+    //     throw new Error("No themes provided");
+    // }
 
     const themeVariant = themes?.[theme]?.[componentKey];
 
     const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
 
-    if (isNil(variants)) {
-      throw new Error("No variants provided");
-    }
+    // if (isNil(variants)) {
+    //   throw new Error("No variants provided");
+    // }
 
-    const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
-        if (isString(variant)) {
-            return variants[componentKey]?.[variant] || {};
-        } else {
-            return variant || {};
-        }
-    });
+    // const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
+    //     if (isString(variant)) {
+    //         return variants[componentKey]?.[variant] || {};
+    //     } else {
+    //         return variant || {};
+    //     }
+    // });
+
+    const variant = [];
 
     let variantProps = [...variant, props].reduce((acc, variant) => mergeVariant(acc, variant), {});
+
+    console.log(variantProps);
 
     const mergeDefaultElementProps = (defaultProps = {}, props = {}) => ({        
         ...defaultProps,
