@@ -1,12 +1,22 @@
 import { fn } from 'storybook/test';
 
-import { Button } from './Button';
+// import { Button } from './Button';
+import { Header } from "./Header";
+
+import { Button } from '../lib';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
-  title: 'Others/Button',
+  title: 'Components/Others/Button',
   component: Button,
+  subcomponents: { Header },
   parameters: {
+    options: {
+      showPanel: false,
+    },
+    // docs: {
+    //   codePanel: true
+    // },
     backgrounds: {
       options: {
         red: { name: 'Red', value: '#f00' },
@@ -18,19 +28,19 @@ export default {
     layout: 'centered',
   },
   // This component will have an automatically generated Autodocs entry: https://storybook.js.org/docs/writing-docs/autodocs
-  tags: ['autodocs'],
+  tags: ["autodocs", "others"],
   // More on argTypes: https://storybook.js.org/docs/api/argtypes
   argTypes: {
-    backgroundColor: { control: 'color' },
-    label: {
-      control: { type: 'select' },
-      options: ['Normal', 'Bold', 'Italic'],
+    // backgroundColor: { control: 'color' },
+    // label: {
+    //   control: { type: 'select' },
+    //   options: ['Normal', 'Bold', 'Italic'],
       // mapping: {
       //   Normal: <p>Bold</p>,
       //   Bold: <b>Bold</b>,
       //   Italic: <i>Italic</i>,
       // },
-    },
+    // },
   },
   // Use `fn` to spy on the onClick arg, which will appear in the actions panel once invoked: https://storybook.js.org/docs/essentials/actions#action-args
   args: { onClick: fn() },
@@ -39,27 +49,27 @@ export default {
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Primary = {
   args: {
-    primary: true,
-    label: 'Button',
+    // primary: true,
+    // label: 'Button',
   },
 };
 
-export const Secondary = {
-  args: {
-    label: 'Button',
-  },
-};
+// export const Secondary = {
+//   args: {
+//     label: 'Button',
+//   },
+// };
 
-export const Large = {
-  args: {
-    size: 'large',
-    label: 'Button',
-  },
-};
+// export const Large = {
+//   args: {
+//     size: 'large',
+//     label: 'Button',
+//   },
+// };
 
-export const Small = {
-  args: {
-    size: 'small',
-    label: 'Button',
-  },
-};
+// export const Small = {
+//   args: {
+//     size: 'small',
+//     label: 'Button',
+//   },
+// };
