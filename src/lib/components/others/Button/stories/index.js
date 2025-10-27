@@ -1,2 +1,2 @@
-export * from "./Primary";
+export * from "./Default";
 export * from "./Test";
