@@ -6,14 +6,12 @@ import { propTypes } from "./props";
 
 // TODO badge
 
+/** UI button component for user interaction */
 export const Button = (props) => {
     const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("button", props);
 
-    const { id, loading, icon, badge, children, disabled } = variantProps;
-
-    // console.log(variantProps);
+    const { id, label, loading = false, icon, badge, children, disabled } = variantProps;
     
-
     return (
         <button { ...mergeProps("button", props => ({
             ...props,
@@ -39,7 +37,7 @@ export const Button = (props) => {
                     ...props,
                     className: `shrink-0`
                 }))}>
-                    {icon}
+                    {icon()}
                 </div>
             }
 
@@ -53,6 +51,8 @@ export const Button = (props) => {
                     {badge}
                 </div>
             }
+
+            {label && label}
 
             {children}
 
@@ -80,3 +80,8 @@ export const Button = (props) => {
 // --button-children-font-weight
 
 Button.propTypes = propTypes;
+
+Button.defaultProps = {
+    loading: false,
+    disabled: false
+};
