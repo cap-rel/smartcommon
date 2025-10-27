@@ -1,9 +1,9 @@
 import { fn } from 'storybook/test';
 
 // import { Button } from './Button';
-import { Header } from "./Header";
+import { Header } from "../Header/Header";
 
-import { Button } from '../../lib';
+import { Button } from '../../../../lib';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
