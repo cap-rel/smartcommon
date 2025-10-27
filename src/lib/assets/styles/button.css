@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+@theme {
+    --color-button: var(--color-primary);
+    --color-color-button: white;
+    --spacing-button-padding: calc(var(--spacing) * 3) calc(var(--spacing) * 6);
+    --spacing-button-gap: calc(var(--spacing) * 4);
+    --button-filter-duration: 100ms;
+    --brightness-button: 90%;
+    --radius-button: var(--radius-md);
+    --text-button: var(--text-xl);
+    --font-weight-weight-button: var(--font-weight-semibold);
+}

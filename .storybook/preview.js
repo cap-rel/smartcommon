@@ -1,4 +1,4 @@
-import "../src/interface/assets/styles/style.css";
+import "../src/lib/assets/styles/export.css";
 
 /** @type { import('@storybook/react-vite').Preview } */
 const preview = {

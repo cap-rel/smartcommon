@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+@theme {
+  /* --color-primary      : #6d4aff;
+  --color-secondary    : #26daaf;
+  --color-success      : var(--color-green-500);
+  --color-error        : var(--color-red-500);
+  --color-warning      : var(--color-yellow-500);
+
+  --color-strong       : #292734; 
+  --color-soft         : #1c1b23;
+  --color-soft-border  : var(--color-gray-600);
+  --color-strong-border: #3b3746; 
+  --color-soft-text    : var(--color-gray-500);
+  --color-strong-text  : white;
+
+  --brightness-soft    : 130%;
+  --brightness-strong  : 160%; */
+
+  /* Colors */
+  --color-primary           : #f72d40;
+  --color-strong-primary    : var(--color-red-700);
+  /* --color-primary           : var(--color-blue-600); */
+  --color-secondary         : #fccb4f;
+  --color-strong-secondary  : var(--color-yellow-600);
+  --color-success           : var(--color-green-600);
+  --color-strong-success    : var(--color-green-700);
+  --color-error             : #f72d40;
+  --color-warning           : #fccb4f;
+  --color-strong-warning    : var(--color-yellow-600);
+  --color-neutral           : var(--color-gray-500);
+  --color-strong-neutral    : var(--color-gray-600);
+
+  --color-soft-text         : var(--color-gray-400);
+  --color-medium-text       : var(--color-gray-500);
+  --color-strong-text       : var(--color-gray-900);
+
+  --color-soft-bg           : white;
+  --color-medium-bg         : var(--color-gray-100);
+  --color-strong-bg         : var(--color-gray-200);
+
+  --color-border            : var(--color-gray-300);
+
+  --color-dark-primary      : #6d4aff;
+  --color-dark-secondary    : var(--color-pink-500);
+  --color-dark-success      : var(--color-green-500);
+  --color-dark-error        : var(--color-red-500);
+  --color-dark-warning      : var(--color-yellow-500);
+  --color-dark-neutral      : var(--color-gray-500);
+
+  --color-dark-soft-text    : var(--color-gray-400);
+  --color-dark-medium-text  : var(--color-gray-500);
+  --color-dark-strong-text  : var(--color-gray-900);
+
+  --color-dark-soft-bg      : white;
+  --color-dark-medium-bg    : var(--color-gray-100);
+  --color-dark-strong-bg    : var(--color-gray-200);
+
+  --color-dark-border       : var(--color-gray-300);
+
+  /* filter-brightness */
+  --brightness-soft         : 90%;
+  --brightness-medium       : 80%;
+  --brightness-strong       : 70%;
+
+  --brightness-dark-soft    : 120%;
+  --brightness-dark-medium  : 140%;
+  --brightness-dark-strong  : 160%;
+
+  /* border-radius */
+  --radius-app-base         : 0;
+  --radius-app-md           : var(--radius-md);
+  --radius-app-lg           : var(--radius-xl);
+  --radius-app-xl           : 9999px;
+
+  /* font-weight */
+  --font-weight-app-base    : var(--font-weight-normal);
+  --font-weight-app-semibold: var(--font-weight-semibold);
+  --font-weight-app-bold    : var(--font-weight-extrabold);
+
+  /* font-size */
+  --text-app-xxs             : 10px;
+  --text-app-xs             : var(--text-xs);
+  --text-app-sm             : var(--text-sm);
+  --text-app-base           : var(--text-base);
+  --text-app-md             : var(--text-lg);
+  --text-app-lg             : var(--text-xl);
+  --text-app-xl             : var(--text-2xl);
+  --text-app-2xl            : var(--text-3xl);
+  --text-app-3xl            : var(--text-4xl);
+  --text-app-4xl            : var(--text-5xl);
+  --text-app-5xl            : var(--text-6xl);
+  --text-app-6xl            : var(--text-7xl);
+
+  /* spacing */
+  --spacing-app-xxs         : calc(var(--spacing) * 1);
+  --spacing-app-xs          : calc(var(--spacing) * 2);
+  --spacing-app-sm          : calc(var(--spacing) * 3);
+  --spacing-app-base        : calc(var(--spacing) * 4);
+  --spacing-app-md          : calc(var(--spacing) * 6);
+  --spacing-app-lg          : calc(var(--spacing) * 8);
+  --spacing-app-xl          : calc(var(--spacing) * 12);
+
+  /* duration */
+  --instant                 : 50ms;
+  --really-quick            : 100ms;
+  --quick                   : 200ms;
+  --medium                  : 300ms;
+  --slow                    : 1000ms;
+
+  /* leading, tracking, shadow, blur, border */
+
+  /* SmartInterventions colors */
+  --color-mine: var(--color-primary);
+  --color-update: var(--color-primary);
+  --color-unassigned: var(--color-neutral);
+  --color-draft: var(--color-warning);
+  
+  --color-create: var(--color-primary);
+  --color-edit: var(--color-warning);
+  --color-delete: var(--color-error);
+
+  --color-strong-to-complete-status: var(--color-strong-warning);
+  --color-to-complete-status: var(--color-warning);
+
+  --color-strong-in-progress-status: var(--color-strong-primary);
+  --color-in-progress-status: var(--color-primary);
+
+  --color-done-status: var(--color-success);
+  --color-strong-done-status: var(--color-strong-success);
+
+  --color-strong-to-do-status: var(--color-strong-neutral);
+  --color-to-do-status: var(--color-neutral);
+
+  --color-draft-status: var(--color-warning);
+  --color-update-status: var(--color-primary);
+
+  --color-urgent: var(--color-error);
+}
+
+.dark {
+  --color-primary           : var(--color-dark-primary);
+  --color-secondary         : var(--color-dark-secondary);
+  --color-success           : var(--color-dark-success);
+  --color-error             : var(--color-dark-error);
+  --color-warning           : var(--color-dark-warning);
+  --color-neutral           : var(--color-dark-neutral); 
+
+  --color-soft-text         : var(--color-dark-soft-text);
+  --color-medium-text       : var(--color-dark-medium-text);
+  --color-strong-text       : var(--color-dark-strong-text);
+
+  --color-soft-bg           : var(--color-dark-soft-bg);
+  --color-medium-bg         : var(--color-dark-medium-bg);
+  --color-strong-bg         : var(--color-dark-strong-bg);
+
+  --color-border            : var(--color-dark-border);
+
+  --brightness-soft         : var(--color-dark-soft);
+  --brightness-medium       : var(--color-dark-medium);
+  --brightness-strong       : var(--color-dark-strong);
+}
+
+  
+  /* @layer theme => Pour les variables
+  
+  @layer comonents => Pour les classes de composants
+  
+  layer utilities => Pour faire des classes ?
+  
+  @layer base =>
+  
+  @media, @custom-variant, @supports, @slot
+  
+  hover, focus, active, visited, focus-within, focus-visible
+  
+  first, last, odd, even
+  
+  before, after, content, placeholder, file, marker, selection
+  
+  first-line, first-letter
+  
+  backdrop for <dialog>
+  
+  nth, only-child, first-of-type, empty, first-child
+  
+  required, disabled, read-only, indeterminate, invalid, checked
+  
+  has-*, group-*, peer-*, not-*, nth-*, in-*
+  
+  not-focus, ...
+  
+  data-current, grid-template-columns
+  
+  @container for the parent and @ in front of md, lg, etc to style an element based on the width of a parent element
+  
+  dark, motion-reduce | motion-safe, contrast-more | contrast-safe, forced-colors | not-forced-colors, portrait | landscape, supports | not-supports, rtl | ltr
+  
+  print
+  
+  starting:open
+  
+  data attributes
+  
+  open for <details> and <dialog> also working with popover and popovertarget attributes
+  
+  inert
+  
+  * to style children elements and ** to style all descendants. Warning: children can't override their own styling
+  
+  <button
+    style={{
+      "--bg-color": buttonColor,
+      "--bg-color-hover": buttonColorHover,
+      "--text-color": textColor,      }}
+      className="bg-(--bg-color) text-(--text-color) hover:bg-(--bg-color-hover) ..."
+  >
+    {children}    
+  </button>
+  
+  !important (important or prefix in front of @import "tailwindcss")
+  
+  @theme {  --breakpoint-2xl: initial;} to reset breakpoint
+  
+  @theme {  --breakpoint-*: initial;  --breakpoint-tablet: 40rem;  --breakpoint-laptop: 64rem;  --breakpoint-desktop: 80rem;}
+  
+  @custom-variant dark (&:where(.dark, .dark *));
+  
+  @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+  
+  @theme {  --color-mint-500: oklch(0.72 0.11 178);} */
