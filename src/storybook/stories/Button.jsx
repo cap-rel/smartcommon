@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 import './button.css';
 
-/** Primary UI component for user interaction */
+/** UI button component for user interaction */
 export const Button = ({
   primary = false,
   backgroundColor = null,
