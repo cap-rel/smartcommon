@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 export const propTypes = {
     /** Every component must have an id. It allows to use generated css variables (position, height, ...) and identify in some case (form errors, ...). Ex: "login-button" */
     id: PropTypes.string.isRequired,
+    /** Variant */
+    variant: PropTypes.oneOfType([PropTypes.arrayOf([PropTypes.string, PropTypes.object]), PropTypes.string, PropTypes.object]),
     /** Content og  */
     label: PropTypes.string,
     /** The icon must be */

@@ -47,6 +47,9 @@ export default {
         control: false,
         table: { category: 'Main' },
     },
+    variant: { 
+        table: { category: 'Main' },
+    },
     children: { 
         control: false,
         table: { category: 'Main' },
