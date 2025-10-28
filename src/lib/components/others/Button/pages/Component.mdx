@@ -1,0 +1,16 @@
+import { Meta, Title, ArgTypes, Subtitle, Description, Primary, Controls, Stories, Source, Canvas, Story, DocsContainer, DocsPage } from "@storybook/addon-docs/blocks";
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+<Title />
+<Subtitle />
+<Description />
+
+<Canvas sourceState="none" of={stories.Default}/>
+
+<Source of={stories.Default}/>
+
+<div className="h2" style={{ fontSize: "13px" }}>Props</div>
+<ArgTypes />
+{/* <Controls /> */}
