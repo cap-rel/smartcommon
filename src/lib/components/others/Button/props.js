@@ -30,3 +30,8 @@ export const propTypes = {
     /** UI button component for user interaction */
     badgeProps: PropTypes.object,
 };
+
+export const defaultProps = {
+    loading: false,
+    disabled: false
+};

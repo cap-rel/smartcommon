@@ -2,7 +2,7 @@ import { isNil } from "../../../utils/functions";
 import { useVariantMerger } from "../../../hooks";
 import { Spinner } from "../Spinner";
 
-import { propTypes } from "./props";
+import { propTypes, defaultProps } from "./props";
 
 // TODO badge
 
@@ -80,8 +80,4 @@ export const Button = (props) => {
 // --button-children-font-weight
 
 Button.propTypes = propTypes;
-
-Button.defaultProps = {
-    loading: false,
-    disabled: false
-};
+Button.defaultProps = defaultProps;
