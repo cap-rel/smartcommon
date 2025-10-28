@@ -1,0 +1,93 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+~~NOTOC~~
+
+<Meta title="SmartMaker" />
+
+# SmartMaker ou DoliMobile ?
+
+{/* {{ pasted:20250924-150331.png?200}} */}
+
+Au départ le projet portait le nom de DoliMobile et puis vu que la solution n'est pas que pour les périphériques mobiles et que le nom DoliMobile a été "piqué" par un autre projet nous avons changé de nom pour SmartMaker.
+
+Néanmoins vous trouverez peut-être encore le nom DoliMobile dans nos publications, merci de ne pas nous en vouloir et de faire vous-même la transposition : DoliMobile = ancien nom de SmartMaker.
+
+SmartMaker est le résultat d'un long travail de réflexion visant à apporter à l'écosystème Dolibarr une pile technique pour que les développeurs puissent proposer des interface mobiles natives en complément du Module Builder.
+
+L'objectif est de permettre à tout développeur dolibarr de proposer des PWA (Progressive Web App) et non des applications déployées via les portail des GAFAM (et donc soumises à leurs conditions).
+
+## Historique rapide
+
+Tout a commencé lors d'un devcamp dolibarr et a donné naissance à un GIFF (voir https://www.dolibarr.fr/forum/t/giff-socle-technique-mobile/43476) qui n'a malheureusement pas été financé ni porté par un réel groupe de partenaires dolibarr : https://decidim-dolibarr.informatique-libre.com/assemblies/assemblee-giff-socle-mobile sans doute par manque de moyens humains et une gestion des priorités dans le contexte actuel (facture électronique, certification du logiciel de caisse entre autre).
+
+## Motivations
+
+Dolibarr est un projet libre et nous pensons qu'il faut proposer une alternative décentralisée à nos utilisateurs pour ne pas les laisser se faire enfermer dans les écosystèmes des GAFAM comme c'est le cas lorsqu'on propose une application native diffusée sur Google play ou apple iTunes.
+
+Ainsi une application PWA développée à l'aide de SmartMaker sera simplement hébergée sur le dolibarr de l'utilisateur comme tout module dolibarr classique.
+
+L'utilisateur peut s'il le souhaite "ajouter une icône de lancement" sur le "bureau" de son smartphone (ou de ceux de ses utilisateurs) rendant ainsi l'accès à la PWA aussi simple qu'une application native.
+
+Pour simplifier également le processus nous vous invitons à générer un qrcode du chemin d'hébergement de la PWA ainsi les utilisateurs n'auront qu'a flasher le qrcode pour y avoir accès, encore plus facile que de faire une recherche sur le portail des GAFAM.
+
+Pour plus de détails concernant les PWA vous pouvez consulter la fiche wikipédia https://fr.wikipedia.org/wiki/Progressive_web_app
+
+SmartMaker est un projet porté par CAP-REL (preferred partner dolibarr) complètement ouvert et dont nous espérons voir le plus possible de choses intégrées dans le projet Dolibarr.
+
+## Backoffice (PHP)
+
+SmartMaker s'intègre dans un module normal dolibarr (par exemple généré avec le module builder natif de dolibarr) et propose l'utilisation d'API(s) côté backoffice pour rendre accessible les éléments dont l'application frontale a besoin.
+
+Vous pouvez ainsi développer dans votre module tout ce que vous voulez exposer à l'application frontale dans le langage du coeur de dolibarr.
+
+### Authentification
+
+La pile d'authentification est détaillée dans le projet SmartAuth : https://inligit.fr/cap-rel/dolibarr/plugin-smartauth/
+
+L'API native de dolibarr n'est à notre avis pas suffisante et nous a conduit à l'implémentation proposée dans [[:smartauth:start|SmartAuth]].
+
+Note: Le contenu du projet SmartAuth a été prévu pour être intégré dans le cœur de dolibarr où tout au moins nous espérons voir arriver dans le cœur une solution couvrant le même périmètre fonctionnel
+.
+### API métier pour votre application
+
+SmartMaker vous offre un cadre de développement moderne pour maximiser votre efficacité.
+
+SmartMaker apporte un routeur PHP comme vous pouvez en trouver dans des projets PHP modernes tels que symfony ou Laravel. Par exemple:
+
+{/* {{pasted:20250828-152354.png}} */}
+
+Lié à ce routeur un autoloader PSR-4 est également livré vous permettant de mettre en place une arborescence de fichiers logique répondant aux points d'entrées de votre table de routage PHP.
+
+(Les fichiers suffixés de Controller.php sont donc les classes controleur indiquées dans le routeur)
+
+{/* {{pasted:20250828-152620.png}} */}
+
+Ainsi la ligne suivante du routeur
+
+```PHP
+Route::get('home',      HomeController::class, 'index', true);
+```
+
+Implémente la méthode "GET /home" et fait appel à la fonction "index" de la classe HomeController ... tout est structuré et vous permet d'avoir un code facile à lire et à maintenir.
+
+La classe `HomeController` étant tout simplement implémentée dans le fichier `./smartmaker-api/HomeController.php` et sera chargée automatiquement par un autoloader (PSR-4). Note: Vous trouverez l'autoloader dans le fichier `smartmaker-api-prepend.php`
+
+## Front en react
+
+Le front est développé en react et de nombreux objets prêts à l'emploi sont proposés.
+
+Note: Si vous n'avez jamais mis les pieds dans le monde du développement mobile : votre code source pour la plate-forme mobile sera compilé (pour résumer le résultat sera un gros fichier "js"). Il est donc important de maîtriser la chaîne complète pour pouvoir implémenter l'application mobile.
+
+## Des outils complémentaires
+
+SmartMaker est livré avec des outils complémentaires dont en particulier un fichier Makefile qui fera sourire les "vieux" développeurs (make est particulièrement utilisé dans le développement C/C++).
+
+En effet, au lieu de devoir lancer des commandes compliquées nous avons tout regroupés dans le fichier Makefile qui vous permet de lancer des commandes plus simple. Make étant en mesure de vérifier un certain nombre de choses et d'automatiser des actions un peu comme un script.
+
+Ainsi par exemple pour compiler l'application mobile pwa et la lancer en mode développeur vous pouvez lancer uniquement la commande
+
+`> make pwadev`
+
+Pour plus de détails, regardez le fichier Makefile.dist 
+
+Note: Si vous avez des adaptations "locales" à implémenter vous pouvez le faire dans un nouveau fichier Makefile.local qui sera automatiquement inclus lors de l'appel à la commande make !
