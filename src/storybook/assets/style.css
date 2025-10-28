@@ -1,0 +1,10 @@
+.h2 {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 16px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: rgb(92, 104, 112);
+    border: 0px;
+    margin-bottom: 12px;
+}
