@@ -101,7 +101,7 @@ export default {
       // },
     // },
   },
-//   args: { onClick: fn() },
+  args: { onClick: fn() },
 };
 
 import { Default as Def, Outlined as Out, Uppercase as Upp } from "./stories";
@@ -110,4 +110,6 @@ export const Default = { tags: ["!dev"], ...Def };
 export const Outlined = { tags: ["!dev"], ...Out };
 export const Uppercase = { tags: ["!dev"], ...Upp };
 
-export { ButtonWithIcon } from "./stories";
+import { ButtonWithIcon as ButIco } from "./stories";
+
+export const ButtonWithIcon = { name: "Button With Icon", ...ButIco };
