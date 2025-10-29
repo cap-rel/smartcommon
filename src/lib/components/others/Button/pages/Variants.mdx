@@ -1,49 +1,8 @@
-import { Meta, Title, ArgTypes, Subtitle, Description, Primary, Controls, Stories, Source, Canvas, Story, DocsContainer, DocsPage } from "@storybook/addon-docs/blocks";
+import { Meta } from "@storybook/addon-docs/blocks";
 import * as stories from "../.stories";
 import * as variants from "../variants";
-import { toFirstUppercase } from "../../../../export";
+import { VariantsPage } from "../../../../../storybook";
 
 <Meta of={stories} />
 
-<div className="h1" style={{ fontSize: "32px", marginBottom: "16px" }}>Variants</div>
-
-<Description />
-
-<div style={{ fontSize: "16px", marginTop: "20px" }}>
-    <div style={{ position: "relative" }}>
-        <table class="docblock-argstable sb-unstyled st-table">
-            <thead class="docblock-argstable-head">
-                <tr>
-                    <th><span>Variant</span></th>
-                    <th><span>Description</span></th>
-                    <th><span>Preview</span></th>
-                    {/* <th><span>Code</span></th> */}
-                </tr>
-            </thead>
-            <tbody class="docblock-argstable-body st-tbody">
-                {Object.entries(variants).map(([name, variant]) => {
-                    console.log(name[0].toUpperCase() + name.slice(1))
-                    return (
-                        <tr>
-                            <td class="first-td"><span class="first-span">{name}</span></td>
-                            {/* <td><div><span>Description</span></div></td> */}
-                            <td><Description  of={stories[toFirstUppercase(name)]} /></td>
-                            <td><Canvas of={stories[toFirstUppercase(name)]} /></td>
-                            {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
-                        </tr>   
-                        
-                    )
-                })}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-{/* ### Test
-qsdfqsdf
-<Canvas of={stories.Test} /> */}
-
-{/* <Source of={ButtonStories.Test} /> */}
-
-
-{/* <Stories /> */}
+<VariantsPage of={stories} variants={variants} />
