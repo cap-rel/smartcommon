@@ -5,7 +5,6 @@ import { fn } from 'storybook/test';
 
 import { Button } from './';
 import { FaApple, FaBook, FaUser } from 'react-icons/fa6';
-import { PropsPage } from '../../../../storybook';
 
 import * as variants from "./variants";
 
