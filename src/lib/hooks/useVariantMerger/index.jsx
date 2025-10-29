@@ -83,14 +83,34 @@ export const useVariantMerger = (componentKey, props) => {
     
     const variants = {
         button: {
+            reverse: {
+                buttonProps: {
+                    className: "flex-row-reverse"
+                }
+            },
             outlined: {
                 buttonProps: {
                     className: "text-gray-800 bg-white border"
                 },
+                Spinner: {
+                    spinnerProps: {
+                        className: "border-primary border-l-secondary"
+                    }
+                }
             },
             uppercase: {
                 labelProps: {
-                    className: "uppercase"
+                    className: "uppercase font-normal tracking-widest"
+                }
+            },
+            floatingRight: {
+                buttonProps: {
+                    className: "absolute bottom-4 right-4 shadow-md"
+                }
+            },
+            rounded: {
+                buttonProps: {
+                    className: "p-app-base rounded-full"
                 }
             }
         }

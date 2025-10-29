@@ -10,7 +10,7 @@ import { propTypes, defaultProps } from "./props";
 export const Button = (props) => {
     const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("button", props);
 
-    const { id, label, loading = false, icon, badge, children, disabled } = variantProps;
+    const { id, label, loading, icon, badge, children, disabled } = variantProps;
     
     return (
         <button { ...mergeProps("button", props => ({

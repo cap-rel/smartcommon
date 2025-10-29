@@ -26,7 +26,7 @@ export const VariantsPage = (props) => {
                                     <tr>
                                         <td class="first-td"><span class="first-span">{variant}</span></td>
                                         {/* <td><div><span>Description</span></div></td> */}
-                                        <td><Description  of={of[toFirstUppercase(variant)]} /></td>
+                                        <td><Description of={of[toFirstUppercase(variant)]} /></td>
                                         <td><Canvas of={of[toFirstUppercase(variant)]} /></td>
                                         {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
                                     </tr>   

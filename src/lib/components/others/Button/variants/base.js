@@ -1,14 +1,10 @@
-export const outlined = () => ({
-    buttonProps: {
-        className: "text-strong-text bg-soft-text border border-border"
-    },
-    labelProps: {
-        className: "uppercase"
-    }
-});
+export const outlined = () => ({});
 
-export const uppercase = () => ({
-    labelProps: {
-        className: "uppercase"
-    }
-});
+export const uppercase = () => ({});
+
+export const reverse = () => ({});
+
+export const floatingRight = () => ({});
+
+export const rounded = () => ({});
+

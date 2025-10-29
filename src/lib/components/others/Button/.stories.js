@@ -103,14 +103,17 @@ export default {
   args: { onClick: fn() },
 };
 
-import { Default as Def, Outlined as Out, Uppercase as Upp } from "./stories";
+import { Default as Def, Outlined as Out, Uppercase as Upp, Reverse as Rev, FloatingRight as FloRig, Rounded as Rou } from "./stories";
 
 export const Default = { tags: ["!dev"], ...Def };
 export const Outlined = { tags: ["!dev"], ...Out };
 export const Uppercase = { tags: ["!dev"], ...Upp };
+export const Reverse = { tags: ["!dev"], ...Rev };
+export const FloatingRight = { tags: ["!dev"], parameters: { layout: "fullscreen" }, ...FloRig };
+export const Rounded = { tags: ["!dev"], ...Rou };
 
-import { ButtonWithIcon as ButIco, ButtonWithChildren as ButChi } from "./stories";
+import { ButtonWithIcon as ButIco, IconButton as IcoBut } from "./stories";
 
 export { Button } from "./stories";
 export const ButtonWithIcon = { name: "Button with Icon", ...ButIco };
-export const ButtonWithChildren = { name: "Button with Children", ...ButChi };
+export const IconButton = { name: "Icon Button", ...IcoBut };
