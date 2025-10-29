@@ -110,6 +110,8 @@ export const Default = { tags: ["!dev"], ...Def };
 export const Outlined = { tags: ["!dev"], ...Out };
 export const Uppercase = { tags: ["!dev"], ...Upp };
 
-import { ButtonWithIcon as ButIco } from "./stories";
+import { ButtonWithIcon as ButIco, ButtonWithChildren as ButChi } from "./stories";
 
-export const ButtonWithIcon = { name: "Button With Icon", ...ButIco };
+export { Button } from "./stories";
+export const ButtonWithIcon = { name: "Button with Icon", ...ButIco };
+export const ButtonWithChildren = { name: "Button with Children", ...ButChi };
