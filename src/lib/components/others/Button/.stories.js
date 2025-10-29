@@ -104,4 +104,10 @@ export default {
 //   args: { onClick: fn() },
 };
 
-export { Default, Test } from "./stories";
+import { Default as Def, Outlined as Out, Uppercase as Upp } from "./stories";
+
+export const Default = { tags: ["!dev"], ...Def };
+export const Outlined = { tags: ["!dev"], ...Out };
+export const Uppercase = { tags: ["!dev"], ...Upp };
+
+export { ButtonWithIcon } from "./stories";
