@@ -1,1 +1,1 @@
-export * from "./outlined";
+export * from "./base";
