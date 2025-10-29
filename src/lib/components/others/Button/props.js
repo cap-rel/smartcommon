@@ -14,7 +14,7 @@ export const propTypes = {
     /** UI button component for user interaction */
     loading: PropTypes.bool,
     /** UI button component for user interaction */
-    badge: PropTypes.number,
+    badge: PropTypes.string,
     /** UI button component for user interaction */
     disabled: PropTypes.bool,
     /** UI button component for user interaction */
