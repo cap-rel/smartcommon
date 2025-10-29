@@ -206,3 +206,7 @@ import { isArray, isEmpty, isNil } from "./type";
     const formatted = JSON.stringify(value, null, 2);
     document.write("<pre>" + formatted + "</pre>");
   }
+
+  export function toFirstUppercase(string) {
+    return string[0].toUpperCase() + string.slice(1);
+  }
