@@ -1,17 +1,17 @@
 import { Meta, Title, ArgTypes, Subtitle, Description, Primary, Controls, Stories, Source, Canvas, Story, DocsContainer, DocsPage } from "@storybook/addon-docs/blocks";
 import * as stories from "../.stories";
-import { outlined } from "../variants";
+import * as variants from "../variants";
+import { toFirstUppercase } from "../../../../export";
 
-<Meta of={stories} name="Variants and stories" />
+<Meta of={stories} />
 
-<Title />
-<Subtitle />
+<div className="h1" style={{ fontSize: "32px", marginBottom: "16px" }}>Variants</div>
+
 <Description />
 
-<div className="h2" style={{ fontSize: "13px", marginBottom: "12px" }}>Variants</div>
-<div class="css-14m39zm">
-    <div class="css-79elbk">
-        <table class="docblock-argstable sb-unstyled css-v2ifgj">
+<div style={{ fontSize: "16px", marginTop: "20px" }}>
+    <div style={{ position: "relative" }}>
+        <table class="docblock-argstable sb-unstyled st-table">
             <thead class="docblock-argstable-head">
                 <tr>
                     <th><span>Variant</span></th>
@@ -20,27 +20,28 @@ import { outlined } from "../variants";
                     {/* <th><span>Code</span></th> */}
                 </tr>
             </thead>
-            <tbody class="docblock-argstable-body">
-                <tr>
-                    <td class="css-4lbn0a"><span class="css-in3yi3">outlined</span></td>
-                    <td><div class="css-18pz2h2"><span>Description</span></div></td>
-                    <td><Canvas of={stories.Test} /></td>
-                    {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
-                </tr>
-                  <tr>
-                    <td class="css-4lbn0a"><span class="css-in3yi3">outlined</span></td>
-                    <td><div class="css-18pz2h2"><span>Description</span></div></td>
-                    <td><Canvas of={stories.Test} source={{ code: outlined.toString() }} /></td>
-                    {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
-                </tr>
+            <tbody class="docblock-argstable-body st-tbody">
+                {Object.entries(variants).map(([name, variant]) => {
+                    console.log(name[0].toUpperCase() + name.slice(1))
+                    return (
+                        <tr>
+                            <td class="first-td"><span class="first-span">{name}</span></td>
+                            {/* <td><div><span>Description</span></div></td> */}
+                            <td><Description  of={stories[toFirstUppercase(name)]} /></td>
+                            <td><Canvas of={stories[toFirstUppercase(name)]} /></td>
+                            {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
+                        </tr>   
+                        
+                    )
+                })}
             </tbody>
         </table>
     </div>
 </div>
 
-### Test
+{/* ### Test
 qsdfqsdf
-<Canvas of={stories.Test} />
+<Canvas of={stories.Test} /> */}
 
 {/* <Source of={ButtonStories.Test} /> */}
 
