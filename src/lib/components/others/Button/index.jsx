@@ -16,10 +16,12 @@ export const Button = (props) => {
         <button { ...mergeProps("button", props => ({
             ...props,
             ...mergeQuickProps(props, ["onClick", "disabled", "onFocus", "onBlur", "type"]),
-            className: `relative flex justify-center items-center 
+            className: `relative flex justify-center items-center
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
-            not-disabled:active:brightness-soft disabled:brightness-soft`,
+            not-disabled:active:brightness-soft disabled:brightness-soft
+            ${(!disabled && !loading) && "cursor-pointer"}
+            `,
             disabled: loading || disabled
         }))}>
             {loading &&
