@@ -111,7 +111,8 @@ export const SignaturePad = (props) => {
         value={currentValue.signer}
         hidden
       />
-      <input
+      {/* TODO gpsPoints is possibly not an array */}
+      {/* <input
         name={name}
         onChange={() => {}}
         value={currentValue.gpsPoints[0]}
@@ -122,7 +123,7 @@ export const SignaturePad = (props) => {
         onChange={() => {}}
         value={currentValue.gpsPoints[1]}
         hidden
-      />
+      /> */}
 
       <div { ...mergeProps("mainContainer", props => ({
         ...props,
