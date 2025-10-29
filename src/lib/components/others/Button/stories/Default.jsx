@@ -1,24 +1,19 @@
 import { FaUser } from "react-icons/fa6";
+import { setDefaultStory } from "../../../../../storybook";
 
-export const Default = {
+export const Default = setDefaultStory({
   args: {
     label: "Login",
     icon: FaUser
   },
-  parameters: {
-    docs: {
-      source: {
-        code: `
-          import { Button } from "@cap-rel/smartcommon";
-          import { FaUser } from "react-icons/fa6";
+  code: `
+    import { Button } from "@cap-rel/smartcommon";
+    import { FaUser } from "react-icons/fa6";
 
-          <Button
-            id="login-button"
-            label="Login"
-            icon={FaUser}
-          />
-        `
-      }
-    }
-  }
-};
+    <Button
+      id="login-button"
+      label="Login"
+      icon={FaUser}
+    />
+  `
+});

@@ -1,17 +1,10 @@
 import { uppercase } from "../../variants";
+import { setVariantStory } from "../../../../../../storybook";
 
-export const Uppercase = {
+export const Uppercase = setVariantStory({
   args: {
     label: "Login"
   },
-  parameters: {
-    docs: {
-      description: {
-        story: "Description Uppercase in configuration"
-      },
-      source: {
-        code: uppercase.toString().replace("() => (", "").slice(0, -1)
-      }
-    }
-  }
-};
+  description: "Description Uppercase in configuration",
+  variant: uppercase
+});
