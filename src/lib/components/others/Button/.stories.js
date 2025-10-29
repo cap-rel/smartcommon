@@ -7,6 +7,8 @@ import { Button } from './';
 import { FaApple, FaBook, FaUser } from 'react-icons/fa6';
 import { PropsPage } from '../../../../storybook';
 
+import * as variants from "./variants";
+
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories#default-export
 export default {
   title: 'Components/Others/Button',
@@ -33,11 +35,13 @@ export default {
   tags: ["Others"],
   argTypes: {
     id: { 
-        control: false,
-        table: { category: 'Main' },
+      control: false,
+      table: { category: 'Main' },
     },
     variant: { 
-        table: { category: 'Main' },
+      control: "inline-check",
+      options: Object.keys(variants),
+      table: { category: 'Main' },
     },
     children: { 
         control: false,
