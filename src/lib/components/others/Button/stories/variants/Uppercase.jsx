@@ -3,7 +3,8 @@ import { setVariantStory } from "../../../../../../storybook";
 
 export const Uppercase = setVariantStory({
   args: {
-    label: "Login"
+    label: "Login",
+    variant: "uppercase"
   },
   description: "Description Uppercase in configuration",
   variant: uppercase

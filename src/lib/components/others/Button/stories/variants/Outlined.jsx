@@ -3,7 +3,8 @@ import { setVariantStory } from "../../../../../../storybook";
 
 export const Outlined = setVariantStory({
   args: {
-    label: "Login"
+    label: "Login",
+    variant: "outlined"
   },
   description: "Description Outlined in configuration",
   variant: outlined
