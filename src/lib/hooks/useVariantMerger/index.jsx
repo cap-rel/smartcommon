@@ -65,29 +65,44 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    const { theme, themes, variants } = useLib() ?? {}; // TODO
+    // const { theme, themes, variants } = useLib() ?? {}; // TODO
 
     // if (isNil(themes)) {
     //     throw new Error("No themes provided");
     // }
 
-    const themeVariant = themes?.[theme]?.[componentKey];
+    // const themeVariant = themes?.[theme]?.[componentKey];
 
-    const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
+    // const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
 
     // if (isNil(variants)) {
     //   throw new Error("No variants provided");
     // }
 
-    // const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
-    //     if (isString(variant)) {
-    //         return variants[componentKey]?.[variant] || {};
-    //     } else {
-    //         return variant || {};
-    //     }
-    // });
+    // ...themeVariantArray,
+    
+    const variants = {
+        button: {
+            outlined: {
+                buttonProps: {
+                    className: "text-gray-800 bg-white border"
+                },
+            },
+            uppercase: {
+                labelProps: {
+                    className: "uppercase"
+                }
+            }
+        }
+    };
 
-    const variant = [];
+    const variant = [...toArray(props.variant)].map(variant => {
+        if (isString(variant)) {
+            return variants[componentKey]?.[variant] || {};
+        } else {
+            return variant || {};
+        }
+    });
 
     let variantProps = [...variant, props].reduce((acc, variant) => mergeVariant(acc, variant), {});
 
