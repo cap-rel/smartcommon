@@ -91,8 +91,6 @@ export const useVariantMerger = (componentKey, props) => {
 
     let variantProps = [...variant, props].reduce((acc, variant) => mergeVariant(acc, variant), {});
 
-    console.log(variantProps);
-
     const mergeDefaultElementProps = (defaultProps = {}, props = {}) => ({        
         ...defaultProps,
         style: { ...(defaultProps.style || {}), ...(props.style || {})},
