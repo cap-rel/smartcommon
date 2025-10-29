@@ -54,7 +54,11 @@ export const Button = (props) => {
                 </div>
             }
 
-            {label && label}
+            {!isNil(label) &&
+                <div { ...mergeProps("label", props => props)}>
+                    {label}
+                </div>
+            }
 
             {children}
 
