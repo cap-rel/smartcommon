@@ -13,14 +13,14 @@ export default {
   component: Button,
   // subcomponents: { Header },
   parameters: {
-    options: {
-      showPanel: true,
-    },
     docs: {
-      description: {
-        story: 'Another description, overriding the comments',
-      },
+      codePanel: true
     },
+    // docs: {
+    //   description: {
+    //     story: 'Another description, overriding the comments',
+    //   },
+    // },
     // backgrounds: {
     //   options: {
     //     red: { name: 'Red', value: '#f00' },
