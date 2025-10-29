@@ -30,7 +30,7 @@ export default {
     // },
     layout: 'centered',
   },
-  tags: ["others"],
+  tags: ["Others"],
   argTypes: {
     id: { 
         control: false,
