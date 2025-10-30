@@ -63,12 +63,8 @@ const config = {
 // 
 // - Configurer par défaut
 
-const useSC = () => {
-  return { themes, variants, SCVariantsOnly, SCThemesOnly }
-};
-
 // i18n => download JSON files or copy JSON from the site
 
 // useVariantMerge => mergeProps, variantProps, mergeQuickProps, setParams ?
 // Provider
-// useConfig ou useSmartCommon
+// useConfig ou useSmartCommon ou useLib
