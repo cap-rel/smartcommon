@@ -4,10 +4,9 @@ import { useLib } from "../useLib";
 export const useApi = (props) => {
   let { url, token = "", errors = {} } = props;
 
-  const { api } = useLib() ?? {};
-  const { url: configUrl } = api ?? {};
+  const { config } = useLib() ?? {};
 
-  url = url ?? configUrl;
+  url = url ?? config?.api?.url;
 
   const fetchApi = async (path, method = "GET", body, requestRest = {}, requestErrors = {}) => {
     let request = {
