@@ -4,7 +4,7 @@ import { I18nextProvider } from "../I18nextProvider";
 export const LibContext = createContext();
 
 export const Provider = (props) => {
-  const { children, mergedClass, config, variants, themes } = props;
+  const { children, config } = props;
   
   return (
     <LibContext.Provider value={{ config }}>
@@ -34,6 +34,7 @@ const config = {
   // Variantes fournis par le dev => { Button: { variant1, variant2 } }
   variants: {},
   // Configuration des composants (pour l'instant, il n'y a que les variantes (array, string ou object))
+  // On pourrait rajouter les erreurs pour les composants de formulaire
   components: {
     Button: {
       variant: ""
@@ -43,7 +44,19 @@ const config = {
   // Classes qui doivent être prises en compte par le twMerge. Si une classe n'a pas l'air de fonctionner en dev, on la met la dedans
   mergedClass: "",
   // Par défaut en anglais, oui ou non smartcommon est traduit donc utilisation des function de i18next
-  translated: true
+  i18n: {
+    translated: true
+  },
+  // Pour le useApi
+  api: {
+    // l'url pourrait être une simple url (string) ou un objet d'url et on pourrait sélectionner la clé
+    url: ""
+  },
+  // Pour le hook compression (useCompression ? useFile)
+  compression: {
+
+  },
+
 };
 
 // Deux moyens de faire configurer les variantes des composants par défaut:
