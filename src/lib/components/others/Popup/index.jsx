@@ -7,6 +7,8 @@ import { applyFunctionIfNotNil, isNil } from "../../../utils";
 
 // TODO z-index prop
 
+// TODO error when click on overlay (surely relative to the close function)
+
 export const Popup = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("popup", props);
 
