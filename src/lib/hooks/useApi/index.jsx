@@ -5,7 +5,7 @@ export const useApi = (props) => {
   let { url, token = "", errors = {} } = props;
 
   const { api } = useLib() ?? {};
-  const { url: configUrl } = api;
+  const { url: configUrl } = api ?? {};
 
   url = url ?? configUrl;
 
