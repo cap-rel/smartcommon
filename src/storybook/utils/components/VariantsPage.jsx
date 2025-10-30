@@ -11,8 +11,8 @@ export const VariantsPage = (props) => {
 
             <div style={{ fontSize: "16px", marginTop: "20px" }}>
                 <div style={{ position: "relative" }}>
-                    <table class="docblock-argstable sb-unstyled st-table">
-                        <thead class="docblock-argstable-head">
+                    <table className="docblock-argstable sb-unstyled st-table">
+                        <thead className="docblock-argstable-head">
                             <tr>
                                 <th><span>Variant</span></th>
                                 <th><span>Description</span></th>
@@ -20,11 +20,11 @@ export const VariantsPage = (props) => {
                                 {/* <th><span>Code</span></th> */}
                             </tr>
                         </thead>
-                        <tbody class="docblock-argstable-body st-tbody">
-                            {Object.keys(variants).map(variant => {
+                        <tbody className="docblock-argstable-body st-tbody">
+                            {Object.keys(variants).map((variant, VI) => {
                                 return (
-                                    <tr>
-                                        <td class="first-td"><span class="first-span">{variant}</span></td>
+                                    <tr key={`variant${VI}`}>
+                                        <td className="first-td"><span className="first-span">{variant}</span></td>
                                         {/* <td><div><span>Description</span></div></td> */}
                                         <td><Description of={of[toFirstUppercase(variant)]} /></td>
                                         <td><Canvas of={of[toFirstUppercase(variant)]} /></td>
