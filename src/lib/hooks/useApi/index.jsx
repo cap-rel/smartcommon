@@ -1,6 +1,14 @@
 import { isFunction } from "../../utils";
+import { useLib } from "../useLib";
 
-export const useApi = (url, token = "", errors = {}) => {
+export const useApi = (props) => {
+  let { url, token = "", errors = {} } = props;
+
+  const { api } = useLib() ?? {};
+  const { url: configUrl } = api;
+
+  url = url ?? configUrl;
+
   const fetchApi = async (path, method = "GET", body, requestRest = {}, requestErrors = {}) => {
     let request = {
       method: method,
