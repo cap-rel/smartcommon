@@ -257,7 +257,7 @@ export const PhotosUploader = (props) => {
                 }))} />
                 <div className="flex gap-app-xs items-center">
                     <Button { ...mergeProps("DeleteButton", props => ({
-                        icon: <FaTrashCan />,
+                        icon: FaTrashCan,
                         ...props,
                         onClick: e => {
                             e.preventDefault();
@@ -272,7 +272,7 @@ export const PhotosUploader = (props) => {
                         Supprimer la photo
                     </Button>
                     <Button
-                        icon={<FaCamera />}
+                        icon={FaCamera}
                         onClick={() => {
                             if (multiple) {
                                 set("selectedPhotoIndex", null);
@@ -359,7 +359,7 @@ export const PhotosUploader = (props) => {
                     // border-t pt-4 border-border
                 }))}>
                     <Button { ...mergeProps("CaptureButton", props => ({
-                        icon: <FaCamera />,
+                        icon: FaCamera,
                         loading: isInputInCaptureMode && isPhotoLoading,
                         ...props,
                         disabled: disabled || isPhotoLoading,
@@ -374,7 +374,7 @@ export const PhotosUploader = (props) => {
                         }
                     }))} />
                     <Button { ...mergeProps("ImportButton", props => ({
-                        icon: <FaFileImport />,
+                        icon: FaFileImport,
                         loading: !isInputInCaptureMode && isPhotoLoading,
                         ...props,
                         disabled: disabled || isPhotoLoading,

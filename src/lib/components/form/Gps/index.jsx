@@ -188,7 +188,7 @@ export const Gps = props => {
           hidden
         />
         <Button { ...mergeProps("LocateButton", props => ({
-          icon: <FaLocationDot />,
+          icon: FaLocationDot,
           ...props,
           loading: isLocating,
           disabled: disabled,

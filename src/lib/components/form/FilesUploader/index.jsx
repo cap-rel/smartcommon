@@ -168,7 +168,8 @@ export const FilesUploader = ({
                         {isEmpty(file.title) ? "Sans titre" : file.title}
                     </div>
                     <Button
-                        left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
+                        left={RiCloseLargeFill}
+                        // left={<RiCloseLargeFill { ...deleteButtonIconProps} />}
                         { ...deleteButtonProps}
                         onClick={e => deleteFile(e, index)}
                         className={twMerge(`rounded-full bg-strong text-soft-text`, deleteButtonProps?.className)}

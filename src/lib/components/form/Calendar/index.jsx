@@ -272,7 +272,7 @@ export const Calendar = (props) => {
         }))}>
 
             <Button { ...mergeProps("PreviousButton", props => ({
-              icon: <FaArrowLeft />,
+              icon: FaArrowLeft,
               ...props,
               onClick: e => {
                 e.preventDefault();
@@ -343,7 +343,7 @@ export const Calendar = (props) => {
             </div>
 
             <Button { ...mergeProps("NextButton", props => ({
-              icon: <FaArrowRight />,
+              icon: FaArrowRight,
               ...props,
               onClick: e => {
                 e.preventDefault();

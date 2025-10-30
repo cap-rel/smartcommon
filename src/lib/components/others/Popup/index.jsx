@@ -58,7 +58,7 @@ export const Popup = (props) => {
 
                             {closeButton &&
                                 <Button { ...mergeProps("Button", props => ({
-                                    icon: <RiCloseLargeLine />,
+                                    icon: RiCloseLargeLine,
                                     ...props,
                                     onClick: e => {
                                         e.preventDefault();

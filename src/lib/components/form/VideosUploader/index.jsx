@@ -259,7 +259,7 @@ export const VideosUploader = (props) => {
                     }
                 }))} />
                 <Button { ...mergeProps("DeleteButton", props => ({
-                    icon: <FaTrashCan />,
+                    icon: FaTrashCan,
                     ...props,
                     className: `w-full`,
                     onClick: e => {
@@ -317,7 +317,7 @@ export const VideosUploader = (props) => {
                     // border-t pt-4 border-border
                 }))}>
                     <Button { ...mergeProps("CaptureButton", props => ({
-                        icon: <FaVideo />,
+                        icon: FaVideo,
                         loading: isInputInCaptureMode && isVideoLoading,
                         ...props,
                         disabled: isVideoLoading,
@@ -332,7 +332,7 @@ export const VideosUploader = (props) => {
                         }
                     }))} />
                     <Button { ...mergeProps("ImportButton", props => ({
-                        icon: <FaFileImport />,
+                        icon: FaFileImport,
                         loading: !isInputInCaptureMode && isVideoLoading,
                         ...props,
                         disabled: isVideoLoading,

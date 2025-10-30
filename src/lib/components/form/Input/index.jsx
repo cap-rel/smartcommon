@@ -225,7 +225,7 @@ export const Input = (props) => {
         {!isNil(step) &&
           <>
             <Button { ...mergeProps("MinusButton", props => ({
-              icon: <FaMinus />,
+              icon: FaMinus,
               ...props,
               disabled: disabled,
               onClick: e => {
@@ -239,7 +239,7 @@ export const Input = (props) => {
               }
             }))} />
             <Button { ...mergeProps("PlusButton", props => ({
-              icon: <FaPlus />,
+              icon: FaPlus,
               ...props,
               disabled: disabled,
               onClick: e => {
@@ -257,7 +257,7 @@ export const Input = (props) => {
 
         {isPassword &&
           <Button { ...mergeProps("PasswordButton", props => ({
-            icon: isPasswordVisible ? <FaEyeSlash /> : <FaEye />,
+            icon: isPasswordVisible ? FaEyeSlash : FaEye,
             ...props,
             disabled: disabled,
             onClick: e => {

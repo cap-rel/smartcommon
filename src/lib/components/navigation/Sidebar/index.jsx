@@ -92,7 +92,7 @@ export const Sidebar = (props) => {
         {toggleButton &&
           <Button { ...mergeProps("Button", props => ({
             id: ButtonId,
-            icon: isOpen ? <IoCloseSharp /> : <IoMenuSharp />,
+            icon: isOpen ? IoCloseSharp : IoMenuSharp,
             ...props,
             buttonProps: {
               ...props.buttonProps,

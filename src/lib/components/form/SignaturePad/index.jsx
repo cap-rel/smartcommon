@@ -136,7 +136,7 @@ export const SignaturePad = (props) => {
         }))}>
 
           <Button { ...mergeProps("EraseButton", props => ({
-            icon: <FaEraser />,
+            icon: FaEraser,
             ...props,
             disabled: blocked,
             buttonProps: {
@@ -158,7 +158,7 @@ export const SignaturePad = (props) => {
           </div>
 
           <Button { ...mergeProps("ValidateButton", props => ({
-            icon: <FaSignature />,
+            icon: FaSignature,
             ...props,
             disabled: blocked,
             buttonProps: {

@@ -263,7 +263,7 @@ export const AudiosUploader = (props) => {
                     }
                 }))} />
                 <Button { ...mergeProps("DeleteButton", props => ({
-                    icon: <FaTrashCan />,
+                    icon: FaTrashCan,
                     ...props,
                     className: `w-full`,
                     onClick: e => {
@@ -321,7 +321,7 @@ export const AudiosUploader = (props) => {
                     // border-t pt-4 border-border
                 }))}>
                     <Button { ...mergeProps("CaptureButton", props => ({
-                        icon: <FaMicrophoneLines />,
+                        icon: FaMicrophoneLines,
                         loading: isInputInCaptureMode && isAudioLoading,
                         ...props,
                         disabled: isAudioLoading,
@@ -336,7 +336,7 @@ export const AudiosUploader = (props) => {
                         }
                     }))} />
                     <Button { ...mergeProps("ImportButton", props => ({
-                        icon: <FaFileImport />,
+                        icon: FaFileImport,
                         loading: !isInputInCaptureMode && isAudioLoading,
                         ...props,
                         disabled: isAudioLoading,
