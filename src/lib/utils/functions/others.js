@@ -86,6 +86,16 @@ import { isArray, isEmpty, isNil } from "./type";
     return array;
   };
 
+  export const sortObjectByNumber = (object, prop, sort = "ascending") => {
+    const sortedEntries = Object.entries(object).sort(([, a], [, b]) => {
+      const valA = prop ? a[prop] : a;
+      const valB = prop ? b[prop] : b;
+      return sort === "ascending" ? valA - valB : valB - valA;
+    });
+
+    return Object.fromEntries(sortedEntries);
+  }
+
   export const sortArrayByString = (array, prop, sort = "ascending") => {
     const compare = (a, b) => {
       const valA = (prop ? a[prop] : a)?.toLowerCase?.() ?? '';
