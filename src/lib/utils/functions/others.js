@@ -220,3 +220,18 @@ import { isArray, isEmpty, isNil } from "./type";
   export function toFirstUppercase(string) {
     return string[0].toUpperCase() + string.slice(1);
   }
+
+export function mergeObj(obj1, obj2) {
+  const mergedObj = { ...obj1 };
+  for (const key in obj2) {
+    // if (obj2[key] && typeof obj2[key] === 'object' && !isArray(obj2[key])) {
+    //   result[key] = deepMerge(result[key] || {}, obj2[key]);
+    // }
+    if (key in mergedObj) {
+      mergedObj[key] = { ...mergedObj[key], ...obj2[key] };
+    } else {
+      mergedObj[key] = obj2[key];
+    }
+  }
+  return mergedObj;
+};
