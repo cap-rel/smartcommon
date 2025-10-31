@@ -65,6 +65,30 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
+    const { config } = useLib() ?? {}; // TODO
+    const { theme, themes, variants, components } = config ?? {};
+
+    // if (isNil(themes)) {
+    //     throw new Error("No themes provided");
+    // }
+
+    const scThemes = {
+        theme3: {
+            Button: "rounded"
+        },
+        theme4: {
+            Button: ["rounded"]
+        }
+    };
+
+    const themeVariant = mergeObj(scThemes, themes)?.[theme]?.[componentKey];
+
+    const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
+
+    // if (isNil(variants)) {
+    //   throw new Error("No variants provided");
+    // }
+
     const scVariants = {
         Button: {
             reverse: {
@@ -100,9 +124,7 @@ export const useVariantMerger = (componentKey, props) => {
         }
     };
 
-    // ...themeVariantArray, 
-
-    const variant = [...toArray(props.variant)].map(variant => {
+    const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
         if (isString(variant)) {
             return mergeObj(scVariants, variants)?.[componentKey]?.[variant] || {};
         } else {
