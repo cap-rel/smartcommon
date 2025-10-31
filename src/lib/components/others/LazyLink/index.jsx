@@ -8,7 +8,7 @@ const Link = () => {
 }
 
 export const LazyLink = (props) => {
-  const { variantProps, mergeProps } = useVariantMerger("lazyLink", props);
+  const { variantProps, mergeProps } = useVariantMerger("LazyLink", props);
 
   const { duration = 0, children } = variantProps;
 

@@ -8,7 +8,7 @@ import { propTypes, defaultProps } from "./props";
 
 /** UI button component for user interaction */
 export const Button = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("button", props);
+    const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("Button", props);
 
     const { id, label, loading, icon, badge, children, disabled } = variantProps;
     

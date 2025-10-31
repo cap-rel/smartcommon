@@ -2,7 +2,7 @@ import { getVariable, isNil } from "../../../utils";
 import { useVariantMerger } from "../../../hooks";
 
 export const LowerNavbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("lowerNavbarLinks", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("LowerNavbarLinks", props);
 
     const { to, icon, activeIcon, disabled, label, active: activeManually, Link } = variantProps;
                                                 

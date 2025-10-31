@@ -2,7 +2,7 @@ import { isNil } from "../../../utils";
 import { useVariantMerger } from "../../../hooks";
 
 export const TabbarLink = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("tabbarLink", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("TabbarLink", props);
 
     const { badge, icon, activeIcon, disabled, label, active: activeManually, to, Link } = variantProps;
           

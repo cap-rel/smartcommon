@@ -7,7 +7,7 @@ import { useEffect, useRef } from "react";
 // TODO when there is not left or right, adjust the justify-between
 
 export const Navbar = (props) => {
-    const { variantProps, mergeProps, setParams } = useVariantMerger("navbar", props);
+    const { variantProps, mergeProps, setParams } = useVariantMerger("Navbar", props);
 
     const { id, children, upperLeftLinks, upperRightLinks, lowerLinks, title } = variantProps;
 

@@ -18,7 +18,7 @@ const Link = () => {
 }
 
 export const Sidebar = (props) => {
-  const { variantProps, mergeProps } = useVariantMerger("sidebar", props);
+  const { variantProps, mergeProps } = useVariantMerger("Sidebar", props);
 
   const { id, toggleButton, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
 

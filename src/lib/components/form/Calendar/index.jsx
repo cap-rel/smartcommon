@@ -8,7 +8,7 @@ import { propTypes } from "./props";
 // IDEA interval
 
 export const Calendar = (props) => {
-  const { variantProps, mergeProps } = useVariantMerger("calendar", props);
+  const { variantProps, mergeProps } = useVariantMerger("Calendar", props);
 
   const { 
     id,

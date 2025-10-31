@@ -10,7 +10,7 @@ import { useEffect, useRef } from "react";
 // TODO Fix label truncate not working
 
 export const Tabbar = (props) => {
-  const { variantProps, mergeProps, setParams } = useVariantMerger("tabbar", props);
+  const { variantProps, mergeProps, setParams } = useVariantMerger("Tabbar", props);
 
   const { id, children, hideOnScroll } = variantProps;
 

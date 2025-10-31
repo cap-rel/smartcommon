@@ -3,7 +3,7 @@ import { propTypes } from "./props";
 import { useVariantMerger } from "../../../hooks";
 
 export const Block = (props) => {
-    const { variantProps, mergeProps } = useVariantMerger("block", props);
+    const { variantProps, mergeProps } = useVariantMerger("Block", props);
 
     const { id, title, header, footer, children } = variantProps;
 

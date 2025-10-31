@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useStates, useVariantMerger } from "../../../hooks";
 
 export const Page = (props) => {
-    const { variantProps, mergeProps } = useVariantMerger("page", props);
+    const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
     const { children } = variantProps;
 

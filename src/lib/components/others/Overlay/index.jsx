@@ -5,7 +5,7 @@ import { applyFunctionIfNotNil } from "../../../utils";
 // TODO open or toggle
 
 export const Overlay = (props) => {
-    const { variantProps, mergeProps } = useVariantMerger("overlay", props);
+    const { variantProps, mergeProps } = useVariantMerger("Overlay", props);
     const { id, isOpen, close = () => {}, onClick = () => {}, zIndex = 40 } = variantProps;
 
     return (
