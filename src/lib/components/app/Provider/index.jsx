@@ -31,7 +31,7 @@ const config = {
   theme: "",
   // Thèmes fournis par le dev => { theme1: {}, theme2: {} }
   themes: {},
-  // Variantes fournis par le dev => { Button: { variant1, variant2 } }
+  // Variantes fournies par le dev => { Button: ["variant1", "variant2"] }. Si un thème existant est fourni, ils fusionnent (Button => Button)
   variants: {},
   // Configuration des composants (pour l'instant, il n'y a que les variantes (array, string ou object))
   // On pourrait rajouter les erreurs pour les composants de formulaire
