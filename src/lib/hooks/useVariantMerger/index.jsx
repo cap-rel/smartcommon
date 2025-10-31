@@ -66,7 +66,7 @@ export const useVariantMerger = (componentKey, props) => {
     };
 
     const scVariants = {
-        button: {
+        Button: {
             reverse: {
                 buttonProps: {
                     className: "flex-row-reverse"
@@ -82,58 +82,23 @@ export const useVariantMerger = (componentKey, props) => {
                     }
                 }
             },
+            uppercase: {
+                labelProps: {
+                    className: "uppercase font-normal tracking-widest"
+                }
+            },
+            floatingRight: {
+                buttonProps: {
+                    className: "absolute bottom-4 right-4 shadow-md"
+                }
+            },
+            rounded: {
+                buttonProps: {
+                    className: "p-app-base rounded-full"
+                }
+            }
         }
-    }
-
-    const { config } = useLib() ?? {}; // TODO
-    const { theme, themes, variants } = config ?? {};
-
-    // if (isNil(themes)) {
-    //     throw new Error("No themes provided");
-    // }
-
-    // const themeVariant = themes?.[theme]?.[componentKey];
-
-    // const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
-
-    // if (isNil(variants)) {
-    //   throw new Error("No variants provided");
-    // }
-
-    // const variants = {
-    //     button: {
-    //         reverse: {
-    //             buttonProps: {
-    //                 className: "flex-row-reverse"
-    //             }
-    //         },
-    //         outlined: {
-    //             buttonProps: {
-    //                 className: "text-gray-800 bg-white border"
-    //             },
-    //             Spinner: {
-    //                 spinnerProps: {
-    //                     className: "border-primary border-l-secondary"
-    //                 }
-    //             }
-    //         },
-    //         uppercase: {
-    //             labelProps: {
-    //                 className: "uppercase font-normal tracking-widest"
-    //             }
-    //         },
-    //         floatingRight: {
-    //             buttonProps: {
-    //                 className: "absolute bottom-4 right-4 shadow-md"
-    //             }
-    //         },
-    //         rounded: {
-    //             buttonProps: {
-    //                 className: "p-app-base rounded-full"
-    //             }
-    //         }
-    //     }
-    // };
+    };
 
     // ...themeVariantArray, 
 
