@@ -1,4 +1,4 @@
-import { isArray, isFunction, isNil, isObject, isString, isUndefined, toArray, twMerge } from "../../utils";
+import { isArray, isFunction, isNil, isObject, isString, isUndefined, mergeObj, toArray, twMerge } from "../../utils";
 import { useStates } from "../useStates";
 import { useLib } from "../../hooks";
 
@@ -65,23 +65,7 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    // const { theme, themes, variants } = useLib() ?? {}; // TODO
-
-    // if (isNil(themes)) {
-    //     throw new Error("No themes provided");
-    // }
-
-    // const themeVariant = themes?.[theme]?.[componentKey];
-
-    // const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
-
-    // if (isNil(variants)) {
-    //   throw new Error("No variants provided");
-    // }
-
-    // ...themeVariantArray,
-    
-    const variants = {
+    const scVariants = {
         button: {
             reverse: {
                 buttonProps: {
@@ -98,27 +82,63 @@ export const useVariantMerger = (componentKey, props) => {
                     }
                 }
             },
-            uppercase: {
-                labelProps: {
-                    className: "uppercase font-normal tracking-widest"
-                }
-            },
-            floatingRight: {
-                buttonProps: {
-                    className: "absolute bottom-4 right-4 shadow-md"
-                }
-            },
-            rounded: {
-                buttonProps: {
-                    className: "p-app-base rounded-full"
-                }
-            }
         }
-    };
+    }
+
+    const { theme, themes, variants } = useLib() ?? {}; // TODO
+
+    // if (isNil(themes)) {
+    //     throw new Error("No themes provided");
+    // }
+
+    // const themeVariant = themes?.[theme]?.[componentKey];
+
+    // const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
+
+    // if (isNil(variants)) {
+    //   throw new Error("No variants provided");
+    // }
+
+    // const variants = {
+    //     button: {
+    //         reverse: {
+    //             buttonProps: {
+    //                 className: "flex-row-reverse"
+    //             }
+    //         },
+    //         outlined: {
+    //             buttonProps: {
+    //                 className: "text-gray-800 bg-white border"
+    //             },
+    //             Spinner: {
+    //                 spinnerProps: {
+    //                     className: "border-primary border-l-secondary"
+    //                 }
+    //             }
+    //         },
+    //         uppercase: {
+    //             labelProps: {
+    //                 className: "uppercase font-normal tracking-widest"
+    //             }
+    //         },
+    //         floatingRight: {
+    //             buttonProps: {
+    //                 className: "absolute bottom-4 right-4 shadow-md"
+    //             }
+    //         },
+    //         rounded: {
+    //             buttonProps: {
+    //                 className: "p-app-base rounded-full"
+    //             }
+    //         }
+    //     }
+    // };
+
+    // ...themeVariantArray, 
 
     const variant = [...toArray(props.variant)].map(variant => {
         if (isString(variant)) {
-            return variants[componentKey]?.[variant] || {};
+            return mergeObj(scVariants, variants)?.[componentKey]?.[variant] || {};
         } else {
             return variant || {};
         }
