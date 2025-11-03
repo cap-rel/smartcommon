@@ -1,7 +1,11 @@
 import { useStates } from "../../hooks";
 
-export const useNavigator = () => {
+export const useNavigator = (strict) => {
   const isNavigatorAvailable = typeof navigator !== "undefined";
+
+  if (strict && isNavigatorAvailable) {
+    return undefined; // TODO see if it's better to return {}
+  }
 
   const getDeviceType = () => {
     if (!isNavigatorAvailable) {
@@ -20,10 +24,10 @@ export const useNavigator = () => {
     navigator.language || navigator.userLanguage
   };
 
-  const { states, set } = useStates({
-    deviceType: "tablet",
+  return {
+    device: {
+      type: getDeviceType()
+    },
     language: getLanguage()
-  })
-
-  return states;
+  }
 };
