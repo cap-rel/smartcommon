@@ -1,4 +1,4 @@
-import { useVariantMerger } from "../../../hooks";
+import { useNavigator, useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -49,6 +49,8 @@ export const Page = (props) => {
 
     const { children } = variantProps;
 
+    const { device } = useNavigator(true) ?? {};
+
     const location = useLocation();
     const { pathname } = location ?? {}
 
@@ -59,6 +61,10 @@ export const Page = (props) => {
     const { animations = {}, pages = {} } = config ?? {};
 
     const animation = () => {
+        if (device?.type === "desktop") {
+            return "fade";
+        }
+        
         const page = pages[pathname];
         if (page) {
         if (typeof page === "string") {
