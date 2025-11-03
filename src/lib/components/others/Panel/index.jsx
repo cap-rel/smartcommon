@@ -127,6 +127,7 @@ export const Panel = (props) => {
 };
 
 Panel.prototypes = propTypes;
+Panel.defaultProps = defaultProps;
 
 {/* <Overlay 
     { ...overlayProps}

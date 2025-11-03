@@ -12,3 +12,5 @@ export const propTypes = {
     Overlay: PropTypes.object,
     panelProps: PropTypes.object,
 };
+
+export const defaultProps = {};
