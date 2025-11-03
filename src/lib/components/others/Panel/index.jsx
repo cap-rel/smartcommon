@@ -1,8 +1,8 @@
 import { Overlay } from "../Overlay";
 import { useStates, useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
-import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { motion, useMotionValue, useTransform, animate, DragControls, useAnimationControls } from "framer-motion";
 
 // TODO closeOnMove
 // TODO z-index prop
@@ -104,30 +104,32 @@ export const Panel = (props) => {
     }, [panelHeight, panelWidth]);
 
     // ----------------------------- FRAMER-MOTION
+    const controls = useAnimationControls();
 
-    const y = useMotionValue(0)
-    const opacity = useTransform(y, [0, 200], [1, 0.5])
+    const duration = 0.15;
+    const openOpacity = 1;
+    const closedOpacity = 0.3;
+    const openY = 0;
+    const closedY = panelHeight || "100%";
+    const goBackHeight = panelHeight / 5;
 
-  useEffect(() => {
-    if (isOpen) {
-      // remet le panel en position ouverte quand on rouvre
-      animate(y, 0, { type: "spring", stiffness: 300, damping: 30 })
-    }
-  }, [isOpen])
+    const panelY = isOpen ? openY : closedY;
+    const transition = { duration };
 
-  const handleDragEnd = (_, info) => {
-    const offset = info.offset.y
-    const velocity = info.velocity.y
+    const y = useMotionValue(panelY);
+    const opacity = useTransform(y, [openY, closedY], [openOpacity, closedOpacity]);
 
-    // si le mouvement est vers le bas et significatif, on ferme
-    if (offset > 100 || velocity > 500) {
-      animate(y, 500, { duration: 0.2 })
-      close()
-    } else {
-      // sinon on revient à la position initiale
-      animate(y, 0, { type: "spring", stiffness: 300, damping: 30 })
-    }
-  }
+    useEffect(() => {
+        controls.start({ y: panelY, transition });
+    }, [isOpen, controls]);
+
+    const handleDragEnd = () => {
+        if (y.get() > goBackHeight) {
+            close();
+        } else {
+            controls.start({ y: openY, transition });
+        }
+    };
 
     return (
         <>
@@ -143,22 +145,20 @@ export const Panel = (props) => {
                 ...props,
                 drag: "y",
                 dragConstraints: { top: 0 },
-                dragElastic: { top: 0, bottom: 0.5 },
+                dragElastic: 0,
+                animate: controls,
                 onDragEnd: handleDragEnd,
-                animate: { y: isOpen ? 0 : "100%" },
-                transition: { type: "spring", stiffness: 300, damping: 30 },
-
                 ref: panelRef,
                 style: { 
                     "--z-index": zIndex + 10,
                     y,
                     opacity,
-                    touchAction: "none",
                     ...variables
                 },
                 className: `rounded-t-app-lg fixed left-0 right-0 bottom-0 z-(--z-index) p-app-base
-                gap-app-base flex flex-col duration-(--medium) bg-soft-bg max-h-5/6`
+                gap-app-base flex flex-col bg-red-500 max-h-5/6`
             }))}>
+                {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
                 {children}
             </motion.div>
