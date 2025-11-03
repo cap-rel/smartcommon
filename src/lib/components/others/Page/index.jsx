@@ -2,6 +2,7 @@ import { useNavigator, useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { defaultProps, propTypes } from "./props";
 
 const config = {
     animations: {
@@ -119,3 +120,6 @@ export const Page = (props) => {
             </motion.div>
     );
 };
+
+Page.propTypes = propTypes;
+Page.defaultProps = defaultProps;
