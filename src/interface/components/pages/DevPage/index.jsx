@@ -3,6 +3,7 @@ import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
 import { useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 
 export const DevPage = () => {
     // mb-20 for tabbar and mb- for sidebar
@@ -57,8 +58,15 @@ export const DevPage = () => {
         return files;
     };
 
-    return (
+    const location = useLocation();
+
+    return (<Page prevPathname={location?.state?.prevPathname}>
         <div id="main" className={`fixed inset-0 text-strong-text bg-medium-bg`}>
+            <Button disabled={true} onClick={() => {}} buttonsProps={{ className: "text-white bg-red-500" }}>
+                Bonjour
+            </Button>
+                        <Link to={"/dev2"} state={{ prevPathname: location.pathname }}>Bonjour</Link>
+        
             {/* <Navbar 
                 title={`Accueil`}
                 left={[
@@ -93,7 +101,7 @@ export const DevPage = () => {
             />  */}
             {/* <Calendar /> */}
 
-            <Page pageProps={{ className: "p-app-base" }}>
+            {/* <Page pageProps={{ className: "p-app-base" }}> */}
 
               <form 
                 
@@ -332,7 +340,7 @@ export const DevPage = () => {
 
                             {/* <Spinner /> */}
                         </form>
-                    </Page>
+                    {/* </Page> */}
                 
             {/* <Tabbar>
                 <TabbarLink
@@ -380,5 +388,6 @@ export const DevPage = () => {
                 />
             </Sidebar> */}
         </div>
+        </Page>
     );
 };
