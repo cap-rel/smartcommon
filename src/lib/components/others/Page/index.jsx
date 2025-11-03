@@ -1,4 +1,4 @@
-import { usePreviousPathname, useVariantMerger } from "../../../hooks";
+import { useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
@@ -50,6 +50,7 @@ export const Page = (props) => {
     const { children } = variantProps;
 
     const location = useLocation();
+    const { pathname } = location ?? {}
 
     useEffect(() => {
         prevPathname = location.pathname;
@@ -58,7 +59,7 @@ export const Page = (props) => {
     const { animations = {}, pages = {} } = config ?? {};
 
     const animation = () => {
-        const page = pages[location?.pathname];
+        const page = pages[pathname];
         if (page) {
         if (typeof page === "string") {
             return page
@@ -86,7 +87,7 @@ export const Page = (props) => {
     };
 
 //     const animation = () => {
-//     const page = pages[location?.pathname];
+//     const page = pages[pathname];
 //     if (page) {
 //       if (typeof page === "string") return page;
 //       return page[prevPathname] || page["*"];
@@ -100,7 +101,7 @@ export const Page = (props) => {
     return (
         <AnimatePresence mode="wait">
             <motion.div
-                key={location.pathname} // important pour déclencher l'animation au changement de route
+                key={pathname} // important pour déclencher l'animation au changement de route
                 className="fixed inset-0"
                 { ...animations[animation()]}
             >
