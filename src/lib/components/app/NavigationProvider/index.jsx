@@ -30,7 +30,7 @@ export const NavigationProvider = (props) => {
     // prevPathRef.current = location.pathname;
   }, [pathname]);
 
-  const prevPathname = locationNb > 1 ? history[locationNb - 2] : null;
+  const prevPathname = locationNb > 1 ? history[locationNb - 2].pathname : null;
 
   return (
     <NavigationContext.Provider value={{ history, pathname, prevPathname }}>
