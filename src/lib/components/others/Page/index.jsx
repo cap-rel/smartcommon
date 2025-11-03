@@ -64,7 +64,7 @@ export const Page = (props) => {
         if (device?.type === "desktop") {
             return "fade";
         }
-        
+
         const page = pages[pathname];
         if (page) {
         if (typeof page === "string") {
@@ -105,7 +105,6 @@ export const Page = (props) => {
 //   };
 
     return (
-        <AnimatePresence mode="wait">
             <motion.div
                 key={pathname} // important pour déclencher l'animation au changement de route
                 className="fixed inset-0"
@@ -118,6 +117,5 @@ export const Page = (props) => {
                     {children}
                 </div>
             </motion.div>
-        </AnimatePresence>
     );
 };
