@@ -1,7 +1,8 @@
 import { Overlay } from "../Overlay";
 import { useStates, useVariantMerger } from "../../../hooks";
-import { propTypes } from "./props";
-import { useEffect, useRef } from "react";
+import { defaultProps, propTypes } from "./props";
+import { useEffect, useRef, useState } from "react";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 
 // TODO closeOnMove
 // TODO z-index prop
@@ -31,7 +32,7 @@ export const Panel = (props) => {
         overlay = true,
         closeOnClickOverlay = true,
         closeOnMove,
-        close,
+        close = () => {},
         isOpen,
     } = variantProps;
     
@@ -102,6 +103,32 @@ export const Panel = (props) => {
         setParams({ panelHeight, panelWidth });
     }, [panelHeight, panelWidth]);
 
+    // ----------------------------- FRAMER-MOTION
+
+    const y = useMotionValue(0)
+    const opacity = useTransform(y, [0, 200], [1, 0.5])
+
+  useEffect(() => {
+    if (isOpen) {
+      // remet le panel en position ouverte quand on rouvre
+      animate(y, 0, { type: "spring", stiffness: 300, damping: 30 })
+    }
+  }, [isOpen])
+
+  const handleDragEnd = (_, info) => {
+    const offset = info.offset.y
+    const velocity = info.velocity.y
+
+    // si le mouvement est vers le bas et significatif, on ferme
+    if (offset > 100 || velocity > 500) {
+      animate(y, 500, { duration: 0.2 })
+      close()
+    } else {
+      // sinon on revient à la position initiale
+      animate(y, 0, { type: "spring", stiffness: 300, damping: 30 })
+    }
+  }
+
     return (
         <>
             {overlay &&
@@ -112,16 +139,29 @@ export const Panel = (props) => {
                     close: closeOnClickOverlay && close
                 }))} />
             }
-            <div { ...mergeProps("panel", props => ({
+            <motion.div { ...mergeProps("panel", props => ({
                 ...props,
+                drag: "y",
+                dragConstraints: { top: 0 },
+                dragElastic: { top: 0, bottom: 0.5 },
+                onDragEnd: handleDragEnd,
+                animate: { y: isOpen ? 0 : "100%" },
+                transition: { type: "spring", stiffness: 300, damping: 30 },
+
                 ref: panelRef,
-                style: { "--z-index": zIndex + 10, ...variables },
+                style: { 
+                    "--z-index": zIndex + 10,
+                    y,
+                    opacity,
+                    touchAction: "none",
+                    ...variables
+                },
                 className: `rounded-t-app-lg fixed left-0 right-0 bottom-0 z-(--z-index) p-app-base
-                gap-app-base flex flex-col duration-(--medium) bg-soft-bg max-h-5/6
-                ${isOpen ? "translate-y-0" : "translate-y-full"}`
+                gap-app-base flex flex-col duration-(--medium) bg-soft-bg max-h-5/6`
             }))}>
+                {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
                 {children}
-            </div>
+            </motion.div>
         </>
     );
 };
