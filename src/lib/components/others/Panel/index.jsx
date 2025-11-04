@@ -67,52 +67,77 @@ export const Panel = (props) => {
         setParams({ panelHeight, panelWidth });
     }, [panelHeight, panelWidth]);
 
-    // ----------------------------- POSITION
-
-    const positions = {
-        bottom: {},
-        left: {
-
-            drag: "x",
-            dragConstraints: { right: 0 },
-            className: "max-w-5/6 left-0 top-0 bottom-0 rounded-r-app-lg"
-        },
-    }
-
     // ----------------------------- FRAMER-MOTION
     const duration = 0.15;
     const openOpacity = 1;
     const closedOpacity = 0.3;
 
-    const openX = 0;
-    const closedX = -(panelWidth || window.innerWidth);
-    const goBackWidth = -(panelWidth / 5);
+    const openPosition = 0;
+    // const goBackWidth = -(panelWidth / 5);
 
-    const panelX = isOpen ? openX : closedX;
+    const positions = {
+        bottom: {
+            motion: "positive",
+            drag: "y",
+            dragConstraints: { top: 0 },
+            className: "max-h-5/6 left-0 right-0 bottom-0 rounded-t-app-lg",
+            closedPosition: panelHeight || window.innerHeight,
+            // goBack: motionValue.get() < -(panelWidth / 5),
+        },
+        top: {
+            motion: "negative",
+            drag: "y",
+            dragConstraints: { bottom: 0 },
+            className: "max-h-5/6 left-0 top-0 right-0 rounded-b-app-lg",
+            closedPosition: -(panelHeight || window.innerHeight),
+            // goBack: motionValue.get() < -(panelWidth / 5),
+        },
+        right: {
+            motion: "positive",
+            drag: "x",
+            dragConstraints: { left: 0 },
+            className: "max-w-5/6 right-0 top-0 bottom-0 rounded-l-app-lg",
+            closedPosition: panelWidth || window.innerWidth,
+            // goBack: motionValue.get() < -(panelWidth / 5),
+        },
+        left: {
+            motion: "negative",
+            drag: "x",
+            dragConstraints: { right: 0 },
+            className: "max-w-5/6 left-0 top-0 bottom-0 rounded-r-app-lg",
+            closedPosition: -(panelWidth || window.innerWidth),
+            // goBack: motionValue.get() < -(panelWidth / 5),
+        },
+    };
 
-    const x = useMotionValue(panelX);
-    const opacity = useTransform(x, [closedX, openX], [closedOpacity, openOpacity]);
+    const { motion, closedPosition, drag, dragConstraints, className } = positions[position] ?? positions.bottom;
 
-    // const openY = 0;
-    // const closedY = panelHeight || window.innerHeight;
-    // const goBackHeight = panelHeight / 5;
+    const motions = {
+        positive: {
+            position: [openPosition, closedPosition],
+            opacity: [openOpacity, closedOpacity],
+        },
+        negative: {
+            position: [closedPosition, openPosition],
+            opacity: [closedOpacity, openOpacity]
+        }
+    };
 
-    // const panelY = isOpen ? openY : closedY;
-    // const transition = { duration };
+    const panelPosition = isOpen ? openPosition : closedPosition;
 
-    // const y = useMotionValue(panelY);
-    // const opacity = useTransform(y, [openY, closedY], [openOpacity, closedOpacity]);
+    const motionValue = useMotionValue(panelPosition);
+    const opacity = useTransform(motionValue, ...Object.values(motions[motion]));
 
     useEffect(() => {
-        animate(x, panelX, { duration });
+        animate(motionValue, panelPosition, { duration });
     }, [isOpen]);
 
     const handleDragEnd = () => {
-        if (x.get() < goBackWidth) {
+        // if (x.get() < goBackWidth) {
             close();
-        } else {
-            animate(x, openX, { duration });
-        }
+        // } else {
+        //     animate(motionValue, openMotionValue, { duration });
+        // }
     };
 
     return (
@@ -128,19 +153,19 @@ export const Panel = (props) => {
             <motion.div { ...mergeProps("panel", props => ({
                 ...props,
                 dragListener: closeOnDrag,
-                drag: "x",
-                dragConstraints: { right: 0 },
+                drag,
+                dragConstraints,
                 dragElastic: 0,
                 onDragEnd: handleDragEnd,
                 ref: panelRef,
                 style: { 
                     "--z-index": zIndex + 10,
-                    x,
+                    [drag]: motionValue,
                     opacity,
                     ...variables
                 },
-                className: `rounded-r-app-lg fixed top-0 left-0 bottom-0 z-(--z-index) p-app-base
-                gap-app-base flex flex-col bg-red-500 max-w-5/6 overflow-y-auto`
+                className: `fixed z-(--z-index) p-app-base
+                gap-app-base flex flex-col bg-red-500 overflow-y-auto ${className}`
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
