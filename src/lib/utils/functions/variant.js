@@ -155,3 +155,10 @@ export function getVariable(key) {
 export function setVariable(key, value) {
     return document.documentElement.style.setProperty(key, value);
 }
+
+export function setGlobalVariables(id, variables) {
+    for (const variable in variables) {
+        const idVariable = `--${id}-${variable.slice(1)}`
+        setVariable(idVariable, variables[variable]);
+    }
+}
