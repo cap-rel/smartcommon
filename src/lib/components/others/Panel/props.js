@@ -1,11 +1,12 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
-    id: PropTypes.string,
+    id: PropTypes.string.isRequired,
     children: PropTypes.node,
+    position: PropTypes.oneOf(["bottom", "right", "top", "left"]),
     overlay: PropTypes.bool,
     closeOnClickOverlay: PropTypes.bool,
-    closeOnMove: PropTypes.bool,
+    closeOnDrag: PropTypes.bool,
     isOpen: PropTypes.bool,
     close: PropTypes.func,
 
@@ -13,4 +14,9 @@ export const propTypes = {
     panelProps: PropTypes.object,
 };
 
-export const defaultProps = {};
+export const defaultProps = {
+    position: "bottom",
+    overlay: true,
+    closeOnClickOverlay: true,
+    closeOnDrag: true,
+};

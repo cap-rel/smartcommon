@@ -28,10 +28,11 @@ export const Panel = (props) => {
     const { 
         id,
         zIndex = 40,
+        position = "bottom",
         children,
         overlay = true,
         closeOnClickOverlay = true,
-        closeOnMove,
+        closeOnDrag = true,
         close = () => {},
         isOpen,
     } = variantProps;
@@ -143,6 +144,7 @@ export const Panel = (props) => {
             }
             <motion.div { ...mergeProps("panel", props => ({
                 ...props,
+                dragListener: closeOnDrag,
                 drag: "y",
                 dragConstraints: { top: 0 },
                 dragElastic: 0,
