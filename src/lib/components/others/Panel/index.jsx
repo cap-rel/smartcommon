@@ -131,7 +131,9 @@ export const Panel = (props) => {
                 <motion.div { ...mergeProps("overlay", props => ({
                     ...props,
                     onClick: e => {
-                        close();
+                        if (closeOnClickOverlay) {
+                            close();
+                        }
                         applyFunctionIfNotNil(props.onClick, e);
                     },
                     style: { "--z-index": zIndex, opacity },
