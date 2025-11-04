@@ -3,6 +3,7 @@ import { useStates, useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { applyFunctionIfNotNil } from "../../../utils";
 
 export const Panel = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantMerger("Panel", props);
@@ -50,9 +51,9 @@ export const Panel = (props) => {
     }, [panelHeight, panelWidth]);
 
     // ----------------------------- FRAMER-MOTION
-    const duration = 0.15;
+    const duration = 0.18;
     const openOpacity = 1;
-    const closedOpacity = 0.3;
+    const closedOpacity = 0;
 
     const openPosition = 0;
     const goBackLimit = 5; // 1/5
@@ -127,11 +128,15 @@ export const Panel = (props) => {
     return (
         <>
             {overlay &&
-                <Overlay { ...mergeProps("Overlay", props => ({
-                    zIndex: zIndex,
+                <motion.div { ...mergeProps("overlay", props => ({
                     ...props,
-                    isOpen,
-                    close: closeOnClickOverlay && close
+                    onClick: e => {
+                        close();
+                        applyFunctionIfNotNil(props.onClick, e);
+                    },
+                    style: { "--z-index": zIndex, opacity },
+                    className: `z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen && "pointer-events-none"}`
+                    // duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
                 }))} />
             }
             <motion.div { ...mergeProps("panel", props => ({
