@@ -12,7 +12,11 @@ import { useEffect, useRef } from "react";
 export const Tabbar = (props) => {
   const { variantProps, mergeProps, setParams } = useVariantMerger("Tabbar", props);
 
-  const { id, children, hideOnScroll } = variantProps;
+  const { 
+    id,
+    children,
+    hideOnScroll = false
+  } = variantProps;
 
   const tabbarRef = useRef();
 
@@ -36,13 +40,15 @@ export const Tabbar = (props) => {
   };
 
   const variables = {
-    [`--tabbar-height`]: `${tabbarHeight}px`,
-    [`--tabbar-width`]: `${tabbarWidth}px`
+    "--tabbar-height": `${tabbarHeight}px`,
+    "--tabbar-width": `${tabbarWidth}px`
   };
 
   useEffect(() => {
-    setVariable(`--${id}-tabbar-height`, `${tabbarHeight}px`);
-    setVariable(`--${id}-tabbar-width`, `${tabbarWidth}px`);
+    for (const variable in globalVariables) {
+      setVariable(variable, globalVariables[variable]);
+    }
+    
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
