@@ -80,40 +80,38 @@ export const Panel = (props) => {
     }
 
     // ----------------------------- FRAMER-MOTION
-    const controls = useAnimationControls();
-
     const duration = 0.15;
     const openOpacity = 1;
     const closedOpacity = 0.3;
 
     const openX = 0;
-    const closedX = panelWidth || "100%";
-    const goBackWidth = panelWidth / 5;
+    const closedX = -(panelWidth || window.innerWidth);
+    const goBackWidth = -(panelWidth / 5);
 
     const panelX = isOpen ? openX : closedX;
 
     const x = useMotionValue(panelX);
-    const opacity = useTransform(x, [openX, closedX], [openOpacity, closedOpacity]);
+    const opacity = useTransform(x, [closedX, openX], [closedOpacity, openOpacity]);
 
-    const openY = 0;
-    const closedY = panelHeight || "100%";
-    const goBackHeight = panelHeight / 5;
+    // const openY = 0;
+    // const closedY = panelHeight || window.innerHeight;
+    // const goBackHeight = panelHeight / 5;
 
-    const panelY = isOpen ? openY : closedY;
-    const transition = { duration };
+    // const panelY = isOpen ? openY : closedY;
+    // const transition = { duration };
 
-    const y = useMotionValue(panelY);
+    // const y = useMotionValue(panelY);
     // const opacity = useTransform(y, [openY, closedY], [openOpacity, closedOpacity]);
 
     useEffect(() => {
-        controls.start({ x: panelX, transition });
-    }, [isOpen, controls]);
+        animate(x, panelX, { duration });
+    }, [isOpen]);
 
     const handleDragEnd = () => {
-        if (x.get() > goBackWidth) {
+        if (x.get() < goBackWidth) {
             close();
         } else {
-            controls.start({ x: openX, transition });
+            animate(x, openX, { duration });
         }
     };
 
@@ -131,9 +129,8 @@ export const Panel = (props) => {
                 ...props,
                 dragListener: closeOnDrag,
                 drag: "x",
-                dragConstraints: { left: 0 },
+                dragConstraints: { right: 0 },
                 dragElastic: 0,
-                animate: controls,
                 onDragEnd: handleDragEnd,
                 ref: panelRef,
                 style: { 
@@ -142,7 +139,7 @@ export const Panel = (props) => {
                     opacity,
                     ...variables
                 },
-                className: `rounded-l-app-lg fixed right-0 top-0 bottom-0 z-(--z-index) p-app-base
+                className: `rounded-r-app-lg fixed top-0 left-0 bottom-0 z-(--z-index) p-app-base
                 gap-app-base flex flex-col bg-red-500 max-w-5/6 overflow-y-auto`
             }))}>
                 {/* duration-(--medium) */}
