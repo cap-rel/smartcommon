@@ -44,8 +44,8 @@ export const Panel = (props) => {
     // };
 
     const variables = {
-        [`--panel-height`]: `${panelHeight}px`,
-        [`--panel-width`]: `${panelWidth}px`
+        "--panel-height": `${panelHeight}px`,
+        "--panel-width": `${panelWidth}px`
     };
 
     useEffect(() => {
@@ -156,10 +156,11 @@ export const Panel = (props) => {
                     ...variables
                 },
                 className: `fixed z-(--z-index) p-app-base
-                gap-app-base flex flex-col bg-red-500 overflow-y-auto ${className}`
+                gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}`
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
+                <div className={`mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`}/>
                 {children}
             </motion.div>
         </>
