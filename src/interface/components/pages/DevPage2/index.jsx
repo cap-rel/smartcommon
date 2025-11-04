@@ -7,18 +7,17 @@ export const DevPage2 = () => {
 
     const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-    console.log(isPanelOpen);
-
     return (
         <Page>
             <Link to={"/"}>Bonjour</Link>
             <button onClick={() => setIsPanelOpen(true)}>Open</button>
 
             <Panel
+                position="bottom"
                 isOpen={isPanelOpen}
                 close={() => setIsPanelOpen(false)}
             >
-                <div className="h-100">
+                <div className="min-w-50 min-h-100">
 
                 </div>
             </Panel>
