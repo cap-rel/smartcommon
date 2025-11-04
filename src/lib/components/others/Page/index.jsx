@@ -48,7 +48,7 @@ let prevPathname = null;
 export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
-    const { children } = variantProps;
+    const { id, children } = variantProps;
 
     const { device } = useNavigator(true) ?? {};
 
@@ -113,7 +113,7 @@ export const Page = (props) => {
             >
                 <div { ...mergeProps("page", props => ({
                     ...props,
-                    className: `fixed inset-0 flex flex-col bg-medium-bg overflow-y-auto text-strong-text text-app-sm`
+                    className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm`
                 }))}>
                     {children}
                 </div>
