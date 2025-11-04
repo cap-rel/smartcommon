@@ -2,7 +2,7 @@ import { defaultProps, propTypes } from "./props";
 import { useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
 import { isNil, setGlobalVariables, setVariable } from "../../../utils";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // TODO HideOnScroll
 // TODO centralButton
@@ -15,7 +15,7 @@ export const Tabbar = (props) => {
   const { 
     id,
     children,
-    hideOnScroll = false
+    hideOnScroll = true
   } = variantProps;
 
   const tabbarRef = useRef();
@@ -44,12 +44,35 @@ export const Tabbar = (props) => {
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
+  const [hidden, setHidden] = useState(false);
+  const [lastScrollY, setLastScrollY] = useState(0);
+
+  useEffect(() => {
+    const scrollElement = document.querySelector("#Principal");
+
+    const handleScroll = () => {
+      const currentY = scrollElement.scrollTop;
+
+      if (currentY > lastScrollY && currentY > 200) {
+        setHidden(true);
+      } 
+      else if (currentY < lastScrollY) {
+        setHidden(false);
+      }
+
+      setLastScrollY(currentY);
+    };
+
+    scrollElement.addEventListener("scroll", handleScroll);
+    return () => scrollElement.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
+
   return (
     <div { ...mergeProps("tabbar", props => ({
       ...props,
       ref: tabbarRef,
       style: variables,
-      className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
+      className: `${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) shadow-xl shadow-black h-50 fixed right-0 bottom-0 left-0 z-10 bg-red-500 flex justify-between items-center`
     }))}>
       {children}
     </div>
