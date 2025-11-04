@@ -3,7 +3,7 @@ import { useStates, useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
 import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { applyFunctionIfNotNil } from "../../../utils";
+import { applyFunctionIfNotNil, setGlobalVariables } from "../../../utils";
 
 export const Panel = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantMerger("Panel", props);
@@ -38,17 +38,13 @@ export const Panel = (props) => {
         }
     }, []);
 
-    // const globalVariables = {
-    //     [`--${id}-panel-height`]: `${panelHeight}px`,
-    //     [`--${id}-panel-width`]: `${panelWidth}px`
-    // };
-
     const variables = {
         "--panel-height": `${panelHeight}px`,
         "--panel-width": `${panelWidth}px`
     };
 
     useEffect(() => {
+        setGlobalVariables(id, variables);
         setParams({ panelHeight, panelWidth });
     }, [panelHeight, panelWidth]);
 

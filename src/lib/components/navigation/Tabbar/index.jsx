@@ -1,7 +1,7 @@
 import { propTypes } from "./props";
 import { useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
-import { isNil, setVariable } from "../../../utils";
+import { isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { useEffect, useRef } from "react";
 
 // TODO HideOnScroll
@@ -34,21 +34,13 @@ export const Tabbar = (props) => {
     }
   }, []);
 
-  const globalVariables = {
-    [`--${id}-tabbar-height`]: `${tabbarHeight}px`,
-    [`--${id}-tabbar-width`]: `${tabbarWidth}px`
-  };
-
   const variables = {
     "--tabbar-height": `${tabbarHeight}px`,
     "--tabbar-width": `${tabbarWidth}px`
   };
 
   useEffect(() => {
-    for (const variable in globalVariables) {
-      setVariable(variable, globalVariables[variable]);
-    }
-    
+    setGlobalVariables(id, variables);
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
@@ -59,9 +51,7 @@ export const Tabbar = (props) => {
       style: variables,
       className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
     }))}>
-
       {children}
-
     </div>
   );
 };
