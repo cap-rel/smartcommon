@@ -9,14 +9,20 @@ export const propTypes = {
     closeOnDrag: PropTypes.bool,
     isOpen: PropTypes.bool,
     close: PropTypes.func,
+    duration: PropTypes.number,
+    goBackLimit: PropTypes.number,
+    zIndex: PropTypes.number,
 
-    Overlay: PropTypes.object,
+    overlayProps: PropTypes.object,
     panelProps: PropTypes.object,
 };
 
 export const defaultProps = {
+    zIndex: 40,
     position: "bottom",
     overlay: true,
     closeOnClickOverlay: true,
     closeOnDrag: true,
+    duration: 0.18,
+    goBackLimit: 1/5
 };

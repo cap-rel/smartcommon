@@ -18,6 +18,8 @@ export const Panel = (props) => {
         closeOnDrag = true,
         close = () => {},
         isOpen,
+        duration = 0.18,
+        goBackLimit = 1/5
     } = variantProps;
    
     const panelRef = useRef();
@@ -51,12 +53,10 @@ export const Panel = (props) => {
     }, [panelHeight, panelWidth]);
 
     // ----------------------------- FRAMER-MOTION
-    const duration = 0.18;
     const openOpacity = 1;
     const closedOpacity = 0;
 
     const openPosition = 0;
-    const goBackLimit = 5; // 1/5
 
     const positions = {
         bottom: {
@@ -65,7 +65,7 @@ export const Panel = (props) => {
             dragConstraints: { top: 0 },
             className: "max-h-5/6 left-0 right-0 bottom-0 rounded-t-app-lg",
             closedPosition: panelHeight || window.innerHeight,
-            goBackValue: panelHeight / goBackLimit
+            goBackValue: panelHeight * goBackLimit
         },
         top: {
             direction: "negative",
@@ -73,7 +73,7 @@ export const Panel = (props) => {
             dragConstraints: { bottom: 0 },
             className: "max-h-5/6 left-0 top-0 right-0 rounded-b-app-lg",
             closedPosition: -(panelHeight || window.innerHeight),
-            goBackValue: -(panelHeight / goBackLimit)
+            goBackValue: -(panelHeight * goBackLimit)
         },
         right: {
             direction: "positive",
@@ -81,7 +81,7 @@ export const Panel = (props) => {
             dragConstraints: { left: 0 },
             className: "max-w-5/6 right-0 top-0 bottom-0 rounded-l-app-lg",
             closedPosition: panelWidth || window.innerWidth,
-            goBackValue: panelWidth / goBackLimit
+            goBackValue: panelWidth * goBackLimit
         },
         left: {
             direction: "negative",
@@ -89,7 +89,7 @@ export const Panel = (props) => {
             dragConstraints: { right: 0 },
             className: "max-w-5/6 left-0 top-0 bottom-0 rounded-r-app-lg",
             closedPosition: -(panelWidth || window.innerWidth),
-            goBackValue: -(panelWidth / goBackLimit)
+            goBackValue: -(panelWidth * goBackLimit)
         },
     };
 
