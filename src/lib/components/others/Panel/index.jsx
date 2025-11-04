@@ -143,7 +143,7 @@ export const Panel = (props) => {
                     ...variables
                 },
                 className: `rounded-l-app-lg fixed right-0 top-0 bottom-0 z-(--z-index) p-app-base
-                gap-app-base flex flex-col bg-red-500 max-w-5/6`
+                gap-app-base flex flex-col bg-red-500 max-w-5/6 overflow-y-auto`
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
