@@ -17,7 +17,7 @@ export const ApiProvider = (props) => {
   
   const { user } = states;
 
-  const { accessToken, refreshToken, tokenExpiry, rememberMe } = user ?? {};
+  const { access_token, refresh_token, tokenExpiry, rememberMe } = user ?? {};
 
   const login = async (loginInfo, request = {}, errors = {}) => {
     const response = await fetch(`${url}login`, {
@@ -61,7 +61,7 @@ export const ApiProvider = (props) => {
   const logout = async (request = {}, errors = {}) => {
     const response = await fetch(`${url}logout`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${accessToken}` },
+      headers: { "Authorization": `Bearer ${access_token}` },
       ...request
     });
 
@@ -90,7 +90,7 @@ export const ApiProvider = (props) => {
   const refreshAccessToken = async () => {
     const response = await fetch(`${url}refresh`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${refreshToken}` }
+      headers: { "Authorization": `Bearer ${refresh_token}` }
     });
 
     const json = await response.json();
@@ -101,13 +101,9 @@ export const ApiProvider = (props) => {
       // throw new Error(json);
     }
 
-    const { access_token, refresh_token, token_expires_in } = json?.data ?? {};
+    const { access_token, refresh_token: refreshToken, token_expires_in } = json?.data ?? {};
 
-    const refreshUser = { ...user,
-      accessToken: access_token,
-      refreshToken: refresh_token,
-      tokenExpiry: Date.now() + (token_expires_in * 1000)
-    };
+    const refreshUser = { ...user, access_token, refresh_token: refreshToken, tokenExpiry: Date.now() + (token_expires_in * 1000)};
     
     set("user", refreshUser);
 
@@ -127,7 +123,7 @@ export const ApiProvider = (props) => {
     const response = await fetch(`${url}${path}`, {
       ...request,
       headers: {
-        Authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${access_token}`,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
