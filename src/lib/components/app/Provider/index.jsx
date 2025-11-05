@@ -7,11 +7,11 @@ export const Provider = (props) => {
   const { children, config } = props;
   // TODO voir à quoi sert réellement AnimatePresence car ça fonctionne sans
   return (
-    <LibProvider value={{ config }}>
+    <LibProvider value={config}>
       {/* <NavigationProvider> */}
         <ApiProvider>
           <AnimatePresence mode="wait">
-          {children}
+            {children}
           </AnimatePresence>
         </ApiProvider>
       {/* </NavigationProvider> */}
