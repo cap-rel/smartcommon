@@ -7,15 +7,15 @@ export function getLocalJSON(key) {
 }
   
 export function setLocal(key, value) {
-    return localStorage.setItem(key, value);
+    localStorage.setItem(key, value);
 }
 
 export function setLocalJSON(key, value) {
-    return localStorage.setItem(key, JSON.stringify(value));
+    localStorage.setItem(key, JSON.stringify(value));
 }
   
 export function removeLocal(input) {
-    return localStorage.removeItem(input);
+    localStorage.removeItem(input);
 }
   
 export function getSession(key) {
@@ -27,15 +27,15 @@ export function getSessionJSON(key) {
 }
   
 export function setSession(key, value) {
-    return sessionStorage.setItem(key, value);
+    sessionStorage.setItem(key, value);
 }
 
 export function setSessionJSON(key, value) {
-    return sessionStorage.setItem(key, JSON.stringify(value));
+    sessionStorage.setItem(key, JSON.stringify(value));
 }
   
 export function removeSession(input) {
-    return sessionStorage.removeItem(input);
+    sessionStorage.removeItem(input);
 }
   
 export function getIndexedDB(key) {
@@ -47,15 +47,15 @@ export function getIndexedDBJSON(key) {
 }
   
 export function setIndexedDB(key, value) {
-    return indexedDB.setItem(key, value);
+    indexedDB.setItem(key, value);
 }
 
 export function setIndexedDBJSON(key, value) {
-    return indexedDB.setItem(key, JSON.stringify(value));
+    indexedDB.setItem(key, JSON.stringify(value));
 }
   
 export function removeIndexedDB(input) {
-    return indexedDB.removeItem(input);
+    indexedDB.removeItem(input);
 }
 
 export function encodeString(str) {
