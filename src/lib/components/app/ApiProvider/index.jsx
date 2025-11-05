@@ -158,7 +158,7 @@ export const ApiProvider = (props) => {
     return json;
   };
 
-  const GET = (path, request, errors) => fetchApi(path, null, { ...request, method: "GET" }, requestErrors);
+  const GET = (path, request, errors) => fetchApi(path, null, { ...request, method: "GET" }, errors);
 
   const POST = (path, body, request, errors) => fetchApi(path, body, { ...request, method: "POST" }, errors);
 
