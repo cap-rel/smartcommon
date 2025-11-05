@@ -167,34 +167,8 @@ export const ApiProvider = (props) => {
 
   const DELETE = (path, body, request, errors) => fetchApi(path, body, { ...request, method: "DELETE" }, errors);
 
-  const PublicRoutes = () => {
-    return user ? <Navigate to="/" replace/> : <Outlet />;
-  };
-
-  const PrivateRoutes = () => {
-    return user ? <Outlet /> : <Navigate to="/login" replace />;
-  };
-
-  const Router = (props) => {
-    const { publicRoutes, privatesRoutes } = props;
-    return (
-        <BrowserRouter>
-            <Routes>
-                <Route element={<PublicRoutes/>}>
-                  {publicRoutes}
-                </Route>
-                <Route element={<PrivateRoutes />}>
-                  {privatesRoutes}
-                </Route>
-                <Route path={`*`} element={"error 404"} />
-            </Routes>
-        </BrowserRouter>
-    );        
-  };
-
   const value = {
     user,
-    Router,
     login,
     logout,
     fetchApi,
