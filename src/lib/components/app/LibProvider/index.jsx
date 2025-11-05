@@ -4,10 +4,10 @@ import { I18nextProvider } from "../I18nextProvider";
 export const LibContext = createContext();
 
 export const LibProvider = (props) => {
-  const { children, config } = props;
+  const { children, value } = props;
   
   return (
-    <LibContext.Provider value={config}>
+    <LibContext.Provider value={value}>
       {children}
     </LibContext.Provider>
   );
