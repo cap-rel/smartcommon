@@ -1,11 +1,10 @@
 import { defaultProps, propTypes } from "./props";
-import { useStates, useVariantMerger } from "../../../hooks";
+import { useNavigator, useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
 import { isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { useEffect, useRef, useState } from "react";
 import { animate, useMotionValue, motion, scroll } from "framer-motion";
 
-// TODO HideOnScroll
 // TODO centralButton
 // TODO badge for link
 // TODO Fix label truncate not working
@@ -59,8 +58,10 @@ export const Tabbar = (props) => {
 
   const y = useMotionValue(openPosition);
 
+  const isDesktop = useNavigator().device.type === "desktop";
+
   useEffect(() => {
-    if (!hideOnScroll) return;
+    if (!hideOnScroll || isDesktop) { return; }
 
     const scrollElement = document.querySelector("#Principal");
 
@@ -105,7 +106,7 @@ export const Tabbar = (props) => {
   }, [lastScrollY]);
 
   useEffect(() => {
-    if (!hideOnScroll) return;
+    if (!hideOnScroll || isDesktop) { return; }
     animate(y, tabbarPosition, { duration });
   }, [isOpen]);
 
