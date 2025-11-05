@@ -2,11 +2,12 @@ import { isFunction } from "../../utils";
 import { useLib } from "../useLib";
 
 export const useApi = (props) => {
-  let { url, token = "", errors = {} } = props;
+  let { url } = props;
+  const {  token = "", errors = {} } = props;
 
-  const { config } = useLib() ?? {};
+  const { api } = useLib() ?? {};
 
-  url = url ?? config?.api?.url;
+  url = url ?? api?.url;
 
   const fetchApi = async (path, method = "GET", body, requestRest = {}, requestErrors = {}) => {
     let request = {
@@ -38,7 +39,7 @@ export const useApi = (props) => {
     }
 
     return json;
-  };    
+  };
 
   const GET = (path, requestRest, requestErrors) => fetchApi(path, "GET", null, requestRest, requestErrors);
 

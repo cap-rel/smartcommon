@@ -7,7 +7,7 @@ export const LibProvider = (props) => {
   const { children, config } = props;
   
   return (
-    <LibContext.Provider value={{ config }}>
+    <LibContext.Provider value={config}>
       {children}
     </LibContext.Provider>
   );

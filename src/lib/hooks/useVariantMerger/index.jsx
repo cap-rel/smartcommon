@@ -65,8 +65,7 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    const { config } = useLib() ?? {}; // TODO
-    const { theme, themes, variants, components } = config ?? {};
+    const { theme, themes, variants, components } = useLib ?? {};
 
     // if (isNil(themes)) {
     //     throw new Error("No themes provided");
