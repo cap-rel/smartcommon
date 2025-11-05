@@ -3,6 +3,7 @@ import { useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
 import { isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { useEffect, useRef, useState } from "react";
+import { animate, useMotionValue, motion, scroll } from "framer-motion";
 
 // TODO HideOnScroll
 // TODO centralButton
@@ -44,35 +45,78 @@ export const Tabbar = (props) => {
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
-  const [hidden, setHidden] = useState(false);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  // const [isOpen, setIsOpen] = useState(false);
+  // const [lastScrollY, setLastScrollY] = useState(0);
 
-  useEffect(() => {
-    const scrollElement = document.querySelector("#Principal");
+  // useEffect(() => {
+  //   const scrollElement = document.querySelector("#Principal");
 
-    const handleScroll = () => {
-      const currentY = scrollElement.scrollTop;
+  //   const handleScroll = () => {
+  //     const currentY = scrollElement.scrollTop;
 
-      if (currentY > lastScrollY && currentY > 200) {
-        setHidden(true);
-      } 
-      else if (currentY < lastScrollY) {
-        setHidden(false);
-      }
+  //     if (currentY > lastScrollY && currentY > 200) {
+  //       setIsOpen(false);
+  //     } 
+  //     else if (currentY < lastScrollY) {
+  //       setIsOpen(true);
+  //     }
 
-      setLastScrollY(currentY);
-    };
+  //     setLastScrollY(currentY);
+  //   };
 
-    scrollElement.addEventListener("scroll", handleScroll);
-    return () => scrollElement.removeEventListener("scroll", handleScroll);
-  }, [lastScrollY]);
+  //   const handleScrollEnd = () => {
+  //     const currentY = scrollElement.scrollTop;
+
+  //     if (currentY > lastScrollY && currentY > 200) {
+  //       setIsOpen(false);
+  //     } 
+  //     else if (currentY < lastScrollY) {
+  //       setIsOpen(true);
+  //     }
+
+  //     setLastScrollY(currentY);
+  //   };
+
+  //   scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+  //   scrollElement.addEventListener("touchend", handleScrollEnd);
+  //   scrollElement.addEventListener("mouseup", handleScrollEnd);
+
+  //   return () => {
+  //     scrollElement.removeEventListener("scroll", handleScroll);
+  //     scrollElement.removeEventListener("touchend", handleScrollEnd);
+  //     scrollElement.removeEventListener("mouseup", handleScrollEnd);
+  //   };
+  // }, [lastScrollY]);
+
+  // const duration = 0.1;
+  // const goBackValue = 1/2;
+
+  // const openPosition = 0;
+  // const closedPosition = tabbarHeight || window.innerHeight;
+
+  // const tabbarPosition = isOpen ? openPosition : closedPosition;
+
+  // const y = useMotionValue(tabbarPosition);
+
+  // useEffect(() => {
+  //   animate(y, tabbarPosition, { duration });
+  // }, [isOpen]);
+
+  // const handleDragEnd = () => {
+  //   if (y.get() < goBackValue) {
+  //     animate(y, openPosition, { duration });
+  //   } else {
+  //     setIsOpen(false);
+  //   }
+  // };
 
   return (
     <div { ...mergeProps("tabbar", props => ({
       ...props,
       ref: tabbarRef,
-      style: variables,
-      className: `${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) shadow-xl shadow-black h-50 fixed right-0 bottom-0 left-0 z-10 bg-red-500 flex justify-between items-center`
+      style: { ...variables },
+      className: `shadow-xl shadow-black h-50 fixed right-0 bottom-0 left-0 z-10 bg-red-500 flex justify-between items-center`
+      // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
     }))}>
       {children}
     </div>
