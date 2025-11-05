@@ -45,81 +45,83 @@ export const Tabbar = (props) => {
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
-  // const [isOpen, setIsOpen] = useState(false);
-  // const [lastScrollY, setLastScrollY] = useState(0);
 
-  // useEffect(() => {
-  //   const scrollElement = document.querySelector("#Principal");
+  const [isOpen, setIsOpen] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  //   const handleScroll = () => {
-  //     const currentY = scrollElement.scrollTop;
+  const duration = 0.1;
+  const goBackValue = 1/2;
 
-  //     if (currentY > lastScrollY && currentY > 200) {
-  //       setIsOpen(false);
-  //     } 
-  //     else if (currentY < lastScrollY) {
-  //       setIsOpen(true);
-  //     }
+  const openPosition = 0;
+  const closedPosition = tabbarHeight || window.innerHeight;
 
-  //     setLastScrollY(currentY);
-  //   };
+  const tabbarPosition = isOpen ? openPosition : closedPosition;
 
-  //   const handleScrollEnd = () => {
-  //     const currentY = scrollElement.scrollTop;
+  const y = useMotionValue(openPosition);
 
-  //     if (currentY > lastScrollY && currentY > 200) {
-  //       setIsOpen(false);
-  //     } 
-  //     else if (currentY < lastScrollY) {
-  //       setIsOpen(true);
-  //     }
+  useEffect(() => {
+    if (!hideOnScroll) return;
 
-  //     setLastScrollY(currentY);
-  //   };
+    const scrollElement = document.querySelector("#Principal");
 
-  //   scrollElement.addEventListener("scroll", handleScroll, { passive: true });
-  //   scrollElement.addEventListener("touchend", handleScrollEnd);
-  //   scrollElement.addEventListener("mouseup", handleScrollEnd);
+    const handleScroll = () => {
+      const currentY = scrollElement.scrollTop;
 
-  //   return () => {
-  //     scrollElement.removeEventListener("scroll", handleScroll);
-  //     scrollElement.removeEventListener("touchend", handleScrollEnd);
-  //     scrollElement.removeEventListener("mouseup", handleScrollEnd);
-  //   };
-  // }, [lastScrollY]);
+      const delta = currentY - lastScrollY;
 
-  // const duration = 0.1;
-  // const goBackValue = 1/2;
+      const currentPosition = Math.max(openPosition, Math.min(closedPosition, y.get() + delta));
 
-  // const openPosition = 0;
-  // const closedPosition = tabbarHeight || window.innerHeight;
+      y.set(currentPosition);
 
-  // const tabbarPosition = isOpen ? openPosition : closedPosition;
+      setLastScrollY(currentY);
+    };
 
-  // const y = useMotionValue(tabbarPosition);
+    const handleScrollEnd = () => {
+      if (isOpen) {
+        if (y.get() > tabbarHeight * goBackValue) {
+          setIsOpen(false);
+        } else {
+          animate(y, openPosition, { duration });
+        }
+      } else {
+        if (y.get() > tabbarHeight * goBackValue) {
+          animate(y, closedPosition, { duration });
+        } else {
+          setIsOpen(true);
+        }
+      }
+      
+    };
 
-  // useEffect(() => {
-  //   animate(y, tabbarPosition, { duration });
-  // }, [isOpen]);
+    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+    scrollElement.addEventListener("touchend", handleScrollEnd);
+    scrollElement.addEventListener("mouseup", handleScrollEnd);
 
-  // const handleDragEnd = () => {
-  //   if (y.get() < goBackValue) {
-  //     animate(y, openPosition, { duration });
-  //   } else {
-  //     setIsOpen(false);
-  //   }
-  // };
+    return () => {
+      scrollElement.removeEventListener("scroll", handleScroll);
+      scrollElement.removeEventListener("touchend", handleScrollEnd);
+      scrollElement.removeEventListener("mouseup", handleScrollEnd);
+    };
+  }, [lastScrollY]);
+
+  useEffect(() => {
+    if (!hideOnScroll) return;
+    animate(y, tabbarPosition, { duration });
+  }, [isOpen]);
 
   return (
-    <div { ...mergeProps("tabbar", props => ({
+    <motion.div { ...mergeProps("tabbar", props => ({
       ...props,
       ref: tabbarRef,
-      style: { ...variables },
+      style: { 
+        y,
+        ...variables
+      },
       className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
       // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
     }))}>
       {children}
-    </div>
+    </motion.div>
   );
 };
 
