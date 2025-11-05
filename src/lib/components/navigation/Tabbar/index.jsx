@@ -115,7 +115,7 @@ export const Tabbar = (props) => {
       ...props,
       ref: tabbarRef,
       style: { ...variables },
-      className: `shadow-xl shadow-black h-50 fixed right-0 bottom-0 left-0 z-10 bg-red-500 flex justify-between items-center`
+      className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
       // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
     }))}>
       {children}
