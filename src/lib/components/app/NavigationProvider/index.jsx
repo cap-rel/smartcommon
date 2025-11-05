@@ -1,5 +1,5 @@
 import { createContext, useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 
 export const NavigationContext = createContext({
   history: [],
@@ -10,7 +10,7 @@ export const NavigationContext = createContext({
 export const NavigationProvider = (props) => {
   const { children } = props;
   
-  const location = useLocation() ?? {};
+  const location = undefined ?? {};
   const { pathname } = location;
 
   const [history, setHistory] = useState([]);

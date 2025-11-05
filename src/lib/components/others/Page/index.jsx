@@ -1,7 +1,7 @@
 import { useNavigator, useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+// import { useLocation } from "react-router-dom";
 import { defaultProps, propTypes } from "./props";
 
 const config = {
@@ -48,11 +48,10 @@ let prevPathname = null;
 export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
-    const { id, children } = variantProps;
+    const { id, location, children } = variantProps;
 
     const { device } = useNavigator(true) ?? {};
 
-    const location = useLocation();
     const { pathname } = location ?? {}
 
     useEffect(() => {
