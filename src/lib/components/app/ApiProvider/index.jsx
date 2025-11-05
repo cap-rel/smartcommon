@@ -20,7 +20,7 @@ export const ApiProvider = (props) => {
   const { accessToken, refreshToken, tokenExpiry, rememberMe } = user ?? {};
 
   const login = async (loginInfo, request = {}, errors = {}) => {
-    const response = await fetch('login', {
+    const response = await fetch(`${url}login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(loginInfo),
@@ -59,7 +59,7 @@ export const ApiProvider = (props) => {
   };
 
   const logout = async (request = {}, errors = {}) => {
-    const response = await fetch("logout", {
+    const response = await fetch(`${url}logout`, {
       method: "POST",
       headers: { "Authorization": `Bearer ${accessToken}` },
       ...request
@@ -88,7 +88,7 @@ export const ApiProvider = (props) => {
   };
 
   const refreshAccessToken = async () => {
-    const response = await fetch("refresh", {
+    const response = await fetch(`${url}refresh`, {
       method: "GET",
       headers: { "Authorization": `Bearer ${refreshToken}` }
     });
