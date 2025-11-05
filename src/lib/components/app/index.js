@@ -3,3 +3,4 @@ export * from "./NavigationProvider";
 export * from "./LibProvider";
 export * from "./Toaster";
 export * from "./Provider";
+export * from "./ApiProvider";
