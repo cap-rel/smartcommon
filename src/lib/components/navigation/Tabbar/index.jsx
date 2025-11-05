@@ -118,7 +118,10 @@ export const Tabbar = (props) => {
         y,
         ...variables
       },
-      className: `shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center`
+      className: `
+        shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center
+        lg:top-0 lg:right-auto lg:w-50 lg:flex-col lg:justify-start lg:items-start lg:px-app-base lg:py-app-xl lg:gap-app-xs lg:shadow-black/10
+      `
       // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
     }))}>
       {children}
