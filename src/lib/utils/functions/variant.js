@@ -158,7 +158,7 @@ export function setVariable(key, value) {
 
 export function setGlobalVariables(id, variables) {
     for (const variable in variables) {
-        const idVariable = `--${id}-${variable.slice(1)}`
+        const idVariable = `--${id}-${variable.slice(2)}`
         setVariable(idVariable, variables[variable]);
     }
 }
