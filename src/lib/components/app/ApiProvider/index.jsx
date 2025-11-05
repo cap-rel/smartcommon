@@ -90,7 +90,7 @@ export const ApiProvider = (props) => {
 
   const refreshAccessToken = async () => {
     const response = await fetch("refresh", {
-      method: "POST",
+      method: "GET",
       headers: { "Authorization": `Bearer ${refreshToken}` }
     });
 
