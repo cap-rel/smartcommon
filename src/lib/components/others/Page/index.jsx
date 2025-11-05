@@ -55,8 +55,8 @@ export const Page = (props) => {
     const { pathname } = location ?? {}
 
     useEffect(() => {
-        prevPathname = location.pathname;
-    }, [location.pathname]);
+        prevPathname = pathname;
+    }, [pathname]);
 
     const { animations = {}, pages = {} } = config ?? {};
 
