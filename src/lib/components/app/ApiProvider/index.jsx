@@ -1,6 +1,5 @@
 import { createContext } from "react";
 import { useLib, useStates } from "../../../hooks";
-import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { getLocalJSON, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "../../../utils";
 
 export const ApiContext = createContext();
