@@ -48,7 +48,7 @@ let prevPathname = null;
 export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
-    const { id, location, children } = variantProps;
+    const { id, responsive = true, location, children } = variantProps;
 
     const { device } = useNavigator(true) ?? {};
 
@@ -108,7 +108,10 @@ export const Page = (props) => {
         <motion.div { ...mergeProps("page", props => ({
             ...props,
             key: pathname,
-            className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm`,
+            className: `
+                fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm
+                lg:px-50 lg:py-app-xl
+            `,
             ...animations[animation()]
         }))}>
             {children}

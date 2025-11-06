@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 
 export const propTypes = {
     id: PropTypes.string.isRequired,
+    responsive: PropTypes.bool,
     icon: PropTypes.func,
     badge: PropTypes.string,
     activeIcon: PropTypes.func,
@@ -15,5 +16,6 @@ export const propTypes = {
 };
 
 export const defaultProps = {
+    responsive: true,
     disabled: false
 };

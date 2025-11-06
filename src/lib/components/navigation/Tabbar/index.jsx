@@ -15,6 +15,7 @@ export const Tabbar = (props) => {
   const { 
     id,
     children,
+    responsive = true,
     hideOnScroll = true
   } = variantProps;
 

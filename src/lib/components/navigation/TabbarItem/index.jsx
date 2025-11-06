@@ -5,6 +5,8 @@ export const TabbarItem = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("TabbarItem", props);
 
     const { 
+        id,
+        responsive = true,
         badge,
         icon,
         activeIcon,
