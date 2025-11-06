@@ -110,7 +110,7 @@ export const Page = (props) => {
             key: pathname,
             className: `
                 fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm
-                lg:px-50 lg:py-app-xl
+                ${responsive && "lg:px-50 lg:py-app-xl"}
             `,
             ...animations[animation()]
         }))}>

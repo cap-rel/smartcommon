@@ -23,7 +23,7 @@ export const TabbarItem = (props) => {
             ...mergeQuickProps(props, ["disabled", "to", "replace", "state", "onClick"]),
             className: `
                 group flex-1 py-app-xs ${disabled && "pointer-events-none"}
-                lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}
+                ${responsive && `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}`}
             `
         }))}>
 
@@ -31,7 +31,7 @@ export const TabbarItem = (props) => {
                 ...props,
                 className: `
                     flex flex-col items-center gap-app-xxs
-                    lg:flex-row lg:gap-app-xs
+                    ${responsive && "lg:flex-row lg:gap-app-xs"}
                 `
             }))}>
 
@@ -40,7 +40,7 @@ export const TabbarItem = (props) => {
                         ...props,
                         className: `
                             text-lg flex justify-center items-center py-app-xs px-app-md rounded-app-xl duration-(--really-quick) ${active ? "text-primary lg:text-white bg-primary/15" : "text-soft-text group-active:brightness-soft bg-soft-bg"}
-                            lg:p-0 lg:bg-transparent
+                            ${responsive && "lg:p-0 lg:bg-transparent"}
                         `
                     }))}>
                         {currentIcon()}
@@ -52,7 +52,7 @@ export const TabbarItem = (props) => {
                         ...props,
                         className: `
                             truncate text-app-xs ${active ? "text-primary lg:text-white" : "text-soft-text"}
-                            lg:grow
+                            ${responsive && "lg:grow"}
                         `
                     }))}>
                         {label}
