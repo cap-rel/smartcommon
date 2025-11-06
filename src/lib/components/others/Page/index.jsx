@@ -105,18 +105,14 @@ export const Page = (props) => {
 //   };
 
     return (
-            <motion.div
-                key={pathname} // important pour déclencher l'animation au changement de route
-                className="fixed inset-0"
-                { ...animations[animation()]}
-            >
-                <div { ...mergeProps("page", props => ({
-                    ...props,
-                    className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm`
-                }))}>
-                    {children}
-                </div>
-            </motion.div>
+        <motion.div { ...mergeProps("page", props => ({
+            ...props,
+            key: pathname,
+            className: `fixed inset-0 bg-medium-bg overflow-y-auto text-strong-text text-app-sm`,
+            ...animations[animation()]
+        }))}>
+            {children}
+        </motion.div>
     );
 };
 
