@@ -25,3 +25,5 @@ export const propTypes = {
     bottomBadgeProps: PropTypes.object,
     bottomLabelProps: PropTypes.object,
 };
+
+export const defaultProps = {};
