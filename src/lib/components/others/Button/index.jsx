@@ -10,19 +10,29 @@ import { propTypes, defaultProps } from "./props";
 export const Button = (props) => {
     const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("Button", props);
 
-    const { id, label, loading, icon, badge, children, disabled } = variantProps;
+    const { 
+        id,
+        label,
+        responsive = true,
+        loading = false,
+        icon,
+        badge,
+        children,
+        disabled = false,
+        onClick = () => {}
+    } = variantProps;
     
     return (
         <button { ...mergeProps("button", props => ({
             ...props,
-            ...mergeQuickProps(props, ["onClick", "disabled", "onFocus", "onBlur", "type"]),
             className: `relative flex justify-center items-center
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
             not-disabled:active:brightness-soft disabled:brightness-soft
             ${(!disabled && !loading) && "cursor-pointer"}
             `,
-            disabled: loading || disabled
+            disabled: loading || disabled,
+            onClick
         }))}>
             {loading &&
                 <Spinner { ...mergeProps("Spinner", props => ({

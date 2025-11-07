@@ -11,13 +11,12 @@ export const propTypes = {
     disabled: PropTypes.bool,
     onClick: PropTypes.func,
     containerProps: PropTypes.object,
-    iconAndLabelContainerProps: PropTypes.object,
     iconProps: PropTypes.object,
     labelProps: PropTypes.object,
 };
 
 export const defaultProps = {
-    responsive: true,
     disabled: false,
+    responsive: false,
     onClick: () => {}
 };

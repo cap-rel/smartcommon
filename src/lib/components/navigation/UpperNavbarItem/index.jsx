@@ -1,12 +1,20 @@
 import { useVariantMerger } from "../../../hooks";
 import { isNil } from "../../../utils";
+import { propTypes } from "./props";
 
 // TODO badge
 
-export const UpperNavbarLink = (props) => {
+export const UpperNavbarItem = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("UpperNavbarLink", props);
     
-    const { badge, icon, disabled, label, children } = variantProps;
+    const { 
+        id,
+        badge,
+        icon,
+        disabled,
+        label,
+        children
+    } = variantProps;
                                                                             
     return (
         <div { ...mergeProps("link", props => ({
@@ -31,4 +39,7 @@ export const UpperNavbarLink = (props) => {
 
         </div>
     );
-}
+};
+
+UpperNavbarItem.propTypes = propTypes;
+UpperNavbarItem.defaultProps = propTypes;

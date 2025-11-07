@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 export const propTypes = {
     /** Every component must have an id. It allows to use generated css variables (position, height, ...) and identify in some case (form errors, ...). Ex: "login-button" */
     id: PropTypes.string.isRequired,
+    responsive: PropTypes.bool,
     /** Variant */
     variant: PropTypes.oneOfType([PropTypes.arrayOf([PropTypes.string, PropTypes.object]), PropTypes.string, PropTypes.object]),
     /** Content og  */
@@ -32,6 +33,8 @@ export const propTypes = {
 };
 
 export const defaultProps = {
+    responsive: true,
     loading: false,
-    disabled: false
+    disabled: false,
+    onClick: () => {}
 };

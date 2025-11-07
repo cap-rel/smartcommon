@@ -12,7 +12,8 @@ export const TabbarItem = (props) => {
         activeIcon,
         disabled = false,
         label,
-        active
+        active,
+        onClick = () => {} 
     } = variantProps;
           
     const currentIcon = active ? (activeIcon ? activeIcon : icon) : icon;
@@ -20,11 +21,11 @@ export const TabbarItem = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            ...mergeQuickProps(props, ["disabled", "to", "replace", "state", "onClick"]),
             className: `
                 group flex-1 py-app-xs ${disabled && "pointer-events-none"}
                 ${responsive && `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}`}
-            `
+            `,
+            onClick
         }))}>
 
             <div { ...mergeProps("iconAndLabelContainer", props => ({
