@@ -45,15 +45,14 @@ export const Navbar = (props) => {
 
     const variables = {
         [`--navbar-height`]: `${navbarHeight}px`,
-        [`--navbar-width`]: `${navbarWidth}px`
+        [`--navbar-width`]: `${navbarWidth}px`,
+        [`--upper-navbar-height`]: `${upperNavbarHeight}px`,
+        [`--upper-navbar-width`]: `${upperNavbarWidth}px`
     };
 
     useEffect(() => {
-        setVariable(`--${id}-upper-navbar-height`, `${upperNavbarHeight}px`);
-        setVariable(`--${id}-upper-navbar-width`, `${upperNavbarWidth}px`);
-
-        setVariable(`--${id}-navbar-height`, `${navbarHeight}px`);
-        setVariable(`--${id}-navbar-width`, `${navbarWidth}px`);
+        setGlobalVariables(id, variables);
+        // setParams
     }, [navbarHeight, navbarWidth, upperNavbarHeight, upperNavbarWidth]);
 
     // useEffect(() => {
@@ -64,6 +63,7 @@ export const Navbar = (props) => {
         <div { ...mergeProps("navbar", props => ({
             ...props,
             ref: navbarRef,
+            style: { ...variables },
             className: `sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md`
         }))}>     
 
