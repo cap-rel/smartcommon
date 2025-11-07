@@ -45,7 +45,6 @@ export const Tabbar = (props) => {
     setParams({ tabbarHeight, tabbarWidth });
   }, [tabbarHeight, tabbarWidth]);
 
-
   const [isOpen, setIsOpen] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -64,10 +63,11 @@ export const Tabbar = (props) => {
   useEffect(() => {
     if (!hideOnScroll || isDesktop) { return; }
 
-    const scrollElement = document.querySelector("#Principal");
+    // const scrollElement = document.querySelector("#Principal");
+    const scrollElement = window;
 
     const handleScroll = () => {
-      const currentY = scrollElement.scrollTop;
+      const currentY = scrollElement.scrollY;
 
       const delta = currentY - lastScrollY;
 

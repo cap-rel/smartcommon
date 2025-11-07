@@ -1,15 +1,25 @@
-import { useStates, useVariantMerger } from "../../../hooks";
-import { isNil, setGlobalVariables, setVariable } from "../../../utils";
+import { animate, useMotionValue, motion } from "framer-motion";
+import { useNavigator, useStates, useVariantMerger } from "../../../hooks";
+import { isEmpty, isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { defaultProps, propTypes } from "./props";
 // import { Link } from "react-router-dom";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // TODO when there is not left or right, adjust the justify-between
 
 export const Navbar = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantMerger("Navbar", props);
 
-    const { id, children, upperLeftLinks, upperRightLinks, lowerLinks, title } = variantProps;
+    const { 
+        id,
+        responsive = true,
+        hideOnScroll = true,
+        children,
+        left,
+        right,
+        bottom,
+        title
+    } = variantProps;
 
     // useEffect(() => {
     //     setParams()
@@ -38,11 +48,6 @@ export const Navbar = (props) => {
         }
     }, []);
 
-    const globalVariables = {
-        [`--${id}-navbar-height`]: `${navbarHeight}px`,
-        [`--${id}-navbar-width`]: `${navbarWidth}px`
-    };
-
     const variables = {
         [`--navbar-height`]: `${navbarHeight}px`,
         [`--navbar-width`]: `${navbarWidth}px`,
@@ -59,58 +64,133 @@ export const Navbar = (props) => {
     //     setParams({ navbarHeight, navbarWidth });
     // }, [navbarHeight, navbarWidth]);
 
+    const isLeftEmpty = isEmpty(left);
+    const isRightEmpty = isEmpty(right);
+    const isBottomEmpty = isEmpty(bottom);
+
+    const [isOpen, setIsOpen] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    const duration = 0.1;
+    const goBackValue = 1/2;
+
+    const openPosition = 0;
+    const closedPosition = -navbarHeight || -window.innerHeight;
+
+    const tabbarPosition = isOpen ? openPosition : closedPosition;
+
+    const y = useMotionValue(openPosition);
+
+    const isDesktop = useNavigator().device.type === "desktop";
+
+    useEffect(() => {
+        if (!hideOnScroll || isDesktop) { return; }
+
+            // const scrollElement = document.querySelector("#Principal");
+            const scrollElement = window;
+
+            const handleScroll = () => {
+            const currentY = scrollElement.scrollY;
+
+            const delta = currentY - lastScrollY;
+
+            const currentPosition = Math.max(closedPosition, Math.min(openPosition, y.get() - delta));
+
+            y.set(currentPosition);
+
+            setLastScrollY(currentY);
+        };
+
+        const handleScrollEnd = () => {
+            if (isOpen) {
+                if (y.get() < -navbarHeight * goBackValue) {
+                    setIsOpen(false);
+                } else {
+                    animate(y, openPosition, { duration });
+                }
+            } else {
+                if (y.get() < -navbarHeight * goBackValue) {
+                    animate(y, closedPosition, { duration });
+                } else {
+                    setIsOpen(true);
+                }
+            }
+        
+        };
+
+        scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+        scrollElement.addEventListener("touchend", handleScrollEnd);
+        scrollElement.addEventListener("mouseup", handleScrollEnd);
+
+        return () => {
+            scrollElement.removeEventListener("scroll", handleScroll);
+            scrollElement.removeEventListener("touchend", handleScrollEnd);
+            scrollElement.removeEventListener("mouseup", handleScrollEnd);
+        };
+    }, [lastScrollY]);
+
+    useEffect(() => {
+        if (!hideOnScroll || isDesktop) { return; }
+        animate(y, tabbarPosition, { duration });
+    }, [isOpen]);
+
     return (
-        <div { ...mergeProps("navbar", props => ({
+        <motion.div { ...mergeProps("navbar", props => ({
             ...props,
             ref: navbarRef,
-            style: { ...variables },
+            style: {
+                y,
+                ...variables
+            },
             className: `sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md`
         }))}>     
 
             <div { ...mergeProps("upperNavbar", props => ({
                 ...props,
                 ref: upperNavbarRef,
-                className: `p-app-xs flex justify-between items-center ${!isNil(lowerLinks) ? "rounded-b-none" :  "rounded-b-app-base"}`
+                className: `p-app-base flex justify-between items-center ${isBottomEmpty ? "rounded-b-app-base" : "rounded-b-none"}`
             }))}>
 
-                {!isNil(upperLeftLinks) &&
-                    <div { ...mergeProps("upperLeftLinks", props => ({
+                {!isLeftEmpty &&
+                    <div { ...mergeProps("leftContainer", props => ({
                         ...props,
-                        className: `flex gap-app-xs min-w-9`
+                        className: `flex gap-app-xs -ml-app-xs`
+                        // min-w-9
                     }))}>
-                        {upperLeftLinks}
+                        {left}
                     </div>
                 }
 
-                {!isNil(title) && 
+                {title && 
                     <div { ...mergeProps("title", props => ({
                         ...props,
-                        className: `text-center truncate text-white font-app-semibold text-app-md py-app-xs`
+                        className: `grow ${isLeftEmpty ? "text-left" : isRightEmpty ? "text-right" : "text-center"} truncate text-white font-app-semibold text-app-md`
                     }))}>
                         {title}
                     </div>
                 }
             
-                {!isNil(upperRightLinks) &&
-                    <div { ...mergeProps("upperRightLinks", props => ({
+                {!isRightEmpty &&
+                    <div { ...mergeProps("rightContainer", props => ({
                         ...props,
-                        className: `flex gap-app-xs min-w-9`
+                        className: `flex gap-app-xs -mr-app-xs`
+                        // min-w-9
                     }))}>
-                        {upperRightLinks}
+                        {right}
                     </div>
                 }
             </div>
 
-            {!isNil(lowerLinks) &&
-                <div { ...mergeProps("lowerLinks", props => ({
+            {bottom &&
+                <div { ...mergeProps("bottomContainer", props => ({
                     ...props,
                     className: `snap-x flex items-center bg-primary text-app-base overflow-x-auto`
                 }))}>
-                    {lowerLinks}
+                    {bottom}
                 </div>
             }
 
-        </div>
+        </motion.div>
     );
 };
 
