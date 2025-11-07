@@ -1,29 +1,24 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    id: PropTypes.string.isRequired,
+    responsive: PropTypes.bool,
+    hideOnScroll: PropTypes.bool,
+    children: PropTypes.node,
     title: PropTypes.string,
-    leftLinks: PropTypes.array,
-    rightLinks: PropTypes.array,
-    bottomLinks: PropTypes.array,
+    left: PropTypes.array,
+    right: PropTypes.array,
+    bottom: PropTypes.array,
 
     navbarProps: PropTypes.object,
     upperNavbarProps: PropTypes.object,
+    leftContainerProps: PropTypes.object,
     titleProps: PropTypes.object,
-    leftLinksContainerProps: PropTypes.object,
-    rightLinksContainerProps: PropTypes.object,
-    bottomLinksContainerProps: PropTypes.object,
-    leftLinkProps: PropTypes.object,
-    leftIconProps: PropTypes.object,
-    leftBadgeProps: PropTypes.object,
-    leftLabelProps: PropTypes.object,
-    rightLinkProps: PropTypes.object,
-    rightIconProps: PropTypes.object,
-    rightBadgeProps: PropTypes.object,
-    rightLabelProps: PropTypes.object,
-    bottomLinkProps: PropTypes.object,
-    bottomIconProps: PropTypes.object,
-    bottomBadgeProps: PropTypes.object,
-    bottomLabelProps: PropTypes.object,
+    rightContainerProps: PropTypes.object,
+    bottomContainerProps: PropTypes.object,
 };
 
-export const defaultProps = {};
+export const defaultProps = {
+    responsive: true,
+    hideOnScroll: true
+};
