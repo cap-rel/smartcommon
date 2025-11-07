@@ -72,7 +72,8 @@ export const Navbar = (props) => {
     const [lastScrollY, setLastScrollY] = useState(0);
 
     const duration = 0.1;
-    const goBackValue = 1/2;
+    const openGoBackValue = 1/5;
+    const closedGoBackValue = 4/5;
 
     const openPosition = 0;
     const closedPosition = -navbarHeight || -window.innerHeight;
@@ -103,13 +104,13 @@ export const Navbar = (props) => {
 
         const handleScrollEnd = () => {
             if (isOpen) {
-                if (y.get() < -navbarHeight * goBackValue) {
+                if (y.get() < -navbarHeight * openGoBackValue) {
                     setIsOpen(false);
                 } else {
                     animate(y, openPosition, { duration });
                 }
             } else {
-                if (y.get() < -navbarHeight * goBackValue) {
+                if (y.get() < -navbarHeight * closedGoBackValue) {
                     animate(y, closedPosition, { duration });
                 } else {
                     setIsOpen(true);

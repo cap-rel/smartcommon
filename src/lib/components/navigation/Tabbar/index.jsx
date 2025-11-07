@@ -49,7 +49,8 @@ export const Tabbar = (props) => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const duration = 0.1;
-  const goBackValue = 1/2;
+  const openGoBackValue = 1/5;
+  const closedGoBackValue = 4/5;
 
   const openPosition = 0;
   const closedPosition = tabbarHeight || window.innerHeight;
@@ -80,13 +81,13 @@ export const Tabbar = (props) => {
 
     const handleScrollEnd = () => {
       if (isOpen) {
-        if (y.get() > tabbarHeight * goBackValue) {
+        if (y.get() > tabbarHeight * openGoBackValue) {
           setIsOpen(false);
         } else {
           animate(y, openPosition, { duration });
         }
       } else {
-        if (y.get() > tabbarHeight * goBackValue) {
+        if (y.get() > tabbarHeight * closedGoBackValue) {
           animate(y, closedPosition, { duration });
         } else {
           setIsOpen(true);
