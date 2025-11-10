@@ -1,4 +1,4 @@
-import { getVariable, isNil } from "../../../utils";
+import { applyFunctionIfFunction, getVariable, isNil } from "../../../utils";
 import { useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
 
@@ -22,23 +22,36 @@ export const LowerNavbarItem = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            ...mergeQuickProps(props, ["disabled", "to", "state", "replace", "onClick"]),
-            style: { transition: `filter ${getVariable("--really-quick")}, color ${getVariable("--medium")}, border-color ${getVariable("--medium")}` },
-            className: `bg-primary text-app-sm snap-center px-app-base py-app-xs border-b-4
-            font-app-base flex-1 ${disabled && "pointer-events-none"} whitespace-nowrap rounded-app-base border-primary
-            ${active ? "text-white border-white font-app-semibold" : "font-app-base text-soft-text border-primary active:brightness-soft"}
-            flex justify-center items-center gap-app-xs`,
-            onClick
+            style: { 
+                transition: `
+                    filter ${getVariable("--really-quick")},
+                    color ${getVariable("--medium")},
+                    border-color ${getVariable("--medium")}
+                `
+            },
+            className: `
+                bg-primary text-app-sm snap-center px-app-base py-app-xs border-b-4 flex justify-center items-center gap-app-xs flex-1 whitespace-nowrap rounded-app-base border-primary
+                ${disabled && "pointer-events-none"}
+                ${active ? "text-white border-white font-app-semibold" : "font-app-base text-soft-text border-primary active:brightness-soft"}
+                lg:bg-transparent lg:cursor-pointer lg:border-b-2
+                ${active ? "lg:text-strong-text lg:border-primary" : "border-transparent lg:border-border"}
+            `,
+            onClick: e => {
+                if (props.onClick) {
+                    return applyFunctionIfFunction(props.onClick(), e);
+                }
+                onClick();
+            }
         }))}>
             {/* border-b-4 */}
 
-            {!isNil(icon) && 
+            {icon && 
                 <div { ...mergeProps("icon", props => props)}>
-                    {currentIcon}
+                    {currentIcon()}
                 </div>
             }
 
-            {!isNil(label) &&
+            {label &&
                 <div { ...mergeProps("label", props => props)}>
                     {label}
                 </div>
