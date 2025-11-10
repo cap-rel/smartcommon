@@ -96,15 +96,17 @@ export const Tabbar = (props) => {
       
     };
 
-    scrollElement.addEventListener("scroll", handleScroll, { passive: true });
-    scrollElement.addEventListener("touchend", handleScrollEnd);
-    scrollElement.addEventListener("mouseup", handleScrollEnd);
+    if (scrollElement) {
+      scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+      scrollElement.addEventListener("touchend", handleScrollEnd);
+      scrollElement.addEventListener("mouseup", handleScrollEnd);
 
-    return () => {
-      scrollElement.removeEventListener("scroll", handleScroll);
-      scrollElement.removeEventListener("touchend", handleScrollEnd);
-      scrollElement.removeEventListener("mouseup", handleScrollEnd);
-    };
+      return () => {
+        scrollElement.removeEventListener("scroll", handleScroll);
+        scrollElement.removeEventListener("touchend", handleScrollEnd);
+        scrollElement.removeEventListener("mouseup", handleScrollEnd);
+      };
+    }
   }, [lastScrollY]);
 
   useEffect(() => {

@@ -119,15 +119,18 @@ export const Navbar = (props) => {
         
         };
 
-        scrollElement.addEventListener("scroll", handleScroll, { passive: true });
-        scrollElement.addEventListener("touchend", handleScrollEnd);
-        scrollElement.addEventListener("mouseup", handleScrollEnd);
+        if (scrollElement) {
+            scrollElement.addEventListener("scroll", handleScroll, { passive: true });
+            scrollElement.addEventListener("touchend", handleScrollEnd);
+            scrollElement.addEventListener("mouseup", handleScrollEnd);
 
-        return () => {
-            scrollElement.removeEventListener("scroll", handleScroll);
-            scrollElement.removeEventListener("touchend", handleScrollEnd);
-            scrollElement.removeEventListener("mouseup", handleScrollEnd);
-        };
+            return () => {
+                scrollElement.removeEventListener("scroll", handleScroll);
+                scrollElement.removeEventListener("touchend", handleScrollEnd);
+                scrollElement.removeEventListener("mouseup", handleScrollEnd);
+            };
+        }
+
     }, [lastScrollY]);
 
     useEffect(() => {
@@ -146,7 +149,7 @@ export const Navbar = (props) => {
             },
             className: `
                 sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md
-                lg:relative lg:flex-row lg:text-strong-text lg:bg-transparent lg:shadow-none lg:justify-between lg:items-center
+                lg:relative lg:flex-row lg:text-strong-text lg:bg-transparent lg:shadow-none lg:justify-between lg:items-center lg:col-span-full
             `
         }))}>     
 
