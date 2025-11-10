@@ -17,3 +17,4 @@ export * from "./SearchBar";
 export * from "./Spinner";
 export * from "./Stepper";
 export * from "./Tag";
+export * from "./List";
