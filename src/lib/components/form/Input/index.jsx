@@ -200,12 +200,12 @@ export const Input = (props) => {
           <Spinner { ...mergeProps("Spinner", props => props)} />
         }
 
-        {(!isNil(inputIcon) && !loading) &&
+        {(inputIcon && !loading) &&
           <div { ...mergeProps("inputIcon", props => ({
             ...props,
             className: `shrink-0 text-soft-text`
           }))}>
-            {inputIcon}
+            {inputIcon()}
           </div>
         }
 
