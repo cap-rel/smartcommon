@@ -49,10 +49,10 @@ export const Navbar = (props) => {
     }, []);
 
     const variables = {
-        [`--navbar-height`]: `${navbarHeight}px`,
-        [`--navbar-width`]: `${navbarWidth}px`,
-        [`--upper-navbar-height`]: `${upperNavbarHeight}px`,
-        [`--upper-navbar-width`]: `${upperNavbarWidth}px`
+        "--navbar-height": `${navbarHeight}px`,
+        "--navbar-width": `${navbarWidth}px`,
+        "--upper-navbar-height": `${upperNavbarHeight}px`,
+        "--upper-navbar-width": `${upperNavbarWidth}px`
     };
 
     useEffect(() => {
@@ -87,11 +87,11 @@ export const Navbar = (props) => {
     useEffect(() => {
         if (!hideOnScroll || isDesktop) { return; }
 
-            // const scrollElement = document.querySelector("#Principal");
-            const scrollElement = window;
+        const scrollElement = navbarRef.current?.closest("[data-component='Page']");
+        // const scrollElement = window;
 
-            const handleScroll = () => {
-            const currentY = scrollElement.scrollY;
+        const handleScroll = () => {
+            const currentY = scrollElement.scrollTop;
 
             const delta = currentY - lastScrollY;
 
@@ -138,18 +138,25 @@ export const Navbar = (props) => {
     return (
         <motion.div { ...mergeProps("navbar", props => ({
             ...props,
+            "data-component": "Navbar",
             ref: navbarRef,
             style: {
                 y,
                 ...variables
             },
-            className: `sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md`
+            className: `
+                sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md
+                lg:relative lg:flex-row lg:text-strong-text lg:bg-transparent lg:shadow-none lg:justify-between lg:items-center
+            `
         }))}>     
 
             <div { ...mergeProps("upperNavbar", props => ({
                 ...props,
                 ref: upperNavbarRef,
-                className: `p-app-base flex justify-between items-center ${isBottomEmpty ? "rounded-b-app-base" : "rounded-b-none"}`
+                className: `
+                    p-app-base flex justify-between items-center
+                    ${isBottomEmpty ? "rounded-b-app-base" : "rounded-b-none"}
+                `
             }))}>
 
                 {!isLeftEmpty &&
@@ -165,7 +172,11 @@ export const Navbar = (props) => {
                 {title && 
                     <div { ...mergeProps("title", props => ({
                         ...props,
-                        className: `grow ${isLeftEmpty ? "text-left" : isRightEmpty ? "text-right" : "text-center"} truncate text-white font-app-semibold text-app-md`
+                        className: `
+                            grow truncate text-white font-app-semibold text-app-md
+                            ${isLeftEmpty ? "text-left" : isRightEmpty ? "text-right" : "text-center"}
+                            lg:text-strong-text lg:text-app-2xl
+                        `
                     }))}>
                         {title}
                     </div>
@@ -185,7 +196,10 @@ export const Navbar = (props) => {
             {bottom &&
                 <div { ...mergeProps("bottomContainer", props => ({
                     ...props,
-                    className: `snap-x flex items-center bg-primary text-app-base overflow-x-auto`
+                    className: `
+                        snap-x flex items-center bg-primary text-app-base overflow-x-auto
+                        lg:bg-transparent
+                    `
                 }))}>
                     {bottom}
                 </div>
