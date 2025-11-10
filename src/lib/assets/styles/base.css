@@ -11,6 +11,14 @@
     *::-webkit-scrollbar {
       display: none;  /* Cache la scrollbar pour les navigateurs Webkit */
     }
+
+    @media (min-width: 1280px) {
+      
+    }
+
+    body {
+      @apply bg-medium-bg;
+    }
   
     .scroll-hidden {
       -ms-overflow-style: none;  /* Pour Internet Explorer */

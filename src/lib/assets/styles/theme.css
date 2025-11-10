@@ -36,7 +36,7 @@
   --color-strong-text       : var(--color-gray-900);
 
   --color-soft-bg           : white;
-  --color-medium-bg         : var(--color-gray-100);
+  --color-medium-bg         : #f7f8fc;
   --color-strong-bg         : var(--color-gray-200);
 
   --color-border            : var(--color-gray-300);
