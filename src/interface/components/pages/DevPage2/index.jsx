@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Page, Panel, Tabbar, TabbarItem } from "../../../../lib";
+import { Block, LowerNavbarItem, Navbar, Page, Panel, Tabbar, TabbarItem } from "../../../../lib";
 import { useState } from "react";
 import { FaUserAstronaut, FaUser, FaGear, FaGears } from "react-icons/fa6";
 
@@ -10,12 +10,46 @@ export const DevPage2 = () => {
 
     return (
         <>
-            <Page pageProps={{ id: "Principal", className: "mb-(--test-tabbar-height) lg:mb-0 lg:ml-(--test-tabbar-width)" }}>
-                <div className="flex flex-col">
-                    <Link to={"/"}>Bonjour</Link>
-                    <button onClick={() => setIsPanelOpen(true)}>Open</button>
+            <Page pageProps={{ id: "Principal" }}>
+                <Navbar
+                    id="navbar"
+                    title="Navbar"
+                    bottom={<>
+                        <LowerNavbarItem
+                            label={"Toutes"}
+                            active
+                        />
+                        <LowerNavbarItem
+                            label={"Mes interventions"}
+                        />
+                        <LowerNavbarItem
+                            label={"Urgentes"}
+                        />
+                        <LowerNavbarItem
+                            label={"Non assignées"}
+                        />
+                    </>}
+                />
+                    <Block title={"bonjour"}>
+                        <Link to={"/"}>
+                            Bonjour
+                        </Link>
+                        <button onClick={() => setIsPanelOpen(true)}>Open</button>
+                    </Block>
+                     <Block title={"bonjour"}>
+                        <Link to={"/"}>
+                            Bonjour
+                        </Link>
+                        <button onClick={() => setIsPanelOpen(true)}>Open</button>
+                    </Block>
+                     <Block title={"bonjour"}>
+                        <Link to={"/"}>
+                            Bonjour
+                        </Link>
+                        <button onClick={() => setIsPanelOpen(true)}>Open</button>
+                    </Block>
 
-                    <Panel
+                    {/* <Panel
                         position="bottom"
                         isOpen={isPanelOpen}
                         close={() => setIsPanelOpen(false)}
@@ -24,25 +58,24 @@ export const DevPage2 = () => {
 
                         </div>
                     </Panel>
-                    <div className="h-[2000px]">
-                        sfdsqfq
-                    </div>
-                </div>
+                    <div className="h-[2000px] flex flex-col justify-end">
+                        Fin de page
+                    </div> */}
+                <Tabbar id={"tabbar"}>
+                    <TabbarItem
+                        icon={FaUser}
+                        activeIcon={FaUserAstronaut}
+                        active={location.pathname === "/dev2"}
+                        label="Utilisateur"
+                    />
+                    <TabbarItem
+                        icon={FaGear}
+                        activeIcon={FaGears}
+                        active={location.pathname === "/"}
+                        label="Paramètres"
+                    />
+                </Tabbar>
             </Page>
-            <Tabbar id={"test"}>
-                <TabbarItem
-                    icon={FaUser}
-                    activeIcon={FaUserAstronaut}
-                    active={location.pathname === "/dev2"}
-                    label="Utilisateur"
-                />
-                <TabbarItem
-                    icon={FaGear}
-                    activeIcon={FaGears}
-                    active={location.pathname === "/"}
-                    label="Paramètres"
-                />
-            </Tabbar>
         </>
     );
 };
