@@ -146,7 +146,7 @@ export const Page = (props) => {
             <div {...mergeProps("content", props => ({
                 ...props,
                 className: `
-                    lg:max-w-[1280px] lg:mx-auto
+                    lg:max-w-[1024px] lg:mx-auto lg:grid lg:grid-cols-2 lg:gap-app-base
                 `
             }))}>
                 {children}
