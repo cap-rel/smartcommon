@@ -11,4 +11,8 @@ export const propTypes = {
     headerProps: PropTypes.object,
     blockProps: PropTypes.object,
     footerProps: PropTypes.object,
-}
+};
+
+export const defaultProps = {
+    responsive: true
+};
