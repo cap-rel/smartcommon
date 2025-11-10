@@ -17,7 +17,10 @@ export const Block = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            className: `flex flex-col gap-app-xs my-app-base`
+            className: `
+                flex flex-col gap-app-xs my-app-base
+                lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md
+            `
         }))}>
             {title && 
                 <div { ...mergeProps("title", props => ({
@@ -38,7 +41,10 @@ export const Block = (props) => {
             {children &&
                 <div { ...mergeProps("block", props => ({
                     ...props,
-                    className: `flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text shadow-md text-app-sm`
+                    className: `
+                        flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text shadow-md text-app-sm
+                        lg:shadow-none
+                    `
                 }))}>
                     {children}
                 </div>
@@ -46,7 +52,7 @@ export const Block = (props) => {
             {!isNil(footer) && 
                 <div { ...mergeProps("footer", props => ({
                     ...props,
-                    className: ` text-soft-text text-app-sm mx-app-xxs`
+                    className: `text-soft-text text-app-sm mx-app-xxs`
                 }))}>
                     {footer}
                 </div>
