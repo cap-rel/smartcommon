@@ -64,11 +64,11 @@ export const Tabbar = (props) => {
   useEffect(() => {
     if (!hideOnScroll || isDesktop) { return; }
 
-    // const scrollElement = document.querySelector("#Principal");
-    const scrollElement = window;
+    const scrollElement = tabbarRef.current?.closest("[data-component='Page']");
+    // const scrollElement = window;
 
     const handleScroll = () => {
-      const currentY = scrollElement.scrollY;
+      const currentY = scrollElement.scrollTop;
 
       const delta = currentY - lastScrollY;
 
@@ -115,6 +115,7 @@ export const Tabbar = (props) => {
   return (
     <motion.div { ...mergeProps("tabbar", props => ({
       ...props,
+      "data-component": "Tabbar",
       ref: tabbarRef,
       style: { 
         y,
