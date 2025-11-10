@@ -20,8 +20,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 
-import "./assets/styles/theme.css";
-import "./assets/styles/base.css";
+// import "./assets/styles/theme.css";
+// import "./assets/styles/base.css";
+import "../lib/assets/styles/export.css";
 
 import { App } from "./App";
 
