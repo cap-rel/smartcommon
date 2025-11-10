@@ -6,6 +6,7 @@ export const propTypes = {
     animations: PropTypes.object,
     children: PropTypes.node,
     pageProps: PropTypes.object,
+    contentProps: PropTypes.object
 };
 
 export const defaultProps = {
