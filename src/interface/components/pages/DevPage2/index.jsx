@@ -72,9 +72,9 @@ export const DevPage2 = () => {
         };
     };
 
-    useEffect(() => {
-        initDB();
-    }, [])
+    // useEffect(() => {
+    //     initDB();
+    // }, [])
 
     const createData = () => {
         const req = indexedDB.open(DB_NAME, DB_VERSION);

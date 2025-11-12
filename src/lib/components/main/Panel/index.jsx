@@ -1,4 +1,4 @@
-import { Overlay } from "../Overlay";
+import { Overlay } from "../../others";
 import { useStates, useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
 import { useEffect, useRef } from "react";
@@ -10,6 +10,7 @@ export const Panel = (props) => {
 
     const { 
         id,
+        responsive = true,
         zIndex = 40,
         position = "bottom",
         children,
@@ -133,7 +134,10 @@ export const Panel = (props) => {
                         applyFunctionIfNotNil(props.onClick, e);
                     },
                     style: { "--z-index": zIndex, opacity },
-                    className: `z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen && "pointer-events-none"}`
+                    className: `
+                        z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen && "pointer-events-none"}
+                        ${responsive && ""}
+                    `
                     // duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
                 }))} />
             }
@@ -152,12 +156,17 @@ export const Panel = (props) => {
                     opacity,
                     ...variables
                 },
-                className: `fixed z-(--z-index) p-app-base
-                gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}`
+                className: `
+                    fixed z-(--z-index) p-app-base gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}
+                    ${responsive && ""}
+                `
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
-                <div className={`mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`}/>
+                <div { ...mergeProps("dash", props => ({
+                    ...props,
+                    className: `mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`
+                }))} />
                 {children}
             </motion.div>
         </>

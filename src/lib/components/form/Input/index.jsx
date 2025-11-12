@@ -7,7 +7,7 @@ import { FaClipboardCheck, FaEye, FaEyeSlash, FaMinus, FaPlus, FaRegClipboard } 
 import { propTypes } from "./props";
 
 import toast from "react-hot-toast";
-import { Button, Spinner } from "../../others";
+import { Button, Spinner } from "../../little";
 import { useEffect } from "react";
 
 // IDEA Types week, month, year

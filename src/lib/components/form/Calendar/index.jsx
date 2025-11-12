@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { applyFunctionIfNotNil, isArray, isNil, isNumber, ISOFormat, isString } from "../../../utils/functions";
 import { useStates, useValue, useVariantMerger } from "../../../hooks";
-import { Button } from "../../others";
+import { Button } from "../../little";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 import { propTypes } from "./props";
 

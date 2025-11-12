@@ -5,7 +5,7 @@ import { propTypes } from "./props";
 import { useStates, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEye, FaMarkdown } from "react-icons/fa6";
-import { Button } from "../../others";
+import { Button } from "../../little";
 import { marked } from "marked";
 
 // TODO Style view (h1, h2, ...)

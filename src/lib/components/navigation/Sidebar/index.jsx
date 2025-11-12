@@ -1,6 +1,6 @@
 import { useVariantMerger } from "../../../hooks";
-import { Panel } from "../../others";
-import { Button } from "../../others";
+import { Panel } from "../../main";
+import { Button } from "../../little";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
 import { propTypes } from "./props";
 // import { Link } from "react-router-dom";

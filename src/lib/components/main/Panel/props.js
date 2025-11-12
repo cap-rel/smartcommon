@@ -15,9 +15,11 @@ export const propTypes = {
 
     overlayProps: PropTypes.object,
     panelProps: PropTypes.object,
+    dashProps: PropTypes.object
 };
 
 export const defaultProps = {
+    responsive: true,
     zIndex: 40,
     position: "bottom",
     overlay: true,

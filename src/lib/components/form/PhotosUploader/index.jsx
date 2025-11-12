@@ -1,6 +1,8 @@
 import { FaCamera, FaFileImage, FaFileImport, FaTrash, FaTrashCan } from "react-icons/fa6";
 import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
-import { Button, Overlay, Panel, Popup } from "../../others";
+import { Panel, Popup } from "../../main";
+import { Overlay } from "../../others";
+import { Button } from "../../little";
 import { propTypes } from "./props";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../utils";
 import { useEffect, useRef } from "react";

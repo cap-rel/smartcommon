@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Input, Label, Textarea } from ".."
-import { Button, Spinner } from "../../others";
+import { Button, Spinner } from "../../little";
 import { isEmpty, isNil, splitFileExtension } from "../../../utils/functions";
 import { useStates } from "../../../hooks";
 import { propTypes } from "./props";

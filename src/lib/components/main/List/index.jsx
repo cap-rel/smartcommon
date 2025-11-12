@@ -2,7 +2,7 @@ import { Input } from "../../form";
 import { defaultProps, propTypes } from "./props";
 import { useVariantMerger } from "../../../hooks";
 import { IoSearch } from "react-icons/io5";
-import { Button } from "../../others/Button";
+import { Button } from "../../little";
 import { RxCaretSort } from "react-icons/rx";
 import { isEmpty, isNil } from "../../../utils";
 import { useEffect } from "react";

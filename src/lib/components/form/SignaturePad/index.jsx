@@ -1,4 +1,4 @@
-import { Button } from "../../others";
+import { Button } from "../../little";
 import { Label } from "../tools/Label";
 import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'

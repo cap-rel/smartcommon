@@ -1,6 +1,6 @@
 import { propTypes } from "./props";
 import { useStates, useVariantMerger } from "../../../hooks";
-import { Popup } from "../../others";
+import { Popup } from "../../main";
 
 export const Signature = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Signature", props);

@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "../../../utils/functions";
 import { Label } from "../tools/Label";
-import { Button, Spinner } from "../../others";
+import { Button, Spinner } from "../../little";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";

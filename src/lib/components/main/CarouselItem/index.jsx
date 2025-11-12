@@ -1,8 +1,8 @@
 import { useVariantMerger } from "../../../hooks";
 import { defaultProps, propTypes } from "./props";
 
-export const Carousel = (props) => {
-    const { variantProps, mergeProps } =  useVariantMerger("Carousel", props);
+export const CarouselItem = (props) => {
+    const { variantProps, mergeProps } =  useVariantMerger("CarouselItem", props);
 
     const {
         id,
@@ -13,7 +13,7 @@ export const Carousel = (props) => {
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            "data-component": "Carousel",
+            "data-component": "CarouselItem",
             className: ""
         }))}>
 
@@ -21,5 +21,5 @@ export const Carousel = (props) => {
     );
 };
 
-Carousel.propTypes = propTypes;
-Carousel.defaultProps = defaultProps;
+CarouselItem.propTypes = propTypes;
+CarouselItem.defaultProps = defaultProps;

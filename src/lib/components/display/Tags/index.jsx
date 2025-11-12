@@ -1,6 +1,6 @@
 import { isArray } from "../../../utils";
 import { useVariantMerger } from "../../../hooks";
-import { Tag } from "../../others/Tag";
+import { Tag } from "../../little";
 import { propTypes } from "./props";
 
 export const Tags = (props) => {
