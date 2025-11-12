@@ -139,6 +139,7 @@ export const Panel = (props) => {
             }
             <motion.div { ...mergeProps("panel", props => ({
                 ...props,
+                "data-component": "Panel",
                 dragListener: closeOnDrag,
                 drag,
                 dragConstraints,

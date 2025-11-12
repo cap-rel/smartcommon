@@ -36,6 +36,7 @@ export const Popup = (props) => {
             }
             <div { ...mergeProps("popupBackdrop", props => ({
                 ...props,
+                "data-component": "Popup",
                 style: { "--z-index": zIndex + 10 },
                 className: `z-(--z-index) fixed inset-0 flex justify-center items-center p-app-lg pointer-events-none`
             }))}>
