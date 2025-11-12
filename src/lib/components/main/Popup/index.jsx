@@ -1,6 +1,6 @@
 import { Overlay } from "../../others";
 import { useVariantMerger } from "../../../hooks";
-import { propTypes } from "./props";
+import { defaultProps, propTypes } from "./props";
 import { Button } from "../../little";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { applyFunctionIfNotNil, isNil } from "../../../utils";
@@ -14,6 +14,7 @@ export const Popup = (props) => {
 
     const { 
         id,
+        responsive = true,
         zIndex = 40,
         children,
         overlay = true,
@@ -36,14 +37,18 @@ export const Popup = (props) => {
             }
             <div { ...mergeProps("popupBackdrop", props => ({
                 ...props,
-                "data-component": "Popup",
                 style: { "--z-index": zIndex + 10 },
                 className: `z-(--z-index) fixed inset-0 flex justify-center items-center p-app-lg pointer-events-none`
             }))}>
 
                 <div { ...mergeProps("popup", props => ({
                     ...props,
-                    className: `w-full max-h-full duration-(--really-quick) overflow-y-auto rounded-app-md p-app-md pb-app-lg gap-app-base text-app-sm flex flex-col bg-soft-bg ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`
+                    "data-component": "Popup",
+                    className: `
+                        w-full max-h-full duration-(--really-quick) overflow-y-auto rounded-app-md p-app-md pb-app-lg gap-app-base text-app-sm flex flex-col bg-soft-bg
+                        ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
+                        ${responsive && "lg:w-200 lg:h-160 lg:max-w-3/5 lg:max-h-3/5"}
+                    `
                 }))}>
 
                     {(!isNil(title) || closeButton) &&
@@ -86,3 +91,4 @@ export const Popup = (props) => {
 };
 
 Popup.prototypes = propTypes;
+Popup.defaultProps = defaultProps;
