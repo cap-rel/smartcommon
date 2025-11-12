@@ -136,7 +136,6 @@ export const Panel = (props) => {
                     style: { "--z-index": zIndex, opacity },
                     className: `
                         z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen && "pointer-events-none"}
-                        ${responsive && ""}
                     `
                     // duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
                 }))} />
@@ -156,17 +155,12 @@ export const Panel = (props) => {
                     opacity,
                     ...variables
                 },
-                className: `
-                    fixed z-(--z-index) p-app-base gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}
-                    ${responsive && ""}
-                `
+                className: `fixed z-(--z-index) p-app-base
+                gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}`
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
-                <div { ...mergeProps("dash", props => ({
-                    ...props,
-                    className: `mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`
-                }))} />
+                <div className={`mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`}/>
                 {children}
             </motion.div>
         </>

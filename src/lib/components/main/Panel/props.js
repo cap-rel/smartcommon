@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 
 export const propTypes = {
     id: PropTypes.string.isRequired,
+    responsive: PropTypes.bool,
     children: PropTypes.node,
     position: PropTypes.oneOf(["bottom", "right", "top", "left"]),
     overlay: PropTypes.bool,
