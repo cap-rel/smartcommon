@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Block, List, ListItem, LowerNavbarItem, Navbar, Page, Panel, Tabbar, TabbarItem } from "../../../../lib";
+import { Block, List, ListItem, LowerNavbarItem, Navbar, Page, Panel, Popup, Tabbar, TabbarItem } from "../../../../lib";
 import { useEffect, useState } from "react";
 import { FaUserAstronaut, FaUser, FaGear, FaGears } from "react-icons/fa6";
 
@@ -132,6 +132,14 @@ export const DevPage2 = () => {
     return (
         <>
             <Page pageProps={{ id: "Principal" }}>
+                <Popup
+                    isOpen={isPanelOpen}
+                    close={() => setIsPanelOpen(false)}
+                >
+                    <div className="h-100">
+
+                    </div>
+                </Popup>
                 <Navbar
                     id="navbar"
                     title="Navbar"
@@ -151,7 +159,7 @@ export const DevPage2 = () => {
                         />
                     </>}
                     titleProps={{
-                        onClick: () => createData()
+                        onClick: () => setIsPanelOpen(true)
                     }}
                 />
                 <List
