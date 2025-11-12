@@ -1,34 +1,17 @@
 import { fn } from 'storybook/test';
 
-import { Button } from './';
+import { Button } from '.';
 
 import * as variants from "./variants";
 
 export default {
-  title: 'Components/Others/Button',
+  title: 'Components/Button',
   component: Button,
-  // subcomponents: { Header },
   parameters: {
     docs: {
       codePanel: true
     },
-    layout: 'centered', // fullscreen
-  },
-  tags: ["Others"],
-  argTypes: {
-    id: { 
-      control: false,
-      table: { category: 'Main' },
-    },
-    variant: { 
-      control: "inline-check",
-      options: Object.keys(variants),
-      table: { category: 'Main' },
-    },
-    children: { 
-        control: false,
-        table: { category: 'Main' },
-    },
+    layout: 'centered',
   },
   args: { onClick: fn() },
 };

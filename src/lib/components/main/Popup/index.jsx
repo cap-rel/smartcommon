@@ -1,7 +1,7 @@
-import { Overlay } from "../Overlay";
+import { Overlay } from "../../others/Overlay";
 import { useVariantMerger } from "../../../hooks";
 import { propTypes } from "./props";
-import { Button } from "../Button";
+import { Button } from "../../others/Button";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { applyFunctionIfNotNil, isNil } from "../../../utils";
 

@@ -42,7 +42,6 @@ import { useState } from "react";
 //   return { resizeImage };
 // };
 
-
 //TODO
 // old code -----------------
 

@@ -1,17 +1,11 @@
-export * from "./Block";
 export * from "./Button";
 export * from "./Chart";
 export * from "./DataTable";
-export * from "./Carousel";
 // export * from "./Icon";
 export * from "./LazyLink";
 export * from "./Map";
 export * from "./Overlay";
-export * from "./Popup";
-export * from "./Panel";
 // export * from "./popupTest";
 export * from "./Spinner";
 export * from "./SearchBar";
 export * from "./Tag";
-export * from "./Page";
-export * from "./List";

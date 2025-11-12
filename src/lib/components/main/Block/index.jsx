@@ -25,7 +25,10 @@ export const Block = (props) => {
             {title && 
                 <div { ...mergeProps("title", props => ({
                     ...props,
-                    className: `font-app-semibold text-strong-text text-app-base mx-app-base`
+                    className: `
+                        font-app-semibold text-strong-text text-app-base mx-app-base
+                        lg:mx-0
+                    `
                 }))}>
                     {title}
                 </div>
@@ -43,7 +46,7 @@ export const Block = (props) => {
                     ...props,
                     className: `
                         flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text shadow-md text-app-sm
-                        lg:shadow-none
+                        lg:shadow-none lg:p-0
                     `
                 }))}>
                     {children}
