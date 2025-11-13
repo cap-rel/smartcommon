@@ -1,4 +1,4 @@
-import { useNavigator, useStates, useVariantMerger } from "../../../hooks";
+import { useLib, useNavigator, useStates, useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 // import { useLocation } from "react-router-dom";
@@ -6,30 +6,6 @@ import { defaultProps, propTypes } from "./props";
 import { isEmpty } from "../../../utils";
 
 const config = {
-    animations: {
-        slideRight: {
-            initial: { x: "50%", opacity: 0 },
-            animate: { x: 0, opacity: 1, transition: { duration: 0.15, ease: "easeInOut" } },
-            exit: { x: "50%", opacity: 0, transition: { duration: 0.15, ease: "easeInOut" } },
-        },
-        slideLeft: {
-            initial: { x: "-50%", opacity: 0 },
-            animate: { x: 0, opacity: 1, transition: { duration: 0.15, ease: "easeInOut" } },
-            exit: { x: "-50%", opacity: 0, transition: { duration: 0.15, ease: "easeInOut" } },
-        },
-        fade: {
-            initial: { opacity: 0 },
-            animate: { opacity: 1, transition: { duration: 0.15, ease: "easeOut" } },
-            exit: { opacity: 0, transition: { duration: 0.15, ease: "easeOut" }},
-            // transition: { duration: 0.2, ease: "easeInOut" },
-        },
-        zoom : {
-            initial: { scale: 0.9, opacity: 0 },
-            animate: { scale: 1, opacity: 1 },
-            exit: { scale: 0.9, opacity: 0 },
-            transition: { duration: 0.2, ease: "easeOut" },
-        }
-    },
     pages: {
         "/": {
             "/dev2": "slideLeft",
@@ -44,6 +20,31 @@ const config = {
     }
 };
 
+const animations = {
+    slideRight: {
+        initial: { x: "50%", opacity: 0 },
+        animate: { x: 0, opacity: 1, transition: { duration: 0.15, ease: "easeInOut" } },
+        exit: { x: "50%", opacity: 0, transition: { duration: 0.15, ease: "easeInOut" } },
+    },
+    slideLeft: {
+        initial: { x: "-50%", opacity: 0 },
+        animate: { x: 0, opacity: 1, transition: { duration: 0.15, ease: "easeInOut" } },
+        exit: { x: "-50%", opacity: 0, transition: { duration: 0.15, ease: "easeInOut" } },
+    },
+    fade: {
+        initial: { opacity: 0 },
+        animate: { opacity: 1, transition: { duration: 0.15, ease: "easeOut" } },
+        exit: { opacity: 0, transition: { duration: 0.15, ease: "easeOut" }},
+        // transition: { duration: 0.2, ease: "easeInOut" },
+    },
+    zoom : {
+        initial: { scale: 0.9, opacity: 0 },
+        animate: { scale: 1, opacity: 1 },
+        exit: { scale: 0.9, opacity: 0 },
+        transition: { duration: 0.2, ease: "easeOut" },
+    }
+};
+
 let prevPathname = null;
 
 export const Page = (props) => {
@@ -55,11 +56,11 @@ export const Page = (props) => {
 
     const { pathname } = location ?? {}
 
+    const { pages } = useLib() ?? {};
+
     useEffect(() => {
         prevPathname = pathname;
     }, [pathname]);
-
-    const { animations = {}, pages = {} } = config ?? {};
 
     const animation = () => {
         if (device?.type === "desktop") {
