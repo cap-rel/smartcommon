@@ -1,7 +1,6 @@
 export * from "./useAnimation";
 export * from "./useApi";
 export * from "./useFile";
-export * from "./useFilter";
 export * from "./useForm";
 export * from "./useIntl";
 export * from "./useLib";
