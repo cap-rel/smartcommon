@@ -1,7 +1,7 @@
 import { applyFunctionIfNotNil, formatDuration, isNil, isNumber, secsToDuration } from "../../../utils/functions";
 import { Input, Label } from "../../form";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 
 import { propTypes } from "./props";
 import { useEffect } from "react";
@@ -26,7 +26,7 @@ export const Timer = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? 0, value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? 0, value, onChange);
 
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },

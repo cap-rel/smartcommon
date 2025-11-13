@@ -1,7 +1,7 @@
 import { isNil, isUndefined } from "../../utils";
 import { useStates } from "../useStates"
 
-export const useValue = (localValue, value, onChange, errors) => {
+export const useLocalValue = (localValue, value, onChange, errors) => {
     const { states, set } = useStates({ localValue });
 
     const currentValue = value ?? states.localValue;

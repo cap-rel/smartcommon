@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { applyFunctionIfNotNil, isEmpty, isObject } from "../../../utils";
-import { useLabel, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 
@@ -23,7 +23,7 @@ export const RadioBar = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly) {    

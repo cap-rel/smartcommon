@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { IoIosArrowDown } from "react-icons/io";
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../utils/functions";
 import { useEffect } from "react";
 
@@ -31,7 +31,7 @@ export const Select = (props) => {
     onError = () => {},
   } = variantProps;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
 
   const handleSelectOnChange = e => {
     if (!disabled && !readOnly) {

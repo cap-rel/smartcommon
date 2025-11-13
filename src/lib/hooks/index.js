@@ -9,7 +9,7 @@ export * from "./useLib";
 export * from "./useListDnD";
 export * from "./useNavigator";
 export * from "./useStates";
-export * from "./useValue";
+export * from "./useLocalValue";
 export * from "./useVariantMerger";
 export * from "./useWindow";
 export * from "./useNavigation";

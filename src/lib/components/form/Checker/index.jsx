@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { Switch, Checkbox, Radio, Icon } from "../tools";
@@ -36,7 +36,7 @@ export const Checker = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly) {

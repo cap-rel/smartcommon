@@ -4,7 +4,7 @@ import { Label } from "../tools/Label";
 import { Button, Spinner } from "../../little";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { useEffect } from "react";
@@ -66,7 +66,7 @@ export const Gps = props => {
     onError = () => {},
   } = variantProps;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
 
   const { states, set } = useStates({
     isLocating: false,

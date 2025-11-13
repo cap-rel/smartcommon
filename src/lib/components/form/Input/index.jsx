@@ -1,6 +1,6 @@
 import { applyFunctionIfNotNil, datetimeFormat, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, minutesToTime, secsToDuration, timeToMinutes } from "../../../utils/functions";
 import { Label } from "../../form";
-import { useStates, useValue, useLabel, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useLabel, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaClipboardCheck, FaEye, FaEyeSlash, FaMinus, FaPlus, FaRegClipboard } from "react-icons/fa6";
 
@@ -58,7 +58,7 @@ export const Input = (props) => {
 
   const { isPasswordVisible } = states; // isCopied
 
-  const { currentValue, setValue } = useValue(defaultValue, value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue, value, onChange);
 
   // const currentValueFormat = {
   //   time: minutesToTime(currentValue)

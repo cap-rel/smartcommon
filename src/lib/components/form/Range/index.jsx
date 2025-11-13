@@ -1,5 +1,5 @@
 import { Label } from "..";
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../utils/functions";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -28,7 +28,7 @@ export const Range = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly) {

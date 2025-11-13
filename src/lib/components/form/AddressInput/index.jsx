@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLabel, useStates, useValue, useVariantMerger } from '../../../hooks';
+import { useLabel, useStates, useLocalValue, useVariantMerger } from '../../../hooks';
 import { Spinner } from '../../little';
 import { Input, Label } from '../../form';
 import { applyFunctionIfNotNil, isEmpty, isNil } from '../../../utils/functions';
@@ -63,7 +63,7 @@ export const AddressInput = (props) => {
 
   const { suggestions, isSearching } = states;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)

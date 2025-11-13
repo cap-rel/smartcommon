@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { Switch, Checkbox, Radio, Icon } from "../tools";
 import { twMerge } from "tailwind-merge";
@@ -34,7 +34,7 @@ export const Boolean = (props) => {
     //     labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
     // }
 
-    const { currentValue, setValue } = useValue(defaultValue ?? false, value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? false, value, onChange);
 
     const handleOnClick = () => {
         if (!disabled && !readOnly) {

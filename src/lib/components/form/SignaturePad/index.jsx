@@ -2,7 +2,7 @@ import { Button } from "../../little";
 import { Label } from "../tools/Label";
 import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
-import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useFile, useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
 import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate, isEmpty } from "../../../utils/functions";
@@ -29,7 +29,7 @@ export const SignaturePad = (props) => {
     onError = () => {},
   } = variantProps; 
 
-  const { currentValue, setValue } = useValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange);
 
   const { states, set } = useStates({
     isSignatureValidated: false

@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -24,7 +24,7 @@ export const ColorPicker = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? null, value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly) {

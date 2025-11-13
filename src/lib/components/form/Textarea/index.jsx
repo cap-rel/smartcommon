@@ -1,4 +1,4 @@
-import { useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
@@ -33,7 +33,7 @@ export const Textarea = (props) => {
     onError = () => {}
    } = variantProps;
 
-  const { currentValue, setValue } = useValue(defaultValue ?? "", value, onChange);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
 
   const handleValueOnChange = (e) => {
     if (!disabled && !readOnly) {

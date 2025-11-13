@@ -1,5 +1,5 @@
 import { FaCamera, FaFileAudio, FaFileImage, FaFileImport, FaMicrophoneLines, FaTrash, FaTrashCan } from "react-icons/fa6";
-import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
+import { useFile, useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Panel, Popup } from "../../main";
 import { Overlay } from "../../others";
 import { Button } from "../../little";
@@ -36,7 +36,7 @@ export const AudiosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useValue(defaultValue ?? (multiple ? [] : null), value, onChange);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
     const { states, set } = useStates({
         // isPanelOpen: false,
