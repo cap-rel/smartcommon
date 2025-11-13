@@ -1,12 +1,20 @@
 import { createContext } from "react";
 import { useLib, useStates } from "../../../hooks";
-import { getLocalJSON, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "../../../utils";
+import { getLocalJSON, isEmpty, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "../../../utils";
+import { v4 } from "uuid";
 
 export const ApiContext = createContext();
 
 export const ApiProvider = (props) => {
   const { children } = props;
 
+  let appKeyId = getLocalJSON("HTTP_X_APP_ID");
+
+  if (isEmpty(appKeyId)) {
+    id = v4();
+    setLocalJSON("HTTP_X_APP_ID", id);
+  }
+  
   const { api } = useLib() ?? {};
 
   const { url, errors: apiErrors } = api ?? {};
@@ -22,7 +30,10 @@ export const ApiProvider = (props) => {
   const login = async (loginInfo, request = {}, errors = {}) => {
     const response = await fetch(`${url}login`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        HTTP_X_APP_ID: appKeyId,
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(loginInfo),
       ...request
     });
@@ -61,7 +72,10 @@ export const ApiProvider = (props) => {
   const logout = async (request = {}, errors = {}) => {
     const response = await fetch(`${url}logout`, {
       method: "POST",
-      headers: { "Authorization": `Bearer ${access_token}` },
+      headers: { 
+        Authorization: `Bearer ${access_token}`,
+        HTTP_X_APP_ID: appKeyId
+      },
       ...request
     });
 
@@ -90,7 +104,10 @@ export const ApiProvider = (props) => {
   const refreshAccessToken = async () => {
     const response = await fetch(`${url}refresh`, {
       method: "GET",
-      headers: { "Authorization": `Bearer ${refresh_token}` }
+      headers: { 
+        Authorization: `Bearer ${refresh_token}`,
+        HTTP_X_APP_ID: appKeyId
+      }
     });
 
     const json = await response.json();
@@ -124,6 +141,7 @@ export const ApiProvider = (props) => {
       ...request,
       headers: {
         Authorization: `Bearer ${access_token}`,
+        HTTP_X_APP_ID: appKeyId,
         Accept: "application/json",
         "Content-Type": "application/json",
       },
