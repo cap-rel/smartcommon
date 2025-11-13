@@ -1,5 +1,6 @@
 import { animate, useMotionValue, motion } from "framer-motion";
-import { navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
+import { navigatorInfo } from "../../../utils";
 import { isEmpty, isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { defaultProps, propTypes } from "./props";
 // import { Link } from "react-router-dom";

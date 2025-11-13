@@ -1,4 +1,5 @@
-import { useLib, navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
+import { useLib, useStates, useVariantMerger } from "../../../hooks";
+import { navigatorInfo } from "../../../utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 // import { useLocation } from "react-router-dom";

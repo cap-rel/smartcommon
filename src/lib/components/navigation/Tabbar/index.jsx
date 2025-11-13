@@ -1,5 +1,6 @@
 import { defaultProps, propTypes } from "./props";
-import { navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
+import { navigatorInfo } from "../../../utils";
 // import { Link } from "react-router-dom";
 import { isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { useEffect, useRef, useState } from "react";
