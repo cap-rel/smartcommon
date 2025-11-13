@@ -1,5 +1,5 @@
 import { defaultProps, propTypes } from "./props";
-import { useNavigator, useStates, useVariantMerger } from "../../../hooks";
+import { navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
 // import { Link } from "react-router-dom";
 import { isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { useEffect, useRef, useState } from "react";
@@ -59,7 +59,7 @@ export const Tabbar = (props) => {
 
   const y = useMotionValue(openPosition);
 
-  const isDesktop = useNavigator().device.type === "desktop";
+  const isDesktop = navigatorInfo.device.type === "desktop";
 
   useEffect(() => {
     if (!hideOnScroll || isDesktop) { return; }

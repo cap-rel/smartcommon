@@ -1,9 +1,9 @@
 import { isEmpty } from "../../utils/functions";
-import { useNavigator } from "../../hooks";
+import { navigatorInfo } from "../../hooks";
 
 export const useIntl = () => {
     const DateTimeFormat = (timestamp, locales = null, options = null) => {
-        const { language } = useNavigator();
+        const { language } = navigatorInfo;
         const defaultLocales = locales || language;
 
         const defaultOptions = {

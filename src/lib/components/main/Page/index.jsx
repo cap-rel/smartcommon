@@ -1,4 +1,4 @@
-import { useLib, useNavigator, useStates, useVariantMerger } from "../../../hooks";
+import { useLib, navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 // import { useLocation } from "react-router-dom";
@@ -52,7 +52,7 @@ export const Page = (props) => {
 
     const { id, responsive = true, location, children } = variantProps;
 
-    const { device } = useNavigator(true) ?? {};
+    const device = navigatorInfo.device.type;
 
     const { pathname } = location ?? {}
 

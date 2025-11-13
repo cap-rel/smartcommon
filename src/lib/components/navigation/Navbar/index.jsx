@@ -1,5 +1,5 @@
 import { animate, useMotionValue, motion } from "framer-motion";
-import { useNavigator, useStates, useVariantMerger } from "../../../hooks";
+import { navigatorInfo, useStates, useVariantMerger } from "../../../hooks";
 import { isEmpty, isNil, setGlobalVariables, setVariable } from "../../../utils";
 import { defaultProps, propTypes } from "./props";
 // import { Link } from "react-router-dom";
@@ -82,7 +82,7 @@ export const Navbar = (props) => {
 
     const y = useMotionValue(openPosition);
 
-    const isDesktop = useNavigator().device.type === "desktop";
+    const isDesktop = navigatorInfo.device.type === "desktop";
 
     useEffect(() => {
         if (!hideOnScroll || isDesktop) { return; }

@@ -6,7 +6,6 @@ export * from "./useForm";
 export * from "./useIntl";
 export * from "./useLib";
 export * from "./useListDnD";
-export * from "./useNavigator";
 export * from "./useStates";
 export * from "./useLocalValue";
 export * from "./useVariantMerger";
