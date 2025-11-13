@@ -286,6 +286,7 @@ export const PhotosUploader = (props) => {
                 }))} />
                 {/* <div className="flex gap-app-xs items-center"> */}
                     <Button { ...mergeProps("SaveButton", props => ({
+                        label: "Enregistrez",
                         icon: GiSaveArrow,
                         ...props,
                         onClick: e => {
@@ -305,9 +306,7 @@ export const PhotosUploader = (props) => {
                             ...props.iconProps,
                             className: "text-app-xl"
                         }
-                    }))} >
-                        Enregistrer les informations
-                    </Button>
+                    }))} />
                 {/* </div> */}
             </Popup>
         );
