@@ -290,7 +290,11 @@ export const PhotosUploader = (props) => {
                         ...props,
                         onClick: e => {
                             e.preventDefault();
-                            deletePhoto(index);
+                            if (multiple) {
+                                set("selectedPhotoIndex", null);
+                            } else {
+                                set("isPhotoSelected", false);
+                            }
                             applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                         },
                         buttonProps: {
