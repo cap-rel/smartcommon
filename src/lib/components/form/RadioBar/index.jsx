@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { applyFunctionIfNotNil, isEmpty, isObject } from "../../../utils";
-import { useLabel, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { propTypes } from "./props";
 

@@ -1,5 +1,5 @@
 import { Label } from "..";
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../utils/functions";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";

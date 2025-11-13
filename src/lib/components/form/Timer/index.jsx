@@ -1,7 +1,7 @@
 import { applyFunctionIfNotNil, formatDuration, isNil, isNumber, secsToDuration } from "../../../utils/functions";
 import { Input, Label } from "../../form";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 
 import { propTypes } from "./props";
 import { useEffect } from "react";

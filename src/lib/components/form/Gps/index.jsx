@@ -4,7 +4,7 @@ import { Label } from "../tools/Label";
 import { Button, Spinner } from "../../little";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { useEffect } from "react";

@@ -2,7 +2,7 @@ import { twMerge } from "tailwind-merge";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { IoIosArrowDown } from "react-icons/io";
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../utils/functions";
 import { useEffect } from "react";
 

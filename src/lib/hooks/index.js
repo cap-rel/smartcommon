@@ -4,7 +4,6 @@ export * from "./useFile";
 export * from "./useFilter";
 export * from "./useForm";
 export * from "./useIntl";
-export * from "./useLabel";
 export * from "./useLib";
 export * from "./useListDnD";
 export * from "./useNavigator";

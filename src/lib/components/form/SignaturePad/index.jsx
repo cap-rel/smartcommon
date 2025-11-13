@@ -2,7 +2,7 @@ import { Button } from "../../little";
 import { Label } from "../tools/Label";
 import { useEffect, useRef } from "react";
 import SignatureCanvas from 'react-signature-canvas'
-import { useFile, useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useFile, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { twMerge } from "tailwind-merge";
 import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
 import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate, isEmpty } from "../../../utils/functions";

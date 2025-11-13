@@ -1,4 +1,4 @@
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../../form";
 import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";

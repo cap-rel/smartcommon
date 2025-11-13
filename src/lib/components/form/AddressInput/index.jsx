@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useLabel, useStates, useLocalValue, useVariantMerger } from '../../../hooks';
+import { useStates, useLocalValue, useVariantMerger } from '../../../hooks';
 import { Spinner } from '../../little';
 import { Input, Label } from '../../form';
 import { applyFunctionIfNotNil, isEmpty, isNil } from '../../../utils/functions';

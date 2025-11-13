@@ -1,4 +1,4 @@
-import { useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Label } from "../tools/Label";
 import { Switch, Checkbox, Radio, Icon } from "../tools";
 import { twMerge } from "tailwind-merge";

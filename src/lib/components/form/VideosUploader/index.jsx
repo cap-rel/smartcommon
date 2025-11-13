@@ -1,5 +1,5 @@
 import { FaCamera, FaFileAudio, FaFileImage, FaFileImport, FaFileVideo, FaMicrophoneLines, FaTrash, FaTrashCan, FaVideo } from "react-icons/fa6";
-import { useFile, useLabel, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useFile, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
 import { Panel, Popup } from "../../main";
 import { Overlay } from "../../others";
 import { Button } from "../../little";
