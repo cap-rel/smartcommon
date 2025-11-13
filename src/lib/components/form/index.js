@@ -9,7 +9,7 @@ export * from "./Gps";
 export * from "./IconSelect";
 export * from "./Input";
 export * from "./tools/Label";
-export * from "./RangeInput";
+export * from "./Range";
 export * from "./Rater";
 export * from "./Select";
 export * from "./SignaturePad";

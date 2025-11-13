@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader, AudiosUploader } from "../../components";
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader, AudiosUploader } from "../../components";
 import { isUndefined } from "../functions";
 
 export function SetListComponent(type) {
@@ -29,7 +29,7 @@ export function SetListComponent(type) {
         // double       : Input,
 
         rating       : Rater,
-        range        : RangeInput,
+        range        : Range,
         duration     : Timer,
         text         : Textarea,
         html         : Editor,

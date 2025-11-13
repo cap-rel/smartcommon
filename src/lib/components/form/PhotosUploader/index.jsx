@@ -257,7 +257,7 @@ export const PhotosUploader = (props) => {
                         applyFunctionIfNotNil(props.onChange, value);
                     }
                 }))} />
-                <div className="flex gap-app-xs items-center">
+                {/* <div className="flex gap-app-xs items-center"> */}
                     <Button { ...mergeProps("DeleteButton", props => ({
                         icon: FaTrashCan,
                         ...props,
@@ -273,20 +273,7 @@ export const PhotosUploader = (props) => {
                     }))} >
                         Supprimer la photo
                     </Button>
-                    <Button
-                        icon={FaCamera}
-                        onClick={() => {
-                            if (multiple) {
-                                set("selectedPhotoIndex", null);
-                            } else {
-                                set("isPhotoSelected", false);
-                            }
-                                }}
-                        buttonProps={{ className: "bg-success" }}
-                    >
-                        Valider
-                    </Button>
-                </div>
+                {/* </div> */}
             </Popup>
         );
     }

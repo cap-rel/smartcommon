@@ -1,4 +1,4 @@
-import { Navbar, Sidebar, Tabbar, Button, Page, Popup, Spinner, Block, useStates, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
+import { Navbar, Sidebar, Tabbar, Button, Page, Popup, Spinner, Block, useStates, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
 import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
 import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
 import { FaSyncAlt } from "react-icons/fa";
@@ -167,7 +167,7 @@ export const DevPage = () => {
                             >
                                 Entrée de donnée
                             </Button> */}
-                            {/* <RangeInput
+                            {/* <Range
                                 label={`Range`}
                                 name={`range`}
                             />

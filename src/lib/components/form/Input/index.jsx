@@ -4,7 +4,7 @@ import { useStates, useValue, useLabel, useVariantMerger } from "../../../hooks"
 import { twMerge } from "tailwind-merge";
 import { FaClipboardCheck, FaEye, FaEyeSlash, FaMinus, FaPlus, FaRegClipboard } from "react-icons/fa6";
 
-import { propTypes } from "./props";
+import { defaultProps, propTypes } from "./props";
 
 import toast from "react-hot-toast";
 import { Button, Spinner } from "../../little";
@@ -22,25 +22,26 @@ export const Input = (props) => {
 
   const { 
     id,
+    responsive = true,
     name,
     defaultValue,
     value,
     onChange = () => {},
 
-    required,
-    disabled,
-    readOnly,
+    required = false,
+    disabled = false,
+    readOnly = false,
 
     type = "text",
-    min,
+    min = 0,
     max,
-    minLength,
+    minLength = 0,
     length,
     maxLength,
     pattern,
     patternError,
 
-    loading,
+    loading = false,
     inputIcon,
     size,
     placeholder,
@@ -298,3 +299,4 @@ export const Input = (props) => {
 };
 
 Input.propTypes = propTypes;
+Input.defaultProps = defaultProps

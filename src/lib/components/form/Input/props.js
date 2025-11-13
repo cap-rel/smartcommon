@@ -56,3 +56,7 @@ export const propTypes = {
   PlusButton: PropTypes.object,
   PasswordButton: PropTypes.object,
 };
+
+export const defaultProps = {
+
+};

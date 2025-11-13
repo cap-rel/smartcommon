@@ -5,8 +5,8 @@ import { propTypes } from "./props";
 import { twMerge } from "tailwind-merge";
 import { useEffect } from "react";
 
-export const RangeInput = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("RangeInput", props);
+export const Range = (props) => {
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Range", props);
     
     const {
         id,
@@ -87,4 +87,4 @@ export const RangeInput = (props) => {
     );  
 };
 
-RangeInput.propTypes = propTypes;
+Range.propTypes = propTypes;

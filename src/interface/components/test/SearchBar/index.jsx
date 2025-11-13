@@ -1,5 +1,5 @@
 import { useRef } from "react";
-import { isEmpty, useStates, Button, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, RangeInput, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
+import { isEmpty, useStates, Button, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
 import { useEffect } from "react";
 import { FaEnvelope, FaRegStar, FaStar } from "react-icons/fa6";
 
@@ -134,7 +134,7 @@ export const SearchBar = ({
         //             console.log(getFiles(formData.getAll("files")));
         //         }}
         //     >
-        //         <RangeInput
+        //         <Range
         //             label={`Range`}
         //             name={`range`}
         //         />

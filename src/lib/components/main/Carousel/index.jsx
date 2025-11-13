@@ -14,7 +14,7 @@ export const Carousel = (props) => {
         <div { ...mergeProps("container", props => ({
             ...props,
             "data-component": "Carousel",
-            className: ""
+            className: "flex"
         }))}>
 
         </div>
