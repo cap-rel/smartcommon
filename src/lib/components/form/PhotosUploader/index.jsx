@@ -205,7 +205,7 @@ export const PhotosUploader = (props) => {
                             src: photo?.src,
                             className: "border border-border"
                         }))} />
-                        : <FaImage className="w-30" />
+                        : <FaImage className="text-soft-text text-[80px]" />
                     }
                     
                     <div { ...mergeProps("title", props => ({
@@ -242,7 +242,7 @@ export const PhotosUploader = (props) => {
                         src: photo?.src,
                         className: `w-full border border-border`
                     }))} />
-                    : <FaImage className="w-30" />
+                    : <FaImage className="w-full text-soft-text text-[80px]" />
                 }
                 <Input { ...mergeProps("TitleInput", props => ({
                     label: "Titre",
