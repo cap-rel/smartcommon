@@ -11,8 +11,8 @@ export const ApiProvider = (props) => {
   let appKeyId = getLocalJSON("HTTP_X_APP_ID");
 
   if (isEmpty(appKeyId)) {
-    id = v4();
-    setLocalJSON("HTTP_X_APP_ID", id);
+    appKeyId = v4();
+    setLocalJSON("HTTP_X_APP_ID", appKeyId);
   }
   
   const { api } = useLib() ?? {};
