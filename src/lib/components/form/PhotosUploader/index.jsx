@@ -10,6 +10,7 @@ import { Textarea } from "../Textarea";
 import { Input } from "../Input";
 import { Label } from "../tools/Label";
 import toast from "react-hot-toast";
+import { GiSaveArrow } from "react-icons/gi";
 
 export const PhotosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("PhotosUploader", props);
@@ -236,7 +237,25 @@ export const PhotosUploader = (props) => {
                 },
                 isOpen: multiple ? selectedPhotoIndex === index : isPhotoSelected,
             }))}>
-                {photo?.src
+                <div className="relative w-full">
+                    <Button { ...mergeProps("DeleteButton", props => ({
+                        icon: FaTrashCan,
+                        ...props,
+                        onClick: e => {
+                            e.preventDefault();
+                            deletePhoto(index);
+                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                        },
+                        buttonProps: {
+                            ...props.buttonProps,
+                            className: `absolute bottom-1 right-1 bg-soft-bg text-white bg-primary p-app-sm rounded-app-xl`
+                        },
+                        iconProps: {
+                            ...props.iconProps,
+                            className: "text-app-lg "
+                        }
+                    }))} />
+                    {photo?.src
                     ? <img { ...mergeProps("popupImg", props => ({
                         ...props,
                         src: photo?.src,
@@ -244,6 +263,7 @@ export const PhotosUploader = (props) => {
                     }))} />
                     : <FaImage className="w-full text-soft-text text-[80px]" />
                 }
+                </div>
                 <Input { ...mergeProps("TitleInput", props => ({
                     label: "Titre",
                     ...props,
@@ -265,8 +285,8 @@ export const PhotosUploader = (props) => {
                     }
                 }))} />
                 {/* <div className="flex gap-app-xs items-center"> */}
-                    <Button { ...mergeProps("DeleteButton", props => ({
-                        icon: FaTrashCan,
+                    <Button { ...mergeProps("SaveButton", props => ({
+                        icon: GiSaveArrow,
                         ...props,
                         onClick: e => {
                             e.preventDefault();
@@ -275,10 +295,14 @@ export const PhotosUploader = (props) => {
                         },
                         buttonProps: {
                             ...props.buttonProps,
-                            className: `grow`,
+                            className: `bg-success`,
+                        },
+                        iconProps: {
+                            ...props.iconProps,
+                            className: "text-app-xl"
                         }
                     }))} >
-                        Supprimer la photo
+                        Enregistrer les informations
                     </Button>
                 {/* </div> */}
             </Popup>
