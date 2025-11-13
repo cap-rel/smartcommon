@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Block, List, ListItem, LowerNavbarItem, Navbar, Page, Panel, Popup, Tabbar, TabbarItem } from "../../../../lib";
+import { Block, List, ListItem, LowerNavbarItem, Navbar, Page, Panel, PhotosUploader, Popup, Tabbar, TabbarItem } from "../../../../lib";
 import { useEffect, useState } from "react";
 import { FaUserAstronaut, FaUser, FaGear, FaGears } from "react-icons/fa6";
 
@@ -129,6 +129,8 @@ export const DevPage2 = () => {
         };
     };
 
+    const [photos, setPhotos] = useState([]);
+
     return (
         <>
             <Page pageProps={{ id: "Principal" }}>
@@ -162,6 +164,10 @@ export const DevPage2 = () => {
                         onClick: () => setIsPanelOpen(true)
                     }}
                 />
+                <PhotosUploader 
+                    value={photos}
+                    onChange={value => setPhotos(value)}
+                />
                 <List
                     title="Liste des interventions"
                     sortProps={"bojuour"}
@@ -184,6 +190,10 @@ export const DevPage2 = () => {
 
                 </Block>
                 <Block title={"Interventions urgentes"}>
+                    <PhotosUploader 
+                        value={photos}
+                        onChange={value => setPhotos(value)}
+                    />
                     <Link to={"/"}>
                         Bonjour
                     </Link>
