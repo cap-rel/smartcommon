@@ -1,4 +1,4 @@
-import { FaCamera, FaFileImage, FaFileImport, FaTrash, FaTrashCan } from "react-icons/fa6";
+import { FaCamera, FaFileImage, FaFileImport, FaTrash, FaTrashCan, FaImage } from "react-icons/fa6";
 import { useFile, useLabel, useStates, useValue, useVariantMerger } from "../../../hooks";
 import { Panel, Popup } from "../../main";
 import { Overlay } from "../../others";
@@ -199,11 +199,15 @@ export const PhotosUploader = (props) => {
                     className: `self-start max-w-30 flex flex-col gap-app-xs ${!disabled && "active:brightness-soft"}
                     rounded-app-md bg-strong-bg p-app-sm duration-(--quick)`
                 }))}>
-                    <img { ...mergeProps("img", props => ({
-                        ...props,
-                        src: photo?.src,
-                        className: "border border-border"
-                    }))} />
+                    {photo?.src
+                        ? <img { ...mergeProps("img", props => ({
+                            ...props,
+                            src: photo?.src,
+                            className: "border border-border"
+                        }))} />
+                        : <FaImage className="w-30" />
+                    }
+                    
                     <div { ...mergeProps("title", props => ({
                         ...props,
                         className: "truncate text-app-xs text-medium-text italic text-center"
@@ -232,11 +236,14 @@ export const PhotosUploader = (props) => {
                 },
                 isOpen: multiple ? selectedPhotoIndex === index : isPhotoSelected,
             }))}>
-                <img { ...mergeProps("popupImg", props => ({
-                    ...props,
-                    src: photo?.src,
-                    className: `w-full border border-border`
-                }))} />
+                {photo?.src
+                    ? <img { ...mergeProps("popupImg", props => ({
+                        ...props,
+                        src: photo?.src,
+                        className: `w-full border border-border`
+                    }))} />
+                    : <FaImage className="w-30" />
+                }
                 <Input { ...mergeProps("TitleInput", props => ({
                     label: "Titre",
                     ...props,
