@@ -4,7 +4,7 @@ import { defaultProps, propTypes } from "./props";
 import { BsRocketFill } from "react-icons/bs";
 import { FaPencil, FaUserSlash } from "react-icons/fa6";
 
-import logo from "../../../../interface/assets/images/icon.png"
+import logo from "../../../../dev/assets/images/icon.png"
 
 export const ListItem = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("ListItem", props);
@@ -53,12 +53,12 @@ export const ListItem = (props) => {
                         </div>
                     </div>
                     <div className="flex gap-app-sm justify-between items-center">
-                        <div className={`text-strong-text line-clamp-1 ${false && "opacity-0"}`}>
+                        <div className={`text-strong-text line-clamp-1 ${!description && "opacity-0"}`}>
                             label label
                         </div>
                         <div className="flex items-center gap-app-xxs text-app-lg uppercase font-app-semibold">
-                            {true && <IoWarning className={`text-urgent`} />}
-                            {true && <FaUserSlash className={`text-neutral`} />}
+                            {/* {true && <IoWarning className={`text-urgent`} />} */}
+                            {/* {true && <FaUserSlash className={`text-neutral`} />} */}
                         </div>
                     </div>
                 </div>

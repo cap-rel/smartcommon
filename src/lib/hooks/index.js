@@ -10,5 +10,5 @@ export * from "./useLocalValue";
 export * from "./useVariantMerger";
 export * from "./useWindow";
 export * from "./useNavigation";
-export * from "./useAppKey";
 export * from "./useAuth";
+export * from "./useDB";
