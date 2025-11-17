@@ -1,6 +1,6 @@
 import { isArray, isFunction, isNil, isObject, isString, isUndefined, mergeObj, toArray, twMerge } from "../../utils";
 import { useStates } from "../useStates";
-import { useLib } from "../../hooks";
+import { useLibConfig } from "../../hooks";
 
 function verifyFunction(func, params = {}){
     return isFunction(func) ? func(params) : func;
@@ -65,7 +65,9 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    const { theme, themes, variants, components } = useLib ?? {};
+    const { components } = useLibConfig ?? {};
+
+    const { theme, themes, variants } = components;
 
     // if (isNil(themes)) {
     //     throw new Error("No themes provided");

@@ -1,4 +1,4 @@
-import { useLib, useStates, useVariantMerger } from "../../../hooks";
+import { useStates, useVariantMerger } from "../../../hooks";
 import { navigatorInfo } from "../../../utils";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
@@ -57,7 +57,9 @@ export const Page = (props) => {
 
     const { pathname } = location ?? {}
 
-    const { pages } = useLib() ?? {};
+    // const { pages } = useComponents() ?? {};
+
+    const { pages } = config;
 
     useEffect(() => {
         prevPathname = pathname;
