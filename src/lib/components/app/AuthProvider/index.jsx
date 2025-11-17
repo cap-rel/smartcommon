@@ -1,12 +1,14 @@
 import { createContext } from "react";
-import { useLib, useStates } from "../../../hooks";
+import { useAuth, useStates } from "../../../hooks";
 import { getLocalJSON, isEmpty, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "../../../utils";
 import { v4 } from "uuid";
 
-export const ApiContext = createContext();
+export const AuthContext = createContext();
 
-export const ApiProvider = (props) => {
-  const { children } = props;
+export const AuthProvider = (props) => {
+  const { children, config } = props;
+
+  const { url, errors: apiErrors } = config?.api ?? {};
 
   let appKeyId = getLocalJSON("HTTP_X_APP_ID");
 
@@ -14,17 +16,9 @@ export const ApiProvider = (props) => {
     appKeyId = v4();
     setLocalJSON("HTTP_X_APP_ID", appKeyId);
   }
+    
+  const user = useSelector(state => state.user);
   
-  const { api } = useLib() ?? {};
-
-  const { url, errors: apiErrors } = api ?? {};
-  
-  const { states, set } = useStates({
-    user: getLocalJSON("user") ?? null
-  });
-  
-  const { user } = states;
-
   const { access_token, refresh_token, tokenExpiry, rememberMe } = user ?? {};
 
   const login = async (loginInfo, request = {}, errors = {}) => {
@@ -192,8 +186,8 @@ export const ApiProvider = (props) => {
   }
   
   return (
-    <ApiContext.Provider value={value}>
+    <AuthContext.Provider value={value}>
       {children}
-    </ApiContext.Provider>
+    </AuthContext.Provider>
   );
 };

@@ -1,11 +1,11 @@
 // import { isFunction } from "../../utils";
-// import { useLib } from "../useLib";
+// import { useComponents } from "../useComponents";
 
 // export const useApi = (props) => {
 //   let { url } = props;
 //   const {  token = "", errors = {} } = props;
 
-//   const { api } = useLib() ?? {};
+//   const { api } = useComponents() ?? {};
 
 //   url = url ?? api?.url;
 
