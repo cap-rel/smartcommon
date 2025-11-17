@@ -1,12 +1,15 @@
 import { Provider } from "react-redux";
-import { redux } from "../../../redux";
+import { store, persistor } from "../../../../lib/hooks/useDb/tests/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 export const ReduxProvider = (props) => {
   const { children } = props;
 
   return (
-    <Provider> {/* store={redux} */}
-      {children}
+    <Provider store={store}> {/* store={redux} */}
+      <PersistGate loading={null} persistor={persistor}>
+        {children}
+      </PersistGate>
     </Provider>
   );
 };
