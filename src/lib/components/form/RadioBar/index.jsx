@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { applyFunctionIfNotNil, isEmpty, isObject } from "../../../utils";
-import { useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../tools/Label";
+
+import { applyFunctionIfNotNil, isEmpty, isObject } from "lib/utils";
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Label } from "lib/components";
+
 import { propTypes } from "./props";
 
 export const RadioBar = (props) => {

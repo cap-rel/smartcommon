@@ -1,10 +1,10 @@
-import { applyFunctionIfNotNil, formatDuration, isNil, isNumber, secsToDuration } from "../../../utils/functions";
-import { Input, Label } from "../../form";
-import { twMerge } from "tailwind-merge";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
+import { useEffect } from "react";
+
+import { formatDuration, isNil, isNumber, secsToDuration } from "lib/utils";
+import { Input, Label } from "lib/components";
+import { useLocalValue, useVariantMerger } from "lib/hooks";
 
 import { propTypes } from "./props";
-import { useEffect } from "react";
 
 export const Timer = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Timer", props);

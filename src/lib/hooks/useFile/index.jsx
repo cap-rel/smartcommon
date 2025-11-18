@@ -1,4 +1,3 @@
-import { useState } from "react";
 
 // export const useFile = (props) => {
 //   const resizeImage = (image) => {

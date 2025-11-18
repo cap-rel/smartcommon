@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
-import { LibConfigProvider } from "../LibConfigProvider";
-import { ReduxProvider } from "../ReduxProvider";
+
+import { LibConfigProvider, ReduxProvider } from "lib/components";
 
 export const Provider = (props) => {
   const { children, config } = props;

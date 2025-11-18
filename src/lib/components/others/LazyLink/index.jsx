@@ -1,7 +1,7 @@
-// import { Link } from 'react-router-dom';
+import { isNil } from 'lib/utils';
+import { useVariantMerger } from 'lib/hooks';
+
 import { propTypes } from './props';
-import { isNil } from '../../../utils/functions';
-import { useVariantMerger } from '../../../hooks';
 
 const Link = () => {
   return null;

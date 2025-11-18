@@ -1,9 +1,10 @@
-import { Overlay } from "../../others";
-import { useVariantMerger } from "../../../hooks";
-import { defaultProps, propTypes } from "./props";
-import { Button } from "../../little";
 import { RiCloseLargeLine } from "react-icons/ri";
-import { applyFunctionIfNotNil, isNil } from "../../../utils";
+
+import { Button, Overlay } from "lib/components";
+import { useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil, isNil } from "lib/utils";
+
+import { defaultProps, propTypes } from "./props";
 
 // TODO z-index prop
 

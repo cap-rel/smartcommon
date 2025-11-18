@@ -1,4 +1,5 @@
-import { useVariantMerger } from "../../../hooks";
+import { useVariantMerger } from "lib/hooks";
+
 import { propTypes } from "./props";
 
 export const Color = (props) => {

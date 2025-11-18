@@ -1,6 +1,6 @@
 // import { Icon } from "../..";
 // import { useEffect, useRef, useState } from "react";
-// import { isEmpty } from "../../../utils/functions";
+// import { isEmpty } from "lib/utils/functions";
 
 // export const SearchBar = (props) => {
 //   const primaryColor = props.primaryColor;

@@ -1,9 +1,10 @@
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../tools/Label";
-import { propTypes } from "./props";
-import { twMerge } from "tailwind-merge";
-import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../utils/functions";
 import { useEffect } from "react";
+
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Label } from "lib/components";
+import { applyFunctionIfNotNil, isEmpty } from "lib/utils";
+
+import { propTypes } from "./props";
 
 // TODO tailwind color
 

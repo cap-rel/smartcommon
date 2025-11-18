@@ -1,6 +1,6 @@
 // import { extendTailwindMerge } from 'tailwind-merge'
 // import { mergedFontSizeClass, mergedRadiusClass, mergedSpacingClass } from './groups';
-// import { useComponents } from '../../../hooks';
+// import { useComponents } from 'lib/hooks';
 
 // export const twMerge = () => {
 //     const { tailwindMerge } = useComponents() ?? {};

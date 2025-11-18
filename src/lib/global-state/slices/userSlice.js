@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getLocal, getSession, removeLocal, removeSession, setLocal, setSession } from "../../utils";
+
+import { getLocal, getSession, removeLocal, removeSession, setLocal, setSession } from "lib/utils";
 
 const userSlice = createSlice({
   name: "users",

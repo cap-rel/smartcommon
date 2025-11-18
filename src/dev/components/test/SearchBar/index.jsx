@@ -1,7 +1,4 @@
-import { useRef } from "react";
-import { isEmpty, useStates, Button, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
-import { useEffect } from "react";
-import { FaEnvelope, FaRegStar, FaStar } from "react-icons/fa6";
+import { useStates } from "lib/hooks";
 
 export const SearchBar = ({
     isOpen = true,

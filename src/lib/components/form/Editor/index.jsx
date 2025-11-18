@@ -1,12 +1,13 @@
-import { isNil } from "../../../utils/functions";
-import { Label, Textarea } from "../../form";
-// import MDEditor, { commands } from '@uiw/react-md-editor';
-import { propTypes } from "./props";
-import { useStates, useVariantMerger } from "../../../hooks";
-import { twMerge } from "tailwind-merge";
 import { FaEye, FaMarkdown } from "react-icons/fa6";
-import { Button } from "../../little";
 import { marked } from "marked";
+import { twMerge } from "tailwind-merge";
+// import MDEditor, { commands } from '@uiw/react-md-editor';
+
+import { isNil } from "lib/utils";
+import { Label, Textarea, Button } from "lib/components";
+import { useStates, useVariantMerger } from "lib/hooks";
+
+import { propTypes } from "./props";
 
 // TODO Style view (h1, h2, ...)
 // TODO Create a random id for textarea

@@ -1,16 +1,13 @@
-import { FaCamera, FaFileImage, FaFileImport, FaTrash, FaTrashCan, FaImage } from "react-icons/fa6";
-import { useFile, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Panel, Popup } from "../../main";
-import { Overlay } from "../../others";
-import { Button } from "../../little";
-import { propTypes } from "./props";
-import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "../../../utils";
+import { FaCamera, FaFileImport, FaTrashCan, FaImage } from "react-icons/fa6";
 import { useEffect, useRef } from "react";
-import { Textarea } from "../Textarea";
-import { Input } from "../Input";
-import { Label } from "../tools/Label";
 import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
+
+import { useFile, useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { Popup, Button, Label, Input, Textarea } from "lib/components";
+import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "lib/utils";
+
+import { propTypes } from "./props";
 
 export const PhotosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("PhotosUploader", props);

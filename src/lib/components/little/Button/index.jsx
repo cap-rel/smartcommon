@@ -1,6 +1,6 @@
-import { isNil } from "../../../utils/functions";
-import { useVariantMerger } from "../../../hooks";
-import { Spinner } from "../Spinner";
+import { isNil } from "lib/utils";
+import { useVariantMerger } from "lib/hooks";
+import { Spinner } from "lib/components";
 
 import { propTypes, defaultProps } from "./props";
 

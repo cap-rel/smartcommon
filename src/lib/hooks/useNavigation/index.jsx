@@ -1,4 +1,5 @@
 import { useContext } from "react";
-import { NavigationContext } from "../../components";
+
+import { NavigationContext } from "lib/components";
 
 export const useNavigation = () => useContext(NavigationContext);

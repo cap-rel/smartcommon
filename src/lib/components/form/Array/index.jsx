@@ -1,8 +1,10 @@
-import { useStates } from "../../../hooks";
-import { Input, Label } from "../../form";
-import { arrayPropTypes } from "./props";
 import { twMerge } from "tailwind-merge";
-import { isEmpty, isNil } from "../../../utils/functions";
+
+import { useStates } from "lib/hooks";
+import { Input, Label } from "lib/components";
+import { isEmpty, isNil } from "lib/utils";
+
+import { arrayPropTypes } from "./props";
 
 export const Array = ({
   label,

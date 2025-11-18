@@ -1,11 +1,9 @@
-import { useContext } from "react";
-import { AuthContext } from "../../components";
-import { createContext } from "react";
-import { getLocal, setLocal, isEmpty, isFunction } from "../../utils";
 import { v4 } from "uuid";
-import { useLibConfig } from "../useLibConfig";
 import { useDispatch, useSelector } from "react-redux";
-import { setUser, unsetUser } from "../../global-state";
+
+import { getLocal, setLocal, isEmpty, isFunction } from "lib/utils";
+import { useLibConfig } from "lib/hooks";
+import { setUser, unsetUser } from "lib/global-state";
 
 export const useApi = () => {
     const { api } = useLibConfig();

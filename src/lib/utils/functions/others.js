@@ -1,4 +1,4 @@
-import { isArray, isEmpty, isNil } from "./type";
+import { isArray, isEmpty } from "lib/utils";
   
   export const secondsToTime = (seconds) => {
     const m = Math.floor(seconds / 60);

@@ -1,5 +1,4 @@
-import { isArray } from "../../functions";
-import { isDate } from "../functions";
+import { isDate, isArray } from "src/utils";
 
 /**
  * @param {Date} date

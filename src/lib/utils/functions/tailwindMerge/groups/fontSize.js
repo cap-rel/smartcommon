@@ -1,4 +1,4 @@
-import { format } from "../functions";
+import { format } from "lib/utils";
 
 const prefixes = ["text"];
 

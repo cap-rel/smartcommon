@@ -1,12 +1,9 @@
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../tools/Label";
-import { Switch, Checkbox, Radio, Icon } from "../tools";
-import { twMerge } from "tailwind-merge";
-import { isNil } from "../../../utils/functions";
+import { useEffect } from "react";
+
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
 
 import { propTypes } from "./props";
-import { mergeProps } from "../../../utils/functions";
-import { useEffect } from "react";
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = (props) => {

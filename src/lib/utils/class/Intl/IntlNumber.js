@@ -1,5 +1,4 @@
-import { isArray, isNumber } from "../../functions";
-import { isDate } from "../functions";
+import { isArray, isNumber } from "src/utils";
 
 export class IntlNumber {
   constructor({

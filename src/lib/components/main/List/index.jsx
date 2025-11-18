@@ -1,11 +1,11 @@
-import { Input } from "../../form";
-import { defaultProps, propTypes } from "./props";
-import { useVariantMerger } from "../../../hooks";
-import { IoSearch } from "react-icons/io5";
-import { Button } from "../../little";
 import { RxCaretSort } from "react-icons/rx";
-import { isEmpty, isNil } from "../../../utils";
-import { useEffect } from "react";
+import { IoSearch } from "react-icons/io5";
+
+import { Input, Button } from "lib/components";
+import { useVariantMerger } from "lib/hooks";
+import { isEmpty } from "lib/utils";
+
+import { defaultProps, propTypes } from "./props";
 
 export const List = props => {
     const { variantProps, mergeProps } = useVariantMerger("List", props);

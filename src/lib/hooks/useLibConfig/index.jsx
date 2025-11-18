@@ -1,4 +1,5 @@
 import { useContext } from "react";
-import { LibConfigContext } from "../../components";
+
+import { LibConfigContext } from "lib/components";
 
 export const useLibConfig = () => useContext(LibConfigContext) ?? {};

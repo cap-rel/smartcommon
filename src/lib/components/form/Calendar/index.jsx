@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { applyFunctionIfNotNil, isArray, isNil, isNumber, ISOFormat, isString } from "../../../utils/functions";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Button } from "../../little";
+import { useEffect, useMemo, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+
+import { applyFunctionIfNotNil, isArray, isNil, ISOFormat, isString } from "lib/utils";
+import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { Button } from "lib/components";
+
 import { propTypes } from "./props";
 
 // IDEA interval

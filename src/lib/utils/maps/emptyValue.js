@@ -1,4 +1,4 @@
-import { isInvalid, isNumber, isUndefined } from "../..";
+import { isInvalid, isUndefined } from "lib/utils";
 
 export function setEmptyValue(attribute) {
     const { type, default: defaultValue, min, max, ratingMax } = attribute;

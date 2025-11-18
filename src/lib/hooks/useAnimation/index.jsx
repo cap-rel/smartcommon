@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
-import { isEmpty } from "../../utils/functions";
+import { useEffect, useState } from "react";
+
+import { isEmpty } from "lib/utils";
 
 export const useAnimation = (initialValues) => {
   const [animations, setAnimations] = useState(initialValues);

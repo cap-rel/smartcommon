@@ -1,14 +1,12 @@
-import { applyFunctionIfNotNil, datetimeFormat, formatDate, formatSeconds, formatTime, isEmpty, isNil, isNumber, minutesToTime, secsToDuration, timeToMinutes } from "../../../utils/functions";
-import { Label } from "../../form";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { twMerge } from "tailwind-merge";
-import { FaClipboardCheck, FaEye, FaEyeSlash, FaMinus, FaPlus, FaRegClipboard } from "react-icons/fa6";
+import { Button, Spinner } from "lib/components";
+import { useEffect } from "react";
+import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
+
+import { applyFunctionIfNotNil, datetimeFormat, isEmpty, isNil, isNumber, timeToMinutes } from "lib/utils";
+import { Label } from "lib/components";
+import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
 
 import { defaultProps, propTypes } from "./props";
-
-import toast from "react-hot-toast";
-import { Button, Spinner } from "../../little";
-import { useEffect } from "react";
 
 // IDEA Types week, month, year
 // IDEA Clipboard

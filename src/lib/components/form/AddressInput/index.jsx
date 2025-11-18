@@ -1,11 +1,11 @@
 import { useRef } from 'react';
-import { useStates, useLocalValue, useVariantMerger } from '../../../hooks';
-import { Spinner } from '../../little';
-import { Input, Label } from '../../form';
-import { applyFunctionIfNotNil, isEmpty, isNil } from '../../../utils/functions';
-import { propTypes } from './props';
 import { FaSearchLocation } from 'react-icons/fa';
-import { twMerge } from 'tailwind-merge';
+
+import { useStates, useLocalValue, useVariantMerger } from 'lib/hooks';
+import { Label, Input } from 'lib/components';
+import { isEmpty } from 'lib/utils';
+
+import { propTypes } from './props';
 
 // TODO Find a way to replace input focus condition
 

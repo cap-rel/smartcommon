@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader, AudiosUploader } from "../../components";
-import { isUndefined } from "../functions";
+
+import { AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, PhotosUploader, Textarea, VideosUploader, AudiosUploader } from "lib/components";
 
 export function SetFormComponent(type) {
     const FORM_COMPONENTS_MAP = useMemo(() => ({

@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
-import { isEmpty } from "../../../utils/functions";
+
+import { isEmpty } from "lib/utils";
 
 export const Stepper = ({
     steps = [],

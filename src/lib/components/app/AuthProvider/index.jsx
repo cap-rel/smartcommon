@@ -1,6 +1,6 @@
 // import { createContext } from "react";
-// import { useAuth, useStates } from "../../../hooks";
-// import { getLocalJSON, isEmpty, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "../../../utils";
+// import { useAuth, useStates } from "lib/hooks";
+// import { getLocalJSON, isEmpty, isFunction, removeLocal, removeSession, setLocal, setLocalJSON, setSessionJSON } from "lib/utils";
 // import { v4 } from "uuid";
 
 // export const AuthContext = createContext();

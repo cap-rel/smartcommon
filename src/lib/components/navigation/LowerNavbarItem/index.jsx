@@ -1,5 +1,6 @@
-import { applyFunctionIfFunction, getVariable, isNil } from "../../../utils";
-import { useVariantMerger } from "../../../hooks";
+import { applyFunctionIfFunction, getVariable } from "lib/utils";
+import { useVariantMerger } from "lib/hooks";
+
 import { defaultProps, propTypes } from "./props";
 
 export const LowerNavbarItem = (props) => {

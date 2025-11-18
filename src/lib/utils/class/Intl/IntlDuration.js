@@ -1,4 +1,4 @@
-import { isObject } from "../../functions";
+import { isObject } from "src/utils";
 
 export class IntlDuration {
   constructor({

@@ -1,6 +1,7 @@
+import { useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil } from "lib/utils";
+
 import { propTypes } from "./props";
-import { useVariantMerger } from "../../../hooks";
-import { applyFunctionIfNotNil } from "../../../utils";
 
 // TODO open or toggle
 

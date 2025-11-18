@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { removeLocal, setLocal } from "../../export";
+
+import { removeLocal, setLocal } from "lib/utils";
 
 const tokenSlice = createSlice({
   name: "users",

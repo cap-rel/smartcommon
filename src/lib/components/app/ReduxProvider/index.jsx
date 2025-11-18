@@ -1,7 +1,8 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import { reducers } from "../../../global-state";
-import { useLibConfig } from "../../../hooks";
+
+import { reducers } from "lib/global-state";
+import { useLibConfig } from "lib/hooks";
 
 /**
  * This component is a wrapper of the actual Redux provider component, 

@@ -1,12 +1,11 @@
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../tools/Label";
+import { FaStar } from "react-icons/fa6";
+import { useEffect } from "react";
+
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Label, Icon } from "lib/components";
+import { isEmpty, isNil } from "lib/utils";
+
 import { propTypes } from "./props";
-import { twMerge } from "tailwind-merge";
-import { useEffect, useMemo } from "react";
-import { IoHeart, IoHeartHalf, IoHeartOutline } from "react-icons/io5";
-import { FaFaceSmile, FaRegStar, FaRegStarHalfStroke, FaStar, FaThumbsUp } from "react-icons/fa6";
-import { isEmpty, isNil } from "../../../utils/functions";
-import { Icon } from "../tools";
 
 // IDEA Add decimal rating system
 

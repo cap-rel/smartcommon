@@ -1,5 +1,6 @@
 import { FaCheck } from "react-icons/fa6";
-import { applyFunctionIfNotNil } from "../../../../utils";
+
+import { applyFunctionIfNotNil } from "lib/utils";
 
 export const Checkbox = (props) => {
     const {

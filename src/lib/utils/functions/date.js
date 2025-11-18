@@ -1,7 +1,6 @@
 /*-----------------  Objet Date  ------------------*/
 
-import { secsToDuration } from "./others";
-import { isDate, isNil, isObject, isString } from "./type";
+import { isDate, isNil, secsToDuration } from "lib/utils";
 
 // new Date();
 // new Date(value);

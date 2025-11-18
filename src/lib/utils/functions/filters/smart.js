@@ -1,4 +1,4 @@
-import { cleanForComparison } from "../../utils/functions";
+import { cleanForComparison } from "lib/utils";
 
 export const useFilter = (attributes) => {
 

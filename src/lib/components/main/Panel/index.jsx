@@ -1,9 +1,10 @@
-import { Overlay } from "../../others";
-import { useStates, useVariantMerger } from "../../../hooks";
-import { defaultProps, propTypes } from "./props";
-import { useEffect, useRef } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
-import { applyFunctionIfNotNil, setGlobalVariables } from "../../../utils";
+import { useEffect, useRef } from "react";
+
+import { useStates, useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil, setGlobalVariables } from "lib/utils";
+
+import { defaultProps, propTypes } from "./props";
 
 export const Panel = (props) => {
     const { variantProps, mergeProps, setParams } = useVariantMerger("Panel", props);

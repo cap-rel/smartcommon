@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { isEmpty } from "../../../utils/functions";
+import { isEmpty } from "lib/utils/functions";
 import { Icon } from "../Icon";
-import { useWindow } from "../../../hooks";
+import { useWindow } from "lib/hooks";
 
 export const Help = (props) => {
     // OLD CODE but can be useful in the future

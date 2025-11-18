@@ -1,5 +1,5 @@
-import { isFunction } from "../../utils";
-import { useLibConfig } from "../useLibConfig";
+import { isFunction } from "lib/utils";
+import { useLibConfig } from "lib/hooks";
 
 export const useApiTest = (props) => {
   let { url } = props;

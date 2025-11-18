@@ -1,5 +1,6 @@
-import { isEmpty, isNil } from "../../../../utils";
 import { IoMdInformationCircleOutline } from "react-icons/io";
+
+import { isEmpty, isNil } from "lib/utils";
 
 // IDEA Mini-popup for help
 

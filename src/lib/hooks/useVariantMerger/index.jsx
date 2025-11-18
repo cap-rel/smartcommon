@@ -1,6 +1,5 @@
-import { isArray, isFunction, isNil, isObject, isString, isUndefined, mergeObj, toArray, twMerge } from "../../utils";
-import { useStates } from "../useStates";
-import { useLibConfig } from "../../hooks";
+import { isArray, isFunction, isNil, isString, isUndefined, mergeObj, toArray, twMerge } from "lib/utils";
+import { useLibConfig, useStates } from "lib/hooks";
 
 function verifyFunction(func, params = {}){
     return isFunction(func) ? func(params) : func;

@@ -1,5 +1,5 @@
-import { isNil, isUndefined } from "../../utils";
-import { useStates } from "../useStates"
+import { isUndefined } from "lib/utils";
+import { useStates } from "lib/hooks"
 
 export const useLocalValue = (localValue, value, onChange, errors) => {
     const { states, set } = useStates({ localValue });

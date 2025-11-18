@@ -1,12 +1,13 @@
 import { useRef } from "react";
-import { Input, Label, Textarea } from ".."
-import { Button, Spinner } from "../../little";
-import { isEmpty, isNil, splitFileExtension } from "../../../utils/functions";
-import { useStates } from "../../../hooks";
-import { propTypes } from "./props";
 import { FaFile } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
+
+import { Button, Spinner, Label } from "lib/components";
+import { isEmpty, isNil, splitFileExtension } from "lib/utils";
+import { useStates } from "lib/hooks";
+
+import { propTypes } from "./props";
 
 // TODO Add retake or reimport system
 

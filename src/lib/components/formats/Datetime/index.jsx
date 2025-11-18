@@ -1,7 +1,9 @@
-import { propTypes } from "./props";
-import { useVariantMerger } from "../../../hooks";
-import { isNil } from "../../../utils";
 import { FaCalendarDays } from "react-icons/fa6";
+
+import { useVariantMerger } from "lib/hooks";
+import { isNil } from "lib/utils";
+
+import { propTypes } from "./props";
 
 export const Datetime = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Datetime", props);

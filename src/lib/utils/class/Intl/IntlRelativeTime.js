@@ -1,4 +1,4 @@
-import { isNumber, isString } from "../../functions";
+import { isNumber, isString } from "src/utils";
 
 /**
  * @param {number} value

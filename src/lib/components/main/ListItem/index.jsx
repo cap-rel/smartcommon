@@ -1,10 +1,7 @@
-import { IoWarning } from "react-icons/io5";
-import { Tag, useVariantMerger } from "../../../export";
-import { defaultProps, propTypes } from "./props";
-import { BsRocketFill } from "react-icons/bs";
-import { FaPencil, FaUserSlash } from "react-icons/fa6";
+import { FaPencil } from "react-icons/fa6";
 
-import logo from "../../../../dev/assets/images/icon.png"
+import { useVariantMerger } from "lib/hooks";
+import { defaultProps, propTypes } from "./props";
 
 export const ListItem = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("ListItem", props);

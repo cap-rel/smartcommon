@@ -1,5 +1,6 @@
 import { twMerge } from "tailwind-merge";
-import { isArray, isFunction, isNil, isString } from "./type";
+
+import { isFunction } from "lib/utils";
 
 export function resolveProp(prop, params = {}){
     return isFunction(prop) ? prop(params) : prop;

@@ -1,5 +1,5 @@
 import { Meta, Title, ArgTypes, Subtitle, Description, Primary, Controls, Stories, Source, Canvas, Story, DocsContainer, DocsPage } from "@storybook/addon-docs/blocks";
-import { toFirstUppercase } from "../../../lib";
+import { toFirstUppercase } from "lib/utils";
 
 export const VariantsPage = (props) => {
     const { of, variants } = props;

@@ -1,5 +1,4 @@
-import { isEmpty } from "../../utils/functions";
-import { navigatorInfo } from "../../utils";
+import { navigatorInfo, isEmpty } from "lib/utils";
 
 export const useIntl = () => {
     const DateTimeFormat = (timestamp, locales = null, options = null) => {

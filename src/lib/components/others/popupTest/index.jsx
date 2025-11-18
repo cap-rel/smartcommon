@@ -1,9 +1,7 @@
-import { Button } from "../Button";
-import { Overlay } from "../Overlay";
-import { useStates } from "../../../hooks";
-import { isNull } from "../../../utils/functions";
-import { useEffect } from "react";
 import { twMerge } from "tailwind-merge";
+
+import { Overlay, Button } from "lib/components";
+import { useStates } from "lib/hooks";
 
 export const Popup = ({
     overlay = {

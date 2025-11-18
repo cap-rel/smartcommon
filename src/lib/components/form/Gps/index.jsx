@@ -1,13 +1,12 @@
 import toast from "react-hot-toast";
-import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "../../../utils/functions";
-import { Label } from "../tools/Label";
-import { Button, Spinner } from "../../little";
-import { propTypes } from "./props";
-import { twMerge } from "tailwind-merge";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { FaLocationDot, FaMapLocationDot } from "react-icons/fa6";
-import { RiCloseLargeFill } from "react-icons/ri";
+import { FaLocationDot } from "react-icons/fa6";
 import { useEffect } from "react";
+
+import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "lib/utils";
+import { Button, Label } from "lib/components";
+import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+
+import { propTypes } from "./props";
 
 // IDEA Add location via map
 

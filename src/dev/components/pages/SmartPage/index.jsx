@@ -1,13 +1,11 @@
-import { useEffect, useRef } from "react";
-import { FaReact } from "react-icons/fa6";
-import { IoArrowDown, IoHome } from "react-icons/io5";
-import { IoIosArrowDown } from "react-icons/io";
-import { useStates, Tabbar, convertCSSVar, convertClassName, Checker, Gps } from "../../../../lib";
-import { FaBook } from "react-icons/fa";
+import { twMerge } from "tailwind-merge";
+
+import { Checker } from "lib/components";
+import { useStates } from "lib/hooks";
+
 import { Variables } from "./Variables";
 import { Components } from "./Components";
 import { Radio } from "./Radio";
-import { twMerge } from "tailwind-merge";
 
 export const SmartPage = () => {
     const { states, set } = useStates({

@@ -1,10 +1,10 @@
-import { useStates, useVariantMerger } from "../../../hooks";
-import { navigatorInfo } from "../../../utils";
-import { AnimatePresence, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
-// import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+
+import { useStates, useVariantMerger } from "lib/hooks";
+import { navigatorInfo } from "lib/utils";
+
 import { defaultProps, propTypes } from "./props";
-import { isEmpty } from "../../../utils";
 
 const config = {
     pages: {

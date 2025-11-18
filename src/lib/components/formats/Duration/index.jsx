@@ -1,6 +1,7 @@
+import { useVariantMerger } from "lib/hooks";
+import { secsToDuration } from "lib/utils";
+
 import { propTypes } from "./props";
-import { useVariantMerger } from "../../../hooks";
-import { isEmpty, secsToDuration } from "../../../utils";
 
 // TODO Intl DurationFormat
 

@@ -1,5 +1,6 @@
 import { createContext } from "react";
-import { I18nextProvider } from "../I18nextProvider";
+
+import { I18nextProvider } from "lib/components";
 
 export const LibConfigContext = createContext();
 

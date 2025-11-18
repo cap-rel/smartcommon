@@ -1,10 +1,10 @@
-import { twMerge } from "tailwind-merge";
-import { Label } from "../../form";
-import { propTypes } from "./props";
-import { IoIosArrowDown } from "react-icons/io";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "../../../utils/functions";
 import { useEffect } from "react";
+
+import { Label } from "lib/components";
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "lib/utils";
+
+import { propTypes } from "./props";
 
 // TODO Add attributes to options like disabled, maybe props
 

@@ -1,16 +1,13 @@
-import { Button } from "../../little";
-import { Label } from "../tools/Label";
-import { useEffect, useRef } from "react";
-import SignatureCanvas from 'react-signature-canvas'
-import { useFile, useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { twMerge } from "tailwind-merge";
-import { FaEraser, FaSignature, FaUser } from "react-icons/fa6";
-import { applyFunctionIfFunction, applyFunctionIfNotNil, isNil, locate, isEmpty } from "../../../utils/functions";
 import toast from "react-hot-toast";
+import SignatureCanvas from 'react-signature-canvas'
+import { useEffect, useRef } from "react";
+import { FaEraser, FaSignature } from "react-icons/fa6";
+
+import { Button, Label, Input } from "lib/components";
+import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil, isNil, locate, isEmpty } from "lib/utils/functions";
 
 import { propTypes } from "./props";
-import { Input } from "../Input";
-import { AddressInput } from "../AddressInput";
 
 export const SignaturePad = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("SignaturePad", props);

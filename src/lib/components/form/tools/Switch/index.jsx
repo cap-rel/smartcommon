@@ -1,4 +1,4 @@
-import { applyFunctionIfNotNil } from "../../../../utils";
+import { applyFunctionIfNotNil } from "lib/utils";
 
 export const Switch = (props) => {
     const {

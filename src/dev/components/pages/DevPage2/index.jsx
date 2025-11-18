@@ -1,9 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
-import { Block, Button, List, ListItem, LowerNavbarItem, Navbar, Page, Panel, PhotosUploader, Popup, Tabbar, TabbarItem } from "../../../../lib";
 import { useEffect, useState } from "react";
 import { FaUserAstronaut, FaUser, FaGear, FaGears } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
-import { addUser } from "../../../../lib/hooks/useDb/tests/reducers/slices/usersSlice";
+
+import { Block, Button, List, ListItem, LowerNavbarItem, Navbar, Page, PhotosUploader, Popup, Tabbar, TabbarItem } from "lib/components";
 
 export const DevPage2 = () => {
     const location = useLocation();
@@ -28,7 +28,7 @@ export const DevPage2 = () => {
             tokenExpiry: 121211414,
         };
 
-        dispatch(addUser(data));
+        // dispatch(addUser(data));
     };
 
     const users = useSelector(state => state.users.data);

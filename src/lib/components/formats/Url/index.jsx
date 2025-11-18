@@ -1,5 +1,7 @@
-import { FaLink, FaPhoneFlip } from "react-icons/fa6";
-import { useVariantMerger } from "../../../hooks";
+import { FaLink } from "react-icons/fa6";
+
+import { useVariantMerger } from "lib/hooks";
+
 import { propTypes } from "./props";
 
 export const Url = (props) => {

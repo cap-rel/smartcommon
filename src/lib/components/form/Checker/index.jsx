@@ -1,11 +1,11 @@
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../tools/Label";
-import { propTypes } from "./props";
-import { Switch, Checkbox, Radio, Icon } from "../tools";
-import { twMerge } from "tailwind-merge";
-import { isEmpty, isNil, isObject, mergeProps } from "../../../utils/functions";
-import { useEffect } from "react";
 import { FaStar } from "react-icons/fa6";
+import { useEffect } from "react";
+
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
+import { isEmpty, isNil, isObject } from "lib/utils";
+
+import { propTypes } from "./props";
 
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 // TODO Add attributes to options like disabled, color, maybe props

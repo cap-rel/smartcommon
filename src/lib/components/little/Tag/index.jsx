@@ -1,4 +1,4 @@
-import { useVariantMerger } from "../../../hooks";
+import { useVariantMerger } from "lib/hooks";
 
 export const Tag = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Tag", props);

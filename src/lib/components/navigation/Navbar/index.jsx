@@ -1,10 +1,10 @@
 import { animate, useMotionValue, motion } from "framer-motion";
-import { useStates, useVariantMerger } from "../../../hooks";
-import { navigatorInfo } from "../../../utils";
-import { isEmpty, isNil, setGlobalVariables, setVariable } from "../../../utils";
-import { defaultProps, propTypes } from "./props";
-// import { Link } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+
+import { useStates, useVariantMerger } from "lib/hooks";
+import { isEmpty, setGlobalVariables, navigatorInfo } from "lib/utils";
+
+import { defaultProps, propTypes } from "./props";
 
 // TODO when there is not left or right, adjust the justify-between
 

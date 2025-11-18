@@ -1,5 +1,6 @@
-import { useVariantMerger } from "../../../hooks";
-import { isNil } from "../../../utils";
+import { useVariantMerger } from "lib/hooks";
+import { isNil } from "lib/utils";
+
 import { propTypes } from "./props";
 
 // TODO badge

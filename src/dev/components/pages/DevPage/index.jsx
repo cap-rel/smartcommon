@@ -1,9 +1,10 @@
-import { Navbar, Sidebar, Tabbar, Button, Page, Popup, Spinner, Block, useStates, AddressInput, Array, Boolean, Checker, ColorPicker, Timer, Editor, FilesUploader, Gps, Input, Range, Rater, Select, SignaturePad, Textarea, VideosUploader } from "../../../../lib";
-import { IoEllipsisHorizontal, IoHome } from "react-icons/io5";
-import { FaBook, FaEllipsisVertical, FaEnvelope, FaGear, FaMagnifyingGlass, FaStar } from "react-icons/fa6";
+import { FaBook, FaGear } from "react-icons/fa6";
+import { IoHome } from "react-icons/io5";
 import { FaSyncAlt } from "react-icons/fa";
-import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+
+import { Button, Page } from "lib/components";
+import { useStates } from "lib/hooks";
 
 export const DevPage = () => {
     // mb-20 for tabbar and mb- for sidebar

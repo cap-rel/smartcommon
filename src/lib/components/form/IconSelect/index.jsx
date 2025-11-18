@@ -4,10 +4,10 @@
 // import * as io from "react-icons/io";
 // import * as io5 from "react-icons/io5";
 // import * as md from "react-icons/md";
-// import { Label } from "../../form";
-// import { Icon } from "../../others";
-// import { useStates } from "../../../hooks";
-// import { cleanForComparison, isUndefined } from "../../../utils/functions";
+// import { Label } from "lib/components";
+// import { Icon } from "lib/components";
+// import { useStates } from "lib/hooks";
+// import { cleanForComparison, isUndefined } from "lib/utils/functions";
 // import { propTypes } from "./props";
 
 // // OLD CODE but maybe useful in the future

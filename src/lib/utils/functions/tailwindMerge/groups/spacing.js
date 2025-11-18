@@ -1,4 +1,4 @@
-import { format } from "../functions";
+import { format } from "lib/utils";
 
 const prefixes = [
     "p", "pb", "pe", "pl", "pr", "ps", "pt", "px", "py",

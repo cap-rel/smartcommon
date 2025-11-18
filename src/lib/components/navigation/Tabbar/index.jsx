@@ -1,10 +1,10 @@
-import { defaultProps, propTypes } from "./props";
-import { useStates, useVariantMerger } from "../../../hooks";
-import { navigatorInfo } from "../../../utils";
-// import { Link } from "react-router-dom";
-import { isNil, setGlobalVariables, setVariable } from "../../../utils";
+import { animate, useMotionValue, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-import { animate, useMotionValue, motion, scroll } from "framer-motion";
+
+import { useStates, useVariantMerger } from "lib/hooks";
+import { setGlobalVariables, navigatorInfo } from "lib/utils";
+
+import { defaultProps, propTypes } from "./props";
 
 // TODO centralButton
 // TODO badge for link

@@ -1,9 +1,10 @@
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { Label } from "../../form";
-import { propTypes } from "./props";
-import { twMerge } from "tailwind-merge";
-import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../utils/functions";
 import { useEffect } from "react";
+
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { Label } from "lib/components";
+import { applyFunctionIfNotNil, isEmpty, isNil } from "lib/utils";
+
+import { propTypes } from "./props";
 
 export const Textarea = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Textarea", props);

@@ -1,5 +1,7 @@
-import { FaEnvelope, FaPhoneFlip } from "react-icons/fa6";
-import { useVariantMerger } from "../../../hooks";
+import { FaEnvelope } from "react-icons/fa6";
+
+import { useVariantMerger } from "lib/hooks";
+
 import { propTypes } from "./props";
 
 export const Email = (props) => {

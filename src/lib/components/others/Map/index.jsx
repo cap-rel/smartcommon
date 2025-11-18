@@ -1,5 +1,6 @@
 import { useEffect } from "react";
-import { mToKm, secsToTime } from "../../../utils/functions";
+
+import { mToKm, secsToTime } from "lib/utils";
 
 /**
  * @param {*} props

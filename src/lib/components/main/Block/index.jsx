@@ -1,6 +1,7 @@
-import { isNil } from "../../../utils/functions";
+import { isNil } from "lib/utils";
+import { useVariantMerger } from "lib/hooks";
+
 import { defaultProps, propTypes } from "./props";
-import { useVariantMerger } from "../../../hooks";
 
 export const Block = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Block", props);

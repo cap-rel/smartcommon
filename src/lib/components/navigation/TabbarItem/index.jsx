@@ -1,4 +1,5 @@
-import { useVariantMerger } from "../../../hooks";
+import { useVariantMerger } from "lib/hooks";
+
 import { defaultProps, propTypes } from "./props";
 
 export const TabbarItem = (props) => {

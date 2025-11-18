@@ -1,9 +1,10 @@
-import { Label } from "..";
-import { useStates, useLocalValue, useVariantMerger } from "../../../hooks";
-import { applyFunctionIfNotNil, isEmpty, isNil } from "../../../utils/functions";
-import { propTypes } from "./props";
-import { twMerge } from "tailwind-merge";
 import { useEffect } from "react";
+
+import { Label } from "lib/components";
+import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { applyFunctionIfNotNil, isEmpty, isNil } from "lib/utils";
+
+import { propTypes } from "./props";
 
 export const Range = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Range", props);

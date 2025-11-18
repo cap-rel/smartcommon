@@ -1,10 +1,10 @@
-import { useVariantMerger } from "../../../hooks";
-import { Panel } from "../../main";
-import { Button } from "../../little";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
+
+import { useVariantMerger } from "lib/hooks";
+import { Panel, Button } from "lib/components";
+import { isNil } from "lib/utils";
+
 import { propTypes } from "./props";
-// import { Link } from "react-router-dom";
-import { isNil } from "../../../utils";
 
 // TODO badge for link
 // TODO hideButtonOnScroll

@@ -1,10 +1,10 @@
 import { fn } from 'storybook/test';
+import { FaApple, FaBook, FaUser } from 'react-icons/fa6';
 
 // import { Button } from './Button';
 // import { Header } from "../Header/Header";
 
 import { Button } from './';
-import { FaApple, FaBook, FaUser } from 'react-icons/fa6';
 
 import * as variants from "./variants";
 

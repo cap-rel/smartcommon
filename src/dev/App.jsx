@@ -1,6 +1,6 @@
-import { ReduxProvider, I18nextProvider, Head, Router } from "./components";
+import { Provider, Toaster } from "lib/components";
 
-import { Provider, Toaster } from "../lib";
+import { I18nextProvider, Head, Router } from "dev/components";
 
 export const App = () => {
   return (
