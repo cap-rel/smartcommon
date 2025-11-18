@@ -1,5 +1,5 @@
 export * from "./useAnimation";
-export * from "./useApi";
+export * from "./useApiTest";
 export * from "./useFile";
 export * from "./useForm";
 export * from "./useIntl";
@@ -10,5 +10,5 @@ export * from "./useLocalValue";
 export * from "./useVariantMerger";
 export * from "./useWindow";
 export * from "./useNavigation";
-export * from "./useAuth";
 export * from "./useDb";
+export * from "./useApi";

@@ -14,7 +14,6 @@ export const useVariantMerger = (componentKey, props) => {
     // ignoreTheme ?
     // ignorePreviousVariant
 
-
     const { states, set } = useStates({
         params: {}
     })
@@ -67,7 +66,7 @@ export const useVariantMerger = (componentKey, props) => {
 
     const { components } = useLibConfig ?? {};
 
-    const { theme, themes, variants } = components;
+    const { theme, themes, variants } = components ?? {};
 
     // if (isNil(themes)) {
     //     throw new Error("No themes provided");

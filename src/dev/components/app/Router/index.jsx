@@ -2,11 +2,8 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { componentNames } from "../../pages/SmartPage/components";
 import { DevPage, SmartPage } from "../../pages";
 import { DevPage2 } from "../../pages/DevPage2";
-import { useAuth } from "../../../../lib";
 
-export const Router = () => {
-    const {} = useAuth();
-    
+export const Router = () => {    
     return (
         <BrowserRouter>
             {/* <NavigationProvider> */}
