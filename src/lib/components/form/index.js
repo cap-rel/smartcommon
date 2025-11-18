@@ -8,7 +8,7 @@ export * from "./Editor";
 export * from "./Gps";
 export * from "./IconSelect";
 export * from "./Input";
-export * from "./tools/Label";
+export * from "./tools";
 export * from "./Range";
 export * from "./Rater";
 export * from "./Select";
