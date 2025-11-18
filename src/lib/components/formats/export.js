@@ -5,7 +5,7 @@ export * from "./Datetime";
 export * from "./Duration";
 export * from "./Email";
 export * from "./Files";
-export * from "./Icon";
+// export * from "./Icon";
 export * from "./Number";
 export * from "./PhoneNumber";
 export * from "./Signature";
