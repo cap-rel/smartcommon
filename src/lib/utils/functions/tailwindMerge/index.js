@@ -1,9 +1,9 @@
 // import { extendTailwindMerge } from 'tailwind-merge'
 // import { mergedFontSizeClass, mergedRadiusClass, mergedSpacingClass } from './groups';
-// import { useLib } from '../../../hooks';
+// import { useComponents } from '../../../hooks';
 
 // export const twMerge = () => {
-//     const { tailwindMerge } = useLib() ?? {};
+//     const { tailwindMerge } = useComponents() ?? {};
 
 //     // const classGroups = Object.entries(tailwindMerge).reduce((acc, [key, { prefixes, variables }]) => {
 //     //     acc = { ...acc, [key]: format(prefixes, variables) };

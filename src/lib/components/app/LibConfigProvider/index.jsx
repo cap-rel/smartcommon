@@ -69,7 +69,7 @@ const config = {
       url: "",
       // Pour donner des clés à différents chemins
       paths: {},
-      errors,
+      errors: {},
     }
   },
   // Pour le hook compression (useCompression ? useFile)

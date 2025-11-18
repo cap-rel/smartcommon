@@ -12,7 +12,7 @@ const interventionsSlice = createSlice({
         state.data.push(action.payload);
     },
     deleteIntervention(state, action) {
-        state.data = state.data.filter(interventions => intervention.id != action.payload);
+        state.data = state.data.filter(intervention => intervention.id != action.payload);
     }
   },
 });

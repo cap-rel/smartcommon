@@ -2,10 +2,10 @@ import { useContext } from "react";
 import { AuthContext } from "../../components";
 import { createContext } from "react";
 import { useStates } from "../../../hooks";
-import { getLocal, setLocal, isEmpty, isFunction, setLocal } from "../../../utils";
+import { getLocal, setLocal, isEmpty, isFunction } from "../../../utils";
 import { v4 } from "uuid";
 import { useLibConfig } from "../useLibConfig";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser, unsetUser } from "../../global-state";
 
 export const useAuth = () => {
@@ -84,7 +84,7 @@ export const useAuth = () => {
         //   throw new Error(json);
         // }
 
-        dispatch(unsetUser(newUser));
+        dispatch(unsetUser());
 
         return json;
     };

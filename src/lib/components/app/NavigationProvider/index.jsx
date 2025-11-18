@@ -10,7 +10,7 @@ export const NavigationContext = createContext({
 export const NavigationProvider = (props) => {
   const { children } = props;
   
-  const location = undefined ?? {};
+  const location = {};
   const { pathname } = location;
 
   const [history, setHistory] = useState([]);

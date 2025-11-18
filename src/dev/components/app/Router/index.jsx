@@ -2,14 +2,14 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { componentNames } from "../../pages/SmartPage/components";
 import { DevPage, SmartPage } from "../../pages";
 import { DevPage2 } from "../../pages/DevPage2";
-import { NavigationProvider, useAuth } from "../../../../lib";
+import { useAuth } from "../../../../lib";
 
 export const Router = () => {
     const {} = useAuth();
     
     return (
         <BrowserRouter>
-            <NavigationProvider>
+            {/* <NavigationProvider> */}
                 <Routes>
                     <Route path={`/`} element={<DevPage />}/>
                     <Route path={`/dev2`} element={<DevPage2 />}/>
@@ -17,7 +17,7 @@ export const Router = () => {
                         <Route key={`component${CI}`} path={`/${component}`} element={<SmartPage />} />
                     )} */}
                 </Routes>
-            </NavigationProvider>
+            {/* </NavigationProvider> */}
         </BrowserRouter>
     );
 };

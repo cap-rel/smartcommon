@@ -178,7 +178,6 @@ export function ISOFormat(date, format) {
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
 
-
   switch (format) {
     case "date": return `${year}-${month}-${day}`;
     case "time": return `${hours}:${minutes}`;
@@ -213,7 +212,7 @@ export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle:
  * @param {object} options default => { style: 'narrow' }
  * @param {string} locales default => 'default'
  * 
- * @see for the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat/DurationFormat
+ * @see For the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat/DurationFormat
  * 
  * @example
  * const duration1 = { };
