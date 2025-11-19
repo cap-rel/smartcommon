@@ -4,7 +4,7 @@ import { getLocal, getSession, removeLocal, removeSession, setLocal, setSession 
 
 const userSlice = createSlice({
   name: "users",
-  initialState: getLocal("user") ?? getSession("user") ?? null,
+  initialState: getLocal("user") ?? getSession("user") ?? {},
   reducers: {
     setUser(state, action) {
       const user = action.payload;
