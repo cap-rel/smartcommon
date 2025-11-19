@@ -50,7 +50,7 @@ export const useApi = () => {
 
         const data = json?.data ?? {};
 
-        const newUser = { ...data, tokenExpiry: Date.now() + (data.expires_in * 1000) }
+        const newUser = { ...data, tokenExpiry: Date.now() + (data.expires_in * 1000) };
 
         dispatch(setUser(newUser));
 
