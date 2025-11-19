@@ -10,11 +10,11 @@ export const useApi = () => {
 
     const { url, errors: apiErrors } = api ?? {};
 
-    let appKeyId = getLocal("HTTP_X_APP_ID");
+    let appKeyId = getLocal("HTTP_X_DEVICEID");
 
     if (isEmpty(appKeyId)) {
         appKeyId = v4();
-        setLocal("HTTP_X_APP_ID", appKeyId);
+        setLocal("HTTP_X_DEVICEID", appKeyId);
     }
 
     const dispatch = useDispatch();
@@ -27,7 +27,7 @@ export const useApi = () => {
         const response = await fetch(`${url}login`, {
             method: 'POST',
             headers: {
-                HTTP_X_APP_ID: appKeyId,
+                "X-DEVICEID": appKeyId,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(loginInfo),
@@ -62,7 +62,7 @@ export const useApi = () => {
             method: "POST",
             headers: { 
                 Authorization: `Bearer ${access_token}`,
-                HTTP_X_APP_ID: appKeyId
+                "X_DEVICEID": appKeyId
             },
             ...request
         });
@@ -91,7 +91,7 @@ export const useApi = () => {
             method: "GET",
             headers: { 
                 Authorization: `Bearer ${refresh_token}`,
-                HTTP_X_APP_ID: appKeyId
+                "X_DEVICEID": appKeyId
             }
         });
 
@@ -120,7 +120,7 @@ export const useApi = () => {
             ...request,
             headers: {
                 Authorization: `Bearer ${access_token}`,
-                HTTP_X_APP_ID: appKeyId,
+                "X_DEVICEID": appKeyId,
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
