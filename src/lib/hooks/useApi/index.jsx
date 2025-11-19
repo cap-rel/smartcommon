@@ -62,7 +62,7 @@ export const useApi = () => {
             method: "POST",
             headers: { 
                 Authorization: `Bearer ${access_token}`,
-                "X_DEVICEID": appKeyId
+                "X-DEVICEID": appKeyId
             },
             ...request
         });
@@ -91,7 +91,7 @@ export const useApi = () => {
             method: "GET",
             headers: { 
                 Authorization: `Bearer ${refresh_token}`,
-                "X_DEVICEID": appKeyId
+                "X-DEVICEID": appKeyId
             }
         });
 
@@ -120,7 +120,7 @@ export const useApi = () => {
             ...request,
             headers: {
                 Authorization: `Bearer ${access_token}`,
-                "X_DEVICEID": appKeyId,
+                "X-DEVICEID": appKeyId,
                 Accept: "application/json",
                 "Content-Type": "application/json",
             },
