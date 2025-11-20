@@ -34,7 +34,7 @@ export const useApi = () => {
             ...request
         });
 
-        const json = await response.json();
+        const data = await response.json() ?? {};
 
         const { ok, status } = response;
         
@@ -47,8 +47,6 @@ export const useApi = () => {
             
             throw new Error(json);
         }
-
-        const data = json?.data ?? {};
 
         const newUser = { ...data, tokenExpiry: Date.now() + (data.expires_in * 1000) };
 
@@ -95,7 +93,7 @@ export const useApi = () => {
             }
         });
 
-        const json = await response.json();
+        const data = await response.json() ?? {};
 
         if (!response.ok) {
             await logout();
@@ -103,7 +101,7 @@ export const useApi = () => {
             // throw new Error(json);
         }
 
-        const { access_token, refresh_token: refreshToken, token_expires_in } = json?.data ?? {};
+        const { access_token, refresh_token: refreshToken, token_expires_in } = data;
 
         const refreshedUser = { ...user, access_token, refresh_token: refreshToken, tokenExpiry: Date.now() + (token_expires_in * 1000)};
         
@@ -127,7 +125,7 @@ export const useApi = () => {
             body: body ? JSON.stringify(body) : undefined
         });
         
-        const json = await response.json();
+        const data = await response.json();
 
         const { ok, status } = response;
         
@@ -144,11 +142,11 @@ export const useApi = () => {
                 errorAction();
             }
             
-            throw new Error(json);
+            throw new Error(data);
         }
 
 
-        return json;
+        return data;
     };
 
     const GET = (path, request, errors) => fetchApi(path, undefined, { ...request, method: "GET" }, errors);
