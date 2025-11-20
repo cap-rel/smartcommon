@@ -45,14 +45,14 @@ export const useApi = () => {
                 errorAction();
             }
             
-            throw new Error(json);
+            throw new Error(data);
         }
 
         const newUser = { ...data, tokenExpiry: Date.now() + (data.expires_in * 1000) };
 
         dispatch(setUser(newUser));
 
-        return json;
+        return data;
     };
 
     const logout = async (request = {}, errors = {}) => {
@@ -65,7 +65,7 @@ export const useApi = () => {
             ...request
         });
 
-        const json = await response.json();
+        const data = await response.json();
 
         // const { ok, status } = response;
         
@@ -81,7 +81,7 @@ export const useApi = () => {
 
         dispatch(unsetUser());
 
-        return json;
+        return data;
     };
 
     const refreshAccessToken = async () => {
