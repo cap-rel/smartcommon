@@ -24,6 +24,7 @@ export const Select = (props) => {
     min,
     exact,
     max,
+    placeholder,
 
     multiple,
     options = [],
@@ -84,7 +85,7 @@ export const Select = (props) => {
           className: `py-2 pr-7 pl-2 w-full truncate whitespace-nowrap overflow-hidden rounded-app-md border border-border truncate
           outline-none ${disabled ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-strong-bg inset-shadow-sm`
         }))}>
-          {/* <option disabled { ...optionProps}>{placeholder}</option> */}
+          <option disabled>{placeholder}</option>
           {!isEmpty(options) && 
             options.map((option, OI) => {
               const optionValue = isObject(option) ? option.value : option;
