@@ -9,37 +9,36 @@ const userSlice = createSlice({
     setUser(state, action) {
       const user = action.payload;
 
-      Object.assign(state, user);
-
       if (user.rememberMe) {
         setLocal("user", user);
       } else {
         setSession("user", user);
       }
+
+      return user;
     },
     unsetUser(state) {
-      Object.assign(state, null);
-
       removeLocal("user");
       removeSession("user");
+
+      return {};
     },
-    saveConfig(state, action) {
-      const config = action.payload;
+    updateUser(state, action) {
+      const update = action.payload;
 
-      state.config = config;
+      const newUser = { ...state, ...update };
 
-      const user = { ...state };
-
-      user.config = config
-      
-      if (user.rememberMe) {
-        setLocal("user", user);
+      if (newUser.rememberMe) {
+        setLocal("user", newUser);
       } else {
-        setSession("user", user);
+        setSession("user", newUser);
       }
+
+      return newUser;
+      
     }
   },
 });
 
 export const userReducer = userSlice.reducer;
-export const { setUser, unsetUser, saveConfig } = userSlice.actions;
+export const { setUser, unsetUser, updateUser } = userSlice.actions;
