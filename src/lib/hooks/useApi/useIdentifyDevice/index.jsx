@@ -5,10 +5,10 @@ import { updateUser } from "lib/global-state";
 
 import { useFetchApi } from "../useFetchApi";
 
-export const useIdentifyDevice = () => {
+export const useIdentifyDevice = (deviceId) => {
     const dispatch = useDispatch();
 
-    const { POST } = useFetchApi();
+    const { POST } = useFetchApi(deviceId);
 
     const { deviceOptions } = useSelector(state => state.user);
 

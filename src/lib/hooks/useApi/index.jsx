@@ -21,7 +21,7 @@ export const useApi = () => {
 
     const { fetchApi, GET, POST, PUT, DELETE } = useFetchApi(deviceId);
 
-    const identifyDevice = useIdentifyDevice();
+    const identifyDevice = useIdentifyDevice(deviceId);
 
     return {
         login,
