@@ -1,8 +1,7 @@
-import { userReducer, tokenReducer } from "./slices";
+import { userReducer } from "./slices";
 
 export const reducers = {
   user: userReducer,
-  // token: tokenReducer,
 };
 
 export * from "./slices";
