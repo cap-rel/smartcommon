@@ -3,7 +3,7 @@ import { useEffect } from "react";
 
 import { useLocalValue, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
-import { isEmpty, isNil, isObject } from "lib/utils";
+import { applyFunctionIfFunction, isEmpty, isNil, isObject } from "lib/utils";
 
 import { propTypes } from "./props";
 
@@ -84,7 +84,7 @@ export const Checker = (props) => {
             {!isEmpty(options) &&
                 <div { ...mergeProps("optionsContainer", props => ({
                     ...props,
-                    className: `flex flex-col gap-app-sm`
+                    className: `flex flex-col divide-y divide-border border border-border`
                 }))}>
                     {options.map((option, OI) => {
                         const optionValue = isObject(option) ? option.value : option;
@@ -94,7 +94,11 @@ export const Checker = (props) => {
                         return (
                             <div key={`option${OI}`} { ...mergeProps("option", props => ({
                                 ...props,
-                                className: `flex items-center gap-app-xs`
+                                onClick: () => {
+                                    applyFunctionIfFunction(props.onClick, e);
+                                    handleOnClick(optionValue);
+                                },
+                                className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft duration-(--really-quick)`
                             }))}>
                                 <input
                                     type={`checkbox`}
@@ -104,10 +108,9 @@ export const Checker = (props) => {
                                     name={name}
                                     hidden                                    
                                 />
-                                {type === "checkbox" ?
-                                    <Checkbox
+                                {type === "switch" ?
+                                    <Switch
                                         mergeProps={mergeProps}
-                                        onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                         disabled={disabled}
                                     />
@@ -126,7 +129,7 @@ export const Checker = (props) => {
                                         checked={checked}
                                         disabled={disabled}
                                     />
-                                :   <Switch
+                                :   <Checkbox
                                         mergeProps={mergeProps}
                                         onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
