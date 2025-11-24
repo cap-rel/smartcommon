@@ -5,6 +5,15 @@ import { setUser } from "lib/global-state";
 
 import { useLogout } from "../useLogout";
 
+import { apiMap } from "../apiMap";
+
+export const refreshAccessTokenMap = data => apiMap({
+    access_token:   { key: "accessToken"                                            },
+    refresh_token:  { key: "refreshToken",                                          },
+    expires_in:     { key: "expiresIn"                                              },
+    token_type:     { key: "tokenType"                                              },
+}, data);
+
 export const useRefreshAccessToken = (deviceId) => {
     const { api } = useLibConfig();
     
@@ -16,18 +25,20 @@ export const useRefreshAccessToken = (deviceId) => {
 
     const user = useSelector(state => state.user);
 
-    const { refresh_token } = user;
+    const { refreshToken } = user;
 
-     const refreshAccessToken = async () => {
+    const refreshAccessToken = async () => {
         const response = await fetch(`${url}refresh`, {
             method: "GET",
             headers: { 
-                Authorization: `Bearer ${refresh_token}`,
+                Authorization: `Bearer ${refreshToken}`,
                 "X-DEVICEID": deviceId
             }
         });
 
         const data = await response.json() ?? {};
+
+        const mappedData = refreshAccessTokenMap(data);
 
         if (!response.ok) {
             await logout();
@@ -35,24 +46,12 @@ export const useRefreshAccessToken = (deviceId) => {
             // throw new Error(json);
         }
 
-        const { access_token, refresh_token: refreshToken, token_expires_in } = data;
+        const { accessToken, refreshToken, expiresIn } = mappedData;
 
-        const refreshedUser = { ...user, access_token, refresh_token: refreshToken, tokenExpiry: Date.now() + (token_expires_in * 1000)};
+        const refreshedUser = { ...user, accessToken, refreshToken, tokenExpiry: Date.now() + (expiresIn * 1000)};
         
         dispatch(setUser(refreshedUser));
     };
     
     return refreshAccessToken;
 };
-
-
-// POST("device", { label: label || undefined, uuid: (uuid === "noDevice" || isEmpty(deviceOptions)) ? getLocal("HTTP_X_DEVICEID") : uuid })
-//             .then(data => {
-//                 if ((uuid === "noDevice" || isEmpty(deviceOptions))) {
-//                     setLocal("HTTP_X_DEVICEID", uuid);
-//                 }
-                
-//                 dispatch(updateUser({ data }));
-//                 dispatch(updateLocalUser({ devicesOptions: undefined }));
-//             })
-//             .catch(err => console.error(err));

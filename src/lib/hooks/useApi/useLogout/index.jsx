@@ -10,13 +10,13 @@ export const useLogout = (deviceId) => {
 
     const dispatch = useDispatch();
     
-    const { access_token } = useSelector(state => state.user);
+    const { accessToken } = useSelector(state => state.user);
 
     const logout = async (request = {}, errors = {}) => {
         const response = await fetch(`${url}logout`, {
             method: "POST",
             headers: { 
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${accessToken}`,
                 "X-DEVICEID": deviceId
             },
             ...request

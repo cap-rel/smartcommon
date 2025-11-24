@@ -12,7 +12,7 @@ export const useFetchApi = (deviceId) => {
 
     const refreshAccessToken = useRefreshAccessToken(deviceId);
 
-    const { access_token, tokenExpiry } = useSelector(state => state.user);
+    const { accessToken, tokenExpiry } = useSelector(state => state.user);
 
     const fetchApi = async (path, body, request = {}, errors = {}) => {
         // Check if token needs refresh (refresh 5 min before expiry)
@@ -23,7 +23,7 @@ export const useFetchApi = (deviceId) => {
         const response = await fetch(`${url}${path}`, {
             ...request,
             headers: {
-                Authorization: `Bearer ${access_token}`,
+                Authorization: `Bearer ${accessToken}`,
                 "X-DEVICEID": deviceId,
                 Accept: "application/json",
                 "Content-Type": "application/json",

@@ -4,6 +4,20 @@ import { useLibConfig } from "lib/hooks";
 import { setUser } from "lib/global-state";
 import { isFunction } from "lib/utils";
 
+import { apiMap } from "../apiMap";
+
+export const loginMap = data => apiMap({
+    userid:         { key: "id"          , transform: value => Number(value)        },
+    user:           { key: "username"                                               },
+    entity:         { key: "entity"                                                 },
+    access_token:   { key: "accessToken"                                            },
+    refresh_token:  { key: "refreshToken",                                          },
+    expires_in:     { key: "expiresIn"                                              },
+    token_type:     { key: "tokenType"                                              },
+    rememberMe:     { key: "rememberMe"  , transform: value => value ? true : false },
+    devices_choice: { key: "deviceOptions"                                          }
+}, data);
+
 export const useLogin = (deviceId) => {
     const { api } = useLibConfig();
     
@@ -24,6 +38,8 @@ export const useLogin = (deviceId) => {
 
         const data = await response.json() ?? {};
 
+        const mappedData = loginMap(data);
+
         const { ok, status } = response;
         
         if (!ok) {
@@ -36,11 +52,11 @@ export const useLogin = (deviceId) => {
             throw new Error(data);
         }
 
-        const newUser = { ...data, tokenExpiry: Date.now() + (data.expires_in * 1000) };
+        const newUser = { ...mappedData, tokenExpiry: Date.now() + (mappedData.expiresIn * 1000) };
 
         dispatch(setUser(newUser));
 
-        return data;
+        return mappedData;
     };
     
     return login;
