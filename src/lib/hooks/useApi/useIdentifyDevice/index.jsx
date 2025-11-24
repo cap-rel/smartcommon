@@ -22,7 +22,7 @@ export const useIdentifyDevice = (deviceId) => {
             .then(data => {
                 dispatch(updateUser({ ...data, deviceOptions: undefined }));
 
-                if (noUuid) {
+                if (!noUuid) {
                     setLocal("HTTP_X_DEVICEID", uuid);
                 }
             })
