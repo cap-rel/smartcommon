@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { FaUserAstronaut, FaUser, FaGear, FaGears } from "react-icons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 
-import { Block, Button, List, ListItem, LowerNavbarItem, Navbar, Page, PhotosUploader, Popup, Tabbar, TabbarItem } from "lib/components";
+import { Block, Button, Checker, List, ListItem, LowerNavbarItem, Navbar, Page, PhotosUploader, Popup, Tabbar, TabbarItem } from "lib/components";
 
 export const DevPage2 = () => {
     const location = useLocation();
@@ -31,11 +31,11 @@ export const DevPage2 = () => {
         // dispatch(addUser(data));
     };
 
-    const users = useSelector(state => state.users.data);
+    // const users = useSelector(state => state.users.data);
 
-    useEffect(() => {
-        console.log(users);
-    }, [users]);
+    // useEffect(() => {
+    //     console.log(users);
+    // }, [users]);
     
     return (
         <>
@@ -77,6 +77,11 @@ export const DevPage2 = () => {
                 <Button
                     label={"add user"}
                     onClick={handleClick}
+                />
+                <Checker
+                    label="checker"
+                    type="radio"
+                    options={["test", "toast", "bonjour"]}
                 />
                 <List
                     title="Liste des interventions"

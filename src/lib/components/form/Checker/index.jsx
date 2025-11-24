@@ -84,7 +84,7 @@ export const Checker = (props) => {
             {!isEmpty(options) &&
                 <div { ...mergeProps("optionsContainer", props => ({
                     ...props,
-                    className: `flex flex-col divide-y divide-border border border-border`
+                    className: `flex flex-col divide-y divide-border border border-border w-full rounded-app-md`
                 }))}>
                     {options.map((option, OI) => {
                         const optionValue = isObject(option) ? option.value : option;
@@ -94,12 +94,18 @@ export const Checker = (props) => {
                         return (
                             <div key={`option${OI}`} { ...mergeProps("option", props => ({
                                 ...props,
-                                onClick: () => {
+                                onClick: (e) => {
                                     applyFunctionIfFunction(props.onClick, e);
                                     handleOnClick(optionValue);
                                 },
                                 className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft duration-(--really-quick)`
                             }))}>
+                                <div { ...mergeProps("optionLabel", props => ({
+                                    ...props,
+                                    className: `text-strong-text truncate grow`
+                                }))}>
+                                    {optionLabel}
+                                </div>
                                 <input
                                     type={`checkbox`}
                                     onChange={() => {}}
@@ -117,7 +123,6 @@ export const Checker = (props) => {
                                 : type === "radio" ?
                                     <Radio
                                         mergeProps={mergeProps}
-                                        onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                         disabled={disabled}
                                     />
@@ -125,23 +130,15 @@ export const Checker = (props) => {
                                     <Icon
                                         mergeProps={mergeProps}
                                         icon={checkedIcon}
-                                        onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                         disabled={disabled}
                                     />
                                 :   <Checkbox
                                         mergeProps={mergeProps}
-                                        onClick={() => handleOnClick(optionValue)}
                                         checked={checked}
                                         disabled={disabled}
                                     />
                                 }
-                                <div { ...mergeProps("optionLabel", props => ({
-                                    ...props,
-                                    className: `text-strong-text truncate`
-                                }))}>
-                                    {optionLabel}
-                                </div>
                             </div>
                         );
                     })}

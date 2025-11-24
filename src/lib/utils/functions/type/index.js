@@ -212,7 +212,7 @@ export function applyFunctionIfNotNil(value, ...params) {
 }
 
 export function applyFunctionIfFunction(value, ...params) {
-    if (!isFunction(value)) {
+    if (isFunction(value)) {
         return value(params);
     }
 
