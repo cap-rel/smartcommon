@@ -12,7 +12,7 @@ export const refreshAccessTokenMap = data => apiMap({
     refresh_token:  { key: "refreshToken",                                          },
     expires_in:     { key: "expiresIn"                                              },
     token_type:     { key: "tokenType"                                              },
-}, data);
+}, data, true);
 
 export const useRefreshAccessToken = (deviceId) => {
     const { api } = useLibConfig();
@@ -46,9 +46,9 @@ export const useRefreshAccessToken = (deviceId) => {
             // throw new Error(json);
         }
 
-        const { accessToken, refreshToken, expiresIn } = mappedData;
+        const { expiresIn } = mappedData;
 
-        const refreshedUser = { ...user, accessToken, refreshToken, tokenExpiry: Date.now() + (expiresIn * 1000)};
+        const refreshedUser = { ...user, ...mappedData, expiresIn: undefined, tokenExpiry: Date.now() + (expiresIn * 1000)};
         
         dispatch(setUser(refreshedUser));
     };
