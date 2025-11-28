@@ -53,6 +53,7 @@ export const Timer = (props) => {
 
     const inputPropsDependingOnUnit = (key, unit, props) => ({
         ...props,
+        type: "number",
         label: unit.label,
         prefix: `:`,
         suffix: `:`,
