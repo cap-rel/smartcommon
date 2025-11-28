@@ -4,6 +4,7 @@ import { getLocal, isEmpty, setLocal } from "lib/utils";
 import { updateUser } from "lib/global-state";
 
 import { useFetchApi } from "../useFetchApi";
+import { refreshAccessTokenMap } from "../useRefreshAccessToken";
 
 export const useIdentifyDevice = (deviceId) => {
     const dispatch = useDispatch();
@@ -20,7 +21,9 @@ export const useIdentifyDevice = (deviceId) => {
             { label: label || undefined, uuid: noUuid ? getLocal("HTTP_X_DEVICEID") : uuid }
         )
             .then(data => {
-                dispatch(updateUser({ ...data, deviceOptions: undefined }));
+                const mappedData = refreshAccessTokenMap(data);
+                
+                dispatch(updateUser({ ...mappedData, deviceOptions: undefined }));
 
                 if (!noUuid) {
                     setLocal("HTTP_X_DEVICEID", uuid);
