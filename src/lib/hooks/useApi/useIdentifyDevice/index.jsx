@@ -13,12 +13,13 @@ export const useIdentifyDevice = (deviceId) => {
 
     const { deviceOptions } = useSelector(state => state.user);
 
-    const identifyDevice = async ({ label, uuid }) => {
+    const identifyDevice = async ({ label, uuid }, request = {}, errors = {}) => {
         const noUuid = (uuid === "noDevice" || isEmpty(deviceOptions));
 
         return POST(
             "device",
-            { label: label || undefined, uuid: noUuid ? getLocal("HTTP_X_DEVICEID") : uuid }
+            { label: label || undefined, uuid: noUuid ? getLocal("HTTP_X_DEVICEID") : uuid },
+            request
         )
             .then(data => {
                 const mappedData = refreshAccessTokenMap(data);
