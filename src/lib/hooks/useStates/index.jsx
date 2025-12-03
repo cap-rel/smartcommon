@@ -2,7 +2,7 @@ import { useState } from "react";
 import { isPlainObject } from "lodash";
 import { log } from "lib/utils";
 
-export const useStates = (initialStates = {}) => {
+export const useStates = ({ initialStates = {}, debug = true }) => {
   if (!isPlainObject(initialStates)) {
     throw new Error("initialStates must be a plain object.");
   }
@@ -75,7 +75,9 @@ export const useStates = (initialStates = {}) => {
         applyValue(level, lastKey);
       }
 
-      log.state(`SET ${path} =>`, value);
+      if (debug) {
+        log.state(`SET ${path} =>`, value);
+      }
 
       return newState;
     });
@@ -126,13 +128,17 @@ export const useStates = (initialStates = {}) => {
         if (index >= 0 && index < level.length) {
           level.splice(index, 1);
           
-          log.state(`UNSET ${path}`);
+          if (debug) {
+            log.state(`UNSET ${path}`);
+          }
         }
       } else {
         if (last in level) {
-          log.state(`UNSET ${path}`);
-
           delete level[last];
+
+          if (debug) {
+            log.state(`UNSET ${path}`);
+          }
         }
       }
 
