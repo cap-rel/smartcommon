@@ -16,13 +16,6 @@ export const DevPage = () => {
         { to: "/4", label: "Refusées", icon: <FaGear /> }
     ];
 
-    const { states, set } = useStates({
-        init: false,
-        isPopupOpen: false,
-    });
-
-    const { init, isPopupOpen } = states;
-
     const getgps = (value) => {
         return value.map(gpsPoint => Number(gpsPoint));
     };

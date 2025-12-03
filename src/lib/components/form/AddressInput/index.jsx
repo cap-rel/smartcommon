@@ -56,10 +56,12 @@ export const AddressInput = (props) => {
     onChange,
   } = variantProps;
 
-  const { states, set } = useStates({
+  const initialStates = {
     suggestions: [],
     isSearching: false,
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { suggestions, isSearching } = states;
 

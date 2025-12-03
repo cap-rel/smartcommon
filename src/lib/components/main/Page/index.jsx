@@ -111,10 +111,12 @@ export const Page = (props) => {
 
     const pageRef = useRef(null);
 
-    const { states, set } = useStates({
+    const initialStates = {
         tabbarHeight: 0,
         tabbarWidth: 0
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { tabbarHeight, tabbarWidth } = states;
 

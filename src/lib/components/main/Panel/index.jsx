@@ -26,10 +26,12 @@ export const Panel = (props) => {
    
     const panelRef = useRef();
 
-    const { states, set } = useStates({
+    const initialStates = {
         panelHeight: 0,
         panelWidth: 0
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { panelHeight, panelWidth } = states;
 

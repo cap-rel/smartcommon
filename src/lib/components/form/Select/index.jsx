@@ -58,6 +58,10 @@ export const Select = (props) => {
       condition: !isNil(exact) && multiple && currentValue.length !== exact,
       message: `Exactement ${exact} éléments doivent être sélectionnés.`
     },
+    notAnOption: {
+      condition: !isEmpty(currentValue) && !options.includes(currentValue),
+      message: "La valeur sélectionnée ne fait pas partie des options"
+    }
   };
 
   useEffect(() => {

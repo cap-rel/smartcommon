@@ -8,7 +8,7 @@ import { Components } from "./Components";
 import { Radio } from "./Radio";
 
 export const SmartPage = () => {
-    const { states, set } = useStates({
+    const initialStates = {
         hideOnScroll: false,
         tabbarLinkProps: {
             linkProps: {
@@ -25,7 +25,9 @@ export const SmartPage = () => {
             },
         },
         test: {}
-    })
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { hideOnScroll, tabbarLinkProps, test } = states;
     const { linkProps, iconAndLabelContainerProps, iconContainerProps, labelProps } = tabbarLinkProps;

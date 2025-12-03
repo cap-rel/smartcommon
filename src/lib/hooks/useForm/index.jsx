@@ -53,13 +53,15 @@ export const useForm = (form) => {
         }, {});
     }
 
-    const { states, set } = useStates({
-        formValues        : setInitialFormValues(form),
-        selectedTabs      : setInitialSelectedTabs(form),
+    const initialStates = {
+        formValues : setInitialFormValues(form),
+        selectedTabs : setInitialSelectedTabs(form),
         opacityTransitions: {
-                                tabs: setInitialOpacityTransitionsTabs(form)
-                            }
-    });
+            tabs: setInitialOpacityTransitionsTabs(form)
+        }
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     useEffect(() => {
 

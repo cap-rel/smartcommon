@@ -22,10 +22,12 @@ export const Tabbar = (props) => {
 
   const tabbarRef = useRef();
 
-  const { states, set } = useStates({
+  const initialStates = {
     tabbarHeight: 0,
     tabbarWidth: 0
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { tabbarHeight, tabbarWidth } = states;
 

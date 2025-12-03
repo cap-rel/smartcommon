@@ -4,12 +4,6 @@ export const SearchBar = ({
     isOpen = true,
     closeSearchBar = () => {}
 }) => { 
-    const { states, set } = useStates({
-        searchBar: "",
-    });
-
-    const { searchBar } = states;
-
     // useEffect(() => console.log(searchBar), [searchBar]);
 
     const getgps = (value) => {

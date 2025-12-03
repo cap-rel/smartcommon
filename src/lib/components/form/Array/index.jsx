@@ -44,10 +44,12 @@ export const Array = ({
 
   const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps  };
 
-  const { states, set } = useStates({
+  const initialStates = {
     localValue: defaultValue ?? [],
     inputValue: ""
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { inputValue, localValue } = states;
 

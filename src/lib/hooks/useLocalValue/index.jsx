@@ -2,7 +2,8 @@ import { isUndefined } from "lib/utils";
 import { useStates } from "lib/hooks"
 
 export const useLocalValue = (localValue, value, onChange, errors) => {
-    const { states, set } = useStates({ localValue });
+    const initialStates = { localValue };  
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const currentValue = value ?? states.localValue;
 

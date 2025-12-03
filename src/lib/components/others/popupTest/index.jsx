@@ -29,10 +29,12 @@ export const Popup = ({
 
     const { classNames } = variant;
 
-    const { states, set } = useStates({
+    const initialStates = {
         startTouch: null,
         moveTouch: null
-    })
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { startTouch, moveTouch } = states;
 

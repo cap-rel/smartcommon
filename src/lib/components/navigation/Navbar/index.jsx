@@ -29,12 +29,14 @@ export const Navbar = (props) => {
     const navbarRef = useRef();
     const upperNavbarRef = useRef();
 
-    const { states, set } = useStates({
+    const initialStates = {
         navbarHeight: 0,
         navbarWidth: 0,
         upperNavbarHeight: 0,
         upperNavbarWidth: 0
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { navbarHeight, navbarWidth, upperNavbarHeight, upperNavbarWidth } = states;
 

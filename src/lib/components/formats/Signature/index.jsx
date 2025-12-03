@@ -10,9 +10,11 @@ export const Signature = (props) => {
 
     const { signature, signer, coordinates, signedAt } = value;
 
-    const { states, set } = useStates({
+    const initialStates = {
         isPopupOpen: false
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isOpen } = states;
 

@@ -67,9 +67,11 @@ export const Gps = props => {
 
   const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
 
-  const { states, set } = useStates({
+  const initialStates = {
     isLocating: false,
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { isLocating } = states;
 

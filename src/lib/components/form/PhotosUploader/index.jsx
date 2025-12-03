@@ -36,13 +36,15 @@ export const PhotosUploader = (props) => {
 
     const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
-    const { states, set } = useStates({
+    const initialStates = {
         // isPanelOpen: false,
         isInputInCaptureMode: false,
         isPhotoLoading: false,
         isPhotoSelected: false, // from simple photo
         selectedPhotoIndex: null, // for multiple photos
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isPhotoLoading, isPhotoSelected, selectedPhotoIndex } = states;
 

@@ -13,9 +13,9 @@ export const useVariantMerger = (componentKey, props) => {
     // ignoreTheme ?
     // ignorePreviousVariant
 
-    const { states, set } = useStates({
-        params: {}
-    })
+    const initialStates = { params: {} };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { params } = states; 
 

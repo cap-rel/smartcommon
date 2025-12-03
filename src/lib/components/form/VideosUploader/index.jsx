@@ -35,13 +35,15 @@ export const VideosUploader = (props) => {
 
     const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
 
-    const { states, set } = useStates({
+    const initialStates = {
         // isPanelOpen: false,
         isInputInCaptureMode: false,
         isVideoLoading: false,
         isVideoSelected: false, // from simple video
         selectedVideoIndex: null, // for multiple videos
-    });
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isVideoLoading, isVideoSelected, selectedVideoIndex } = states;
 

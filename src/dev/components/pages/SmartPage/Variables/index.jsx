@@ -26,14 +26,16 @@ export const Variables = () => {
         "--color-strongest",
     ]
 
-    const { states, set } = useStates({
+    const initialStates = {
         searchbarContent: "",
         variables: Object.fromEntries(variablesName.map(variableName => [variableName, { default: getVariable(variableName), value: getVariable(variableName) }])),
         searchedVariables: "",
         isVariablesCopied: false,
         isVariablesSaved: false,
         isCopyButtonFocused: false
-    })
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { searchbarContent, variables, searchedVariables, isVariablesCopied, isVariablesSaved, isCopyButtonFocused } = states;
 

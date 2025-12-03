@@ -33,12 +33,14 @@ export const useWindow = () => {
         return window.matchMedia("(prefers-color-scheme: dark)").matches
     };
 
-    const { states, set } = useStates({
+    const initialStates = {
         orientation: getOrientation(),
         windowDimension: getWindowDimension(),
         scroll: getScroll(),
         darkMode: getDarkMode(),
-    })
+    };
+
+    const { states, set } = useStates({ initialStates, debug: false });
   
     const handleResize = () => {
         set("orientation", getOrientation());

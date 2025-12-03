@@ -49,10 +49,12 @@ export const Input = (props) => {
     onError = () => {}
   } = variantProps;
 
-  const { states, set } = useStates({
+  const initialStates = {
     isPasswordVisible: false,
     // isCopied: false
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { isPasswordVisible } = states; // isCopied
 

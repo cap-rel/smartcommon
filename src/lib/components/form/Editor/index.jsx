@@ -45,10 +45,12 @@ export const Editor = ({
 
   const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...textareaPsForLabel };
 
-  const { states, set } = useStates({
+  const initialStates = {
     localValue: defaultValue ?? "",
     isViewMode: false
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { localValue, isViewMode } = states;
 

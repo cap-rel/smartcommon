@@ -28,9 +28,11 @@ export const SignaturePad = (props) => {
 
   const { currentValue, setValue } = useLocalValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange);
 
-  const { states, set } = useStates({
+  const initialStates = {
     isSignatureValidated: false
-  });
+  };
+
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { isSignatureValidated } = states;
 

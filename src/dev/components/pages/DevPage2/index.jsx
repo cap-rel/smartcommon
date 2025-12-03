@@ -70,25 +70,26 @@ export const DevPage2 = () => {
                         onClick: () => setIsPanelOpen(true)
                     }}
                 />
-                <PhotosUploader 
-                    value={photos}
-                    onChange={value => setPhotos(value)}
-                />
-                <Button
-                    label={"add user"}
-                    onClick={handleClick}
-                />
-                <Checker
-                    label="checker"
-                    type="radio"
-                    options={["test", "toast", "bonjour"]}
-                />
                 <List
                     title="Liste des interventions"
                     sortProps={"bojuour"}
                 >
                     <ListItem title="bonjour"/>
                 </List>
+                <PhotosUploader 
+                    label="Photos"
+                    value={photos}
+                    onChange={value => setPhotos(value)}
+                />
+                {/* <Button
+                    label={"add user"}
+                    onClick={handleClick}
+                /> */}
+                <Checker
+                    label="checker"
+                    type="radio"
+                    options={["test", "toast", "bonjour"]}
+                />
                 <Block title={"Interventions à faire"}>
                     <Link to={"/"}>
                         Bonjour
