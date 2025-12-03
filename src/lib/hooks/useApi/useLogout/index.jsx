@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLibConfig } from "lib/hooks";
 import { unsetUser } from "lib/global-state";
 import { log } from "lib/utils";
+import { toString } from "lodash";
 
 export const useLogout = (deviceId) => {
     const { api } = useLibConfig();
@@ -34,12 +35,12 @@ export const useLogout = (deviceId) => {
             errorAction();
           }
 
-          log.apiError(`POST - ${status.toUpperCase()}`, `${url}logout => ${status}`, data.message);
+          log.apiError(`POST - ${toString(status).toUpperCase()}`, `${url}logout => ${status}`, data.message);
         
         //   throw new Error(json);
         }
 
-        log.apiSuccess(`POST - ${status.toUpperCase()}`, `${url}logout => ${status}`);
+        log.apiSuccess(`POST - ${toString(status).toUpperCase()}`, `${url}logout => ${status}`);
 
         dispatch(unsetUser());
 

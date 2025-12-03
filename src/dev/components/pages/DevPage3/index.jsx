@@ -35,12 +35,12 @@ export const DevPage3 = () => {
     // }, [states]);
 
     const test = () => {
-        // login({ email: "jeangeorges", password: "MoN4fPrxUbU5", rememberMe: true })
-        //     .then(json => {
-        //         const data = json?.data ?? {};
+        login({ email: "jeangeorges", password: "MoN4fPrxUbU5", rememberMe: true })
+            .then(json => {
+                const data = json?.data ?? {};
 
-        //         console.log(data);
-        //     })
+                console.log(data);
+            })
         set("email", "paolo");
     };
 
@@ -49,7 +49,7 @@ export const DevPage3 = () => {
             <button onClick={() => set("email", "paolo")}>email test</button>
             <button onClick={() => set("loginData.email", "paolo")}>email</button>
             <button onClick={() => set("loginData.test[3].test", { test: "bonjour" })}>mot de passe</button>
-            <button onClick={() => set("loginData.test")}>connexion</button>
+            <button onClick={() => test()}>connexion</button>
         </div>
     );
 };

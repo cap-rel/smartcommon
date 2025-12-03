@@ -5,6 +5,7 @@ import { setUser } from "lib/global-state";
 import { isFunction, log } from "lib/utils";
 
 import { apiMap } from "../apiMap";
+import { toString } from "lodash";
 
 export const loginMap = data => apiMap({
     userid:         { key: "id"          , transform: value => Number(value)        },
@@ -49,12 +50,12 @@ export const useLogin = (deviceId) => {
                 errorAction();
             }
 
-            log.apiError(`POST${status ? status?.toUpperCase(): ""}`, `${url}login`, data.message);
+            log.apiError(`POST - ${toString(status).toUpperCase()}`, `${url}login`, data.message);
             
             throw new Error(data);
         }
 
-        log.apiSuccess(`POST${status ? status?.toUpperCase(): ""}`, `${url}login`);
+        log.apiSuccess(`POST - ${toString(status).toUpperCase()}`, `${url}login`);
 
         const newUser = { ...mappedData, tokenExpiry: Date.now() + (mappedData.expiresIn * 1000) };
 

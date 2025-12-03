@@ -4,6 +4,7 @@ import { useLibConfig } from "lib/hooks";
 
 import { useRefreshAccessToken } from "../useRefreshAccessToken";
 import { isFunction, log } from "lib/utils";
+import { toString } from "lodash";
 
 export const useFetchApi = (deviceId) => {
     const { api } = useLibConfig();
@@ -48,12 +49,12 @@ export const useFetchApi = (deviceId) => {
                 errorAction();
             }
 
-            log.apiError(`${request.method}${status ? status?.toUpperCase(): ""}`, `${url}${path}`, data.message);
+            log.apiError(`${request.method} - ${toString(status).toUpperCase()}`, `${url}${path}`, data.message);
             
             throw new Error(data);
         }
 
-        log.apiSuccess(`${request.method}${status ? status?.toUpperCase(): ""}`, `${url}${path}`);
+        log.apiSuccess(`${request.method} - ${toString(status).toUpperCase()}`, `${url}${path}`);
 
         return data;
     };

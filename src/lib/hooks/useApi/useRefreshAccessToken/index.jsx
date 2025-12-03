@@ -7,6 +7,7 @@ import { useLogout } from "../useLogout";
 
 import { apiMap } from "../apiMap";
 import { log } from "lib/utils";
+import { toString } from "lodash";
 
 export const refreshAccessTokenMap = data => apiMap({
     access_token:   { key: "accessToken"                                            },
@@ -46,12 +47,12 @@ export const useRefreshAccessToken = (deviceId) => {
         if (!ok) {
             await logout();
 
-            log.apiError(`GET${status ? status?.toUpperCase(): ""}`, `${url}refresh`, data.message);
+            log.apiError(`GET - ${toString(status).toUpperCase()}`, `${url}refresh`, data.message);
             throw new Error('Session expired. Please login again.');
             // throw new Error(json);
         }
 
-        log.apiSuccess(`GET${status ? status?.toUpperCase(): ""}`, `${url}refresh`, data.message);
+        log.apiSuccess(`GET - ${toString(status).toUpperCase()}`, `${url}refresh`, data.message);
 
         const { expiresIn } = mappedData;
 
