@@ -35,12 +35,12 @@ export const useLogout = (deviceId) => {
             errorAction();
           }
 
-          log.apiError(`POST - ${toString(status).toUpperCase()}`, `${url}logout => ${status}`, data.message);
+          log.apiError(`POST - ${toString(status).toUpperCase()}`, `${url}logout`, data.message);
         
         //   throw new Error(json);
         }
 
-        log.apiSuccess(`POST - ${toString(status).toUpperCase()}`, `${url}logout => ${status}`);
+        log.apiSuccess(`POST - ${toString(status).toUpperCase()}`, `${url}logout`);
 
         dispatch(unsetUser());
 
