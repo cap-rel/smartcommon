@@ -1,18 +1,18 @@
 import { useEffect } from "react";
-import { constant, forEach, isFunction, mapValues, toArray, toString } from "lodash";
+import { constant, forEach, isFunction, mapValues, reduce, toArray, toString } from "lodash";
 
 import { useStates } from "lib/hooks";
 import { log } from "lib/utils";
 
 export const useEffects = (effects) => {
-    const { states, set } = useStates(mapValues(effects, constant(1)));
+    const { states, set } = useStates({ initialValues: mapValues(effects, constant(1)), debug: false });
 
     forEach(effects, ({ deps, effect = () => {} }, key) => {
         if (isFunction(effect)) {
             deps = toArray(deps);
 
             useEffect(() => {
-                log.effect(`(${states[key]}) ${key} [${toString(deps)}]`);
+                log.effect(`${key} (${states[key]})`);
                 set(key, states[key] + 1);
                 effect();
             }, deps);
