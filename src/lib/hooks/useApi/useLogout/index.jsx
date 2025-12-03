@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { useLibConfig } from "lib/hooks";
 import { unsetUser } from "lib/global-state";
+import { log } from "lib/utils";
 
 export const useLogout = (deviceId) => {
     const { api } = useLibConfig();

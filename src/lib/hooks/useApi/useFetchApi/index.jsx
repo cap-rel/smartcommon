@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLibConfig } from "lib/hooks";
 
 import { useRefreshAccessToken } from "../useRefreshAccessToken";
-import { isFunction } from "lib/utils";
+import { isFunction, log } from "lib/utils";
 
 export const useFetchApi = (deviceId) => {
     const { api } = useLibConfig();

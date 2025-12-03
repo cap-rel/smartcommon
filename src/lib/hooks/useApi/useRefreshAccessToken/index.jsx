@@ -6,6 +6,7 @@ import { setUser } from "lib/global-state";
 import { useLogout } from "../useLogout";
 
 import { apiMap } from "../apiMap";
+import { log } from "lib/utils";
 
 export const refreshAccessTokenMap = data => apiMap({
     access_token:   { key: "accessToken"                                            },
