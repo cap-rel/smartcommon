@@ -2,7 +2,7 @@ import { useDispatch } from "react-redux";
 
 import { useLibConfig } from "lib/hooks";
 import { setUser } from "lib/global-state";
-import { isFunction } from "lib/utils";
+import { isFunction, log } from "lib/utils";
 
 import { apiMap } from "../apiMap";
 
@@ -48,9 +48,13 @@ export const useLogin = (deviceId) => {
             if (isFunction(errorAction)) {
                 errorAction();
             }
+
+            log.apiError(status, `${url}login ${data.message}`);
             
             throw new Error(data);
         }
+
+        log.apiSuccess(status, `${url}login`);
 
         const newUser = { ...mappedData, tokenExpiry: Date.now() + (mappedData.expiresIn * 1000) };
 
