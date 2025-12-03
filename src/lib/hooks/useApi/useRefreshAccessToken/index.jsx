@@ -40,11 +40,17 @@ export const useRefreshAccessToken = (deviceId) => {
 
         const mappedData = refreshAccessTokenMap(data);
 
-        if (!response.ok) {
+        const { ok, status } = response;
+
+        if (!ok) {
             await logout();
+
+            log.apiError(`GET - ${status.toUpperCase()}`, `${url}refresh`, data.message);
             throw new Error('Session expired. Please login again.');
             // throw new Error(json);
         }
+
+        log.apiSuccess(`GET - ${status.toUpperCase()}`, `${url}refresh`, data.message);
 
         const { expiresIn } = mappedData;
 

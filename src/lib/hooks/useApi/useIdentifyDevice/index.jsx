@@ -29,9 +29,7 @@ export const useIdentifyDevice = (deviceId) => {
                 if (!noUuid) {
                     setLocal("HTTP_X_DEVICEID", uuid);
                 }
-            })
-            .catch(err => console.error(err));
-
+            });
     };
 
     return identifyDevice;

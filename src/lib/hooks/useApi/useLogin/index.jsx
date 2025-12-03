@@ -49,12 +49,12 @@ export const useLogin = (deviceId) => {
                 errorAction();
             }
 
-            log.apiError(status, `${url}login ${data.message}`);
+            log.apiError(`POST - ${status.toUpperCase()}`, `${url}login`, data.message);
             
             throw new Error(data);
         }
 
-        log.apiSuccess(status, `${url}login`);
+        log.apiSuccess(`POST - ${status.toUpperCase()}`, `${url}login`);
 
         const newUser = { ...mappedData, tokenExpiry: Date.now() + (mappedData.expiresIn * 1000) };
 

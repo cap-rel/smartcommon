@@ -24,17 +24,21 @@ export const useLogout = (deviceId) => {
 
         const data = await response.json();
 
-        // const { ok, status } = response;
+        const { ok, status } = response;
         
-        // if (!ok) {
-        //   const errorAction = errors[status] ?? apiErrors[status];
+        if (!ok) {
+          const errorAction = errors[status] ?? apiErrors[status];
         
-        //   if (isFunction(errorAction)) {
-        //     errorAction();
-        //   }
+          if (isFunction(errorAction)) {
+            errorAction();
+          }
+
+          log.apiError(`POST - ${status.toUpperCase()}`, `${url}logout => ${status}`, data.message);
         
         //   throw new Error(json);
-        // }
+        }
+
+        log.apiSuccess(`POST - ${status.toUpperCase()}`, `${url}logout => ${status}`);
 
         dispatch(unsetUser());
 
