@@ -20,5 +20,5 @@ export const useEffects = (effects) => {
         }
     });
 
-    return { states };
+    return { activations: states };
 };
