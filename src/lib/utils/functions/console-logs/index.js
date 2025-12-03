@@ -4,6 +4,7 @@ const logCustom = (status, color, ...messages) => Log.custom(status,`background-
 
 export const log = {
     state: (...messages) => logCustom("STATE", "blue", ...messages),
+    globalState: (...messages) => logCustom("GLOBAL STATE", "darkcyan", ...messages),
     effect: (...messages) => logCustom("EFFECT", "purple", ...messages),
     error: (...messages) => logCustom("ERROR", "red", ...messages),
     success: (...messages) => logCustom("SUCCESS", "green", ...messages),
@@ -12,4 +13,6 @@ export const log = {
     custom: (status, color, ...messages) => logCustom(status, color, ...messages),
     apiError: (status, ...messages) => logCustom(status, "red", ...messages),
     apiSuccess: (status, ...messages) => logCustom(status, "green", ...messages),
+    location: (...messages) => logCustom("LOCATION", "mediumvioletred"),
+    page: (...messages) => logCustom("PAGE", "darkorange", ...messages),
 };
