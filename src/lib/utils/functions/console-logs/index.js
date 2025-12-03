@@ -1,15 +1,15 @@
 import { Log } from "nice-logs";
 
-const logCustom = (status, color, message) => Log.custom(status,`background-color: ${color}; color: white; padding: 5px; border-radius: 9px; font-weight: bold;`, true, message)
+const logCustom = (status, color, ...messages) => Log.custom(status,`background-color: ${color}; color: white; padding: 0px 5px; border-radius: 999px; font-weight: bold;`, true, ...messages)
 
 export const log = {
-    state: (message) => logCustom("STATE", "blue", message),
-    effect: (message) => logCustom("EFFECT", "purple", message),
-    error: (message) => logCustom("ERROR", "red", message),
-    success: (message) => logCustom("SUCCESS", "green", message),
-    warning: (message) => logCustom("WARNING", "goldenrod", message),
-    info: (message) => logCustom("INFO", "grey", message),
-    custom: (status, color, message) => logCustom(status, color, message),
-    apiError: (status, message) => logCustom(status, "red", message),
-    apiSuccess: (status, message) => logCustom(status, "green", message),
+    state: (...messages) => logCustom("STATE", "blue", ...messages),
+    effect: (...messages) => logCustom("EFFECT", "purple", ...messages),
+    error: (...messages) => logCustom("ERROR", "red", ...messages),
+    success: (...messages) => logCustom("SUCCESS", "green", ...messages),
+    warning: (...messages) => logCustom("WARNING", "goldenrod", ...messages),
+    info: (...messages) => logCustom("INFO", "grey", ...messages),
+    custom: (status, color, ...messages) => logCustom(status, color, ...messages),
+    apiError: (status, ...messages) => logCustom(status, "red", ...messages),
+    apiSuccess: (status, ...messages) => logCustom(status, "green", ...messages),
 };
