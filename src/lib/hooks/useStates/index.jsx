@@ -97,44 +97,44 @@ export const useStates = (initialStates = {}) => {
   //   });
   // };
 
-const unset = (path) => {
-  setStates(prev => {
-    const newState = structuredClone(prev);
+// const unset = (path) => {
+//   setStates(prev => {
+//     const newState = structuredClone(prev);
 
-    const keys = path
-      .replace(/\[(\d+)\]/g, ".$1") // items[2] → items.2
-      .split(".")
-      .filter(Boolean);
+//     const keys = path
+//       .replace(/\[(\d+)\]/g, ".$1") // items[2] → items.2
+//       .split(".")
+//       .filter(Boolean);
 
-    let level = newState;
+//     let level = newState;
 
-    for (let i = 0; i < keys.length - 1; i++) {
-      const key = keys[i];
+//     for (let i = 0; i < keys.length - 1; i++) {
+//       const key = keys[i];
 
-      if (!(key in level) || level[key] == null) {
-        // le chemin n'existe pas → rien à faire
-        return newState;
-      }
+//       if (!(key in level) || level[key] == null) {
+//         // le chemin n'existe pas → rien à faire
+//         return newState;
+//       }
 
-      level = level[key];
-    }
+//       level = level[key];
+//     }
 
-    const lastKey = keys[keys.length - 1];
+//     const lastKey = keys[keys.length - 1];
 
-    // si c'est un index de tableau
-    if (Array.isArray(level) && /^\d+$/.test(lastKey)) {
-      const index = Number(lastKey);
-      if (index >= 0 && index < level.length) {
-        level.splice(index, 1);
-      }
-    } else {
-      // sinon suppression d'une clé d'objet
-      delete level[lastKey];
-    }
+//     // si c'est un index de tableau
+//     if (Array.isArray(level) && /^\d+$/.test(lastKey)) {
+//       const index = Number(lastKey);
+//       if (index >= 0 && index < level.length) {
+//         level.splice(index, 1);
+//       }
+//     } else {
+//       // sinon suppression d'une clé d'objet
+//       delete level[lastKey];
+//     }
 
-    return newState;
-  });
-};
+//     return newState;
+//   });
+// };
 
 // const set = (path, value) => {
 //   setStates(prev => {
@@ -298,9 +298,83 @@ const set = (path, value) => {
     });
   };
 
+  const parsePath = (path) => {
+    const parts = [];
+    path.split(".").forEach(segment => {
+      const regex = /([\w-]+)|\[(\d*)\]/g;
+      let match;
+      while ((match = regex.exec(segment)) !== null) {
+        if (match[1]) {
+          parts.push(match[1]);
+        } else if (match[2] === "") {
+          parts.push("__PUSH__");   // utilisé seulement dans set
+        } else {
+          parts.push(match[2]);     // index numérique
+        }
+      }
+    });
+    return parts;
+  };
+
+  const get = (path, root = states) => {
+    const parts = parsePath(path);
+
+    let level = root;
+
+    for (const part of parts) {
+      if (part === "__PUSH__") {
+        // get([]) n’a aucun sens → undefined
+        return undefined;
+      }
+
+      if (level == null) return undefined;
+      if (!(part in level)) return undefined;
+
+      level = level[part];
+    }
+
+    return level;
+  };
+
+  const unset = (path) => {
+    setStates(prev => {
+      const newState = structuredClone(prev);
+      const parts = parsePath(path);
+
+      const last = parts.pop();
+      let level = newState;
+
+      for (const part of parts) {
+        if (part === "__PUSH__") {
+          return newState; // impossible d’unset[] → on ignore
+        }
+        if (!(part in level)) {
+          return newState; // rien à faire
+        }
+        level = level[part];
+        if (level == null) return newState;
+      }
+
+      // Suppression finale
+      if (Array.isArray(level) && /^\d+$/.test(last)) {
+        // suppression dans tableau : remove index
+        const index = Number(last);
+        if (index >= 0 && index < level.length) {
+          level.splice(index, 1);
+        }
+      } else {
+        // suppression dans objet
+        delete level[last];
+      }
+
+      return newState;
+    });
+  };
+
   return {
     states,
     set,
-    unset
+    unset,
+    get
   };
 };
