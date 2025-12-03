@@ -48,12 +48,12 @@ export const useFetchApi = (deviceId) => {
                 errorAction();
             }
 
-            log.apiError(`${request.method} - ${status.toUpperCase()}`, `${url}${path}`, data.message);
+            log.apiError(`${request.method}${status ? status?.toUpperCase(): ""}`, `${url}${path}`, data.message);
             
             throw new Error(data);
         }
 
-        log.apiSuccess(`${request.method} - ${status.toUpperCase()}`, `${url}${path}`);
+        log.apiSuccess(`${request.method}${status ? status?.toUpperCase(): ""}`, `${url}${path}`);
 
         return data;
     };
