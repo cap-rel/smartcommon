@@ -21,8 +21,8 @@ import { useState } from "react";
 
 // TODO Fixer le bug quand deux même string se suivent (ex: "test.test")
 
-export const useStates = (initialValues) => {
-  const [states, setStates] = useState(initialValues);
+export const useStates = (initialStates) => {
+  const [states, setStates] = useState(initialStates);
 
   // let match = keys[i].match(/(\w+)\[(\d+)\]$/);
   // if (match) {
@@ -30,9 +30,9 @@ export const useStates = (initialValues) => {
   // } else {
   //   level = level[keys[i]];
   // }
-  // level[keys[keys.length - 1]] = value;
+  // level[keys[keys.length - 1]] = state;
 
-  const set = (path, value) => {
+  const set = (path, state) => {
     setStates(prevState => {
       const newState = { ...prevState };
       const keys = path.split(".");
@@ -79,11 +79,11 @@ export const useStates = (initialValues) => {
                 level[tab[i]] = [...level[tab[i]]];
                 level = level[tab[i]];
               } else {
-                level[tab[i]] = value;
+                level[tab[i]] = state;
               }
             }
           } else {
-            level[key] = value;
+            level[key] = state;
           }
         }
       });
