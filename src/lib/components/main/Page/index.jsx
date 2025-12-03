@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 import { useStates, useVariantMerger } from "lib/hooks";
-import { navigatorInfo } from "lib/utils";
+import { log, navigatorInfo } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -121,6 +121,7 @@ export const Page = (props) => {
     const { tabbarHeight, tabbarWidth } = states;
 
     useEffect(() => {
+        log.page(id);
         const tabbar = pageRef?.current?.querySelector("[data-component='Tabbar']");
         set("tabbarHeight", tabbar?.offsetHeight);
         set("tabbarWidth", tabbar?.offsetWidth);
