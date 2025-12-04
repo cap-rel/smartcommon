@@ -3,7 +3,7 @@ import { useStates } from "lib/hooks"
 
 export const useLocalValue = (localValue, value, onChange, errors) => {
     const initialStates = { localValue };  
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     const currentValue = value ?? states.localValue;
 

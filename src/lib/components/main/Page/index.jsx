@@ -116,7 +116,7 @@ export const Page = (props) => {
         tabbarWidth: 0
     };
 
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     const { tabbarHeight, tabbarWidth } = states;
 

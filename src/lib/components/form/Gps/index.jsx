@@ -71,7 +71,7 @@ export const Gps = props => {
     isLocating: false,
   };
 
-  const { states, set } = useStates({ initialStates, debug: false });
+  const { states, set } = useStates({ initialStates });
 
   const { isLocating } = states;
 

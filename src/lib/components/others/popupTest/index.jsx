@@ -34,7 +34,7 @@ export const Popup = ({
         moveTouch: null
     };
 
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     const { startTouch, moveTouch } = states;
 

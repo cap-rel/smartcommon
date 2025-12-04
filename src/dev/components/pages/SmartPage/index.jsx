@@ -27,7 +27,7 @@ export const SmartPage = () => {
         test: {}
     };
 
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     const { hideOnScroll, tabbarLinkProps, test } = states;
     const { linkProps, iconAndLabelContainerProps, iconContainerProps, labelProps } = tabbarLinkProps;

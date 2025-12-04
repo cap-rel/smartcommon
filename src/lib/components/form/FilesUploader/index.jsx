@@ -64,7 +64,7 @@ export const FilesUploader = ({
         isFileLoading: false
     };
 
-    const { states, set } = useStates({ initialStates, debug: false }); 
+    const { states, set } = useStates({ initialStates }); 
 
     const { selectedFileId, isFileSelected, localValue, isFileLoading } = states;
 

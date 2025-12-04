@@ -54,7 +54,7 @@ export const Input = (props) => {
     // isCopied: false
   };
 
-  const { states, set } = useStates({ initialStates, debug: false });
+  const { states, set } = useStates({ initialStates });
 
   const { isPasswordVisible } = states; // isCopied
 

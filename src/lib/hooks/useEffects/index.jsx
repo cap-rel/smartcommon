@@ -6,7 +6,7 @@ import { log } from "lib/utils";
 
 export const useEffects = (effects) => {
     const initialStates = mapValues(effects, constant(1));
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     forEach(effects, ({ deps, effect = () => {} }, key) => {
         if (isFunction(effect)) {

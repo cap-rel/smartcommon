@@ -61,7 +61,7 @@ export const AddressInput = (props) => {
     isSearching: false,
   };
 
-  const { states, set } = useStates({ initialStates, debug: false });
+  const { states, set } = useStates({ initialStates });
 
   const { suggestions, isSearching } = states;
 

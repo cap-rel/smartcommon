@@ -50,7 +50,7 @@ export const Editor = ({
     isViewMode: false
   };
 
-  const { states, set } = useStates({ initialStates, debug: false });
+  const { states, set } = useStates({ initialStates });
 
   const { localValue, isViewMode } = states;
 

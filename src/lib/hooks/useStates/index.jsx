@@ -2,7 +2,7 @@ import { useState } from "react";
 import { isNil, isPlainObject } from "lodash";
 import { log } from "lib/utils";
 
-export const useStates = ({ initialStates = {}, debug = true }) => {
+export const useStates = ({ initialStates = {}, debug = false }) => {
   if (!isPlainObject(initialStates)) {
     throw new Error("initialStates must be a plain object.");
   }

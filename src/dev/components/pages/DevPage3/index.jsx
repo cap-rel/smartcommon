@@ -19,7 +19,7 @@ export const DevPage3 = () => {
         isLoggingIn: false
     };
 
-    const { states, set, unset, get } = useStates({ initialStates, debug: false }); 
+    const { states, set, unset, get } = useStates({ initialStates });
 
     const { isLoggingIn } = states;
 

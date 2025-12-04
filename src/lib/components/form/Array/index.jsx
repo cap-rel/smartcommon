@@ -49,7 +49,7 @@ export const Array = ({
     inputValue: ""
   };
 
-  const { states, set } = useStates({ initialStates, debug: false });
+  const { states, set } = useStates({ initialStates });
 
   const { inputValue, localValue } = states;
 

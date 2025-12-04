@@ -35,7 +35,7 @@ export const Variables = () => {
         isCopyButtonFocused: false
     };
 
-    const { states, set } = useStates({ initialStates, debug: false });
+    const { states, set } = useStates({ initialStates });
 
     const { searchbarContent, variables, searchedVariables, isVariablesCopied, isVariablesSaved, isCopyButtonFocused } = states;
 
