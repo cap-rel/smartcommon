@@ -34,21 +34,19 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates, debug = fa
     setSession("global", session);
 
     if (storage === "local") {
-      const local2 = getLocal("global") ?? {}; 
       if (debug) {
         log.globalState(`SET LOCAL ${path} =>`, value);
       }
 
-      return setLocal("global", { ...local2, [path]: value });
+      return setLocal("global", { ...getLocal("global"), [path]: value });
     } 
 
     if (storage === "session") {
-      const session2 = getSession("global") ?? {}; 
       if (debug) {
         log.globalState(`SET SESSION ${path} =>`, value);
       }
 
-      return setSession("global", { ...session2, [path]: value });
+      return setSession("global", { ...getSession("global"), [path]: value });
     }
 
     if (debug) {
