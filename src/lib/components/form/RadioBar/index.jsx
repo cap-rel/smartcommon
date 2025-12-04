@@ -25,15 +25,6 @@ export const RadioBar = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
-
-    const handleOnClick = (optionValue) => {
-        if (!disabled && !readOnly) {    
-            let newValue = currentValue === optionValue ? "" : optionValue;
-            setValue(newValue);
-        }
-    };
-
     const errors = {
         required: { 
             condition: required && isEmpty(currentValue),
@@ -41,9 +32,14 @@ export const RadioBar = (props) => {
         },
     };
 
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange, errors, onError, id);
+
+    const handleOnClick = (optionValue) => {
+        if (!disabled && !readOnly) {    
+            let newValue = currentValue === optionValue ? "" : optionValue;
+            setValue(newValue);
+        }
+    };
 
     return (
         <Label 

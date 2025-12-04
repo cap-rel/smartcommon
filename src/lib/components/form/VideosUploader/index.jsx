@@ -33,7 +33,26 @@ export const VideosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez enregistrer au moins 1 vidéo."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez prendre ${min} vidéos minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez prendre exactement ${exact} vidéos.`
+        },
+    };
+
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 
     const initialStates = {
         // isPanelOpen: false,
@@ -138,29 +157,6 @@ export const VideosUploader = (props) => {
             set("isVideoSelected", false);
         }
     };
-    
-    const errors = {
-        required: { 
-            condition: required && isEmpty(currentValue),
-            message: "Vous devez enregistrer au moins 1 vidéo."
-        },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
-            message: `Vous devez prendre ${min} vidéos minimum.`
-        },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
-            message: `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`
-        },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
-            message: `Vous devez prendre exactement ${exact} vidéos.`
-        },
-    };
-
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
 
     const Video = (video, index) => {
         return (

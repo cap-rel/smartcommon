@@ -51,9 +51,11 @@ export const AddressInput = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("AddressInput", props);
 
   const { 
+    id,
     defaultValue,
     value,
     onChange,
+    onError
   } = variantProps;
 
   const initialStates = {
@@ -65,7 +67,9 @@ export const AddressInput = (props) => {
 
   const { suggestions, isSearching } = states;
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
+  const errors = {};
+  
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange, errors, onError, id);
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
@@ -111,8 +115,6 @@ export const AddressInput = (props) => {
     setValue(newValue)
     set("suggestions", []);
   };
-
-  const errors = {};
 
   return (
     <Label

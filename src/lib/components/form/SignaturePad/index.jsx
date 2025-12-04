@@ -26,7 +26,14 @@ export const SignaturePad = (props) => {
     onError = () => {},
   } = variantProps; 
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange);
+  const errors = {
+    required: { 
+      condition: required && isEmpty(currentValue.src),
+      message: "Ce champ est requis." 
+    },
+  };
+
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange, errors, onError, id);
 
   const initialStates = {
     isSignatureValidated: false
@@ -80,17 +87,6 @@ export const SignaturePad = (props) => {
     padRef.current.clear();
     setValue({ ...currentValue, src: "" });
   };
-
-  const errors = {
-    required: { 
-      condition: required && isEmpty(currentValue.src),
-      message: "Ce champ est requis." 
-    },
-  };
-
-  useEffect(() => {
-    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-  }, [currentValue]);
 
   return (
     <Label 

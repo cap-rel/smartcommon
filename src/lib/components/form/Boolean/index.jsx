@@ -31,14 +31,6 @@ export const Boolean = (props) => {
     //     labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
     // }
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? false, value, onChange);
-
-    const handleOnClick = () => {
-        if (!disabled && !readOnly) {
-            setValue(!currentValue);
-        }
-    };
-
     const errors = {
         required: { 
             condition: required && !currentValue,
@@ -46,9 +38,13 @@ export const Boolean = (props) => {
         }
     };
 
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? false, value, onChange, errors, onError, id);
+
+    const handleOnClick = () => {
+        if (!disabled && !readOnly) {
+            setValue(!currentValue);
+        }
+    };
 
     return (
         <Label 

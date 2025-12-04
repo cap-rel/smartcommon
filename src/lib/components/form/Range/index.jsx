@@ -29,15 +29,6 @@ export const Range = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
-
-    const handleColorOnChange = (e) => {
-        if (!disabled && !readOnly) {
-            const newValue = e.target.value;
-            setValue(newValue);
-        }
-    };
-
     const errors = {
         required: {
             condition: required && isEmpty(currentValue),
@@ -53,9 +44,14 @@ export const Range = (props) => {
         },
     };
 
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+
+    const handleColorOnChange = (e) => {
+        if (!disabled && !readOnly) {
+            const newValue = e.target.value;
+            setValue(newValue);
+        }
+    };
 
     return (
         <Label 

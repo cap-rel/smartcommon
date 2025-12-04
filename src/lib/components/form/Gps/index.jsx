@@ -65,7 +65,14 @@ export const Gps = props => {
     onError = () => {},
   } = variantProps;
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
+  const errors = {
+    required: { 
+      condition: required && isEmpty(currentValue),
+      message: "Vous devez géolocaliser."
+    },
+  };
+
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
 
   const initialStates = {
     isLocating: false,
@@ -110,17 +117,6 @@ export const Gps = props => {
 
     setValue(newValue);
   };
-
-  const errors = {
-    required: { 
-      condition: required && isEmpty(currentValue),
-      message: "Vous devez géolocaliser."
-    },
-  };
-
-  useEffect(() => {
-    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-  }, [currentValue]);
 
   // const gps = (gpsPoints, index) => {
   //   return (

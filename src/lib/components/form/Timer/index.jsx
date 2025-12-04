@@ -26,7 +26,22 @@ export const Timer = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? 0, value, onChange);
+    const errors = {
+        required: {
+            condition: required && currentValue == 0,
+            message: "Ce champ est requis." 
+        },
+        min: {
+            condition: !isNil(min) && currentValue < min,
+            message: `La durée doit être de ${formatDuration(min)} au minimum.`
+        },
+        max: {
+            condition: !isNil(max) && currentValue > max,
+            message: `La valeur doit être de ${formatDuration(max)} au maximum.`
+        },
+    };
+
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? 0, value, onChange, errors, onError, id);
 
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },
@@ -68,25 +83,6 @@ export const Timer = (props) => {
         prefixProps: { ...props.prefixProps, className: "opacity-0" },
         suffixProps: { ...props.suffixProps, className: `${(key === "seconds" || key === "days") && "opacity-0"}` },
     });
-
-    const errors = {
-        required: {
-            condition: required && currentValue == 0,
-            message: "Ce champ est requis." 
-        },
-        min: {
-            condition: !isNil(min) && currentValue < min,
-            message: `La durée doit être de ${formatDuration(min)} au minimum.`
-        },
-        max: {
-            condition: !isNil(max) && currentValue > max,
-            message: `La valeur doit être de ${formatDuration(max)} au maximum.`
-        },
-    };
-
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
 
     return (
         <Label 

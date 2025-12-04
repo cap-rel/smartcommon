@@ -36,22 +36,6 @@ export const Checker = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
-
-    const handleOnClick = (optionValue) => {
-        if (!disabled && !readOnly) {
-            let newValue;
-
-            if (multiple) {
-                newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
-            } else {
-                newValue = currentValue === optionValue ? "" : optionValue;
-            }
-
-            setValue(newValue);
-        }
-    };
-
     const errors = {
         required: { 
             condition: required && isEmpty(currentValue),
@@ -71,9 +55,21 @@ export const Checker = (props) => {
         },
     };
 
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+
+    const handleOnClick = (optionValue) => {
+        if (!disabled && !readOnly) {
+            let newValue;
+
+            if (multiple) {
+                newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
+            } else {
+                newValue = currentValue === optionValue ? "" : optionValue;
+            }
+
+            setValue(newValue);
+        }
+    };
 
     return (
         <Label 

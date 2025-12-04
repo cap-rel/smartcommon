@@ -34,14 +34,6 @@ export const Textarea = (props) => {
     onError = () => {}
    } = variantProps;
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange);
-
-  const handleValueOnChange = (e) => {
-    if (!disabled && !readOnly) {
-      setValue(e.target.value);
-    }
-  };
-
   const errors = {
     required: { 
       condition: required && isEmpty(currentValue),
@@ -65,9 +57,13 @@ export const Textarea = (props) => {
     },
   };
 
-  useEffect(() => {
-    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-  }, [currentValue]);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange, errors, onError, id);
+
+  const handleValueOnChange = (e) => {
+    if (!disabled && !readOnly) {
+      setValue(e.target.value);
+    }
+  };
 
   return (
     <Label 

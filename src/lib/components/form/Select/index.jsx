@@ -32,15 +32,6 @@ export const Select = (props) => {
     onError = () => {},
   } = variantProps;
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange);
-
-  const handleSelectOnChange = e => {
-    if (!disabled && !readOnly) {
-      const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
-      setValue(newValue);
-    }
-  };
-
   const errors = {
     required: {
       condition: required && isEmpty(currentValue),
@@ -62,11 +53,16 @@ export const Select = (props) => {
       condition: !isEmpty(currentValue) && !options.includes(currentValue),
       message: "La valeur sélectionnée ne fait pas partie des options"
     }
-  };
+  };  
 
-  useEffect(() => {
-    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-  }, [currentValue]);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+
+  const handleSelectOnChange = e => {
+    if (!disabled && !readOnly) {
+      const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
+      setValue(newValue);
+    }
+  };
 
   return (
     <Label 

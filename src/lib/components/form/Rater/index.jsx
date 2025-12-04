@@ -32,15 +32,6 @@ export const Rater = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
-
-    const updateRating = (index) => {
-        if (!disabled && !readOnly) {
-            const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
-            setValue(newValue);
-        }
-    };
-
     const errors = {
         required: { 
             condition: required && isEmpty(currentValue),
@@ -54,11 +45,16 @@ export const Rater = (props) => {
             condition: !isNil(max) && currentValue > max,
             message: `La notation doit être de ${max} au minimum.`
         },
-    };
+    };    
 
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+
+    const updateRating = (index) => {
+        if (!disabled && !readOnly) {
+            const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
+            setValue(newValue);
+        }
+    };
 
     return (
         <Label 

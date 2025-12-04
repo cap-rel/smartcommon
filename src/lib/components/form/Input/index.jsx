@@ -58,62 +58,6 @@ export const Input = (props) => {
 
   const { isPasswordVisible } = states; // isCopied
 
-  const { currentValue, setValue } = useLocalValue(defaultValue, value, onChange);
-
-  // const currentValueFormat = {
-  //   time: minutesToTime(currentValue)
-  // };
-
-  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
-  const datetimeTypes = ["date", "datetime-local"];
-  const numberTypes = ["number"];
-  const timeTypes = ["time"];
-
-  const handleInputOnChange = e => {
-    if (!disabled && !readOnly) {
-      let value = e.target.value;
-
-      if (numberTypes.includes(type)) {
-        value = Number(value);
-      } else if (datetimeTypes.includes(type)) {
-        value = (new Date(value)).getTime();
-      } else if (timeTypes.includes(type)) {
-        value = timeToMinutes(value);
-      }
-
-      setValue(value);
-    }
-  };
-
-  const removeStep = () => setValue(Number(currentValue) - step);
-  const addStep = () => setValue(Number(currentValue) + step);
-  const togglePasswordVisibility = () => set("isPasswordVisible", !isPasswordVisible);
-  // const resetCopyButton = () => set("isCopied", false);
-
-  // const copy = () => {
-  //   navigator.clipboard.writeText(currentValue)
-  //     .then(() => {
-  //       set("isCopied", true);
-  //       toast("Copié dans le presse-papier")
-  //     })
-  //     .catch(() => toast.error("La copie a échouée, probablement non disponible sur votre navigateur"));
-  // };
-
-  const isPassword = type === "password";
-
-  const typeMap = {
-    text: { type: "text" },
-    email: { type: "email" },
-    password : { type: isPasswordVisible ? "text" : "password" },
-    tel: { type: "tel" },
-    number: { type: "number" },
-    search: { type: "search" },
-    url: { type: "url" },
-    date: { type: "date" },
-    "datetime-local": { type: "datetime-local" },
-    time: { type: "time" },
-  };
-
   const errors = {
     // email: { 
     //   condition: type === "email" && !yup.email().isValidSync(currentValue),
@@ -177,9 +121,62 @@ export const Input = (props) => {
     },
   };
 
-  useEffect(() => {
-    Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-  }, [currentValue]);
+
+  const { currentValue, setValue } = useLocalValue(defaultValue, value, onChange, errors, onError, id);
+
+  // const currentValueFormat = {
+  //   time: minutesToTime(currentValue)
+  // };
+
+  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
+  const datetimeTypes = ["date", "datetime-local"];
+  const numberTypes = ["number"];
+  const timeTypes = ["time"];
+
+  const handleInputOnChange = e => {
+    if (!disabled && !readOnly) {
+      let value = e.target.value;
+
+      if (numberTypes.includes(type)) {
+        value = Number(value);
+      } else if (datetimeTypes.includes(type)) {
+        value = (new Date(value)).getTime();
+      } else if (timeTypes.includes(type)) {
+        value = timeToMinutes(value);
+      }
+
+      setValue(value);
+    }
+  };
+
+  const removeStep = () => setValue(Number(currentValue) - step);
+  const addStep = () => setValue(Number(currentValue) + step);
+  const togglePasswordVisibility = () => set("isPasswordVisible", !isPasswordVisible);
+  // const resetCopyButton = () => set("isCopied", false);
+
+  // const copy = () => {
+  //   navigator.clipboard.writeText(currentValue)
+  //     .then(() => {
+  //       set("isCopied", true);
+  //       toast("Copié dans le presse-papier")
+  //     })
+  //     .catch(() => toast.error("La copie a échouée, probablement non disponible sur votre navigateur"));
+  // };
+
+  const isPassword = type === "password";
+
+  const typeMap = {
+    text: { type: "text" },
+    email: { type: "email" },
+    password : { type: isPasswordVisible ? "text" : "password" },
+    tel: { type: "tel" },
+    number: { type: "number" },
+    search: { type: "search" },
+    url: { type: "url" },
+    date: { type: "date" },
+    "datetime-local": { type: "datetime-local" },
+    time: { type: "time" },
+  };
 
   return (
 

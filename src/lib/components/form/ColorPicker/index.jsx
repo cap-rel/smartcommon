@@ -25,7 +25,14 @@ export const ColorPicker = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Ce champ est requis."
+        },
+    };
+
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly) {
@@ -33,17 +40,6 @@ export const ColorPicker = (props) => {
             setValue(newValue);
         }
     };
-
-    const errors = {
-        required: { 
-            condition: required && isEmpty(currentValue),
-            message: "Ce champ est requis."
-        },
-    };
-    
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
 
     return (
         <Label 

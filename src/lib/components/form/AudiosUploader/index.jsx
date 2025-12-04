@@ -33,7 +33,26 @@ export const AudiosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez enregistrer au moins 1 audio."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez enregistrer ${min} audios minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez enregistrer exactement ${exact} audios.`
+        },
+    };
+
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 
     const initialStates = {
         // isPanelOpen: false,
@@ -138,30 +157,6 @@ export const AudiosUploader = (props) => {
             set("isAudioSelected", false);
         }
     };
-
-    const errors = {
-        required: { 
-            condition: required && isEmpty(currentValue),
-            message: "Vous devez enregistrer au moins 1 audio."
-        },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
-            message: `Vous devez enregistrer ${min} audios minimum.`
-        },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
-            message: `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`
-        },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
-            message: `Vous devez enregistrer exactement ${exact} audios.`
-        },
-    };
-
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
-    
 
     const Audio = (audio, index) => {
         return (
