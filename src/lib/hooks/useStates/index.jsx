@@ -9,7 +9,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
 
   const [states, setStates] = useState(initialStates);
 
-  // ---------------------- Parser ----------------------
+  // ---------------------- parsePath (Parser) ----------------------
   const parsePath = (path) => {
     const parts = [];
     path.split(".").forEach(segment => {
@@ -24,7 +24,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     return parts;
   };
 
-  // ---------------------- SET ----------------------
+  // ---------------------- set ----------------------
   const set = (path, value) => {
     setStates(prev => {
       const newState = structuredClone(prev);
@@ -83,7 +83,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     });
   };
 
-  // ---------------------- GET ----------------------
+  // ---------------------- get ----------------------
   const get = (path) => {
     let level = states;
     
@@ -101,14 +101,14 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     return level;
   };
 
-  // ---------------------- UNSET ----------------------
+  // ---------------------- unset ----------------------
   const unset = (path) => {
     setStates(prev => {
       if (isNil(path)) {
         if (debug) {
           log.state("UNSET");
         }
-        
+
         return {};  
       }
 
