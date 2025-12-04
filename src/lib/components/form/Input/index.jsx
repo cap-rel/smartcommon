@@ -6,6 +6,8 @@ import { applyFunctionIfNotNil, datetimeFormat, isEmpty, isNil, isNumber, timeTo
 import { Label } from "lib/components";
 import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
 
+import { useLocation } from "react-router-dom";
+
 import { defaultProps, propTypes } from "./props";
 
 // IDEA Types week, month, year
@@ -17,6 +19,8 @@ import { defaultProps, propTypes } from "./props";
 
 export const Input = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Input", props);
+
+  const location = useLocation();
 
   const { 
     id,
