@@ -1,15 +1,14 @@
 import { isUndefined } from "lib/utils";
-import { useStates } from "lib/hooks"
+import { useState } from "react";
 
 export const useLocalValue = (localValue, value, onChange, errors) => {
-    const initialStates = { localValue };  
-    const { states, set } = useStates({ initialStates });
+    const [state, set] = useState(localValue)
 
-    const currentValue = value ?? states.localValue;
+    const currentValue = value ?? state;
 
     const setValue = (newValue) => {
         if (isUndefined(value)) {
-            set("localValue", newValue);
+            set(newValue);
         } else {
             onChange(newValue);
         }
