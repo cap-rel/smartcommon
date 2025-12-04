@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes } from "react-router-dom";
+import { BrowserRouter, Outlet, Routes } from "react-router-dom";
 
 export const Router = () => {
     return (
