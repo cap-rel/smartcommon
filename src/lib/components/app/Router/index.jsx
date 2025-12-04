@@ -1,10 +1,10 @@
-import { BrowserRouter, Outlet, Routes } from "react-router-dom";
+import { BrowserRouter, Routes } from "react-router-dom";
 
-export const Router = () => {
+export const Router = ({ children }) => {
     return (
         <BrowserRouter>
             <Routes>
-                <Outlet />
+                {children}
             </Routes>
         </BrowserRouter>
     );
