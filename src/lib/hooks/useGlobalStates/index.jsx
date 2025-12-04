@@ -1,17 +1,38 @@
 import { useDispatch, useSelector } from "react-redux";
-import { isNil, mapKeys } from "lodash";
+import { forEach, isNil, isUndefined, mapKeys } from "lodash";
 
 import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
 import { getLocal, getSession, log, removeLocal, removeSession, setLocal, setSession } from "lib/utils";
 import { useEffect } from "react";
 
-export const useGlobalStates = ({ initialStates: initialGlobalStates, debug = false }) => {
-  // initialStates = { local, session, memory };
+export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug = false }) => {
+  const { local: initialLocal, session: initialSession, memory: initialMemory } = initialGlobalStates;
+
   const dispatch = useDispatch();
   const globalStates = useSelector(state => state.global) ?? {};
 
   const { states, set, get, unset } = useStates({ initialStates: globalStates });
+
+  useEffect(() => {
+    forEach(initialLocal, (value, path) => {
+      if (isUndefined(get(path))) {
+        setGlobal(path, value, "local");
+      }
+    });
+
+    forEach(initialSession, (value, path) => {
+      if (isUndefined(get(path))) {
+        setGlobal(path, value, "session");
+      }
+    });
+
+    forEach(initialMemory, (value, path) => {
+      if (isUndefined(get(path))) {
+        setGlobal(path, value);
+      }
+    });
+  }, []);
 
   useEffect(() => {
     dispatch(setGlobalStates(states));
@@ -21,7 +42,9 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates, debug = fa
     return get(path);
   };
 
-  const setGlobal = (path, value, storage) => {
+  // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
+  // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
+  const setGlobal = (path, value, storage = "memory") => {
     set(path, value);
 
     const local = getLocal("global") ?? {};
