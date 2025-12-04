@@ -34,7 +34,27 @@ export const PhotosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange);
+    const errors = {
+        required: { 
+            condition: required && isEmpty(currentValue),
+            message: "Vous devez prendre au moins 1 photo."
+        },
+        min: { 
+            condition: !isNil(min) && multiple && currentValue.length < min,
+            message: `Vous devez prendre ${min} photos minimum.`
+        },
+        max: { 
+            condition: !isNil(max) && multiple && currentValue.length > max,
+            message: `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`
+        },
+        exact: { 
+            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+            message: `Vous devez prendre exactement ${exact} photos.`
+        },
+    };
+
+
+    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 
     const initialStates = {
         // isPanelOpen: false,
@@ -137,30 +157,6 @@ export const PhotosUploader = (props) => {
             setValue(newValue);
         }
     };
-
-    const errors = {
-        required: { 
-            condition: required && isEmpty(currentValue),
-            message: "Vous devez prendre au moins 1 photo."
-        },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
-            message: `Vous devez prendre ${min} photos minimum.`
-        },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
-            message: `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`
-        },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
-            message: `Vous devez prendre exactement ${exact} photos.`
-        },
-    };
-
-    useEffect(() => {
-        Object.entries(errors).forEach(([errorKey, error]) => onError(`${id}-${errorKey}`, error.condition))
-    }, [currentValue]);
-
 
     const Photo = (photo, index) => {
         return (
