@@ -96,7 +96,7 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
       delete local[path];
 
       if (debug) {
-        log.globalState(`UNSET LOCAL ${path} =>`, value);
+        log.globalState(`UNSET LOCAL ${path}`);
       }
 
       return setLocal("global", local);
@@ -109,14 +109,14 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
       delete session[path];
 
       if (debug) {
-        log.globalState(`UNSET SESSION ${path} =>`, value);
+        log.globalState(`UNSET SESSION ${path}`,);
       }
 
       return setSession("global", session);
     }
 
     if (debug) {
-      log.globalState(`UNSET ${path} =>`, value);
+      log.globalState(`UNSET ${path}`,);
     }
   };
 
