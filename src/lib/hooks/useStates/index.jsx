@@ -105,7 +105,10 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
   const unset = (path) => {
     setStates(prev => {
       if (isNil(path)) {
-        log.state("UNSET")
+        if (debug) {
+          log.state("UNSET");
+        }
+        
         return {};  
       }
 
