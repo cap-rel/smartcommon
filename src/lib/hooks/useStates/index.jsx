@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isPlainObject } from "lodash";
+import { isNil, isPlainObject } from "lodash";
 import { log } from "lib/utils";
 
 export const useStates = ({ initialStates = {}, debug = true }) => {
@@ -84,15 +84,18 @@ export const useStates = ({ initialStates = {}, debug = true }) => {
   };
 
   // ---------------------- GET ----------------------
-  const get = (path, root = states) => {
-    const parts = parsePath(path);
-    let level = root;
+  const get = (path) => {
+    let level = states;
+    
+    if (!isNil(path)) {
+      const parts = parsePath(path);
 
-    for (const part of parts) {
-      if (part === "__PUSH__") return undefined; // get([]) n’a pas de sens
-      if (level == null) return undefined;
-      if (!(part in level)) return undefined;
-      level = level[part];
+      for (const part of parts) {
+        if (part === "__PUSH__") return undefined; // get([]) n’a pas de sens
+        if (level == null) return undefined;
+        if (!(part in level)) return undefined;
+        level = level[part];
+      }
     }
 
     return level;
@@ -101,11 +104,17 @@ export const useStates = ({ initialStates = {}, debug = true }) => {
   // ---------------------- UNSET ----------------------
   const unset = (path) => {
     setStates(prev => {
+      if (isNil(path)) {
+        log.state("UNSET")
+        return {};  
+      }
+
       const newState = structuredClone(prev);
+      let level = newState;
+      
       const parts = parsePath(path);
       const last = parts.pop();
-      let level = newState;
-
+      
       for (const part of parts) {
         // impossible d’unset[] → ignore
         if (part === "__PUSH__") {
