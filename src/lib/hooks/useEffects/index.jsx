@@ -1,24 +1,31 @@
-import { useEffect } from "react";
-import { constant, forEach, isFunction, mapValues, reduce, toArray, toString } from "lodash";
+import { useEffect, useRef } from "react";
+import { constant, forEach, isFunction, isPlainObject, mapValues, toArray } from "lodash";
 
-import { useStates } from "lib/hooks";
 import { log } from "lib/utils";
 
 export const useEffects = (effects) => {
-    const initialStates = mapValues(effects, constant(1));
-    const { states, set } = useStates({ initialStates });
+    if (!isPlainObject(effects)) {
+        throw new Error("effects must be a plain object.");
+    }
 
-    forEach(effects, ({ deps, effect = () => {} }, key) => {
+    const activationsRef = useRef(mapValues(effects, constant(1)));
+
+    forEach(effects, ({ deps, effect = () => {}, debug = false }, key) => {
         if (isFunction(effect)) {
             deps = toArray(deps);
 
+            const activation = activationsRef.current[key];
+
             useEffect(() => {
-                log.effect(`${key} (${states[key]})`);
-                set(key, states[key] + 1);
+                if (debug) {
+                    log.effect(`${key} (${activation}})`);
+                }
+
+                activation += 1
                 effect();
             }, deps);
         }
     });
 
-    return { activations: states };
+    return { activations: activationsRef.current };
 };
