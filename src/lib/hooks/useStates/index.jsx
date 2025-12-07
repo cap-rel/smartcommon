@@ -10,6 +10,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
   const [states, setStates] = useState(initialStates);
 
   // ---------------------- parsePath (Parser) ----------------------
+  
   const parsePath = (path) => {
     const parts = [];
     path.split(".").forEach(segment => {
@@ -25,6 +26,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
   };
 
   // ---------------------- set ----------------------
+
   const set = (path, value) => {
     setStates(prev => {
       const newState = structuredClone(prev);
@@ -84,6 +86,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
   };
 
   // ---------------------- get ----------------------
+
   const get = (path) => {
     let level = states;
     
@@ -101,12 +104,13 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     return level;
   };
 
-  // ---------------------- unset ----------------------
-  const unset = (path) => {
+  // ---------------------- remove ----------------------
+
+  const remove = (path) => {
     setStates(prev => {
       if (isNil(path)) {
         if (debug) {
-          log.state("UNSET");
+          log.state("REMOVE");
         }
 
         return {};  
@@ -119,7 +123,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
       const last = parts.pop();
       
       for (const part of parts) {
-        // impossible d’unset[] → ignore
+        // impossible d’remove[] → ignore
         if (part === "__PUSH__") {
           return newState;
         }
@@ -141,7 +145,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
           level.splice(index, 1);
           
           if (debug) {
-            log.state(`UNSET ${path}`);
+            log.state(`REMOVE ${path}`);
           }
         }
       } else {
@@ -149,7 +153,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
           delete level[last];
 
           if (debug) {
-            log.state(`UNSET ${path}`);
+            log.state(`REMOVE ${path}`);
           }
         }
       }
@@ -158,5 +162,13 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     });
   };
 
-  return { states, set, get, unset };
+  // ---------------------- return ----------------------
+
+  return { 
+    values: states,
+    states,
+    set,
+    get,
+    remove
+  };
 };
