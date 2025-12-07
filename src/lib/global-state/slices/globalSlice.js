@@ -72,8 +72,6 @@ const storages = { ...getLocal("global"), ...getSession("global") };
 
 const initialState = reduce(storages, set, {});
 
-console.log(initialState);
-
 const globalSlice = createSlice({
   name: "global",
   initialState,
