@@ -1,4 +1,6 @@
-const isNavigatorAvailable = typeof navigator !== "undefined";
+import { isUndefined } from "lodash";
+
+const isNavigatorAvailable = isUndefined(navigator);
 
 const getDeviceType = () => {
     if (!isNavigatorAvailable) {
@@ -38,5 +40,6 @@ export const navigatorInfo = {
       type: getDeviceType()
     },
     language: getLanguage(),
+    isOnLine: !isNavigatorAvailable && navigator.onLine 
     // coords: locate()
 };
