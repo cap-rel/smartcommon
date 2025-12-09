@@ -1,17 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
-import { forEach, isNil, isPlainObject, isUndefined, mapKeys } from "lodash";
+import { forEach, isNil, isPlainObject, isUndefined, keys, mapKeys } from "lodash";
 import { useEffect } from "react";
 
 import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
-import { session, local, log } from "lib/utils";
+import { session, local, log, throwTypeError } from "lib/utils";
 
-export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug = false }) => {
-  if (!isPlainObject(initialStates)) {
-    throw new Error("initialStates must be a plain object.");
-  }
+export const useGlobalStates = ({ initialStates = {}, debug = false }) => {
+  throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] });
   
-  const { local: initialLocal, session: initialSession, ...initialMemory } = initialGlobalStates;
+  const { local: initialLocal, session: initialSession, ...initialMemory } = initialStates;
 
   const dispatch = useDispatch();
   const globalStates = useSelector(state => state.global) ?? {};
@@ -52,6 +50,24 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
     return st.get(path);
   };
 
+  // ---------------------- getStorage ----------------------
+
+  const getStorage = (path) => {
+    if (isUndefined(get(path))) {
+      return undefined;
+    }
+
+    if (keys(local.get("global")).includes(path)) {
+      return "local";
+    }
+
+    if (keys(session.get("global")).includes(path)) {
+      return "session";
+    }
+
+    return "memory";
+  };
+
   // ---------------------- set ----------------------
 
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
@@ -89,18 +105,18 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
     }
   };
 
-  // ---------------------- remove ----------------------
+  // ---------------------- unset ----------------------
 
-  const remove = (path) => {
-    st.remove(path);
+  const unset = (path) => {
+    st.unset(path);
 
     if (isNil(path)) {
       if (debug) {
-        log.globalState("REMOVE");
+        log.globalState("UNSET");
       }
 
-      local.remove("global");
-      return session.remove("global");
+      local.unset("global");
+      return session.unset("global");
     }
 
     const localStorage = local.get("global") ?? {};
@@ -110,7 +126,7 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
       delete localStorage[path];
 
       if (debug) {
-        log.globalState(`REMOVE LOCAL ${path}`);
+        log.globalState(`UNSET LOCAL ${path}`);
       }
 
       return local.set("global", localStorage);
@@ -123,14 +139,14 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
       delete sessionStorage[path];
 
       if (debug) {
-        log.globalState(`REMOVE SESSION ${path}`,);
+        log.globalState(`UNSET SESSION ${path}`,);
       }
 
       return session.set("global", sessionStorage);
     }
 
     if (debug) {
-      log.globalState(`REMOVE ${path}`,);
+      log.globalState(`UNSET ${path}`,);
     }
   };
 
@@ -139,8 +155,9 @@ export const useGlobalStates = ({ initialStates: initialGlobalStates = {}, debug
   return { 
     values: globalStates,
     get,
+    getStorage,
     set,
-    remove,
+    unset,
     local: {
       set: (path, value) => set("local", path, value),
     },

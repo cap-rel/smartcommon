@@ -14,7 +14,7 @@ export const useEffects = (effects) => {
         if (isFunction(effect)) {
             deps = toArray(deps);
 
-            const activation = activationsRef.current[key];
+            let activation = activationsRef.current[key];
 
             useEffect(() => {
                 if (debug) {

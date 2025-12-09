@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { isNil, isPlainObject } from "lodash";
-import { log } from "lib/utils";
+import { log, throwTypeError } from "lib/utils";
 
 export const useStates = ({ initialStates = {}, debug = false }) => {
-  if (!isPlainObject(initialStates)) {
-    throw new Error("initialStates must be a plain object.");
-  }
+  throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] })
 
   const [states, setStates] = useState(initialStates);
 
@@ -17,9 +15,13 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
       const regex = /([\w-]+)|\[(\d*)\]/g;
       let match;
       while ((match = regex.exec(segment)) !== null) {
-        if (match[1]) parts.push(match[1]);
-        else if (match[2] === "") parts.push("__PUSH__"); // push automatique
-        else parts.push(match[2]); // index numérique
+        if (match[1]) {
+          parts.push(match[1]);
+        } else if (match[2] === "") {
+          parts.push("__PUSH__"); // push automatique
+        } else {
+          parts.push(match[2]); // index numérique
+        }
       }
     });
     return parts;
@@ -94,9 +96,10 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
       const parts = parsePath(path);
 
       for (const part of parts) {
-        if (part === "__PUSH__") return undefined; // get([]) n’a pas de sens
-        if (level == null) return undefined;
-        if (!(part in level)) return undefined;
+        if (part === "__PUSH__" || level == null || !(part in level)) {
+          return undefined;
+        }
+        
         level = level[part];
       }
     }
@@ -104,13 +107,13 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     return level;
   };
 
-  // ---------------------- remove ----------------------
+  // ---------------------- unset ----------------------
 
-  const remove = (path) => {
+  const unset = (path) => {
     setStates(prev => {
       if (isNil(path)) {
         if (debug) {
-          log.state("REMOVE");
+          log.state("UNSET");
         }
 
         return {};  
@@ -145,7 +148,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
           level.splice(index, 1);
           
           if (debug) {
-            log.state(`REMOVE ${path}`);
+            log.state(`UNSET ${path}`);
           }
         }
       } else {
@@ -153,7 +156,7 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
           delete level[last];
 
           if (debug) {
-            log.state(`REMOVE ${path}`);
+            log.state(`UNSET ${path}`);
           }
         }
       }
@@ -169,6 +172,6 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     states,
     set,
     get,
-    remove
+    unset
   };
 };

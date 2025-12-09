@@ -4,7 +4,7 @@ import { isFunction, last } from "lodash";
 import { useEffect } from "react";
 import { log } from "lib/utils";
 
-export const useNavigation = ({ debug = false }) => {
+export const useNavigationContext = ({ debug = false }) => {
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });
 
