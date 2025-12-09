@@ -5,4 +5,4 @@ export * from "./others";
 export * from "./variant";
 export * from "./twMerge";
 export * from "./intl";
-export * from "./console-logs";
+export * from "./consoleLogs";
