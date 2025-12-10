@@ -1,11 +1,11 @@
 import { map } from "lodash";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useRoutes } from "react-router-dom";
 
 import { throwTypeError } from "lib/utils";
 import { NavigationProvider } from "lib/components";
 
-export const Router = ({ children }) => {
-    // throwTypeError({ value: routes, name: "routes", type: ["array"] });
+export const Router = ({ routes = {} }) => {
+    throwTypeError({ value: routes, name: "routes", type: ["plain object"] });
 
     // const mapRoutes = (routes) => 
     //     map(routes, ({ path, element, children = [] }, RI) => {
@@ -18,11 +18,13 @@ export const Router = ({ children }) => {
     //         );
     //     });
 
+    const routesElement = useRoutes(routes);
+
     return (
         <BrowserRouter>
             <NavigationProvider>
                 {/* {mapRoutes(routes)} */}
-                {children}
+                {routesElement}
             </NavigationProvider>
         </BrowserRouter>
     );
