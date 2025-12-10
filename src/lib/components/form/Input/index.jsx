@@ -71,14 +71,16 @@ export const Input = (props) => {
     //   condition: required && isEmpty(currentValue),
     //   message: "Ce champ est requis." 
     // },
-    number: { 
-      condition: type === "number" && isNumber(currentValue),
-      message: "Veuillez rentrer un nombre valide." 
-    },
-    required: { 
-      condition: required && isEmpty(currentValue),
-      message: "Ce champ est requis." 
-    },
+
+    // number: { 
+    //   condition: type === "number" && isNumber(currentValue),
+    //   message: "Veuillez rentrer un nombre valide." 
+    // },
+    // required: { 
+    //   condition: required && isEmpty(currentValue),
+    //   message: "Ce champ est requis." 
+    // },
+
     // minTime: { 
     //   condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
     //   message: `L'heure doit être après ${datetimeFormat((new Date().setHours(minutesToTime(min ?? 0, "units").hours, minutesToTime(min ?? 0, "units").minutes)), { timeStyle: "short" })}.`
@@ -87,38 +89,39 @@ export const Input = (props) => {
     //   condition: !isNil(max) && timeTypes.includes(type) && currentValue > max,
     //   message: `L'heure doit être avant ${datetimeFormat((new Date()).setHours(minutesToTime(max ?? 0, "units").hours, minutesToTime(max ?? 0, "units").minutes)), { timeStyle: "short" })}.`
     // },
-    minDateTime: { 
-      condition: !isNil(min) && datetimeTypes.includes(type) && currentValue < min,
-      message: `La date doit être après ${datetimeFormat(!isNil(min) ? min * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
-    },
-    maxDatetime: { 
-      condition: !isNil(max) && datetimeTypes.includes(type) && currentValue > max,
-      message: `La date doit être avant ${datetimeFormat(!isNil(max) ? max * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
-    },
-    minNumber: { 
-      condition: !isNil(min) && numberTypes.includes(type) && currentValue < min,
-      message: `La valeur doit être de ${min} minimum.`
-    },
-    maxNumber: { 
-      condition: !isNil(max) && numberTypes.includes(type) && currentValue > max,
-      message: `La valeur doit être de ${max} maximum.`
-    },
-    minLength: { 
-      condition: !isNil(minLength) && stringTypes.includes(type) && currentValue?.length < minLength,
-      message: `La longueur doit être de ${minLength} caractères au minimum.`
-    },
-    length: { 
-      condition: !isNil(length) && stringTypes.includes(type) && currentValue?.length !== length,
-      message: `La longueur doit être de ${length} caractères exactement.`
-    },
-    maxLength: { 
-      condition: !isNil(maxLength) && stringTypes.includes(type) && currentValue?.length > maxLength,
-      message: `La valeur doit être de ${maxLength} au maximum.`
-    },
-    pattern: { 
-      condition: !isNil(pattern) && stringTypes.includes(type) && !pattern.test(currentValue),
-      message: patternError 
-    },
+
+    // minDateTime: { 
+    //   condition: !isNil(min) && datetimeTypes.includes(type) && currentValue < min,
+    //   message: `La date doit être après ${datetimeFormat(!isNil(min) ? min * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
+    // },
+    // maxDatetime: { 
+    //   condition: !isNil(max) && datetimeTypes.includes(type) && currentValue > max,
+    //   message: `La date doit être avant ${datetimeFormat(!isNil(max) ? max * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
+    // },
+    // minNumber: { 
+    //   condition: !isNil(min) && numberTypes.includes(type) && currentValue < min,
+    //   message: `La valeur doit être de ${min} minimum.`
+    // },
+    // maxNumber: { 
+    //   condition: !isNil(max) && numberTypes.includes(type) && currentValue > max,
+    //   message: `La valeur doit être de ${max} maximum.`
+    // },
+    // minLength: { 
+    //   condition: !isNil(minLength) && stringTypes.includes(type) && currentValue?.length < minLength,
+    //   message: `La longueur doit être de ${minLength} caractères au minimum.`
+    // },
+    // length: { 
+    //   condition: !isNil(length) && stringTypes.includes(type) && currentValue?.length !== length,
+    //   message: `La longueur doit être de ${length} caractères exactement.`
+    // },
+    // maxLength: { 
+    //   condition: !isNil(maxLength) && stringTypes.includes(type) && currentValue?.length > maxLength,
+    //   message: `La valeur doit être de ${maxLength} au maximum.`
+    // },
+    // pattern: { 
+    //   condition: !isNil(pattern) && stringTypes.includes(type) && !pattern.test(currentValue),
+    //   message: patternError 
+    // },
   };
 
 
