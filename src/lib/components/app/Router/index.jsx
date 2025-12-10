@@ -4,8 +4,8 @@ import { BrowserRouter, Route, Routes, useRoutes } from "react-router-dom";
 import { throwTypeError } from "lib/utils";
 import { NavigationProvider } from "lib/components";
 
-export const Router = ({ routes = {} }) => {
-    throwTypeError({ value: routes, name: "routes", type: ["plain object"] });
+export const Router = ({ routes = [] }) => {
+    throwTypeError({ value: routes, name: "routes", type: ["array"] });
 
     // const mapRoutes = (routes) => 
     //     map(routes, ({ path, element, children = [] }, RI) => {
