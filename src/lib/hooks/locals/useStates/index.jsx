@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isNil, isPlainObject } from "lodash";
+import { isNil, isPlainObject, isUndefined } from "lodash";
 import { log, throwTypeError } from "lib/utils";
 
 export const useStates = ({ initialStates = {}, debug = false }) => {
@@ -27,9 +27,33 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     return parts;
   };
 
+  // ---------------------- get ----------------------
+
+  const get = (path) => {
+    let level = states;
+    
+    if (!isNil(path)) {
+      const parts = parsePath(path);
+
+      for (const part of parts) {
+        if (part === "__PUSH__" || level == null || !(part in level)) {
+          return undefined;
+        }
+        
+        level = level[part];
+      }
+    }
+
+    return level;
+  };
+
   // ---------------------- set ----------------------
 
   const set = (path, value) => {
+    if (isEqual(get(path), value)) {
+      return;
+    }
+
     setStates(prev => {
       const newState = structuredClone(prev);
       const parts = parsePath(path);
@@ -87,29 +111,13 @@ export const useStates = ({ initialStates = {}, debug = false }) => {
     });
   };
 
-  // ---------------------- get ----------------------
-
-  const get = (path) => {
-    let level = states;
-    
-    if (!isNil(path)) {
-      const parts = parsePath(path);
-
-      for (const part of parts) {
-        if (part === "__PUSH__" || level == null || !(part in level)) {
-          return undefined;
-        }
-        
-        level = level[part];
-      }
-    }
-
-    return level;
-  };
-
   // ---------------------- unset ----------------------
 
   const unset = (path) => {
+    if (isUndefined(get(path))) {
+      return;
+    }
+    
     setStates(prev => {
       if (isNil(path)) {
         if (debug) {
