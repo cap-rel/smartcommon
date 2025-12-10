@@ -5,7 +5,11 @@ import { useEffect } from "react";
 import { log } from "lib/utils";
 import { useGlobalStates } from "lib/hooks";
 
-export const useNavigationContext = ({ debug = false }) => {
+export const useNavigationContext = (props = {}) => {
+    throwTypeError({ value: props, name: "useNavigation props", type: ["plain object"] })
+    
+    const { debug = false } = props;
+
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });
 

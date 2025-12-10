@@ -6,7 +6,11 @@ import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
 import { session, local, log, throwTypeError } from "lib/utils";
 
-export const useGlobalStates = ({ initialStates = {}, debug = false }) => {
+export const useGlobalStates = (props = {}) => {
+  throwTypeError({ value: props, name: "useGlobalStates props", type: ["plain object"] })
+
+  const { initialStates = {}, debug = false } = props;
+
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] });
   
   const { local: initialLocal, session: initialSession, ...initialMemory } = initialStates;

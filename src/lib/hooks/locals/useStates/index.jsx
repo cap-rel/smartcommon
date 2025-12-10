@@ -2,7 +2,11 @@ import { useState } from "react";
 import { isEqual, isNil, isPlainObject, isUndefined } from "lodash";
 import { log, throwTypeError } from "lib/utils";
 
-export const useStates = ({ initialStates = {}, debug = false }) => {
+export const useStates = (props = {}) => {
+  throwTypeError({ value: props, name: "useStates props", type: ["plain object"] })
+
+  const { initialStates = {}, debug = false } = props;
+  
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] })
 
   const [states, setStates] = useState(initialStates);
