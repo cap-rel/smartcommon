@@ -4,4 +4,4 @@ import { NavigationContext } from "lib/components";
 
 export * from "./context";
 
-export const useNavigation = useContext(NavigationContext) ?? {};
+export const useNavigation = () => useContext(NavigationContext) ?? {};

@@ -4,4 +4,4 @@ import { ApiContext } from "lib/components";
 
 export * from "./context";
 
-export const useApi = useContext(ApiContext) ?? {};
+export const useApi = () => useContext(ApiContext) ?? {};
