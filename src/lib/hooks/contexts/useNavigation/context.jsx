@@ -42,7 +42,7 @@ export const useNavigationContext = (props = {}) => {
         params,
         searchParams,
         location,
-        prevLocation: history[history.length - 2],
+        prevLocation: history[history?.length - 2],
         to: navigate,
         updateState: (state) => navigate(pathname, { state: isFunction(state) ? state(location.state) : state }),
         replaceTo: (pathname) =>  navigate(pathname, { replace: true })
