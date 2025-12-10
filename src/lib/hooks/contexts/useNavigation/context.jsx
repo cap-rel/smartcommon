@@ -2,7 +2,7 @@ import { useLocation, useNavigate, useParams, useSearchParams } from "react-rout
 import { isFunction, last } from "lodash";
 import { useEffect } from "react";
 
-import { log } from "lib/utils";
+import { log, throwTypeError } from "lib/utils";
 import { useGlobalStates } from "lib/hooks";
 
 export const useNavigationContext = (props = {}) => {
