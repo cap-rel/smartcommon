@@ -1,5 +1,5 @@
 import { map } from "lodash";
-import { BrowserRouter, Route, Routes, useRoutes } from "react-router-dom";
+import { BrowserRouter, Route, useRoutes } from "react-router-dom";
 
 import { throwTypeError } from "lib/utils";
 import { NavigationProvider } from "lib/components";
@@ -18,13 +18,13 @@ export const Router = ({ routes = [] }) => {
     //         );
     //     });
 
-    const routesElement = useRoutes(routes);
+    const Routes = ({ routes }) => useRoutes(routes);
 
     return (
         <BrowserRouter>
             <NavigationProvider>
                 {/* {mapRoutes(routes)} */}
-                {routesElement}
+                <Routes routes={routes} />
             </NavigationProvider>
         </BrowserRouter>
     );
