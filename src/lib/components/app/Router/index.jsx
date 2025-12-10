@@ -4,8 +4,8 @@ import { BrowserRouter, Route, useRoutes } from "react-router-dom";
 import { throwTypeError } from "lib/utils";
 import { NavigationProvider } from "lib/components";
 
-export const Router = ({ routes = [] }) => {
-    throwTypeError({ value: routes, name: "routes", type: ["array"] });
+export const Router = ({ children }) => {
+    // throwTypeError({ value: routes, name: "routes", type: ["array"] });
 
     // const mapRoutes = (routes) => 
     //     map(routes, ({ path, element, children = [] }, RI) => {
@@ -18,13 +18,13 @@ export const Router = ({ routes = [] }) => {
     //         );
     //     });
 
-    const Routes = ({ routes }) => useRoutes(routes);
+    // const Routes = ({ routes }) => useRoutes(routes);
 
     return (
         <BrowserRouter>
             <NavigationProvider>
                 {/* {mapRoutes(routes)} */}
-                <Routes routes={routes} />
+                {children}
             </NavigationProvider>
         </BrowserRouter>
     );
