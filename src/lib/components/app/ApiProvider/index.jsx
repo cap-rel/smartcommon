@@ -1,8 +1,5 @@
-import { createContext } from "react";
-
 import { useApiContext } from "lib/hooks";
-
-export const ApiContext = createContext(null);
+import { ApiContext } from "./context";
 
 export const ApiProvider = ({ children }) => {
     const api = useApiContext();

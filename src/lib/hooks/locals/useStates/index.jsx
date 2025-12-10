@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isNil, isPlainObject, isUndefined } from "lodash";
+import { isEqual, isNil, isPlainObject, isUndefined } from "lodash";
 import { log, throwTypeError } from "lib/utils";
 
 export const useStates = ({ initialStates = {}, debug = false }) => {

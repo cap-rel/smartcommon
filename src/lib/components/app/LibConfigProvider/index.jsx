@@ -1,8 +1,6 @@
-import { createContext } from "react";
-
 import { I18nextProvider } from "lib/components";
 
-export const LibConfigContext = createContext();
+import { LibConfigContext } from "./context";
 
 export const LibConfigProvider = (props) => {
   const { children, value } = props;

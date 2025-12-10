@@ -1,8 +1,5 @@
-import { createContext } from "react";
-
 import { useNavigationContext } from "lib/hooks";
-
-export const NavigationContext = createContext(null);
+import { NavigationContext } from "./context";
 
 export const NavigationProvider = ({ children }) => {
   const nav = useNavigationContext();
