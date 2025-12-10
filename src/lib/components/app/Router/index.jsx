@@ -21,10 +21,8 @@ export const Router = ({ children }) => {
     return (
         <BrowserRouter>
             <NavigationProvider>
-                <Routes>
-                    {/* {mapRoutes(routes)} */}
-                    {children}
-                </Routes>
+                {/* {mapRoutes(routes)} */}
+                {children}
             </NavigationProvider>
         </BrowserRouter>
     );
