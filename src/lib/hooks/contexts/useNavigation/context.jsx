@@ -1,8 +1,9 @@
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { useGlobalStates } from "../export";
 import { isFunction, last } from "lodash";
 import { useEffect } from "react";
+
 import { log } from "lib/utils";
+import { useGlobalStates } from "lib/hooks";
 
 export const useNavigationContext = ({ debug = false }) => {
     const initialStates = { session: { history: [] } };
@@ -12,8 +13,9 @@ export const useNavigationContext = ({ debug = false }) => {
 
     const location = useLocation();
 
+    const { key, pathname, state } = location;
+
     useEffect(() => {
-        const { key, pathname, state } = location;
         const lastLocation = last(history);
 
         if (!lastLocation || lastLocation.key !== key) {
@@ -35,10 +37,10 @@ export const useNavigationContext = ({ debug = false }) => {
     return  {
         params,
         searchParams,
-        now: location,
-        prev: history[history.length - 2],
+        location,
+        prevLocation: history[history.length - 2],
         to: navigate,
-        updateState: (state) => navigate(location.pathname, { state: isFunction(state) ? state(location.state) : state }),
+        updateState: (state) => navigate(pathname, { state: isFunction(state) ? state(location.state) : state }),
         replaceTo: (pathname) =>  navigate(pathname, { replace: true })
     };
 };
