@@ -23,7 +23,7 @@ export const useNavigationContext = (props = {}) => {
         const lastLocation = last(history);
 
         if (!lastLocation || lastLocation.key !== key) {
-            gst.set("history[]", location, "session");
+            gst.session.set("history[]", location);
             
             if (debug) {
                 log.location(`pathname = ${pathname}, state =`, state);

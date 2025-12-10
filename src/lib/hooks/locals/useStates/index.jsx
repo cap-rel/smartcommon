@@ -34,6 +34,8 @@ export const useStates = (props = {}) => {
   // ---------------------- get ----------------------
 
   const get = (path) => {
+    throwTypeError({ value: path, name: "get path", type: ["string"], required: true });
+
     let level = states;
     
     if (!isNil(path)) {
@@ -54,6 +56,8 @@ export const useStates = (props = {}) => {
   // ---------------------- set ----------------------
 
   const set = (path, value) => {
+    throwTypeError({ value: path, name: "set path", type: ["string"], required: true  });
+
     if (isEqual(get(path), value)) {
       return;
     }
@@ -118,6 +122,8 @@ export const useStates = (props = {}) => {
   // ---------------------- unset ----------------------
 
   const unset = (path) => {
+    throwTypeError({ value: path, name: "unset path", type: ["string"], required: true });
+
     if (isUndefined(get(path))) {
       return;
     }
