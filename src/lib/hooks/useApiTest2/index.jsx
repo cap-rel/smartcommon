@@ -8,7 +8,7 @@ import { useFetchApi } from "./useFetchApi";
 import { useIdentifyDevice } from "./useIdentifyDevice";
 import { useGetEntities } from "./useGetEntities";
 
-export const useApi = () => {
+export const useApiTest2 = () => {
     let deviceId = getLocal("HTTP_X_DEVICEID");
 
     if (isEmpty(deviceId)) {

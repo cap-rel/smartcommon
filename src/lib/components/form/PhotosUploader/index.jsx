@@ -1,5 +1,5 @@
 import { FaCamera, FaFileImport, FaTrashCan, FaImage } from "react-icons/fa6";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
 
@@ -52,7 +52,6 @@ export const PhotosUploader = (props) => {
             message: `Vous devez prendre exactement ${exact} photos.`
         },
     };
-
 
     const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 

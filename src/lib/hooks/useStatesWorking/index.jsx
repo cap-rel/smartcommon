@@ -20,7 +20,7 @@
 import { useState } from "react";
 import { isPlainObject } from "lodash";
 
-export const useStates = (initialStates = {}) => {
+export const useStatesWorking = (initialStates = {}) => {
   if (!isPlainObject(initialStates)) {
     throw new Error("initialStates must be a plain object.");
   }
