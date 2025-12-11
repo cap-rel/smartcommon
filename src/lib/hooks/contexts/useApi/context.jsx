@@ -43,6 +43,7 @@ export const useApiContext = () => {
             beforeRequest: [
                 (request, options, state) => {
                     const { method, url } = request;
+                    const { delay } = options;
 
                     if (!navigatorInfo.isOnLine) {
                         log.apiError(`${method} - NO CONNECTION`, `${prefixUrl}${url}`);
@@ -50,8 +51,11 @@ export const useApiContext = () => {
                         return Promise.reject(new Error("No internet connection"));
                     }
 
-                    
                     log.apiLoading(`${method}`, `${prefixUrl}${url}`);
+
+                    if (delay) {
+                        return new Promise(response => setTimeout(response, delay));
+                    }
                 }
             ],
             afterResponse: [
