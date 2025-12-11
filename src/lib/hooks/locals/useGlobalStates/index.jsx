@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { forEach, isNil, isPlainObject, isUndefined, keys, mapKeys } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith } from "lodash";
 import { useEffect } from "react";
 
 import { useStates } from "lib/hooks";
@@ -61,11 +61,11 @@ export const useGlobalStates = (props = {}) => {
       return undefined;
     }
 
-    if (keys(local.get("global")).includes(path)) {
+    if (includes(keys(local.get("global")), path)) {
       return "local";
     }
 
-    if (keys(session.get("global")).includes(path)) {
+    if (includes(keys(session.get("global")), path)) {
       return "session";
     }
 
@@ -124,10 +124,14 @@ export const useGlobalStates = (props = {}) => {
     }
 
     const localStorage = local.get("global") ?? {};
-    const isInLocal = mapKeys(localStorage).includes(path);
 
-    if (isInLocal) {
-      delete localStorage[path];
+    const localPathsToUnset = flatMap(localStorage, (value, path) => {
+      // TODO if i'ts "first", "firstname" will be deleted too => to correct
+      return startsWith(path, path) ? [path] : [];
+    });
+    
+    if (!isEmpty(localPathsToUnset)) {
+      forEach(localPathsToUnset, (path) => delete localStorage[path]);
 
       if (debug) {
         log.globalState(`UNSET LOCAL ${path}`);
@@ -137,10 +141,14 @@ export const useGlobalStates = (props = {}) => {
     }
 
     const sessionStorage = session.get("global") ?? {};
-    const isInSession = mapKeys(sessionStorage).includes(path);
 
-    if (isInSession) {
-      delete sessionStorage[path];
+    const sessionPathsToUnset = flatMap(sessionStorage, (value, path) => {
+      // TODO if i'ts "first", "firstname" will be deleted too => to correct
+      return startsWith(path, path) ? [path] : [];
+    });
+
+    if (!isEmpty(sessionPathsToUnset)) {
+      forEach(sessionPathsToUnset, (path) => delete sessionStorage[path]);
 
       if (debug) {
         log.globalState(`UNSET SESSION ${path}`,);
