@@ -20,11 +20,11 @@ export function isNumber(value, options = {}) {
         return false;
     }
 
-    if (typeof min === "number" && value <= min) {
+    if (typeof min === "number" && value < min) {
         return false;
     }
 
-    if (typeof max === "number" && value >= max) {
+    if (typeof max === "number" && value > max) {
         return false;
     }
 
@@ -60,11 +60,11 @@ export function isString(value, options = {}) {
         return false;
     }
 
-    if (typeof minLength === "number" && value.length <= minLength) {
+    if (typeof minLength === "number" && value.length < minLength) {
         return false;
     }
 
-    if (typeof maxLength === "number" && value.length >= maxLength) {
+    if (typeof maxLength === "number" && value.length > maxLength) {
         return false;
     }
 
@@ -121,11 +121,11 @@ export function isArray(value, options = {}) {
         return false;
     }
 
-    if (typeof minLength === "number" && value.length <= minLength) {
+    if (typeof minLength === "number" && value.length < minLength) {
         return false;
     }
 
-    if (typeof maxLength === "number" && value.length >= maxLength) {
+    if (typeof maxLength === "number" && value.length > maxLength) {
         return false;
     }
 
@@ -155,7 +155,7 @@ export function isArray(value, options = {}) {
 }
 
 export function isObject(value) {
-    return typeof value === "object";
+    return value !== null && typeof value === "object";
 }
   
 export function isFunction(value) {

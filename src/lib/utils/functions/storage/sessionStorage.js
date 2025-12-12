@@ -1,27 +1,36 @@
 export function getSession(key) {
-    return JSON.parse(sessionStorage.getItem(key));
+    try {
+        const item = sessionStorage.getItem(key);
+        return item !== null ? JSON.parse(item) : null;
+    } catch {
+        return null;
+    }
 }
-  
+
 export function setSession(key, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    try {
+        sessionStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        // Storage full or unavailable
+    }
 }
-  
+
 export function removeSession(input) {
     sessionStorage.removeItem(input);
 }
 
 export const session = {
-    get: (key) => JSON.parse(sessionStorage.getItem(key)),
-    set: (key, value) => sessionStorage.setItem(key, JSON.stringify(value)),
-    unset: (key) => sessionStorage.removeItem(key) 
+    get: (key) => getSession(key),
+    set: (key, value) => setSession(key, value),
+    unset: (key) => sessionStorage.removeItem(key)
 };
 
-// Anciennes fonctions
-
+// Deprecated - use getSession instead (already returns parsed JSON)
 export function getSessionJSON(key) {
-    return JSON.parse(getSession(key));
+    return getSession(key);
 }
 
+// Deprecated - use setSession instead
 export function setSessionJSON(key, value) {
-    sessionStorage.setItem(key, JSON.stringify(value));
+    setSession(key, value);
 }

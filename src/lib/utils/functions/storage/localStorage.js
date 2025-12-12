@@ -1,9 +1,18 @@
 export function getLocal(key) {
-    return JSON.parse(localStorage.getItem(key));
+    try {
+        const item = localStorage.getItem(key);
+        return item !== null ? JSON.parse(item) : null;
+    } catch {
+        return null;
+    }
 }
 
 export function setLocal(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+    } catch {
+        // Storage full or unavailable
+    }
 }
 
 export function removeLocal(input) {
@@ -11,19 +20,17 @@ export function removeLocal(input) {
 }
 
 export const local = {
-    get: (key) => JSON.parse(localStorage.getItem(key)),
-    set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
-    unset: (key) => localStorage.removeItem(key) 
+    get: (key) => getLocal(key),
+    set: (key, value) => setLocal(key, value),
+    unset: (key) => localStorage.removeItem(key)
 };
 
-
-
-// Anciennes functions
-
+// Deprecated - use getLocal instead (already returns parsed JSON)
 export function getLocalJSON(key) {
-    return JSON.parse(getLocal(key));
+    return getLocal(key);
 }
 
+// Deprecated - use setLocal instead
 export function setLocalJSON(key, value) {
-    localStorage.setItem(key, JSON.stringify(value));
+    setLocal(key, value);
 }
