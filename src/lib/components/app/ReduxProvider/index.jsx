@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
 
@@ -5,7 +6,7 @@ import { reducers } from "lib/global-state";
 import { useLibConfig } from "lib/hooks";
 
 /**
- * This component is a wrapper of the actual Redux provider component, 
+ * This component is a wrapper of the actual Redux provider component,
  * which allows to separate and configure the store properly.
 */
 export const ReduxProvider = (props) => {
@@ -15,7 +16,10 @@ export const ReduxProvider = (props) => {
 
     const providedReducers = globalState?.reducers ?? {};
 
-    const store = configureStore({ reducer: { ...reducers, ...providedReducers } });
+    const store = useMemo(
+        () => configureStore({ reducer: { ...reducers, ...providedReducers } }),
+        [providedReducers]
+    );
 
     return (
         <Provider store={store}>

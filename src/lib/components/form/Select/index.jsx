@@ -10,8 +10,8 @@ import { propTypes } from "./props";
 
 export const Select = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Select", props);
-  
-  const { 
+
+  const {
     id,
     name,
     value,
@@ -32,30 +32,32 @@ export const Select = (props) => {
     onError = () => {},
   } = variantProps;
 
-  const errors = {
+  const getErrors = (currentValue) => ({
     required: {
       condition: required && isEmpty(currentValue),
       message: "1 élément doit être sélectionné au minimum."
     },
     min: {
-      condition: !isNil(min) && multiple && currentValue.length < min,
+      condition: !isNil(min) && multiple && currentValue?.length < min,
       message: `${min} éléments doivent être sélectionnés au minimum.`
     },
     max: {
-      condition: !isNil(max) && multiple && currentValue.length > max,
+      condition: !isNil(max) && multiple && currentValue?.length > max,
       message: `${max} éléments doivent être sélectionnés au maximum.`
     },
     exact: {
-      condition: !isNil(exact) && multiple && currentValue.length !== exact,
+      condition: !isNil(exact) && multiple && currentValue?.length !== exact,
       message: `Exactement ${exact} éléments doivent être sélectionnés.`
     },
     notAnOption: {
       condition: !isEmpty(currentValue) && !options.includes(currentValue),
       message: "La valeur sélectionnée ne fait pas partie des options"
     }
-  };  
+  });
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, getErrors, onError, id);
+
+  const errors = getErrors(currentValue);
 
   const handleSelectOnChange = e => {
     if (!disabled && !readOnly) {
