@@ -31,17 +31,17 @@ export const Boolean = (props) => {
     //     labelProps = { ...labelProps, className: twMerge(`truncate`, labelProps?.className) };
     // }
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && !currentValue,
             message: "Ce champ doit être coché."
         }
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? false, value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors }); // false
 
     const handleOnClick = () => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             setValue(!currentValue);
         }
     };
@@ -49,6 +49,8 @@ export const Boolean = (props) => {
     return (
         <Label 
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

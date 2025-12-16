@@ -33,7 +33,7 @@ export const VideosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && isEmpty(currentValue),
             message: "Vous devez enregistrer au moins 1 vidéo."
@@ -50,9 +50,9 @@ export const VideosUploader = (props) => {
             condition: !isNil(exact) && multiple && currentValue.length !== exact,
             message: `Vous devez prendre exactement ${exact} vidéos.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
     const initialStates = {
         // isPanelOpen: false,
@@ -81,7 +81,7 @@ export const VideosUploader = (props) => {
     };
 
     const deleteVideo = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -97,7 +97,7 @@ export const VideosUploader = (props) => {
     }
 
     const selectVideo = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             if (multiple) {
                 set("selectedVideoIndex", index);
             } else {
@@ -109,7 +109,7 @@ export const VideosUploader = (props) => {
     const { resizeImage } = useFile();
 
     const addVideo = async file => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             set("isVideoLoading", true);
 
             // const base64 = await resizeImage(file);
@@ -132,7 +132,7 @@ export const VideosUploader = (props) => {
     };
 
     const updateVideoInfo = (prop, value) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -274,6 +274,8 @@ export const VideosUploader = (props) => {
     return (
         <Label
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

@@ -58,7 +58,7 @@ export const Input = (props) => {
 
   const { isPasswordVisible } = states; // isCopied
 
-  const errors = {
+  const errors = (currentValue) => ({
     // email: { 
     //   condition: type === "email" && !yup.email().isValidSync(currentValue),
     //   message: "Veuillez rentrer une addresse email valide." 
@@ -122,10 +122,10 @@ export const Input = (props) => {
     //   condition: !isNil(pattern) && stringTypes.includes(type) && !pattern.test(currentValue),
     //   message: patternError 
     // },
-  };
+  });
 
 
-  const { currentValue, setValue } = useField(defaultValue, value, onChange, errors, onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
   // const currentValueFormat = {
   //   time: minutesToTime(currentValue)
@@ -137,7 +137,7 @@ export const Input = (props) => {
   const timeTypes = ["time"];
 
   const handleInputOnChange = e => {
-    if (!disabled && !readOnly) {
+    if (!disabled && !readOnly && !isFormSubmitting) {
       let value = e.target.value;
 
       if (numberTypes.includes(type)) {
@@ -185,6 +185,8 @@ export const Input = (props) => {
 
     <Label 
       { ...variantProps}
+      showErrors={isFormSubmitted}
+      currentValue={currentValue}
       errors={errors}
       mergeProps={mergeProps}
     >

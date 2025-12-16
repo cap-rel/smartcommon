@@ -36,7 +36,7 @@ export const Checker = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && isEmpty(currentValue),
             message: "Une case doit être cochée."
@@ -53,12 +53,12 @@ export const Checker = (props) => {
             condition: !isNil(exact) && multiple && currentValue.length !== exact,
             message: `Exactement ${exact} cases doivent être cochées.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : ""
 
     const handleOnClick = (optionValue) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && ! isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -74,6 +74,8 @@ export const Checker = (props) => {
     return (
         <Label 
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

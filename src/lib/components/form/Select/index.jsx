@@ -32,7 +32,7 @@ export const Select = (props) => {
     onError = () => {},
   } = variantProps;
 
-  const getErrors = (currentValue) => ({
+  const errors = (currentValue) => ({
     required: {
       condition: required && isEmpty(currentValue),
       message: "1 élément doit être sélectionné au minimum."
@@ -55,10 +55,10 @@ export const Select = (props) => {
     }
   });
 
-  const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : ""), value, onChange, getErrors(), onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
   const handleSelectOnChange = e => {
-    if (!disabled && !readOnly) {
+    if (!disabled && !readOnly && !isFormSubmitting) {
       const newValue = multiple ? Array.from(e.target.selectedOptions, option => option.value) : e.target.value;
       setValue(newValue);
     }
@@ -67,6 +67,8 @@ export const Select = (props) => {
   return (
     <Label 
       { ...variantProps}
+      showErrors={isFormSubmitted}
+      currentValue={currentValue}
       errors={errors}
       mergeProps={mergeProps}
     >

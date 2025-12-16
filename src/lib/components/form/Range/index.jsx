@@ -29,7 +29,7 @@ export const Range = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: {
             condition: required && isEmpty(currentValue),
             message: "Ce champ est requis."
@@ -42,12 +42,12 @@ export const Range = (props) => {
             condition: !isNil(max) && currentValue > max,
             message: `La valeur doit être de ${max} au minimum.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
     const handleColorOnChange = (e) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             const newValue = e.target.value;
             setValue(newValue);
         }
@@ -56,6 +56,8 @@ export const Range = (props) => {
     return (
         <Label 
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

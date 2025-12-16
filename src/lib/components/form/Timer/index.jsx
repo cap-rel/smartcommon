@@ -26,7 +26,7 @@ export const Timer = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: {
             condition: required && currentValue == 0,
             message: "Ce champ est requis." 
@@ -39,9 +39,9 @@ export const Timer = (props) => {
             condition: !isNil(max) && currentValue > max,
             message: `La valeur doit être de ${formatDuration(max)} au maximum.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? 0, value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },
@@ -55,7 +55,7 @@ export const Timer = (props) => {
     };
 
     const handleInputOnChange = (unitKey, unitValue) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0; 
             const unit = units[unitKey];
             if (numberValue <= unit.max) {
@@ -87,6 +87,8 @@ export const Timer = (props) => {
     return (
         <Label 
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

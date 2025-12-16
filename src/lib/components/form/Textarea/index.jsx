@@ -34,7 +34,7 @@ export const Textarea = (props) => {
     onError = () => {}
    } = variantProps;
 
-  const errors = {
+  const errors = (currentValue) => ({
     required: { 
       condition: required && isEmpty(currentValue),
       message: "Ce champ est requis."
@@ -55,12 +55,12 @@ export const Textarea = (props) => {
       condition: !isNil(pattern) && !pattern.test(currentValue),
       message: patternError 
     },
-  };
+  });
 
-  const { currentValue, setValue } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
 
   const handleValueOnChange = (e) => {
-    if (!disabled && !readOnly) {
+    if (!disabled && !readOnly && !isFormSubmitting) {
       setValue(e.target.value);
     }
   };
@@ -68,6 +68,8 @@ export const Textarea = (props) => {
   return (
     <Label 
       { ...variantProps}
+      showErrors={isFormSubmitted}
+      currentValue={currentValue}
       errors={errors}
       mergeProps={mergeProps}
     >

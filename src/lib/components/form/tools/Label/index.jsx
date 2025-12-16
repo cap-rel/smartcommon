@@ -14,12 +14,13 @@ export const Label = (props) => {
         prefix,
         suffix,
         required,
-        formSubmitted,
+        showErrors,
+        currentValue,
         errors = {},
         children,
     } = props;
 
-    const currentErrors = Object.values(errors).filter(error => error.condition);
+    const currentErrors = Object.values(errors(currentValue)).filter(error => error.condition);
 
     return (
         <div { ...mergeProps("container", props => ({
@@ -84,10 +85,10 @@ export const Label = (props) => {
 
             </div>
 
-            {(help || (!isEmpty(currentErrors) && formSubmitted)) &&
+            {(help || (!isEmpty(currentErrors) && showErrors)) &&
                 <div { ...mergeProps("footer", props => ({
                     ...props,
-                    className: `${(formSubmitted && !isEmpty(currentErrors)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
+                    className: `${(showErrors && !isEmpty(currentErrors)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
                 }))}>
                     <IoMdInformationCircleOutline { ...mergeProps("helpIcon", props => ({
                         ...props,
@@ -98,7 +99,7 @@ export const Label = (props) => {
                         className: `flex flex-col`
                     }))}>
                         <div { ...mergeProps("help", props => props)}>{help}</div>
-                        {formSubmitted &&
+                        {showErrors &&
                             currentErrors.map((error, EI) => {
                                 const { condition, message } = error;
                                 if (condition) {

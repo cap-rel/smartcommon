@@ -26,14 +26,14 @@ export const SignaturePad = (props) => {
     onError = () => {},
   } = variantProps; 
 
-  const errors = {
+  const errors = (currentValue) => ({
     required: { 
       condition: required && isEmpty(currentValue.src),
       message: "Ce champ est requis." 
     },
-  };
+  });
 
-  const { currentValue, setValue } = useField(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange, errors, onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
   const initialStates = {
     isSignatureValidated: false
@@ -45,7 +45,7 @@ export const SignaturePad = (props) => {
 
   const padRef = useRef(null);
 
-  const blocked = disabled || readOnly;
+  const blocked = disabled || readOnly || isFormSubmitting;
 
   useEffect(() => {
     if (!isNil(padRef.current) && blocked) {
@@ -91,6 +91,8 @@ export const SignaturePad = (props) => {
   return (
     <Label 
       { ...variantProps}
+      showErrors={isFormSubmitted}
+      currentValue={currentValue}
       errors={errors}
       mergeProps={mergeProps}
     >
@@ -195,7 +197,7 @@ export const SignaturePad = (props) => {
             ...props,
             required: props.required ?? required,
             disabled: props.disabled ?? disabled,
-            readOnly: props.readOnly ?? readOnly,
+            readOnly: isFormSubmitting || (props.readOnly ?? readOnly),
             value: currentValue.signer,
             onChange: value => setValue({ ...currentValue, signer: value }),
             inputContainerProps: {

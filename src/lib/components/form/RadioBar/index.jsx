@@ -25,17 +25,17 @@ export const RadioBar = (props) => {
         onError = () => {}
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && isEmpty(currentValue),
             message: "1 élément doit être sélectionné."
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
     const handleOnClick = (optionValue) => {
-        if (!disabled && !readOnly) {    
+        if (!disabled && !readOnly && !isFormSubmitting) {    
             let newValue = currentValue === optionValue ? "" : optionValue;
             setValue(newValue);
         }
@@ -44,6 +44,8 @@ export const RadioBar = (props) => {
     return (
         <Label 
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

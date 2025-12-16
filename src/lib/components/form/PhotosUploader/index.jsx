@@ -34,7 +34,7 @@ export const PhotosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && isEmpty(currentValue),
             message: "Vous devez prendre au moins 1 photo."
@@ -51,9 +51,9 @@ export const PhotosUploader = (props) => {
             condition: !isNil(exact) && multiple && currentValue.length !== exact,
             message: `Vous devez prendre exactement ${exact} photos.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
     const initialStates = {
         // isPanelOpen: false,
@@ -82,7 +82,7 @@ export const PhotosUploader = (props) => {
     };
 
     const deletePhoto = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -98,7 +98,7 @@ export const PhotosUploader = (props) => {
     }
 
     const selectPhoto = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             if (multiple) {
                 set("selectedPhotoIndex", index);
             } else {
@@ -110,7 +110,7 @@ export const PhotosUploader = (props) => {
     const { resizeImage } = useFile();
 
     const addPhoto = async file => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             set("isPhotoLoading", true);
             // setTimeout(() => {
                 // const file = e.target.files[0];
@@ -143,7 +143,7 @@ export const PhotosUploader = (props) => {
     };
 
     const updatePhotoInfo = (prop, value) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -309,6 +309,8 @@ export const PhotosUploader = (props) => {
     return (
         <Label
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

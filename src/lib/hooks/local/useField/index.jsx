@@ -12,18 +12,20 @@ export const useField = (props) => {
 
   const currentValue = isControlledByForm ? values[name] : value;
 
+  const currentErrors = errors(currentValue);
+
   useEffect(() => {
     if (isControlledByForm && isUndefined(currentValue)) {
-      setField({ name, value: defaultValue, errors }); // TODO put the map
+      setField({ name, value: defaultValue, errors: currentErrors }); // TODO put the map
     }
   }, []);
 
   const setValue = (newValue) => {
     if (!isEqual(currentValue, newValue)) {
       if (isControlledByForm) {
-        setField({ name, value: newValue, errors });
+        setField({ name, value: newValue, errors: currentErrors });
       } else {
-        onChange(newValue, errors);
+        onChange(newValue, currentErrors);
       }
     }
   };

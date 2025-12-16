@@ -65,14 +65,14 @@ export const Gps = props => {
     onError = () => {},
   } = variantProps;
 
-  const errors = {
+  const errors = (currentValue) => ({
     required: { 
       condition: required && isEmpty(currentValue),
       message: "Vous devez géolocaliser."
     },
-  };
+  });
 
-  const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
   const initialStates = {
     isLocating: false,
@@ -85,7 +85,7 @@ export const Gps = props => {
   // const isRealValueEmpty = multiple ? isEmpty(currentValue) : isEmpty(currentValue[0]);
 
   const geoLocate = () => {
-    if (!disabled && !readOnly) {
+    if (!disabled && !readOnly && !isFormSubmitting) {
       set("isLocating", true);
       setTimeout(() => {
         locate(
@@ -165,6 +165,8 @@ export const Gps = props => {
   return (
     <Label 
       { ...variantProps}
+      showErrors={isFormSubmitted}
+      currentValue={currentValue}
       errors={errors}
       mergeProps={mergeProps}
     >

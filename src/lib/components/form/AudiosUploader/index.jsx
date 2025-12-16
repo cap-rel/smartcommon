@@ -33,7 +33,7 @@ export const AudiosUploader = (props) => {
         onError = () => {},
     } = variantProps;
 
-    const errors = {
+    const errors = (currentValue) => ({
         required: { 
             condition: required && isEmpty(currentValue),
             message: "Vous devez enregistrer au moins 1 audio."
@@ -50,9 +50,9 @@ export const AudiosUploader = (props) => {
             condition: !isNil(exact) && multiple && currentValue.length !== exact,
             message: `Vous devez enregistrer exactement ${exact} audios.`
         },
-    };
+    });
 
-    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
+    const { currentValue, setValue, isFormSubmitting, isFormSubmitted } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : null;
 
     const initialStates = {
         // isPanelOpen: false,
@@ -81,7 +81,7 @@ export const AudiosUploader = (props) => {
     };
 
     const deleteAudio = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -97,7 +97,7 @@ export const AudiosUploader = (props) => {
     }
 
     const selectAudio = index => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && isFormSubmitting) {
             if (multiple) {
                 set("selectedAudioIndex", index);
             } else {
@@ -109,7 +109,7 @@ export const AudiosUploader = (props) => {
     const { resizeImage } = useFile();
 
     const addAudio = async file => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && isFormSubmitting) {
             set("isAudioLoading", true);
 
             // const base64 = await resizeImage(file);
@@ -132,7 +132,7 @@ export const AudiosUploader = (props) => {
     };
 
     const updateAudioInfo = (prop, value) => {
-        if (!disabled && !readOnly) {
+        if (!disabled && !readOnly && isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -277,6 +277,8 @@ export const AudiosUploader = (props) => {
     return (
         <Label
             { ...variantProps}
+            showErrors={isFormSubmitted}
+            currentValue={currentValue}
             errors={errors}
             mergeProps={mergeProps}
         >

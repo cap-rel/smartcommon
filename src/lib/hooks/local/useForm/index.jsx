@@ -1,4 +1,4 @@
-import { some } from "lodash";
+import { forEach, some } from "lodash";
 
 import { throwTypeError } from "lib/utils";
 import { useStates } from "lib/hooks";
@@ -22,9 +22,10 @@ export const useForm = (props = {}) => {
 
   const { values, errors, isFormSubmitting, isFormSubmitted } = st.values;
 
-  const setField = (name, value) => {
+  const setField = ({ name, value, errors }) => {
     st.set(`values.${name}`, value);
-    st.set(`errors.${name}`, value);
+
+    forEach(errors, (error, key) => st.set(`errors.${name}.${key}`, error.condition));
   };
 
   const submit = async () => {
