@@ -1,4 +1,4 @@
-export * from "./useEffects";
+export * from "./useEffect";
 // export * from "./useFormBuilder";
 export * from "./useGlobalStates";
 export * from "./useStates";
