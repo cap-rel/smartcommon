@@ -28,7 +28,9 @@ export const useForm = (props = {}) => {
     forEach(errors, (error, key) => st.set(`errors.${name}.${key}`, error.condition));
   };
 
-  const submit = async () => {
+  const submit = async (e) => {
+    e.preventDefault();
+    
     set("isFormSubmitted", true);
 
     if (!some(errors, Boolean)) {
