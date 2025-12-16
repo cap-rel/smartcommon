@@ -68,7 +68,7 @@ export const AddressInput = (props) => {
 
   const { suggestions, isSearching } = states;
 
-  const errors = (currentValue) = ({});
+  const errors = (currentValue) => ({});
   
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
