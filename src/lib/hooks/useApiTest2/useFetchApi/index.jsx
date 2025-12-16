@@ -39,8 +39,8 @@ export const useFetchApi = (deviceId) => {
         if (!ok) {
             if (response.status === 401) {
                 await refreshAccessToken();
-                
-                return await fetchApi(path, request, errors)
+
+                return await fetchApi(path, body, request, errors)
             }
             
             const errorAction = errors[status] ?? apiErrors[status];
