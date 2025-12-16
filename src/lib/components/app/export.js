@@ -1,4 +1,4 @@
 export * from "./Provider";
 export * from "./Toaster";
-export * from "./Router";
 export * from "./NavigationProvider";
+export { Routes, Route } from "react-router-dom";
