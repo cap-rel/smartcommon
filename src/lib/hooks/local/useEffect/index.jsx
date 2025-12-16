@@ -33,9 +33,9 @@ import { log, throwTypeError } from "lib/utils";
 export const useEffect = (props = {}) => {
     throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-    const { on, deps, fn = () => {}, debug } = props;
+    const { deps, fn = () => {}, debug } = props;
 
-    throwTypeError({ value: fn, name: "fn", type: ["plain object"] });
+    throwTypeError({ value: fn, name: "fn", type: ["function"] });
 
     const activationsRef = useRef(1);
     let activations = activationsRef.current;
