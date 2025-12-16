@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { FaEraser, FaSignature } from "react-icons/fa6";
 
 import { Button, Label, Input } from "lib/components";
-import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, isNil, locate, isEmpty } from "lib/utils/functions";
 
 import { propTypes } from "./props";
@@ -33,7 +33,7 @@ export const SignaturePad = (props) => {
     },
   };
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue ?? { src: "", gpsPoints: [null, null], signer: "" }, value, onChange, errors, onError, id);
 
   const initialStates = {
     isSignatureValidated: false

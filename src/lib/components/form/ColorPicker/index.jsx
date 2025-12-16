@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 import { applyFunctionIfNotNil, isEmpty } from "lib/utils";
 
@@ -32,7 +32,7 @@ export const ColorPicker = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly) {

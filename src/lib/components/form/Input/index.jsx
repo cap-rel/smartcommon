@@ -4,7 +4,7 @@ import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
 
 import { applyFunctionIfNotNil, datetimeFormat, isEmpty, isNil, isNumber, timeToMinutes } from "lib/utils";
 import { Label } from "lib/components";
-import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -125,7 +125,7 @@ export const Input = (props) => {
   };
 
 
-  const { currentValue, setValue } = useLocalValue(defaultValue, value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue, value, onChange, errors, onError, id);
 
   // const currentValueFormat = {
   //   time: minutesToTime(currentValue)

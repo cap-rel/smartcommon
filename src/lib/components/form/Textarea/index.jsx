@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 import { applyFunctionIfNotNil, isEmpty, isNil } from "lib/utils";
 
@@ -57,7 +57,7 @@ export const Textarea = (props) => {
     },
   };
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
 
   const handleValueOnChange = (e) => {
     if (!disabled && !readOnly) {
@@ -73,7 +73,13 @@ export const Textarea = (props) => {
     >
       <textarea { ...mergeProps("textarea", props => ({
         ...props,
-        ...mergeQuickProps(["placeholder", "disabled", "readOnly", ["rows", 5], "cols", "wrap", "name"]),
+        placeholder,
+        disabled,
+        readOnly,
+        rows: 5,
+        cols,
+        wrap,
+        name,
         value: currentValue,
         onChange: e => {
           handleValueOnChange(e);

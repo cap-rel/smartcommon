@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 
 import { applyFunctionIfNotNil, isArray, isNil, ISOFormat, isString } from "lib/utils";
-import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Button } from "lib/components";
 
 import { propTypes } from "./props";
@@ -24,7 +24,7 @@ export const Calendar = (props) => {
     onYearChange
   } = variantProps;
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange);
+  const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange);
 
   const allYears = [];
   for (let year = yearsInterval[0]; year <= yearsInterval[1]; year++) {

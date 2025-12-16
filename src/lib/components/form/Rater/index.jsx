@@ -1,7 +1,7 @@
 import { FaStar } from "react-icons/fa6";
 import { useEffect } from "react";
 
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { Label, Icon } from "lib/components";
 import { isEmpty, isNil } from "lib/utils";
 
@@ -47,7 +47,7 @@ export const Rater = (props) => {
         },
     };    
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
 
     const updateRating = (index) => {
         if (!disabled && !readOnly) {

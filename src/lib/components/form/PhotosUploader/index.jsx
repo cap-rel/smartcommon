@@ -3,7 +3,7 @@ import { useRef } from "react";
 import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
 
-import { useFile, useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "lib/utils";
 
@@ -53,7 +53,7 @@ export const PhotosUploader = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 
     const initialStates = {
         // isPanelOpen: false,

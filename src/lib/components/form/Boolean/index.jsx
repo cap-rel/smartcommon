@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
 
 import { propTypes } from "./props";
@@ -38,7 +38,7 @@ export const Boolean = (props) => {
         }
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? false, value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? false, value, onChange, errors, onError, id);
 
     const handleOnClick = () => {
         if (!disabled && !readOnly) {

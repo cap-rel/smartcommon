@@ -2,7 +2,7 @@ import { useEffect } from "react";
 
 import { formatDuration, isNil, isNumber, secsToDuration } from "lib/utils";
 import { Input, Label } from "lib/components";
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 
 import { propTypes } from "./props";
 
@@ -41,7 +41,7 @@ export const Timer = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? 0, value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? 0, value, onChange, errors, onError, id);
 
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },

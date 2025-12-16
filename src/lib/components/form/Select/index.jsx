@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { Label } from "lib/components";
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil, isObject } from "lib/utils";
 
 import { propTypes } from "./props";
@@ -55,7 +55,7 @@ export const Select = (props) => {
     }
   };  
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
 
   const handleSelectOnChange = e => {
     if (!disabled && !readOnly) {

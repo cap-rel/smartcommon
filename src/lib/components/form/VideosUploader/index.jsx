@@ -2,7 +2,7 @@ import { FaFileImport, FaFileVideo, FaTrashCan, FaVideo } from "react-icons/fa6"
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 
-import { useFile, useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Textarea, Button, Input, Label } from "lib/components";
 import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "lib/utils";
 
@@ -52,7 +52,7 @@ export const VideosUploader = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : null), value, onChange, errors, onError, id);
 
     const initialStates = {
         // isPanelOpen: false,

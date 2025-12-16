@@ -7,5 +7,5 @@ export * from "./useListDnD";
 export * from "./useStatesWorking";
 export * from "./useWindow";
 
-export * from "./contexts";
-export * from "./locals";
+export * from "./global";
+export * from "./local";

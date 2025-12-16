@@ -1,7 +1,7 @@
 import { FaStar } from "react-icons/fa6";
 import { useEffect } from "react";
 
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
 import { applyFunctionIfFunction, isEmpty, isNil, isObject } from "lib/utils";
 
@@ -55,7 +55,7 @@ export const Checker = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? (multiple ? [] : ""), value, onChange, errors, onError, id);
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly) {

@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { FaSearchLocation } from 'react-icons/fa';
 
-import { useStates, useLocalValue, useVariantMerger } from 'lib/hooks';
+import { useStates, useField, useVariantMerger } from 'lib/hooks';
 import { Label, Input } from 'lib/components';
 import { isEmpty } from 'lib/utils';
 
@@ -69,7 +69,7 @@ export const AddressInput = (props) => {
 
   const errors = {};
   
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? "", value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)

@@ -4,7 +4,7 @@ import { useEffect } from "react";
 
 import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "lib/utils";
 import { Button, Label } from "lib/components";
-import { useStates, useLocalValue, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 
 import { propTypes } from "./props";
 
@@ -72,7 +72,7 @@ export const Gps = props => {
     },
   };
 
-  const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+  const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
 
   const initialStates = {
     isLocating: false,

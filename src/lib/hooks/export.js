@@ -1,4 +1,4 @@
-export * from "./contexts/export";
-export * from "./locals/export";
+export * from "./global/export";
+export * from "./local/export";
 
 export * from "./useApiTest2";

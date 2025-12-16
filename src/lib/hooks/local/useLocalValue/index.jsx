@@ -1,7 +1,7 @@
 import { isUndefined } from "lib/utils";
 import { useState } from "react";
 
-export const useLocalValue = (localValue, value, onChange, errors, onError, id) => {
+export const useField = (localValue, value, onChange, errors, onError, id) => {
     const [state, set] = useState(localValue)
 
     const currentValue = value ?? state;

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { Label } from "lib/components";
-import { useLocalValue, useVariantMerger } from "lib/hooks";
+import { useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, isEmpty, isNil } from "lib/utils";
 
 import { propTypes } from "./props";
@@ -44,7 +44,7 @@ export const Range = (props) => {
         },
     };
 
-    const { currentValue, setValue } = useLocalValue(defaultValue ?? null, value, onChange, errors, onError, id);
+    const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange, errors, onError, id);
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly) {

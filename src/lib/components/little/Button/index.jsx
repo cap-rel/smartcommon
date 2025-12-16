@@ -1,8 +1,10 @@
 import { isNil } from "lib/utils";
 import { useVariantMerger } from "lib/hooks";
-import { Spinner } from "lib/components";
+import { FormContext, Spinner } from "lib/components";
 
 import { propTypes, defaultProps } from "./props";
+import { useContext } from "react";
+import { isUndefined } from "lodash";
 
 // TODO badge
 
@@ -21,6 +23,12 @@ export const Button = (props) => {
         disabled = false,
         onClick = () => {}
     } = variantProps;
+
+    const { submit, isFormSubmitting } = useContext(FormContext);
+
+    const isInForm = !isUndefined(FormContext);
+
+    const isLoading = loading || isFormSubmitting;
     
     return (
         <button { ...mergeProps("button", props => ({
@@ -32,9 +40,15 @@ export const Button = (props) => {
             ${(!disabled && !loading) && "cursor-pointer"}
             `,
             disabled: loading || disabled,
-            onClick
+            onClick: () => {
+                onClick();
+
+                if (isInForm) {
+                    submit();
+                }
+            }
         }))}>
-            {loading &&
+            {isLoading &&
                 <Spinner { ...mergeProps("Spinner", props => ({
                     ...props,
                     spinnerProps: {
@@ -44,7 +58,7 @@ export const Button = (props) => {
                 }))} />
             }
 
-            {(!isNil(icon) && !loading) &&
+            {(!isNil(icon) && !isLoading) &&
                 <div { ...mergeProps("icon", props => ({
                     ...props,
                     className: `shrink-0`
