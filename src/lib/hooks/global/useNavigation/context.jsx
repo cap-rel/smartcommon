@@ -5,6 +5,8 @@ import { useEffect } from "react";
 import { log, throwTypeError } from "lib/utils";
 import { useGlobalStates } from "lib/hooks";
 
+// TODO .query(params) .scroll(false) .preserveState()
+
 export const useNavigationContext = (props = {}) => {
     throwTypeError({ value: props, name: "useNavigation props", type: ["plain object"] })
     
