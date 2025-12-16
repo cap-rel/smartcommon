@@ -37,6 +37,9 @@ export const useEffect = (props = {}) => {
 
     throwTypeError({ value: fn, name: "fn", type: ["plain object"] });
 
+    const activationsRef = useRef(1);
+    const activations = activationsRef.current;
+
     const depsArray = toArray(deps);
 
     useEffect(() => {
@@ -44,6 +47,11 @@ export const useEffect = (props = {}) => {
             log.effect(`${key} (${activation}})`);
         }
 
+        activations += 1;
         fn();
     }, depsArray);
+
+    return {
+        activations
+    }
 };
