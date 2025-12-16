@@ -5,5 +5,5 @@ export * from "./useField";
 export * from "./useStates";
 export * from "./useVariantMerger";
 export * from "./useDb";
-export * from "./useFrom";
+export * from "./useForm";
 export * from "./useButton";
