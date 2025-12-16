@@ -4,7 +4,6 @@
     "paths": {
       "dev/*": ["src/dev/*"],
       "lib/*": ["src/lib/*"],
-      "storybook/*": ["src/storybook/*"]
     }
   },
   "include": ["src", "dev", "lib", "storybook"]

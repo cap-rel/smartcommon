@@ -27,7 +27,7 @@ export default defineConfig({
     alias: {
       'dev': path.resolve(__dirname, './src/dev'),
       'lib': path.resolve(__dirname, './src/lib'),
-      'storybook': path.resolve(__dirname, './src/storybook'),
+      // 'storybook': path.resolve(__dirname, './src/storybook'),
       'prop-types': 'prop-types/prop-types.js',
     },
   },
