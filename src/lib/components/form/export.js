@@ -21,3 +21,4 @@ export * from "./AudiosUploader";
 export * from "./RadioBar";
 export * from "./Calendar";
 export * from "./SignaturePad";
+export * from "./Form";
