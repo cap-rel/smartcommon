@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { isFunction, last } from "lodash";
+import { isFunction, isPlainObject, isUndefined, last } from "lodash";
 import { useEffect } from "react";
 
 import { log, throwTypeError } from "lib/utils";
@@ -13,17 +13,19 @@ export const useNavigationContext = (props = {}) => {
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });
 
-    const history = gst.values?.history ?? [];
+    const { history } = gst.values;
 
     const location = useLocation();
 
     const { key, pathname, state } = location;
 
+    const filteredLocation = { ...location, state: !isPlainObject(state) ? {} : state };
+
     useEffect(() => {
         const lastLocation = last(history);
 
         if (!lastLocation || lastLocation.key !== key) {
-            gst.session.set("history[]", location);
+            gst.session.set("history[]", filteredLocation);
             
             if (debug) {
                 log.location(`pathname = ${pathname}, state =`, state);
@@ -35,16 +37,42 @@ export const useNavigationContext = (props = {}) => {
 
     const params = useParams();
     const searchParams = useSearchParams();
-    
+
+    const navBuilder = () => {
+        const options = { replace: false, state: filteredLocation.state };
+
+        const builder = {
+            replace: () => {
+                options.replace = true;
+                return builder;
+            },
+            state: (state) => {
+                if (!isUndefined(state)) {
+                    options.state = isFunction(state) ? state(options.state) : state;
+                }
+
+                return builder;
+            },
+            to: (pathname) => {
+                if (!isUndefined(pathname)) {
+                    navigate(pathname, options);
+                }
+            },
+        };
+
+        return builder;
+    };
+
+    const nav = navBuilder();
+
     // ---------------------- return ----------------------
 
     return  {
         params,
         searchParams,
-        location,
-        prevLocation: history[history.length - 2],
-        to: navigate,
-        updateState: (state) => navigate(pathname, { state: isFunction(state) ? state(location.state) : state }),
-        replaceTo: (pathname) =>  navigate(pathname, { replace: true })
+        location: filteredLocation,
+        prevLocation: history.length > 2 ? history[history.length - 2] : undefined,
+        navigate,
+        ...nav
     };
 };
