@@ -73,7 +73,8 @@ export const useNavigationContext = (props = {}) => {
         params,
         searchParams,
         location: filteredLocation,
-        prevLocation: history.length > 2 ? history[history.length - 2] : undefined,
+        // prevLocation: history.length > 2 ? history[history.length - 2] : undefined,
+        history,
         navigate,
         ...nav
     };
