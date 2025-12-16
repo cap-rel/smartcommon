@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect as useReactEffect, useRef } from "react";
 import { constant, forEach, isFunction, isPlainObject, mapValues, toArray, upperFirst } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
@@ -42,7 +42,7 @@ export const useEffect = (props = {}) => {
 
     const depsArray = toArray(deps);
 
-    useEffect(() => {
+    useReactEffect(() => {
         if (debug) {
             log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activations}})`);
         }
