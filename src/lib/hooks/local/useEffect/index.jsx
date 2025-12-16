@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { constant, forEach, isFunction, isPlainObject, mapValues, toArray } from "lodash";
+import { constant, forEach, isFunction, isPlainObject, mapValues, toArray, upperFirst } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
@@ -33,7 +33,7 @@ import { log, throwTypeError } from "lib/utils";
 export const useEffect = (props = {}) => {
     throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-    const { deps, fn = () => {}, debug } = props;
+    const { on, deps, fn = () => {}, debug } = props;
 
     throwTypeError({ value: fn, name: "fn", type: ["plain object"] });
 
@@ -44,7 +44,7 @@ export const useEffect = (props = {}) => {
 
     useEffect(() => {
         if (debug) {
-            log.effect(`${key} (${activation}})`);
+            log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activations}})`);
         }
 
         activations += 1;
