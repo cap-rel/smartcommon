@@ -30,13 +30,13 @@ export const useForm = (props = {}) => {
 
   const submit = async (e) => {
     e.preventDefault();
-    
-    set("isFormSubmitted", true);
+
+    st.set("isFormSubmitted", true);
 
     if (!some(errors, Boolean)) {
-      set("isFormSubmitting", true);
+      st.set("isFormSubmitting", true);
       await onSubmit();
-      set("isFormSubmitting", false);
+      st.set("isFormSubmitting", false);
     }
   };
 
