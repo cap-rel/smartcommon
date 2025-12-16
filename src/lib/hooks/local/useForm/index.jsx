@@ -6,9 +6,14 @@ import { useStates } from "lib/hooks";
 export const useForm = (props = {}) => {
   throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-  const { defaultValues = {}, onSubmit = () => {}, debug } = props;
+  const { defaultValues = {}, events = {}, debug } = props;
 
   throwTypeError({ value: defaultValues, name: "defaultValues", type: ["plain object"] });
+  throwTypeError({ value: events, name: "events", type: ["plain object"] });
+
+  const { onPreSubmit, onSubmit } = events;
+
+  throwTypeError({ value: onPreSubmit, name: "onPreSubmit", type: ["function"] });
   throwTypeError({ value: onSubmit, name: "onSubmit", type: ["function"] });
 
   const initialStates = {
@@ -30,6 +35,8 @@ export const useForm = (props = {}) => {
 
   const submit = async (e) => {
     e.preventDefault();
+
+    await onPreSubmit();
 
     st.set("isFormSubmitted", true);
 
