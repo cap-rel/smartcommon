@@ -40,11 +40,11 @@ export const Button = (props) => {
             ${(!disabled && !loading) && "cursor-pointer"}
             `,
             disabled: loading || disabled,
-            onClick: () => {
-                onClick();
+            onClick: (e) => {
+                onClick(e);
 
                 if (isInForm) {
-                    submit();
+                    submit(e);
                 }
             }
         }))}>
