@@ -38,6 +38,7 @@ export const useEffect = (props = {}) => {
     throwTypeError({ value: fn, name: "fn", type: ["plain object"] });
 
     const activationsRef = useRef(1);
+    let activations = activationsRef.current;
 
     const depsArray = toArray(deps);
 
@@ -46,11 +47,11 @@ export const useEffect = (props = {}) => {
             log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activations}})`);
         }
 
-        activationsRef.current += 1;
+        activations += 1;
         fn();
     }, depsArray);
 
     return {
-        activations: activationsRef.current
+        activations
     }
 };
