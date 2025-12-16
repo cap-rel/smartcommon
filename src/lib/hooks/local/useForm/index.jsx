@@ -1,4 +1,4 @@
-import { forEach, some } from "lodash";
+import { forEach, isString, isUndefined, some } from "lodash";
 
 import { throwTypeError } from "lib/utils";
 import { useStates } from "lib/hooks";
@@ -11,10 +11,11 @@ export const useForm = (props = {}) => {
   throwTypeError({ value: defaultValues, name: "defaultValues", type: ["plain object"] });
   throwTypeError({ value: events, name: "events", type: ["plain object"] });
 
-  const { onPreSubmit, onSubmit } = events;
+  const { onPreSubmit = () => {}, onSubmit = () => {}, onPostSubmit = () => {} } = events;
 
   throwTypeError({ value: onPreSubmit, name: "onPreSubmit", type: ["function"] });
   throwTypeError({ value: onSubmit, name: "onSubmit", type: ["function"] });
+  throwTypeError({ value: onPostSubmit, name: "onPostSubmit", type: ["function"] });
 
   const initialStates = {
     values: defaultValues,
@@ -45,11 +46,51 @@ export const useForm = (props = {}) => {
       await onSubmit();
       st.set("isFormSubmitting", false);
     }
+
+    onPostSubmit();
   };
 
+  const returnedValues = Object.defineProperties(values, {
+    set:{
+      value: (key, value) => {
+        if (isString(key)) {
+          st.set(`values.${key}`, value);
+        }
+      },
+      enumerable: false 
+    },
+    unset:{
+      value: (key, value) => {
+        if (isString(key)) {
+          st.unset(`values.${key}`, value);
+        }
+      },
+      enumerable: false
+    }
+  });
+
+  const returnedErrors = Object.defineProperties(errors, {
+    set:{
+      value: (key, value) => {
+        if (isString(key)) {
+          st.set(`errors.${key}`, value);
+        }
+      },
+      enumerable: false 
+    },
+    unset:{
+      value: (key, value) => {
+        if (isString(key)) {
+          st.unset(`errors.${key}`, value);
+        }
+      },
+      enumerable: false
+    }
+  });
+
   return {
-    values,
-    errors,
+    values: returnedValues,
+    errors: returnedErrors,
 
     setField,
 
