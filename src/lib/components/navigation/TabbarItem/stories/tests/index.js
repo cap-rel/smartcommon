@@ -1,0 +1,1 @@
+export { TabbarItem } from "./TabbarItem";
