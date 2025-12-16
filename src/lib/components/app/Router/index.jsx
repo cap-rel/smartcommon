@@ -1,23 +1,9 @@
-import { map } from "lodash";
-import { BrowserRouter, Route, useRoutes } from "react-router-dom";
-
-import { throwTypeError } from "lib/utils";
-import { NavigationProvider } from "lib/components";
-
-export const RouterContent = ({ children }) => {
-    return (
-        <NavigationProvider>
-            {children}
-        </NavigationProvider>
-    );
-};
+import { BrowserRouter } from "react-router-dom";
 
 export const Router = ({ children }) => {
     return (
         <BrowserRouter>
-            <RouterContent>
-                {children}
-            </RouterContent>
+            {children}
         </BrowserRouter>
     );
 };
