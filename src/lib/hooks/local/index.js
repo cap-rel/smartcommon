@@ -6,4 +6,3 @@ export * from "./useStates";
 export * from "./useVariantMerger";
 export * from "./useDb";
 export * from "./useForm";
-export * from "./useButton";
