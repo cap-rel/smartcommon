@@ -57,7 +57,7 @@ export const Textarea = (props) => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField(defaultValue ?? "", value, onChange, errors, onError, id);
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
 
   const handleValueOnChange = (e) => {
     if (!disabled && !readOnly && !isFormSubmitting) {
