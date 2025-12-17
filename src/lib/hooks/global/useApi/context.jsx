@@ -46,12 +46,12 @@ export const useApiContext = () => {
                     const { delay } = options;
 
                     if (!navigatorInfo.isOnLine) {
-                        log.apiError(`${method} - NO CONNECTION`, `${prefixUrl}${url}`);
+                        log.apiError(`${method} - NO CONNECTION`, url);
 
                         return Promise.reject(new Error("No internet connection"));
                     }
 
-                    log.apiLoading(`${method} - LOADING`, `${prefixUrl}${url}`);
+                    log.apiLoading(`${method} - LOADING`, url);
 
                     if (delay) {
                         return new Promise(response => setTimeout(response, delay));
@@ -64,9 +64,9 @@ export const useApiContext = () => {
                     const { ok, status } = response;
 
                     if (!ok) {
-                        log.apiError(`${method} - ${status}`, `${prefixUrl}${url}`);
+                        log.apiError(`${method} - ${status}`, url);
                     } else {
-                        log.apiSuccess(`${method} - ${status}`, `${prefixUrl}${url}`);
+                        log.apiSuccess(`${method} - ${status}`, url);
                     }
                 }
             ]
