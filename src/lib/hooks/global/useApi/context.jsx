@@ -77,7 +77,7 @@ export const useApiContext = () => {
 
     const refresh = () => {
         return baseApi
-            .get("/refresh", {
+            .get("refresh", {
                 headers: {
                     Authorization: `Bearer ${refreshToken}`
                 }
@@ -106,7 +106,7 @@ export const useApiContext = () => {
     const entities = (options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return publicApi.get(options.url ?? "/login", options).json();
+        return publicApi.get(options.url ?? "login", options).json();
     };
 
     // ---------------------- login ----------------------
@@ -115,7 +115,7 @@ export const useApiContext = () => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         return publicApi
-            .post(options.url ?? "/login", {
+            .post(options.url ?? "login", {
                 json: data,
                  ...options
             })
@@ -168,7 +168,7 @@ export const useApiContext = () => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         return privateApi
-            .post(options.url ?? "/logout", options)
+            .post(options.url ?? "logout", options)
             .json()
             .then(() => {
                 gst.unset("user");
@@ -181,7 +181,7 @@ export const useApiContext = () => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         return privateApi
-            .post(options.url ?? "/device", {
+            .post(options.url ?? "device", {
                 json: data,
                 ...options
             })
