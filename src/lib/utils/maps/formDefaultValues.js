@@ -39,6 +39,6 @@ const formDefaultValues = (props) => {
         photos       : multiple ? [] : { src: "", title: "", description: "", capture: false, createdAt: "", gpsPoints: [null, null] },
         signature    : { src: "", signer: "", signedAt: null, gpsPoints: [null, null] },
         // icon         : IconSelect,
-        color        : ColorPicker,
+        color        : "",
     }
 };
