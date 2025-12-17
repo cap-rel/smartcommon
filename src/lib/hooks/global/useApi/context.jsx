@@ -51,7 +51,7 @@ export const useApiContext = () => {
                         return Promise.reject(new Error("No internet connection"));
                     }
 
-                    log.apiLoading(`${method}`, `${prefixUrl}${url}`);
+                    log.apiLoading(`${method} - LOADING`, `${prefixUrl}${url}`);
 
                     if (delay) {
                         return new Promise(response => setTimeout(response, delay));
