@@ -22,7 +22,7 @@ export const useApiContext = () => {
         gst.local.set("deviceId", v4());
     }
 
-    const { accessToken, refreshToken, tokenExpiry, rememberMe } = gst.get("user") ?? {};
+    const { accessToken, refreshToken, tokenExpiry } = gst.get("user") ?? {};
 
     // ---------------------- baseApi ----------------------
 
