@@ -58,9 +58,9 @@ export const useStates = (props = {}) => {
   const set = (path, value) => {
     throwTypeError({ value: path, name: "set path", type: ["string"], required: true  });
 
-    if (isEqual(get(path), value)) {
-      return;
-    }
+    // if (isEqual(get(path), value)) {
+    //   return;
+    // }
 
     setStates(prev => {
       const newState = structuredClone(prev);
