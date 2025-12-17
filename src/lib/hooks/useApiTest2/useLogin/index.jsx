@@ -1,7 +1,6 @@
 import { useDispatch } from "react-redux";
 
 import { useLibConfig } from "lib/hooks";
-import { setUser } from "lib/global-state";
 import { isFunction, log } from "lib/utils";
 
 import { apiMap } from "../apiMap";

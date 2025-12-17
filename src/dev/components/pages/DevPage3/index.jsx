@@ -1,6 +1,5 @@
 import { useApi, useEffects, useGlobalStates, useStates } from "lib/hooks";
 import { useDispatch } from "react-redux";
-import { setUser } from "lib/global-state";
 import { useEffect } from "react";
 import { Page } from "lib/components";
 

@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { useRef } from "react";
 
 import { useLibConfig } from "lib/hooks";
-import { setUser } from "lib/global-state";
 
 import { useLogout } from "../useLogout";
 

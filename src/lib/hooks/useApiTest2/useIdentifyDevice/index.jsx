@@ -1,7 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 
 import { getLocal, isEmpty, setLocal } from "lib/utils";
-import { updateUser } from "lib/global-state";
 
 import { useFetchApi } from "../useFetchApi";
 import { refreshAccessTokenMap } from "../useRefreshAccessToken";
