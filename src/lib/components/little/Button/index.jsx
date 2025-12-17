@@ -24,7 +24,7 @@ export const Button = (props) => {
         onClick = () => {}
     } = variantProps;
 
-    const { submit, isFormSubmitting } = useContext(FormContext);
+    const { submit, isFormSubmitting } = useContext(FormContext) ?? {};
 
     const isInForm = !isUndefined(FormContext);
 
