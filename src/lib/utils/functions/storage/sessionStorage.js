@@ -1,3 +1,5 @@
+import { isNull } from "lodash";
+
 export function getSession(key) {
     try {
         const item = sessionStorage.getItem(key);
