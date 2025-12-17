@@ -23,7 +23,6 @@ export const useApiContext = () => {
     }
 
     const { accessToken, refreshToken, tokenExpiry, rememberMe } = gst.get("user") ?? {};
-    const storage = rememberMe ? "local" : "session";
 
     // ---------------------- baseApi ----------------------
 
@@ -86,15 +85,15 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
 
-                gst[storage].set("user", (prevUser) => ({
+                const { rememberMe, expiresIn } = mappedData;
+
+                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
                     ...prevUser,
                     ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
+                    tokenExpiry: floor(Date.now() / 1000) + expiresIn
                 }));
             })
-            .catch(() => {
-                gst.unset("user");
-            })
+            .catch(() => gst.unset("user"));
     };
 
     // ---------------------- publicApi ----------------------
@@ -123,10 +122,14 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = loginMap(data);
 
-                gst[storage].set("user", { 
+                const { rememberMe, expiresIn } = mappedData;
+
+                gst[rememberMe ? "local" : "session"].set("user", {
                     ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn 
+                    tokenExpiry: floor(Date.now() / 1000) + expiresIn 
                 });
+
+                return mappedData;
             });
     };
 
@@ -170,9 +173,7 @@ export const useApiContext = () => {
         return privateApi
             .post(options.url ?? "logout", options)
             .json()
-            .then(() => {
-                gst.unset("user");
-            });
+            .then(() => gst.unset("user"));
     };
 
     // ---------------------- device ----------------------
@@ -189,10 +190,14 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
 
-                gst[storage].set("user", {
+                const { rememberMe, expiresIn } = mappedData;
+
+                gst[rememberMe ? "local" : "session"].set("user", {
                     ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
+                    tokenExpiry: floor(Date.now() / 1000) + expiresIn
                 });
+
+                return mappedData
             });
     };
 
