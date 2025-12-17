@@ -33,7 +33,7 @@ import { log, throwTypeError } from "lib/utils";
 export const useEffect = (props = {}) => {
     throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-    const { deps, fn = () => {}, debug } = props;
+    const { on, deps, fn = () => {}, debug } = props;
 
     throwTypeError({ value: fn, name: "fn", type: ["function"] });
 
