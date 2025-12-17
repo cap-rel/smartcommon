@@ -37,17 +37,17 @@ export const useForm = (props = {}) => {
   const submit = async (e) => {
     e.preventDefault();
 
-    await onPreSubmit();
+    await onPreSubmit(e);
 
     st.set("isFormSubmitted", true);
 
     if (!some(errors, Boolean)) {
       st.set("isFormSubmitting", true);
-      await onSubmit();
+      await onSubmit(e);
       st.set("isFormSubmitting", false);
     }
 
-    onPostSubmit();
+    onPostSubmit(e);
   };
 
   // const returnedValues = Object.defineProperties(values, {

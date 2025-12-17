@@ -15,6 +15,7 @@ export const Button = (props) => {
     const { 
         id,
         label,
+        type,
         responsive = true,
         loading = false,
         icon,
@@ -24,7 +25,7 @@ export const Button = (props) => {
         onClick = () => {}
     } = variantProps;
 
-    const { submit, isFormSubmitting } = useContext(FormContext) ?? {};
+    const { submit = () => {}, isFormSubmitting } = useContext(FormContext) ?? {};
 
     const isInForm = !isUndefined(FormContext);
 
@@ -41,9 +42,10 @@ export const Button = (props) => {
             `,
             disabled: loading || disabled,
             onClick: (e) => {
+                e.preventDefault();
                 onClick(e);
 
-                if (isInForm) {
+                if (isInForm && type === "submit") {
                     submit(e);
                 }
             }
