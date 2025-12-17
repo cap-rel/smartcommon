@@ -50,47 +50,47 @@ export const useForm = (props = {}) => {
     onPostSubmit();
   };
 
-  const returnedValues = Object.defineProperties(values, {
-    set:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.set(`values.${key}`, value);
-        }
-      },
-      enumerable: false 
-    },
-    unset:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.unset(`values.${key}`, value);
-        }
-      },
-      enumerable: false
-    }
-  });
+  // const returnedValues = Object.defineProperties(values, {
+  //   set:{
+  //     value: (key, value) => {
+  //       if (isString(key)) {
+  //         st.set(`values.${key}`, value);
+  //       }
+  //     },
+  //     enumerable: false 
+  //   },
+  //   unset:{
+  //     value: (key, value) => {
+  //       if (isString(key)) {
+  //         st.unset(`values.${key}`, value);
+  //       }
+  //     },
+  //     enumerable: false
+  //   }
+  // });
 
-  const returnedErrors = Object.defineProperties(errors, {
-    set:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.set(`errors.${key}`, value);
-        }
-      },
-      enumerable: false 
-    },
-    unset:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.unset(`errors.${key}`, value);
-        }
-      },
-      enumerable: false
-    }
-  });
+  // const returnedErrors = Object.defineProperties(errors, {
+  //   set:{
+  //     value: (key, value) => {
+  //       if (isString(key)) {
+  //         st.set(`errors.${key}`, value);
+  //       }
+  //     },
+  //     enumerable: false 
+  //   },
+  //   unset:{
+  //     value: (key, value) => {
+  //       if (isString(key)) {
+  //         st.unset(`errors.${key}`, value);
+  //       }
+  //     },
+  //     enumerable: false
+  //   }
+  // });
 
   return {
-    values: returnedValues,
-    errors: returnedErrors,
+    values,
+    errors,
 
     setField,
 
