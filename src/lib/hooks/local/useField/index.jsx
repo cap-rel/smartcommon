@@ -1,5 +1,5 @@
 import { useContext, useEffect } from "react";
-import { isEqual, isUndefined } from "lodash";
+import { fromPairs, isEqual, isUndefined } from "lodash";
 
 import { FormContext } from "lib/components";
 
@@ -12,20 +12,22 @@ export const useField = (props) => {
 
   const currentValue = isControlledByForm ? values[name] : value;
 
-  const currentErrors = errors(currentValue);
+  // const currentErrors = fromPairs(map(errors(currentValue), (error, key) => [key, error.condition]));
 
   useEffect(() => {
     if (isControlledByForm && isUndefined(currentValue)) {
-      setField({ name, value: defaultValue, errors: currentErrors }); // TODO put the map
+      setField({ name, value: defaultValue, errors: errors(currentValue) }); // TODO put the map
     }
   }, []);
 
   const setValue = (newValue) => {
     if (!isEqual(currentValue, newValue)) {
+      const newErrors = errors(newValue);
+
       if (isControlledByForm) {
-        setField({ name, value: newValue, errors: currentErrors });
+        setField({ name, value: newValue, errors: newErrors });
       } else {
-        onChange(newValue, currentErrors);
+        onChange(newValue, newErrors);
       }
     }
   };
