@@ -8,7 +8,7 @@ export function Form(props) {
   throwTypeError({ value: form, name: "form", type: ["plain object"] });
 
   return (
-    <FormContext.Provider value={{ form, onSubmit }}>
+    <FormContext.Provider value={form}>
       {children}
     </FormContext.Provider>
   );
