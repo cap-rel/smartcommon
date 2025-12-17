@@ -1,7 +1,6 @@
-import { userReducer, globalReducer } from "./slices";
+import { globalReducer } from "./slices";
 
 export const reducers = {
-  user: userReducer,
   global: globalReducer
 };
 
