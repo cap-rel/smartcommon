@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
-
-import { getLocal, getSession, removeLocal, removeSession, setLocal, setSession } from "lib/utils";
 import { reduce } from "lodash";
+
+import { local, session } from "lib/utils";
 
 // ---------------------- parsePath (Parser) ----------------------
 const parsePath = (path) => {
@@ -68,7 +68,7 @@ const set = (acc, value, path) => {
   return newState;
 };
 
-const storages = { ...getLocal("global"), ...getSession("global") };
+const storages = { ...local.get("global"), ...session.get("global") };
 
 const initialState = reduce(storages, set, {});
 
@@ -77,7 +77,7 @@ const globalSlice = createSlice({
   initialState,
   reducers: {
     setGlobalStates(state, action) {
-      state = action.payload;
+      return action.payload;
     },
   },
 });
