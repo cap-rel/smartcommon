@@ -1,4 +1,4 @@
-const formDefaultValues = (props) => {
+export const formDefaultValues = (props) => {
     const { type, multiple } = props;
 
     const defaultValues = {
@@ -40,5 +40,7 @@ const formDefaultValues = (props) => {
         signature    : { src: "", signer: "", signedAt: null, gpsPoints: [null, null] },
         // icon         : IconSelect,
         color        : "",
-    }
+    };
+
+    return defaultValues[type];
 };
