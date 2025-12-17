@@ -29,38 +29,22 @@ export const useForm = (props = {}) => {
 
   Object.defineProperties(valuesCopy, {
     set:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.set(`values.${key}`, value);
-        }
-      },
+      value: (key, value) => st.set(`values.${key}`, value).values,
       enumerable: false
     },
     unset:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.unset(`values.${key}`, value);
-        }
-      },
+      value: (key, value) => st.unset(`values.${key}`, value).values,
       enumerable: false
     }
   });
 
   Object.defineProperties(errorsCopy, {
     set:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.set(`errors.${key}`, value);
-        }
-      },
+      value: (key, value) => st.set(`errors.${key}`, value).errors,
       enumerable: false 
     },
     unset:{
-      value: (key, value) => {
-        if (isString(key)) {
-          st.unset(`errors.${key}`, value);
-        }
-      },
+      value: (key, value) => st.unset(`errors.${key}`, value).errors,
       enumerable: false
     }
   });

@@ -19,13 +19,15 @@ export function Form(props) {
   const submit = async (e) => {
     e.preventDefault();
 
-    await onPreSubmit();
+    const filteredForm = await onPreSubmit() ?? {};
 
     st.set("isFormSubmitted", true);
 
-    if (every(form.errors, (field) => !some(field, Boolean))) {
+    const newForm = { ...form, ...filteredForm };
+
+    if (every(newForm.errors, (field) => !some(field, Boolean))) {
       st.set("isFormSubmitting", true);
-      await onSubmit();
+      await onSubmit(newForm);
       st.set("isFormSubmitting", false);
     }
 
