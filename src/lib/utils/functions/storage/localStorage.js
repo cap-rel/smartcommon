@@ -1,3 +1,5 @@
+import { isNull } from "lodash";
+
 export function getLocal(key) {
     try {
         const item = localStorage.getItem(key);
@@ -20,8 +22,11 @@ export function removeLocal(input) {
 }
 
 export const local = {
-    get: (key) => getLocal(key),
-    set: (key, value) => setLocal(key, value),
+    get: (key) =>  {
+        const item = localStorage.getItem(key);
+        return !isNull(item) ? JSON.parse(item) : null;
+    },
+    set: (key, value) => localStorage.setItem(key, JSON.stringify(value)),
     unset: (key) => localStorage.removeItem(key)
 };
 

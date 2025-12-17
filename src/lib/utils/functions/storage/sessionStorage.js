@@ -20,8 +20,11 @@ export function removeSession(input) {
 }
 
 export const session = {
-    get: (key) => getSession(key),
-    set: (key, value) => setSession(key, value),
+    get: (key) =>  {
+        const item = sessionStorage.getItem(key);
+        return !isNull(item) ? JSON.parse(item) : null;
+    },
+    set: (key, value) => sessionStorage.setItem(key, JSON.stringify(value)),
     unset: (key) => sessionStorage.removeItem(key)
 };
 
