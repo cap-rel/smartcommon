@@ -20,7 +20,7 @@ const parsePath = (path) => {
 
 // ---------------------- set ----------------------
 const set = (acc, value, path) => {
-  const newState = structuredClone(acc);
+  const newState = { ...acc };
   const parts = parsePath(path);
 
   let level = newState;

@@ -55,7 +55,7 @@ export const useDb = ({ name, options = {}, version = 1, stores = {}, debug }) =
                     store,
                     itemId: key,
                     action: "create",
-                    data: structuredClone(item),
+                    data: { ...item },
                     createdAt: dateNow
                 });
             });
@@ -75,7 +75,7 @@ export const useDb = ({ name, options = {}, version = 1, stores = {}, debug }) =
                     store,
                     itemId: key,
                     action: "update",
-                    data: structuredClone({ before: item, after: { ...item, ...updates } }),
+                    data: { before: { ...item }, after: { ...item, ...updates } },
                     createdAt: dateNow
                 });
             });
@@ -92,7 +92,7 @@ export const useDb = ({ name, options = {}, version = 1, stores = {}, debug }) =
                     store,
                     itemId: key,
                     action: "delete",
-                    data: structuredClone(item),
+                    data: { ...item },
                     createdAt: floor(Date.now() / 1000)
                 });
             });
