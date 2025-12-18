@@ -29,7 +29,9 @@ export const Button = (props) => {
 
     const isInForm = !isUndefined(FormContext);
 
-    const isLoading = loading || isFormSubmitting;
+    const isSubmitType = type === "submit";
+
+    const isLoading = loading || (isSubmitType && isFormSubmitting);
     
     return (
         <button { ...mergeProps("button", props => ({
@@ -40,12 +42,12 @@ export const Button = (props) => {
             not-disabled:active:brightness-soft disabled:brightness-soft
             ${(!disabled && !loading) && "cursor-pointer"}
             `,
-            disabled: loading || disabled,
+            disabled: loading || disabled || isFormSubmitting,
             onClick: (e) => {
                 e.preventDefault();
                 onClick(e);
 
-                if (isInForm && type === "submit") {
+                if (isInForm && isSubmitType) {
                     submit(e);
                 }
             }
