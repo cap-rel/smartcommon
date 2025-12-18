@@ -8,7 +8,7 @@ export const useField = (props) => {
 
   const isControlledByForm = !isUndefined(FormContext) && !isUndefined(name) && isUndefined(value);
 
-  const { isFormSubmitting, isFormSubmitted, values, setField } = useContext(FormContext) ?? {};
+  const { isFormSubmitting, isFormSubmitted, values, errors: formErrors, setField } = useContext(FormContext) ?? {};
 
   const currentValue = isControlledByForm ? values[name] : value;
 
@@ -33,6 +33,7 @@ export const useField = (props) => {
   };
 
   return {
+    filteredErrors: formErrors[name] ?? {},
     currentValue,
     setValue,
     isFormSubmitting,
