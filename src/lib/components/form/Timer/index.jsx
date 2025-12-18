@@ -22,8 +22,6 @@ export const Timer = (props) => {
 
         min,
         max,
-
-        onError = () => {}
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -41,7 +39,7 @@ export const Timer = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },
@@ -88,8 +86,7 @@ export const Timer = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input

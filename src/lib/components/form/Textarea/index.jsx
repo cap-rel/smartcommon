@@ -30,8 +30,6 @@ export const Textarea = (props) => {
     rows,
     cols,
     wrap,
-
-    onError = () => {}
    } = variantProps;
 
   const errors = (currentValue) => ({
@@ -57,7 +55,7 @@ export const Textarea = (props) => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const handleValueOnChange = (e) => {
     if (!disabled && !readOnly && !isFormSubmitting) {
@@ -69,8 +67,7 @@ export const Textarea = (props) => {
     <Label 
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <textarea { ...mergeProps("textarea", props => ({

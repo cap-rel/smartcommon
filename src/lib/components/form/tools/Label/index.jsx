@@ -1,6 +1,7 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 import { isEmpty, isNil } from "lib/utils";
+import { filter, map } from "lodash";
 
 // IDEA Mini-popup for help
 
@@ -15,12 +16,9 @@ export const Label = (props) => {
         suffix,
         required,
         showErrors,
-        currentValue,
         errors = {},
         children,
     } = props;
-
-    const currentErrors = Object.values(errors(currentValue)).filter(error => error.condition);
 
     return (
         <div { ...mergeProps("container", props => ({
@@ -100,8 +98,7 @@ export const Label = (props) => {
                     }))}>
                         <div { ...mergeProps("help", props => props)}>{help}</div>
                         {showErrors &&
-                            currentErrors.map((error, EI) => {
-                                const { condition, message } = error;
+                            map(filter(errors, { condition: true }), ({ condition, message }, EI) => {
                                 if (condition) {
                                     return (
                                         <div key={`error${EI}`} { ...mergeProps("error", props => props)}>

@@ -21,8 +21,6 @@ export const RadioBar = (props) => {
         readOnly,
 
         options = [],
-
-        onError = () => {}
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -32,7 +30,7 @@ export const RadioBar = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly && !isFormSubmitting) {    
@@ -45,8 +43,7 @@ export const RadioBar = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <div { ...mergeProps("optionsContainer", props => ({

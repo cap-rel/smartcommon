@@ -30,8 +30,6 @@ export const PhotosUploader = (props) => {
         accept = "image/*",
 
         compressOptions,
-
-        onError = () => {},
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -53,7 +51,7 @@ export const PhotosUploader = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const initialStates = {
         // isPanelOpen: false,
@@ -310,8 +308,7 @@ export const PhotosUploader = (props) => {
         <Label
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input

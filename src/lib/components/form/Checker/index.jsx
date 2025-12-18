@@ -33,8 +33,6 @@ export const Checker = (props) => {
 
         checkedIcon = <FaStar />,
         type,
-
-        onError = () => {},
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -56,7 +54,7 @@ export const Checker = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : ""
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : ""
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly && ! isFormSubmitting) {
@@ -76,8 +74,7 @@ export const Checker = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             {!isEmpty(options) &&

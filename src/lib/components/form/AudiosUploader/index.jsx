@@ -29,8 +29,6 @@ export const AudiosUploader = (props) => {
 
         multiple,
         accept = "audio/*",
-
-        onError = () => {},
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -278,8 +276,7 @@ export const AudiosUploader = (props) => {
         <Label
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input

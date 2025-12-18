@@ -56,7 +56,6 @@ export const AddressInput = (props) => {
     defaultValue,
     value,
     onChange,
-    onError
   } = variantProps;
 
   const initialStates = {
@@ -70,7 +69,7 @@ export const AddressInput = (props) => {
 
   const errors = (currentValue) => ({});
   
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const fetchSuggestions = async (query) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
@@ -121,8 +120,7 @@ export const AddressInput = (props) => {
     <Label
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("relativeContainer", props => ({
@@ -132,7 +130,7 @@ export const AddressInput = (props) => {
         <Input { ...mergeProps("Input", props => ({
           ...props,
           // variant varchar
-          readOnly: isFormSubmitted,
+          readOnly: isFormSubmitting,
           loading: isSearching,
           inputIcon: <FaSearchLocation />,
           placeholder: `Rechercher une adresse...`,

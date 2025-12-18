@@ -28,8 +28,6 @@ export const Select = (props) => {
 
     multiple,
     options = [],
-
-    onError = () => {},
   } = variantProps;
 
   const errors = (currentValue) => ({
@@ -55,7 +53,7 @@ export const Select = (props) => {
     }
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const handleSelectOnChange = e => {
     if (!disabled && !readOnly && !isFormSubmitting) {
@@ -68,8 +66,7 @@ export const Select = (props) => {
     <Label 
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       {/* <div 

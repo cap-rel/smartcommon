@@ -61,8 +61,6 @@ export const Gps = props => {
     readOnly,
 
     multiple,
-
-    onError = () => {},
   } = variantProps;
 
   const errors = (currentValue) => ({
@@ -72,7 +70,7 @@ export const Gps = props => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const initialStates = {
     isLocating: false,
@@ -166,8 +164,7 @@ export const Gps = props => {
     <Label 
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("buttonContainer", props => ({

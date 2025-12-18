@@ -25,8 +25,6 @@ export const Range = (props) => {
 
         rangeMin = 0,
         rangeMax = 100,
-
-        onError = () => {}
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -44,7 +42,7 @@ export const Range = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -57,8 +55,7 @@ export const Range = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <div { ...mergeProps("rangeContainer", props => ({

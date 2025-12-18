@@ -28,8 +28,6 @@ export const Rater = (props) => {
 
         ratingIcon = <FaStar />,
         ratingMax = 5,
-
-        onError = () => {}
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -47,7 +45,7 @@ export const Rater = (props) => {
         },
     });    
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const updateRating = (index) => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -60,8 +58,7 @@ export const Rater = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input

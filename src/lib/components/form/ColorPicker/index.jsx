@@ -21,8 +21,6 @@ export const ColorPicker = (props) => {
         required,
         disabled,
         readOnly,
-
-        onError = () => {},
     } = variantProps;
 
     const errors = (currentValue) => ( {
@@ -32,7 +30,7 @@ export const ColorPicker = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -45,8 +43,7 @@ export const ColorPicker = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input { ...mergeProps("input", props => ({

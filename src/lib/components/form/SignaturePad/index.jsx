@@ -22,8 +22,6 @@ export const SignaturePad = (props) => {
     disabled,
     required,
     readOnly,
-
-    onError = () => {},
   } = variantProps; 
 
   const errors = (currentValue) => ({
@@ -33,7 +31,7 @@ export const SignaturePad = (props) => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const initialStates = {
     isSignatureValidated: false
@@ -92,8 +90,7 @@ export const SignaturePad = (props) => {
     <Label 
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <input

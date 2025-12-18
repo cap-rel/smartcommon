@@ -45,8 +45,6 @@ export const Input = (props) => {
     placeholder,
     step,
     inputMode,
-
-    onError = () => {}
   } = variantProps;
 
   const initialStates = {
@@ -125,7 +123,7 @@ export const Input = (props) => {
   });
 
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   // const currentValueFormat = {
   //   time: minutesToTime(currentValue)
@@ -186,8 +184,7 @@ export const Input = (props) => {
     <Label 
       { ...variantProps}
       showErrors={isFormSubmitted}
-      currentValue={currentValue}
-      errors={errors}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("inputContainer", props => ({

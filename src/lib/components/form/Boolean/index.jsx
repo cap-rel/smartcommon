@@ -22,8 +22,6 @@ export const Boolean = (props) => {
 
         checkedIcon,
         type,
-
-        onError = () => {},
     } = variantProps;
 
     // if (labelRow) {
@@ -38,7 +36,7 @@ export const Boolean = (props) => {
         }
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting } = useField({ name, defaultValue, value, onChange, errors }); // false
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors }); // false
 
     const handleOnClick = () => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -50,8 +48,7 @@ export const Boolean = (props) => {
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
-            currentValue={currentValue}
-            errors={errors}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input
