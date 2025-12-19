@@ -42,7 +42,9 @@ export const useGlobalStatesContext = (props = {}) => {
     });
   }, []);
   
-  useEffect(() => dispatch(setGlobalStates(st.values)), [st.values]);
+  useEffect(() => {
+    dispatch(setGlobalStates(st.values))
+  }, [st.values]);
 
   // ---------------------- get ----------------------
 
