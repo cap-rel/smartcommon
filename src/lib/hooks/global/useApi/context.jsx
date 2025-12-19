@@ -24,6 +24,16 @@ export const useApiContext = () => {
 
     const { accessToken, refreshToken, tokenExpiry } = gst.get("user") ?? {};
 
+    // ---------------------- circuit ----------------------
+
+    let circuitOpenUntil = 0;
+
+    const isCircuitOpen = () => floor(Date.now() / 1000) < circuitOpenUntil;
+
+    const openCircuit = (s = 10) => {
+        circuitOpenUntil = floor(Date.now() / 1000) + s;
+    };
+
     // ---------------------- baseApi ----------------------
 
     const baseApi = ky.create({
@@ -44,8 +54,16 @@ export const useApiContext = () => {
                     const { method, url } = request;
                     const { delay } = options;
 
+                    if (isCircuitOpen()) {
+                        return Promise.reject(new Error("Circuit breaker open – requests blocked"));
+
+                        log.apiError(`${method} - BLOCKED`, url);
+                    }
+
                     if (!navigatorInfo.isOnLine) {
                         log.apiError(`${method} - NO CONNECTION`, url);
+
+                        openCircuit(5000);
 
                         return Promise.reject(new Error("No internet connection"));
                     }
@@ -74,26 +92,33 @@ export const useApiContext = () => {
 
     // ---------------------- refresh ----------------------
 
-    const refresh = () => {
-        return baseApi
-            .get("refresh", {
-                headers: {
-                    Authorization: `Bearer ${refreshToken}`
-                }
-            })
-            .json()
-            .then((data) => {
-                const mappedData = refreshAccessTokenMap(data);
+    let refreshPromise = null;
 
-                const { rememberMe, expiresIn } = mappedData;
+    const refresh = () => {   
+        if (!refreshPromise) {
+            refreshPromise = baseApi
+                .get("refresh", {
+                    headers: {
+                        Authorization: `Bearer ${refreshToken}`
+                    }
+                })
+                .json()
+                .then((data) => {
+                    const mappedData = refreshAccessTokenMap(data);
 
-                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
-                    ...prevUser,
-                    ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + expiresIn
-                }));
-            })
-            .catch(() => gst.unset("user"));
+                    const { rememberMe, expiresIn } = mappedData;
+
+                    gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
+                        ...prevUser,
+                        ...mappedData,
+                        tokenExpiry: floor(Date.now() / 1000) + expiresIn
+                    }));
+                })
+                .catch(() => gst.unset("user"))
+                .finally(() => refreshPromise = null);
+        }
+
+        return refreshPromise;
     };
 
     // ---------------------- publicApi ----------------------
@@ -149,17 +174,24 @@ export const useApiContext = () => {
             ],
             afterResponse: [
                 async (request, options, response) => {
-                    const { ok, status } = response;
+                    const { status } = response;
 
-                    if (!ok && status === 401) {
+                    if (status === 401) {
                         try {
                             await refresh();
 
                             return privateApi(request.url.replace(prefixUrl, ""), options);
                         } catch (error) {
+                            openCircuit(30000);
+
                             return response;
                         }
                     }
+
+                    if (status >= 500) {
+                        openCircuit(5000);
+                    }
+                   
                 }
             ]
         }
