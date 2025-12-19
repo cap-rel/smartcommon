@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual } from "lodash";
 import { useEffect } from "react";
 
 import { useStates } from "lib/hooks";
@@ -45,8 +45,16 @@ export const useGlobalStates = (props = {}) => {
   // ---------------------- useEffect dispatch ----------------------
 
   useEffect(() => {
-    dispatch(setGlobalStates(st.values));
+    if (!isEqual(st.values, globalStates)) {
+      dispatch(setGlobalStates(st.values));
+    }
   }, [st.values]);
+
+  useEffect(() => {
+    if (!isEqual(st.values, globalStates)) {
+      st.set(globalStates);
+    }
+  }, [globalStates]);
 
   // ---------------------- get ----------------------
 
