@@ -168,9 +168,9 @@ export const useApiContext = () => {
         hooks: {
             beforeRequest: [
                 async (request, options) => {
-                    if (floor(Date.now() / 1000) > tokenExpiry) {
-                        await refresh();
-                    }
+                    // if (floor(Date.now() / 1000) > tokenExpiry) {
+                    //     await refresh();
+                    // }
 
                     options.headers = {
                         ...options.headers,
