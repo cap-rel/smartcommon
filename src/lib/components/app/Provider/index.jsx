@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 
-import { ApiProvider, LibConfigProvider, ReduxProvider, Router, Toaster } from "lib/components";
+import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster } from "lib/components";
 
 export const Provider = (props) => {
   const { children, config } = props;
@@ -9,14 +9,18 @@ export const Provider = (props) => {
     
   <LibConfigProvider value={config}>
     <ReduxProvider>
-      <ApiProvider>
-        <Router>
-          <AnimatePresence mode="wait">
-            {children}
-          </AnimatePresence>
-        </Router>
-        <Toaster />
-      </ApiProvider>
+      <GlobalStatesProvider>
+        <ApiProvider>
+          <Router>
+            <NavigationProvider>
+              <AnimatePresence mode="wait">
+                {children}
+              </AnimatePresence>
+            </NavigationProvider>
+          </Router>
+          <Toaster />
+        </ApiProvider>
+      </GlobalStatesProvider>
     </ReduxProvider>
   </LibConfigProvider>
   );

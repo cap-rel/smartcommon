@@ -220,11 +220,13 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
 
-                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
-                    ...prevUser,
-                    ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
-                }));
+                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => {
+                    return {
+                        ...prevUser,
+                        ...mappedData,
+                        tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
+                    }
+                });
 
                 return mappedData
             });

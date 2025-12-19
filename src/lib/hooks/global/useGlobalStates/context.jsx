@@ -6,7 +6,7 @@ import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
 import { session, local, log, throwTypeError } from "lib/utils";
 
-export const useGlobalStates = (props = {}) => {
+export const useGlobalStatesContext = (props = {}) => {
   throwTypeError({ value: props, name: "useGlobalStates props", type: ["plain object"] })
 
   const { initialStates = {}, debug = false } = props;
@@ -42,20 +42,6 @@ export const useGlobalStates = (props = {}) => {
     });
   }, []);
 
-  // ---------------------- useEffect dispatch ----------------------
-
-  useEffect(() => {
-    if (!isEqual(st.values, globalStates)) {
-      dispatch(setGlobalStates(st.values));
-    }
-  }, [st.values]);
-
-  useEffect(() => {
-    if (!isEqual(st.values, globalStates)) {
-      map(globalStates, (value, key) => st.set(key, value));
-    }
-  }, [globalStates]);
-
   // ---------------------- get ----------------------
 
   const get = (path) => {
@@ -85,7 +71,8 @@ export const useGlobalStates = (props = {}) => {
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
   // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
   const set = (storage, path, value) => {
-    st.set(path, value);
+    const values = st.set(path, value);
+    dispatch(setGlobalStates(values));
 
     const localStorage = local.get("global") ?? {};
     const sessionStorage = session.get("global") ?? {};
@@ -120,7 +107,8 @@ export const useGlobalStates = (props = {}) => {
   // ---------------------- unset ----------------------
 
   const unset = (path) => {
-    st.unset(path);
+    const values = st.unset(path);
+    dispatch(setGlobalStates(values));
 
     if (isNil(path)) {
       if (debug) {

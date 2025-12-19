@@ -12,3 +12,6 @@ export * from "./NavigationProvider/context";
 
 export * from "./ApiProvider";
 export * from "./ApiProvider/context";
+
+export * from "./GlobalStatesProvider";
+export * from "./GlobalStatesProvider/context";

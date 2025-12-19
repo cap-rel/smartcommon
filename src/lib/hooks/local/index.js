@@ -1,6 +1,5 @@
 export * from "./useEffect";
 export * from "./useFormBuilder";
-export * from "./useGlobalStates";
 export * from "./useField";
 export * from "./useStates";
 export * from "./useVariantMerger";
