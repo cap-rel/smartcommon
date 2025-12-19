@@ -167,10 +167,16 @@ export const useApiContext = () => {
         },
         hooks: {
             beforeRequest: [
-                async () => {
+                async (request, options) => {
                     if (floor(Date.now() / 1000) > tokenExpiry) {
                         await refresh();
                     }
+
+                    options.headers = {
+                        ...options.headers,
+                        Authorization: `Bearer ${accessToken}`,
+                        "X-DEVICEID": deviceId
+                    };
                 }
             ],
             afterResponse: [
@@ -224,7 +230,6 @@ export const useApiContext = () => {
         return privateApi
             .post(options.url ?? "device", {
                 json: { label: label || undefined, uuid: noUuid ? deviceId : uuid },
-                ...options
             })
             .json()
             .then((data) => {
