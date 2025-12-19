@@ -55,10 +55,8 @@ export const useNavigationContext = (props = {}) => {
 
                 return builder;
             },
-            to: (pathname) => {
-                if (!isUndefined(pathname)) {
-                    navigate(pathname, options);
-                }
+            to: (to) => {
+                navigate(isUndefined(to) ? pathname : to, options);
             },
         };
 
