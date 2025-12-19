@@ -18,7 +18,7 @@
  */
 
 import { useState } from "react";
-import { isPlainObject } from "lodash";
+import { isPlainObject, isArray } from "lodash";
 
 export const useStatesWorking = (initialStates = {}) => {
   if (!isPlainObject(initialStates)) {
@@ -86,7 +86,7 @@ const set = (path, value) => {
     };
 
     if (lastKey === "__PUSH__") {
-      if (!Array.isArray(level)) {
+      if (!isArray(level)) {
         level = level instanceof Object ? level : [];
       }
       applyValue(level, "__PUSH__");
@@ -156,7 +156,7 @@ const set = (path, value) => {
       }
 
       // Suppression finale
-      if (Array.isArray(level) && /^\d+$/.test(last)) {
+      if (isArray(level) && /^\d+$/.test(last)) {
         // suppression dans tableau : remove index
         const index = Number(last);
         if (index >= 0 && index < level.length) {

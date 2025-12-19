@@ -1,9 +1,10 @@
 import { FaStar } from "react-icons/fa6";
 import { useEffect } from "react";
+import { isNil } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label, Icon } from "lib/components";
-import { isEmpty, isNil } from "lib/utils";
+import { isEmpty } from "lib/utils";
 
 import { propTypes } from "./props";
 

@@ -1,4 +1,4 @@
-import { isArray, isNumber } from "src/utils";
+import { isArray, isNumber } from "lodash";
 
 export class IntlNumber {
   constructor({

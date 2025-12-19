@@ -1,6 +1,8 @@
 /*-----------------  Objet Date  ------------------*/
 
-import { isDate, isNil, secsToDuration } from "lib/utils";
+import { isDate, isNil } from "lodash";
+
+import { secsToDuration } from "lib/utils";
 
 // new Date();
 // new Date(value);

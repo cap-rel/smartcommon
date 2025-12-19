@@ -1,4 +1,5 @@
-import { isNil } from 'lib/utils';
+import { isNil } from 'lodash';
+
 import { useVariantMerger } from 'lib/hooks';
 
 import { propTypes } from './props';

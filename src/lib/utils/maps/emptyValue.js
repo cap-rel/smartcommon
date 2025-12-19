@@ -1,4 +1,6 @@
-import { isInvalid, isUndefined } from "lib/utils";
+import { isUndefined } from "lodash";
+
+import { isInvalid } from "lib/utils";
 
 export function setEmptyValue(attribute) {
     const { type, default: defaultValue, min, max, ratingMax } = attribute;

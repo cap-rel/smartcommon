@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { isEqual, isNil, isPlainObject, isUndefined } from "lodash";
+import { isEqual, isNil, isPlainObject, isUndefined, isArray } from "lodash";
+
 import { log, throwTypeError } from "lib/utils";
 
 export const useStates = (props = {}) => {
@@ -102,7 +103,7 @@ export const useStates = (props = {}) => {
     };
 
     if (lastKey === "__PUSH__") {
-      if (!Array.isArray(level)) {
+      if (!isArray(level)) {
         level = level instanceof Object ? level : [];
       }
       applyValue(level, "__PUSH__");
@@ -160,7 +161,7 @@ export const useStates = (props = {}) => {
         }
       }
 
-      if (Array.isArray(level) && /^\d+$/.test(last)) {
+      if (isArray(level) && /^\d+$/.test(last)) {
         const index = Number(last);
         if (index >= 0 && index < level.length) {
           level.splice(index, 1);

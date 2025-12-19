@@ -2,10 +2,11 @@ import { FaCamera, FaFileImport, FaTrashCan, FaImage } from "react-icons/fa6";
 import { useRef } from "react";
 import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
+import { isNil } from "lodash";
 
 import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
-import { applyFunctionIfNotNil, isEmpty, isNil, locate, splitFileExtension } from "lib/utils";
+import { applyFunctionIfNotNil, isEmpty, locate, splitFileExtension } from "lib/utils";
 
 import { propTypes } from "./props";
 

@@ -1,4 +1,4 @@
-import { isNumber, isString } from "src/utils";
+import { isNumber, isString } from "lodash";
 
 /**
  * @param {number} value

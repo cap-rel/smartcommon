@@ -2,9 +2,10 @@ import { useRef } from "react";
 import { FaFile } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
+import { isNil } from "lodash";
 
 import { Button, Spinner, Label } from "lib/components";
-import { isEmpty, isNil, splitFileExtension } from "lib/utils";
+import { isEmpty, splitFileExtension } from "lib/utils";
 import { useStates } from "lib/hooks";
 
 import { propTypes } from "./props";

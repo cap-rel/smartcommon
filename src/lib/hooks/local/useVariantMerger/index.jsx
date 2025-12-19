@@ -1,4 +1,6 @@
-import { isArray, isFunction, isNil, isString, isUndefined, mergeObj, toArray, twMerge } from "lib/utils";
+import { isArray, isFunction, isNil, isString, isUndefined, toArray } from "lodash";
+
+import { mergeObj, twMerge } from "lib/utils";
 import { useLibConfig, useStates } from "lib/hooks";
 
 function verifyFunction(func, params = {}){

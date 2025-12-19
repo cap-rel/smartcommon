@@ -1,6 +1,7 @@
 import { useEffect } from "react";
+import { isObject } from "lodash";
 
-import { applyFunctionIfNotNil, isEmpty, isObject } from "lib/utils";
+import { applyFunctionIfNotNil, isEmpty } from "lib/utils";
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 

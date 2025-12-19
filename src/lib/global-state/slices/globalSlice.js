@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { reduce } from "lodash";
+import { reduce, isArray } from "lodash";
 
 import { local, session } from "lib/utils";
 
@@ -57,7 +57,7 @@ const set = (acc, value, path) => {
   };
 
   if (lastKey === "__PUSH__") {
-    if (!Array.isArray(level)) {
+    if (isArray(level)) {
       level = level instanceof Object ? level : [];
     }
     applyValue(level, "__PUSH__");

@@ -1,6 +1,5 @@
 import { twMerge } from "tailwind-merge";
-
-import { isFunction } from "lib/utils";
+import { isFunction } from "lodash";
 
 export function resolveProp(prop, params = {}){
     return isFunction(prop) ? prop(params) : prop;

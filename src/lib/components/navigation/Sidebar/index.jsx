@@ -1,8 +1,8 @@
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
+import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
 import { Panel, Button } from "lib/components";
-import { isNil } from "lib/utils";
 
 import { propTypes } from "./props";
 

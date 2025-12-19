@@ -1,4 +1,5 @@
-import { isArray } from "lib/utils";
+import { isArray } from "lodash";
+
 import { useVariantMerger } from "lib/hooks";
 import { Tag } from "lib/components";
 

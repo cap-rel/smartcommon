@@ -1,4 +1,5 @@
-import { isFunction } from "lib/utils";
+import { isFunction } from "lodash";
+
 import { useLibConfig } from "lib/hooks";
 
 export const useApiTest = (props) => {

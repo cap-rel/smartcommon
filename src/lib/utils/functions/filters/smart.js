@@ -1,3 +1,5 @@
+import { isArray } from "lodash";
+
 import { cleanForComparison } from "lib/utils";
 
 export const useFilter = (attributes) => {
@@ -67,7 +69,7 @@ export const useFilter = (attributes) => {
     if (filter.interval) {
       const { min, max } = filter.interval;
       return ((!min || attribute >= min) && (!max || attribute <= max));
-    } else if (Array.isArray(filter.value)) {
+    } else if (isArray(filter.value)) {
       return filter.strict
         ? filter.value.length == attribute.length && filter.value.every(val => attribute.includes(val))
         // filter.value.sort().every((val, index) => val === attribute.sort()[index]); Si l'ordre importe
@@ -85,7 +87,7 @@ export const useFilter = (attributes) => {
       if (filter.interval) {
         const { min, max } = filter.interval;
         return ((min ? attribute < min : true) && (max ? attribute > max : true));
-      } else if (Array.isArray(filter.value)) {
+      } else if (isArray(filter.value)) {
         return filter.strict
           ? filter.value.length != attribute.length || filter.value.some(val => !attribute.includes(val))
           : filter.value.some(val => !attribute.includes(val));

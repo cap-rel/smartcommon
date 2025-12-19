@@ -1,8 +1,8 @@
 import { useDispatch, useSelector } from "react-redux";
+import { isFunction, toString } from "lodash";
 
 import { useLibConfig } from "lib/hooks";
 import { log } from "lib/utils";
-import { isFunction, toString } from "lodash";
 
 export const useLogout = (deviceId) => {
     const { api } = useLibConfig();

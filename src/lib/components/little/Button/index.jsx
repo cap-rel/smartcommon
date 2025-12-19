@@ -1,10 +1,11 @@
-import { isNil } from "lib/utils";
+import { isUndefined } from "lodash";
+import { useContext } from "react";
+import { isNil } from "lodash";
+
 import { useVariantMerger } from "lib/hooks";
 import { FormContext, Spinner } from "lib/components";
 
 import { propTypes, defaultProps } from "./props";
-import { useContext } from "react";
-import { isUndefined } from "lodash";
 
 // TODO badge
 

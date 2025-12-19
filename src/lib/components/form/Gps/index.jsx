@@ -1,8 +1,9 @@
 import toast from "react-hot-toast";
 import { FaLocationDot } from "react-icons/fa6";
 import { useEffect } from "react";
+import { isNil } from "lodash";
 
-import { applyFunctionIfNotNil, isEmpty, isNil, locate } from "lib/utils";
+import { applyFunctionIfNotNil, isEmpty, locate } from "lib/utils";
 import { Button, Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 

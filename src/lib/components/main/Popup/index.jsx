@@ -1,8 +1,9 @@
 import { RiCloseLargeLine } from "react-icons/ri";
+import { isNil } from "lodash";
 
 import { Button, Overlay } from "lib/components";
 import { useVariantMerger } from "lib/hooks";
-import { applyFunctionIfNotNil, isNil } from "lib/utils";
+import { applyFunctionIfNotNil } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 

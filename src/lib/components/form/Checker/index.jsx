@@ -1,10 +1,10 @@
 import { FaStar } from "react-icons/fa6";
 import { useEffect } from "react";
-import { isEmpty } from "lodash";
+import { isEmpty, isObject, isNil } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
-import { applyFunctionIfFunction, isNil, isObject } from "lib/utils";
+import { applyFunctionIfFunction } from "lib/utils";
 
 import { propTypes } from "./props";
 

@@ -1,4 +1,4 @@
-import { isObject } from "src/utils";
+import { isObject } from "lodash";
 
 export class IntlDuration {
   constructor({

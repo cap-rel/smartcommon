@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
+import { isNumber, isNil, isArray, isString } from "lodash";
 
-import { applyFunctionIfNotNil, isArray, isNil, ISOFormat, isString } from "lib/utils";
+import { applyFunctionIfNotNil, ISOFormat } from "lib/utils";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Button } from "lib/components";
 

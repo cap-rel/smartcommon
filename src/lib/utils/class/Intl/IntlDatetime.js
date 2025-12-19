@@ -1,4 +1,4 @@
-import { isDate, isArray } from "src/utils";
+import { isDate, isArray } from "lodash";
 
 /**
  * @param {Date} date

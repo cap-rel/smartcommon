@@ -1,10 +1,10 @@
 import { useDispatch } from "react-redux";
+import { toString, isFunction } from "lodash";
 
 import { useLibConfig } from "lib/hooks";
-import { isFunction, log } from "lib/utils";
+import { log } from "lib/utils";
 
 import { apiMap } from "../apiMap";
-import { toString } from "lodash";
 
 export const loginMap = data => apiMap({
     userid:         { key: "id"          , transform: value => Number(value)        },

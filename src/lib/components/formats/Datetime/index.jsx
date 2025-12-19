@@ -1,7 +1,7 @@
 import { FaCalendarDays } from "react-icons/fa6";
+import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
-import { isNil } from "lib/utils";
 
 import { propTypes } from "./props";
 

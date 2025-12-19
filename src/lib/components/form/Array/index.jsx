@@ -1,8 +1,9 @@
 import { twMerge } from "tailwind-merge";
+import { isNil } from "lodash";
 
 import { useStates } from "lib/hooks";
 import { Input, Label } from "lib/components";
-import { isEmpty, isNil } from "lib/utils";
+import { isEmpty } from "lib/utils";
 
 import { arrayPropTypes } from "./props";
 
