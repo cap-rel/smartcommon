@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray } from "lodash";
 import { useEffect } from "react";
 
 import { useStates } from "lib/hooks";
@@ -15,10 +15,79 @@ export const useGlobalStatesContext = (props = {}) => {
   
   const { local: initialLocal, session: initialSession, ...initialMemory } = initialStates;
 
-  const dispatch = useDispatch();
-  const globalStates = useSelector(state => state.global) ?? {};
+  // const dispatch = useDispatch();
+  // const globalStates = useSelector(state => state.global) ?? {};
 
-  const st = useStates({ initialStates: globalStates });
+  // ---------------------- parsePath (Parser) ----------------------
+  const parsePath = (path) => {
+    const parts = [];
+    path.split(".").forEach(segment => {
+      const regex = /([\w-]+)|\[(\d*)\]/g;
+      let match;
+      while ((match = regex.exec(segment)) !== null) {
+        if (match[1]) parts.push(match[1]);
+        else if (match[2] === "") parts.push("__PUSH__");
+        else parts.push(match[2]);
+      }
+    });
+    return parts;
+  };
+  
+  // ---------------------- set ----------------------
+  const setInit = (acc, value, path) => {
+    const newState = { ...acc };
+    const parts = parsePath(path);
+  
+    let level = newState;
+    for (let i = 0; i < parts.length - 1; i++) {
+      const key = parts[i];
+      const nextKey = parts[i + 1];
+      const isNextPush = nextKey === "__PUSH__";
+  
+      if (level[key] !== Object(level[key])) {
+        level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
+      }
+  
+      if (!(key in level)) {
+        level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
+      }
+  
+      level = level[key];
+    }
+  
+    const lastKey = parts[parts.length - 1];
+  
+    const applyValue = (target, keyOrIndex) => {
+      const prevValue =
+        keyOrIndex === "__PUSH__"
+          ? target[target.length - 1]
+          : target[keyOrIndex];
+      const newValue = typeof value === "function" ? value(prevValue) : value;
+  
+      if (keyOrIndex === "__PUSH__") {
+        target.push(newValue);
+      } else {
+        target[keyOrIndex] = newValue;
+      }
+    };
+  
+    if (lastKey === "__PUSH__") {
+      if (isArray(level)) {
+        level = level instanceof Object ? level : [];
+      }
+      applyValue(level, "__PUSH__");
+    } else {
+      applyValue(level, lastKey);
+    }
+  
+    return newState;
+  };
+  
+  const storages = { ...local.get("global"), ...session.get("global") };
+  
+  const test = reduce(storages, set, {});
+
+  const st = useStates({ initialStates: test });
 
   // ---------------------- useEffect ----------------------
 
@@ -42,9 +111,9 @@ export const useGlobalStatesContext = (props = {}) => {
     });
   }, []);
   
-  useEffect(() => {
-    dispatch(setGlobalStates(st.values))
-  }, [st.values]);
+  // useEffect(() => {
+  //   dispatch(setGlobalStates(st.values))
+  // }, [st.values]);
 
   // ---------------------- get ----------------------
 
