@@ -149,18 +149,21 @@ export const useGlobalStatesContext = (props = {}) => {
     const localStorage = local.get("global") ?? {};
     const sessionStorage = session.get("global") ?? {};
 
-    delete localStorage[path];
-    delete sessionStorage[path];
+    const newLocalStorage = { ...localStorage };
+    const newSessionStorage = { ...sessionStorage };
 
-    local.set("global", localStorage);
-    session.set("global", sessionStorage);
+    delete newLocalStorage[path];
+    delete newSessionStorage[path];
+
+    local.set("global", newLocalStorage);
+    session.set("global", newSessionStorage);
 
     if (storage === "local") {
       if (debug) {
         log.globalState(`SET LOCAL ${path} =>`, value);
       }
 
-      return local.set("global", { ...local.get("global"), [path]: value });
+      return local.set("global", { ...localStorage, [path]: value });
     } 
 
     if (storage === "session") {
@@ -168,7 +171,7 @@ export const useGlobalStatesContext = (props = {}) => {
         log.globalState(`SET SESSION ${path} =>`, value);
       }
 
-      return session.set("global", { ...session.get("global"), [path]: value });
+      return session.set("global", { ...sessionStorage, [path]: value });
     }
 
     if (debug) {
