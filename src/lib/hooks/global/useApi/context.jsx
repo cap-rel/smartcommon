@@ -16,13 +16,13 @@ export const useApiContext = () => {
 
     const gst = useGlobalStates();
 
-    const deviceId = gst.get("deviceId");
+    const { deviceId, user } = gst.values;
 
     if (isUndefined(deviceId)) {
         gst.local.set("deviceId", v4());
     }
 
-    const { accessToken, refreshToken, tokenExpiry, rememberMe } = gst.get("user") ?? {};
+    const { accessToken, refreshToken, tokenExpiry, rememberMe } = user ?? {};
 
     // ---------------------- circuit ----------------------
 
@@ -106,11 +106,11 @@ export const useApiContext = () => {
                 .then((data) => {
                     const mappedData = refreshAccessTokenMap(data);
 
-                    gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
-                        ...prevUser,
+                    gst[rememberMe ? "local" : "session"].set("user", {
+                        ...user,
                         ...mappedData,
                         tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
-                    }));
+                    });
                 })
                 .catch(() => gst.unset("user"))
                 .finally(() => refreshPromise = null);
@@ -220,12 +220,10 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
 
-                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => {
-                    return {
-                        ...prevUser,
+                gst[rememberMe ? "local" : "session"].set("user",  {
+                        ...user,
                         ...mappedData,
                         tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
-                    }
                 });
 
                 return mappedData

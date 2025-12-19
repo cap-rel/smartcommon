@@ -141,6 +141,8 @@ export const useGlobalStatesContext = (props = {}) => {
 
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
   // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
+
+  // TODO (prevState) => {} n'est pas géré
   const set = (storage, path, value) => {
     st.set(path, value);
 
