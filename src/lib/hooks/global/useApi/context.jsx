@@ -28,10 +28,10 @@ export const useApiContext = () => {
 
     let circuitOpenUntil = 0;
 
-    const isCircuitOpen = () => floor(Date.now() / 1000) < circuitOpenUntil;
+    const isCircuitOpen = () => Date.now() < circuitOpenUntil;
 
-    const openCircuit = (s = 10) => {
-        circuitOpenUntil = floor(Date.now() / 1000) + s;
+    const openCircuit = (ms = 10000) => {
+        circuitOpenUntil = Date.now() + ms;
     };
 
     // ---------------------- baseApi ----------------------
@@ -184,7 +184,7 @@ export const useApiContext = () => {
                         } catch (error) {
                             openCircuit(30000);
 
-                            return response;
+                            throw error;
                         }
                     }
 
