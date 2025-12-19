@@ -55,9 +55,9 @@ export const useApiContext = () => {
                     const { delay } = options;
 
                     if (isCircuitOpen()) {
-                        return Promise.reject(new Error("Circuit breaker open – requests blocked"));
-
                         log.apiError(`${method} - BLOCKED`, url);
+
+                        return Promise.reject(new Error("Circuit breaker open – requests blocked"));
                     }
 
                     if (!navigatorInfo.isOnLine) {
