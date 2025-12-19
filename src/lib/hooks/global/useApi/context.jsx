@@ -1,5 +1,5 @@
 import ky from "ky";
-import { floor, isUndefined } from "lodash";
+import { floor, isEmpty, isUndefined } from "lodash";
 import { v4 } from "uuid";
 
 import { log, navigatorInfo, throwTypeError } from "lib/utils";
@@ -22,7 +22,7 @@ export const useApiContext = () => {
         gst.local.set("deviceId", v4());
     }
 
-    const { accessToken, refreshToken, tokenExpiry, rememberMe } = user ?? {};
+    const { accessToken, refreshToken, tokenExpiry, rememberMe, deviceOptions } = user ?? {};
 
     // ---------------------- circuit ----------------------
 
@@ -136,12 +136,12 @@ export const useApiContext = () => {
 
     // ---------------------- login ----------------------
 
-    const login = (data, options = {}) => {
+    const login = (body, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         return publicApi
             .post(options.url ?? "login", {
-                json: data,
+                json: body,
                  ...options
             })
             .json()
@@ -214,12 +214,16 @@ export const useApiContext = () => {
 
     // ---------------------- device ----------------------
 
-    const device = (data, options = {}) => {
+    const device = (body, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        const { label, uuid } = body;
+
+        const noUuid = (uuid === "noDevice" || isEmpty(deviceOptions));
 
         return privateApi
             .post(options.url ?? "device", {
-                json: data,
+                json: { label: label || undefined, uuid: noUuid ? deviceId : uuid },
                 ...options
             })
             .json()
@@ -231,6 +235,10 @@ export const useApiContext = () => {
                         ...mappedData,
                         tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
                 });
+
+                if (!noUuid) {
+                    gst.local.set("deviceId", uuid);
+                }
 
                 return mappedData
             });
