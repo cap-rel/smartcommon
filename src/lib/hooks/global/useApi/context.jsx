@@ -22,7 +22,7 @@ export const useApiContext = () => {
         gst.local.set("deviceId", v4());
     }
 
-    const { accessToken, refreshToken, tokenExpiry } = gst.get("user") ?? {};
+    const { accessToken, refreshToken, tokenExpiry, rememberMe } = gst.get("user") ?? {};
 
     // ---------------------- circuit ----------------------
 
@@ -106,12 +106,10 @@ export const useApiContext = () => {
                 .then((data) => {
                     const mappedData = refreshAccessTokenMap(data);
 
-                    const { rememberMe, expiresIn } = mappedData;
-
                     gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
                         ...prevUser,
                         ...mappedData,
-                        tokenExpiry: floor(Date.now() / 1000) + expiresIn
+                        tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
                     }));
                 })
                 .catch(() => gst.unset("user"))
@@ -222,12 +220,11 @@ export const useApiContext = () => {
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
 
-                const { rememberMe, expiresIn } = mappedData;
-
-                gst[rememberMe ? "local" : "session"].set("user", {
+                gst[rememberMe ? "local" : "session"].set("user", (prevUser) => ({
+                    ...prevUser,
                     ...mappedData,
-                    tokenExpiry: floor(Date.now() / 1000) + expiresIn
-                });
+                    tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
+                }));
 
                 return mappedData
             });
