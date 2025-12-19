@@ -41,6 +41,8 @@ export const useGlobalStatesContext = (props = {}) => {
       }
     });
   }, []);
+  
+  useEffect(() => dispatch(setGlobalStates(st.values)), [st.values]);
 
   // ---------------------- get ----------------------
 
@@ -71,8 +73,7 @@ export const useGlobalStatesContext = (props = {}) => {
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
   // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
   const set = (storage, path, value) => {
-    const values = st.set(path, value);
-    dispatch(setGlobalStates(values));
+    st.set(path, value);
 
     const localStorage = local.get("global") ?? {};
     const sessionStorage = session.get("global") ?? {};
@@ -107,8 +108,7 @@ export const useGlobalStatesContext = (props = {}) => {
   // ---------------------- unset ----------------------
 
   const unset = (path) => {
-    const values = st.unset(path);
-    dispatch(setGlobalStates(values));
+    st.unset(path);
 
     if (isNil(path)) {
       if (debug) {
@@ -161,7 +161,7 @@ export const useGlobalStatesContext = (props = {}) => {
   // ---------------------- return ----------------------
 
   return {
-    values: globalStates,
+    values: st.values,
     get,
     getStorage,
     set: (path, value) => set(null, path, value),
