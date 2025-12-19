@@ -1,1 +1,2 @@
-export * from "./Mapping";
+export * from "./mapping";
+export * from "./Db";
