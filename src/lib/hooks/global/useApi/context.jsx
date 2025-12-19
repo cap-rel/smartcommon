@@ -112,7 +112,10 @@ export const useApiContext = () => {
                         tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
                     });
                 })
-                .catch(() => gst.unset("user"))
+                .catch((error) => {
+                    gst.unset("user");
+                    throw error;
+                })
                 .finally(() => refreshPromise = null);
         }
 
@@ -203,7 +206,10 @@ export const useApiContext = () => {
         return privateApi
             .post(options.url ?? "logout", options)
             .json()
-            .then(() => gst.unset("user"));
+            .then(() => gst.unset("user"))
+            .catch((error) => {
+                throw error;
+            })
     };
 
     // ---------------------- device ----------------------

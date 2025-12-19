@@ -89,25 +89,25 @@ export const useGlobalStatesContext = (props = {}) => {
 
   // ---------------------- useEffect ----------------------
 
-  useEffect(() => {
-    forEach(initialLocal, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set("local", path, value);
-      }
-    });
+  // useEffect(() => {
+  //   forEach(initialLocal, (value, path) => {
+  //     if (isUndefined(st.get(path))) {
+  //       set("local", path, value);
+  //     }
+  //   });
 
-    forEach(initialSession, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set("session", path, value);
-      }
-    });
+  //   forEach(initialSession, (value, path) => {
+  //     if (isUndefined(st.get(path))) {
+  //       set("session", path, value);
+  //     }
+  //   });
 
-    forEach(initialMemory, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set(null, path, value);
-      }
-    });
-  }, []);
+  //   forEach(initialMemory, (value, path) => {
+  //     if (isUndefined(st.get(path))) {
+  //       set(null, path, value);
+  //     }
+  //   });
+  // }, []);
   
   // useEffect(() => {
   //   dispatch(setGlobalStates(st.values))
