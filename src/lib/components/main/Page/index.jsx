@@ -53,6 +53,8 @@ export const Page = (props) => {
 
     const { id, responsive = true, location, children } = variantProps;
 
+    const componentId = id || `${id}Page`;
+
     const device = navigatorInfo.device.type;
 
     const { pathname } = location ?? {}
@@ -121,7 +123,7 @@ export const Page = (props) => {
     const { tabbarHeight, tabbarWidth } = states;
 
     useEffect(() => {
-        log.page(id);
+        log.page(componentId);
         const tabbar = pageRef?.current?.querySelector("[data-component='Tabbar']");
         set("tabbarHeight", tabbar?.offsetHeight);
         set("tabbarWidth", tabbar?.offsetWidth);
