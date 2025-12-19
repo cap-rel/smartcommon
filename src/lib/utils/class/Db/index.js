@@ -40,87 +40,87 @@ export class Db {
         const { db, debug } = this;
 
         forEach(keys(stores), (store) => {
-             // db[store].hook('reading', (item) => {
-        //     if (debug) {
-        //         log.db("READ item =", item);
-        //     }
+            // db[store].hook('reading', (item) => {
+            //     if (debug) {
+            //         log.db("READ item =", item);
+            //     }
 
-        //     setTimeout(() => {
-        //         db.logs.add({
-        //             store,
-        //             action: "read",
-        //             data: structuredClone(item),
-        //             createdAt: floor(Date.now() / 1000)
-        //         });
-        //     });
+            //     setTimeout(() => {
+            //         db.logs.add({
+            //             store,
+            //             action: "read",
+            //             data: structuredClone(item),
+            //             createdAt: floor(Date.now() / 1000)
+            //         });
+            //     });
 
-        //     return item;
-        // });
+            //     return item;
+            // });
 
-        db[store].hook("creating", (key, item) => {
-            if (debug) {
-                log.db(`CREATE in ${store} - key =`, key, ", item =", item);
-            }
+            db[store].hook("creating", (key, item) => {
+                if (debug) {
+                    log.db(`CREATE in ${store} - key =`, key, ", item =", item);
+                }
 
-            const dateNow = floor(Date.now() / 1000);
+                const dateNow = floor(Date.now() / 1000);
 
-            item.createdAt = dateNow;
-            item.updatedAt = dateNow;
+                item.createdAt = dateNow;
+                item.updatedAt = dateNow;
 
-            setTimeout(() => {
-                db.logs.add({
-                    store,
-                    itemId: key,
-                    action: "create",
-                    data: { ...item },
-                    createdAt: dateNow
+                setTimeout(() => {
+                    db.logs.add({
+                        store,
+                        itemId: key,
+                        action: "create",
+                        data: { ...item },
+                        createdAt: dateNow
+                    });
                 });
             });
-        });
 
-        db[store].hook("updating", (updates, key, item) => {
-            if (debug) {
-                log.db(`UPDATE in ${store} - key =`, key, ", updates =", updates);
-            }
+            db[store].hook("updating", (updates, key, item) => {
+                if (debug) {
+                    log.db(`UPDATE in ${store} - key =`, key, ", updates =", updates);
+                }
 
-            const dateNow = floor(Date.now() / 1000);
+                const dateNow = floor(Date.now() / 1000);
 
-            item.updatedAt = dateNow;
+                item.updatedAt = dateNow;
 
-            setTimeout(() => {
-                db.logs.add({
-                    store,
-                    itemId: key,
-                    action: "update",
-                    data: {
-                        before: { ...item },
-                        after: { ...item, ...updates }
-                    },
-                    createdAt: dateNow
+                setTimeout(() => {
+                    db.logs.add({
+                        store,
+                        itemId: key,
+                        action: "update",
+                        data: {
+                            before: { ...item },
+                            after: { ...item, ...updates }
+                        },
+                        createdAt: dateNow
+                    });
                 });
             });
-        });
 
-        db[store].hook("deleting", (key, item) => {
-            if (debug) {
-                log.db(`DELETE in ${store} - key =`, key);
-            }
+            db[store].hook("deleting", (key, item) => {
+                if (debug) {
+                    log.db(`DELETE in ${store} - key =`, key);
+                }
 
-            setTimeout(() => {
-                db.logs.add({
-                    store,
-                    itemId: key,
-                    action: "delete",
-                    data: { ...item },
-                    createdAt: floor(Date.now() / 1000)
+                setTimeout(() => {
+                    db.logs.add({
+                        store,
+                        itemId: key,
+                        action: "delete",
+                        data: { ...item },
+                        createdAt: floor(Date.now() / 1000)
+                    });
                 });
             });
-        });
         });
     }
 
     /** Accès direct à Dexie si nécessaire */
-    // get instance() {
-    //     return this.db;
-    // }
+    get instance() {
+        return this.db;
+    }
 }
