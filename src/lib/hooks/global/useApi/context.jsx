@@ -167,16 +167,13 @@ export const useApiContext = () => {
         },
         hooks: {
             beforeRequest: [
-                async (request, options) => {
-                    // if (floor(Date.now() / 1000) > tokenExpiry) {
-                    //     await refresh();
-                    // }
+                async (request) => {
+                    if (floor(Date.now() / 1000) > tokenExpiry) {
+                        await refresh();
+                    }
 
-                    options.headers = {
-                        ...options.headers,
-                        Authorization: `Bearer ${accessToken}`,
-                        "X-DEVICEID": deviceId
-                    };
+                    request.headers.set("Authorization", `Bearer ${accessToken}`);
+                    request.headers.set("X-DEVICEID", deviceId);
                 }
             ],
             afterResponse: [
