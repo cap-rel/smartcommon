@@ -195,13 +195,13 @@ export const useGlobalStatesContext = (props = {}) => {
 
     const localStorage = local.get("global") ?? {};
 
-    const localPathsToUnset = flatMap(localStorage, (value, path) => {
+    const localPathsToUnset = flatMap(localStorage, (value, key) => {
       // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(path, path) ? [path] : [];
+      return startsWith(key, path) ? [key] : [];
     });
     
     if (!isEmpty(localPathsToUnset)) {
-      forEach(localPathsToUnset, (path) => delete localStorage[path]);
+      forEach(localPathsToUnset, (key) => delete localStorage[key]);
 
       if (debug) {
         log.globalState(`UNSET LOCAL ${path}`);
@@ -212,13 +212,13 @@ export const useGlobalStatesContext = (props = {}) => {
 
     const sessionStorage = session.get("global") ?? {};
 
-    const sessionPathsToUnset = flatMap(sessionStorage, (value, path) => {
+    const sessionPathsToUnset = flatMap(sessionStorage, (value, key) => {
       // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(path, path) ? [path] : [];
+      return startsWith(key, path) ? [key] : [];
     });
 
     if (!isEmpty(sessionPathsToUnset)) {
-      forEach(sessionPathsToUnset, (path) => delete sessionStorage[path]);
+      forEach(sessionPathsToUnset, (key) => delete sessionStorage[key]);
 
       if (debug) {
         log.globalState(`UNSET SESSION ${path}`,);
