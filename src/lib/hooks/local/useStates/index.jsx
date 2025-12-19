@@ -63,7 +63,7 @@ export const useStates = (props = {}) => {
     //   return;
     // }
 
-    const newState = structuredClone(states);
+    const newState = { ...states };
     const parts = parsePath(path);
 
     let level = newState;
@@ -124,7 +124,7 @@ export const useStates = (props = {}) => {
   const unset = (path) => {
     throwTypeError({ value: path, name: "unset path", type: ["string"], required: true });
 
-      const newState = structuredClone(states);
+      const newState = { ...states };
 
     if (isUndefined(get(path))) {
       return newState;

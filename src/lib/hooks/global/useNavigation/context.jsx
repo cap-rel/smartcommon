@@ -27,7 +27,7 @@ export const useNavigationContext = (props = {}) => {
         const lastLocation = last(history);
 
         if (!lastLocation || lastLocation.key !== key) {
-            gst.session.set("history[]", filteredLocation);
+            // gst.session.set("history[]", filteredLocation);
             
             if (debug) {
                 log.location(`pathname = ${pathname}, state =`, state);
