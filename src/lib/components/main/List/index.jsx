@@ -1,9 +1,9 @@
 import { RxCaretSort } from "react-icons/rx";
 import { IoSearch } from "react-icons/io5";
+import { isEmpty } from "lodash";
 
 import { Input, Button } from "lib/components";
 import { useVariantMerger } from "lib/hooks";
-import { isEmpty } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 

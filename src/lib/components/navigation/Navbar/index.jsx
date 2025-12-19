@@ -1,8 +1,9 @@
 import { animate, useMotionValue, motion } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { isEmpty } from "lodash";
 
 import { useStates, useVariantMerger } from "lib/hooks";
-import { isEmpty, setGlobalVariables, navigatorInfo } from "lib/utils";
+import { setGlobalVariables, navigatorInfo } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 

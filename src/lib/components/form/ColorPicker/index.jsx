@@ -1,8 +1,9 @@
 import { useEffect } from "react";
+import { isEmpty } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
-import { applyFunctionIfNotNil, isEmpty } from "lib/utils";
+import { applyFunctionIfNotNil } from "lib/utils";
 
 import { propTypes } from "./props";
 

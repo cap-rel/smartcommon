@@ -1,4 +1,4 @@
-import { isArray, isFunction, isNil, isObject, isString } from "lodash";
+import { isFunction, isNil } from "lodash";
 
 // export function isNumber(value, options = {}) {
 //      const {
@@ -180,26 +180,26 @@ export function isInvalid(value) {
     return isNil(value) || Number.isNaN(value);
 } 
   
-export function isEmpty(value) {
-    if (isInvalid(value)) {
-        return true;
-    }
+// export function isEmpty(value) {
+//     if (isInvalid(value)) {
+//         return true;
+//     }
     
-    if (isString(value) || isArray(value)) {
-        return value.length === 0;
-    }
+//     if (isString(value) || isArray(value)) {
+//         return value.length === 0;
+//     }
 
-    if (isObject(value)) {
-        return Object.keys(value).length === 0;
-    }
+//     if (isObject(value)) {
+//         return Object.keys(value).length === 0;
+//     }
 
-    if (isFunction(value)) {
-        const functionString = value.toString().replace(/\s/g, "");
-        return functionString === `function${value}(){}` || functionString === "()=>{}";
-    }
+//     if (isFunction(value)) {
+//         const functionString = value.toString().replace(/\s/g, "");
+//         return functionString === `function${value}(){}` || functionString === "()=>{}";
+//     }
 
-    return false;
-}
+//     return false;
+// }
 
 // export function toArray(value){
 //     return isArray(value) ? value : [value];

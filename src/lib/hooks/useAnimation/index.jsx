@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-
-import { isEmpty } from "lib/utils";
+import { isEmpty } from "lodash";
 
 export const useAnimation = (initialValues) => {
   const [animations, setAnimations] = useState(initialValues);

@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
+import { isEmpty } from "lodash";
 
-import { getLocal, isEmpty, setLocal } from "lib/utils";
+import { getLocal, setLocal } from "lib/utils";
 
 import { useFetchApi } from "../useFetchApi";
 import { refreshAccessTokenMap } from "../useRefreshAccessToken";

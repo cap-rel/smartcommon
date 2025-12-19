@@ -1,11 +1,11 @@
 import { FaFileAudio, FaFileImport, FaMicrophoneLines, FaTrashCan } from "react-icons/fa6";
 import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { isNil } from "lodash";
+import { isNil, isEmpty } from "lodash";
 
 import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Textarea, Input, Label } from "lib/components";
-import { applyFunctionIfNotNil, isEmpty, locate, splitFileExtension } from "lib/utils";
+import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
 import { propTypes } from "./props";
 

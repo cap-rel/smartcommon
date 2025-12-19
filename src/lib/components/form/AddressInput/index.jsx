@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { FaSearchLocation } from 'react-icons/fa';
+import { isEmpty } from 'lodash';
 
 import { useStates, useField, useVariantMerger } from 'lib/hooks';
 import { Label, Input } from 'lib/components';
-import { isEmpty } from 'lib/utils';
 
 import { propTypes } from './props';
 

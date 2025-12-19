@@ -1,6 +1,4 @@
-import { isArray } from "lodash";
-
-import { isEmpty } from "./type";
+import { isArray, isEmpty } from "lodash";
   
   export const secondsToTime = (seconds) => {
     const m = Math.floor(seconds / 60);

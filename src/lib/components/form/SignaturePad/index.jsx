@@ -2,11 +2,11 @@ import toast from "react-hot-toast";
 import SignatureCanvas from 'react-signature-canvas'
 import { useEffect, useRef } from "react";
 import { FaEraser, FaSignature } from "react-icons/fa6";
-import { isNil } from "lodash";
+import { isNil, isEmpty } from "lodash";
 
 import { Button, Label, Input } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
-import { applyFunctionIfNotNil, locate, isEmpty } from "lib/utils/functions";
+import { applyFunctionIfNotNil, locate } from "lib/utils/functions";
 
 import { propTypes } from "./props";
 

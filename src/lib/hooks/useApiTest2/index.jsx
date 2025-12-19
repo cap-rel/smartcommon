@@ -1,6 +1,7 @@
 import { v4 } from "uuid";
+import { isEmpty } from "lodash";
 
-import { getLocal, setLocal, isEmpty } from "lib/utils";
+import { getLocal, setLocal } from "lib/utils";
 
 import { useLogin } from "./useLogin";
 import { useLogout } from "./useLogout";

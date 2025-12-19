@@ -1,7 +1,6 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { isNil } from "lodash";
+import { isNil, isEmpty } from "lodash";
 
-import { isEmpty } from "lib/utils";
 import { filter, map, some } from "lodash";
 
 // IDEA Mini-popup for help

@@ -1,4 +1,6 @@
-import { navigatorInfo, isEmpty } from "lib/utils";
+import { isEmpty } from "lodash";
+
+import { navigatorInfo } from "lib/utils";
 
 export const useIntl = () => {
     const DateTimeFormat = (timestamp, locales = null, options = null) => {
