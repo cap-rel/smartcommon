@@ -57,13 +57,15 @@ export const useStates = (props = {}) => {
   // ---------------------- set ----------------------
 
   const set = (path, value) => {
-    throwTypeError({ value: path, name: "set path", type: ["string"], required: true  });
+    throwTypeError({ value: path, name: "set path", type: ["string"] });
 
-    // if (isEqual(get(path), value)) {
-    //   return;
-    // }
+    if (isUndefined(path)) {
+      throwTypeError({ value: value, name: "When the path is nil, set value", type: ["object"] });
 
-    const newState = { ...states };
+      setStates(value);
+    }
+
+    const newState = structuredClone(states);
     const parts = parsePath(path);
 
     let level = newState;
@@ -124,7 +126,7 @@ export const useStates = (props = {}) => {
   const unset = (path) => {
     throwTypeError({ value: path, name: "unset path", type: ["string"], required: true });
 
-      const newState = { ...states };
+    const newState = structuredClone(states);
 
     if (isUndefined(get(path))) {
       return newState;
