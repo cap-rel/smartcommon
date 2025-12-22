@@ -15,7 +15,7 @@ export const useGlobalStatesContext = (props = {}) => {
 
   const libConfig = useLibConfig();
   
-  const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
+  const { debug } = libConfig.globalStates;
 
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] });
   

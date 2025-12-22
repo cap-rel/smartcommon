@@ -9,10 +9,8 @@ import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessTok
 
 export const useApiContext = (props = {}) => {
     const libConfig = useLibConfig();
-
-    const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
     
-    const { prefixUrl, timeout } = libConfig.api ?? {};
+    const { prefixUrl, timeout, debug } = libConfig.api ?? {};
 
     // ---------------------- globalStates ----------------------
 

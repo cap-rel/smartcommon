@@ -7,12 +7,10 @@ import { useGlobalStates, useLibConfig } from "lib/hooks";
 
 // TODO .query(params) .scroll(false) .preserveState()
 
-export const useNavigationContext = (props = {}) => {
-    throwTypeError({ value: props, name: "useNavigation props", type: ["plain object"] })
-    
+export const useNavigationContext = () => {    
     const libConfig = useLibConfig();
 
-    const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
+    const { debug } = libConfig.navigation;
 
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });
