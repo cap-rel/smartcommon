@@ -42,7 +42,7 @@ export const useEffect = (props = {}) => {
 
     useReactEffect(() => {
         if (debug) {
-            log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activationsRef.current}})`);
+            log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activationsRef.current})`);
         }
 
         activationsRef.current += 1;
