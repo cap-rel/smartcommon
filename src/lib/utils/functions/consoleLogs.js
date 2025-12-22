@@ -14,7 +14,7 @@ export const log = {
     apiLoading: (status, ...messages) => logCustom(status, "grey", ...messages),
     apiError: (status, ...messages) => logCustom(status, "red", ...messages),
     apiSuccess: (status, ...messages) => logCustom(status, "green", ...messages),
-    location: (...messages) => logCustom("LOCATION", "mediumvioletred"),
+    location: (...messages) => logCustom("LOCATION", "mediumvioletred", ...messages),
     page: (...messages) => logCustom("PAGE", "darkorange", ...messages),
     db: (...messages) => logCustom("DB", "midnightblue", ...messages)
 };
