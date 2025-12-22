@@ -1,5 +1,5 @@
 import { useEffect as useReactEffect, useRef } from "react";
-import { constant, forEach, isFunction, isPlainObject, mapValues, toArray, upperFirst } from "lodash";
+import { constant, forEach, isArray, isFunction, isPlainObject, mapValues, toArray, upperFirst } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
