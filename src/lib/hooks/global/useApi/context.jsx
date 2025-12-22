@@ -7,10 +7,12 @@ import { useGlobalStates, useLibConfig } from "lib/hooks";
 import { loginMap } from "lib/hooks/useApiTest2/useLogin"; 
 import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessToken";
 
-export const useApiContext = () => {
-    const { api: apiConfig } = useLibConfig();
+export const useApiContext = (props = {}) => {
+    const libConfig = useLibConfig();
+
+    const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
     
-    const { prefixUrl, timeout } = apiConfig ?? {};
+    const { prefixUrl, timeout } = libConfig.api ?? {};
 
     // ---------------------- globalStates ----------------------
 
@@ -55,20 +57,26 @@ export const useApiContext = () => {
                     const { delay } = options;
 
                     if (isCircuitOpen()) {
-                        log.apiError(`${method} - BLOCKED`, url);
+                        if (debug) {
+                            log.apiError(`${method} - BLOCKED`, url);
+                        }
 
                         return Promise.reject(new Error("Circuit breaker open – requests blocked"));
                     }
 
                     if (!navigatorInfo.isOnLine) {
-                        log.apiError(`${method} - NO CONNECTION`, url);
+                        if (debug) {
+                            log.apiError(`${method} - NO CONNECTION`, url);
+                        }
 
                         openCircuit(5000);
 
                         return Promise.reject(new Error("No internet connection"));
                     }
 
-                    log.apiLoading(`${method} - LOADING`, url);
+                    if (debug) {
+                        log.apiLoading(`${method} - LOADING`, url);
+                    }
 
                     if (delay) {
                         return new Promise(response => setTimeout(response, delay));
@@ -81,9 +89,13 @@ export const useApiContext = () => {
                     const { ok, status } = response;
 
                     if (!ok) {
-                        log.apiError(`${method} - ${status}`, url);
+                        if (debug) {
+                            log.apiError(`${method} - ${status}`, url);
+                        }
                     } else {
-                        log.apiSuccess(`${method} - ${status}`, url);
+                        if (debug) {
+                            log.apiSuccess(`${method} - ${status}`, url);
+                        }
                     }
                 }
             ]

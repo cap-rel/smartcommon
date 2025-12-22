@@ -1,12 +1,16 @@
-import { forEach, isString } from "lodash";
+import { forEach, isString, isUndefined } from "lodash";
 
 import { throwTypeError } from "lib/utils";
-import { useStates } from "lib/hooks";
+import { useLibConfig, useStates } from "lib/hooks";
 
 export const useForm = (props = {}) => {
   throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-  const { defaultValues = {}, debug } = props;
+  const { defaultValues = {} } = props;
+
+  const libConfig = useLibConfig();
+  
+  const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
 
   throwTypeError({ value: defaultValues, name: "defaultValues", type: ["plain object"] });
 

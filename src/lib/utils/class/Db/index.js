@@ -8,7 +8,7 @@ export class Db {
     name;
     debug;
 
-    constructor({ name, options = {}, version = 1, stores = {}, debug = false } = {}) {
+    constructor({ name, options = {}, version = 1, stores = {}, debug } = {}) {
         throwTypeError({ value: name, name: "Db name", type: ["string"], required: true });
         throwTypeError({ value: options, name: "Db options", type: ["plain object"] });
         throwTypeError({ value: version, name: "Db version", type: ["number"] });
@@ -16,7 +16,7 @@ export class Db {
 
         this.name = name;
         this.debug = debug;
-
+        
         this.db = new Dexie(name, options);
 
         this._initStores(version, stores);

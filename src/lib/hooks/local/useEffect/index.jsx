@@ -1,7 +1,8 @@
 import { useEffect as useReactEffect, useRef } from "react";
-import { constant, forEach, isArray, isFunction, isPlainObject, mapValues, toArray, upperFirst } from "lodash";
+import { constant, forEach, isArray, isFunction, isPlainObject, isUndefined, mapValues, toArray, upperFirst } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
+import { useLibConfig } from "lib/hooks";
 
 // export const useEffects = (effects) => {
 //     if (!isPlainObject(effects)) {
@@ -33,7 +34,11 @@ import { log, throwTypeError } from "lib/utils";
 export const useEffect = (props = {}) => {
     throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-    const { on, deps = [], fn = () => {}, debug } = props;
+    const { on, deps = [], fn = () => {} } = props;
+
+    const libConfig = useLibConfig();
+
+    const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
 
     throwTypeError({ value: deps, name: "deps", type: ["array"] });
     throwTypeError({ value: fn, name: "fn", type: ["function"] });

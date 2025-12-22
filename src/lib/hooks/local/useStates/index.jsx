@@ -2,11 +2,16 @@ import { useState } from "react";
 import { isNil, isUndefined, isArray } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
+import { useLibConfig } from "lib/hooks";
 
 export const useStates = (props = {}) => {
   throwTypeError({ value: props, name: "useStates props", type: ["plain object"] })
 
-  const { initialStates = {}, debug = false } = props;
+  const { initialStates = {} } = props;
+
+  const libConfig = useLibConfig();
+
+  const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
   
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] })
 

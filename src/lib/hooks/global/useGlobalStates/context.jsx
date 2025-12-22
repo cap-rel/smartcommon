@@ -2,7 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray } from "lodash";
 import { useEffect } from "react";
 
-import { useStates } from "lib/hooks";
+import { useLibConfig, useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
 import { session, local, log, throwTypeError } from "lib/utils";
 
@@ -11,7 +11,11 @@ import { session, local, log, throwTypeError } from "lib/utils";
 export const useGlobalStatesContext = (props = {}) => {
   throwTypeError({ value: props, name: "useGlobalStates props", type: ["plain object"] })
 
-  const { initialStates = {}, debug = false } = props;
+  const { initialStates = {} } = props;
+
+  const libConfig = useLibConfig();
+  
+  const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
 
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] });
   

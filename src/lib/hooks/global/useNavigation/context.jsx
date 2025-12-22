@@ -3,14 +3,16 @@ import { isFunction, isPlainObject, isUndefined, last } from "lodash";
 import { useEffect } from "react";
 
 import { log, throwTypeError } from "lib/utils";
-import { useGlobalStates } from "lib/hooks";
+import { useGlobalStates, useLibConfig } from "lib/hooks";
 
 // TODO .query(params) .scroll(false) .preserveState()
 
 export const useNavigationContext = (props = {}) => {
     throwTypeError({ value: props, name: "useNavigation props", type: ["plain object"] })
     
-    const { debug = false } = props;
+    const libConfig = useLibConfig();
+
+    const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
 
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });
@@ -29,9 +31,10 @@ export const useNavigationContext = (props = {}) => {
         if (!lastLocation || lastLocation.key !== key) {
             // gst.session.set("history[]", filteredLocation);
             
-            if (debug) {
-                log.location(`pathname = ${pathname}, state =`, state);
-            }
+        }
+
+        if (debug) {
+            log.location(`pathname = ${pathname}, state =`, state);
         }
     }, [location]);
 
