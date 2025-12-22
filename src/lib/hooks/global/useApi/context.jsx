@@ -7,10 +7,14 @@ import { useGlobalStates, useLibConfig } from "lib/hooks";
 import { loginMap } from "lib/hooks/useApiTest2/useLogin"; 
 import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessToken";
 
-export const useApiContext = (props = {}) => {
+export const useApiContext = () => {
     const libConfig = useLibConfig();
+
+    const { debug: libDebug, api } = libConfig;
     
-    const { prefixUrl, timeout, debug } = libConfig.api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug } = api ?? {};
+
+    const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
     // ---------------------- globalStates ----------------------
 

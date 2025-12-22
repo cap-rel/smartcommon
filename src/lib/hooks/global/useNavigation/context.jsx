@@ -10,7 +10,11 @@ import { useGlobalStates, useLibConfig } from "lib/hooks";
 export const useNavigationContext = () => {    
     const libConfig = useLibConfig();
 
-    const { debug } = libConfig.navigation;
+    const { debug: libDebug, navigation } = libConfig;
+    
+    const { debug: navigationDebug } = navigation ?? {};
+
+    const debug = isUndefined(navigationDebug) ? libDebug : navigationDebug;
 
     const initialStates = { session: { history: [] } };
     const gst = useGlobalStates({ initialStates });

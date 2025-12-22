@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-import { useStates, useVariantMerger } from "lib/hooks";
+import { useLibConfig, useStates, useVariantMerger } from "lib/hooks";
 import { log, navigatorInfo } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
@@ -52,6 +52,10 @@ export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
     const { id, responsive = true, location, children } = variantProps;
+
+    const libConfig = useLibConfig();
+
+    const { debug } = libConfig;
 
     const componentId = id || `${id}Page`;
 
@@ -123,7 +127,9 @@ export const Page = (props) => {
     const { tabbarHeight, tabbarWidth } = states;
 
     useEffect(() => {
-        log.page(componentId);
+        if (debug) {
+            log.page(componentId);
+        }
         const tabbar = pageRef?.current?.querySelector("[data-component='Tabbar']");
         set("tabbarHeight", tabbar?.offsetHeight);
         set("tabbarWidth", tabbar?.offsetWidth);
