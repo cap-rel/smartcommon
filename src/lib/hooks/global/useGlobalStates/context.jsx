@@ -95,7 +95,7 @@ export const useGlobalStatesContext = (props = {}) => {
   
   const storages = { ...local.get("global"), ...session.get("global") };
   
-  const st = useStates({ initialStates: reduce(storages, setInit, {}) });
+  const st = useStates({ initialStates: reduce(storages, setInit, {}), debug: false });
 
   // ---------------------- useEffect ----------------------
 

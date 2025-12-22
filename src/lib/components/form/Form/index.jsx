@@ -14,7 +14,7 @@ export function Form(props) {
 
   const initialStates = { isFormSubmitting: false, isFormSubmitted: false };
 
-  const st = useStates({ initialStates });
+  const st = useStates({ initialStates, debug: false });
 
   const submit = async (e) => {
     e.preventDefault();

@@ -14,7 +14,7 @@ export const Signature = (props) => {
         isPopupOpen: false
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isOpen } = states;
 

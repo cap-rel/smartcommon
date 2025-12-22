@@ -40,7 +40,7 @@ export const useWindow = () => {
         darkMode: getDarkMode(),
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
   
     const handleResize = () => {
         set("orientation", getOrientation());

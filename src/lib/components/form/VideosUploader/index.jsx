@@ -61,7 +61,7 @@ export const VideosUploader = (props) => {
         selectedVideoIndex: null, // for multiple videos
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isVideoLoading, isVideoSelected, selectedVideoIndex } = states;
 

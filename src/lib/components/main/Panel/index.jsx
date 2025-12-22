@@ -31,7 +31,7 @@ export const Panel = (props) => {
         panelWidth: 0
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { panelHeight, panelWidth } = states;
 

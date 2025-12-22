@@ -88,7 +88,7 @@ export const Calendar = (props) => {
     return { year, month, origin, lastSelected };
   }
 
-  const { states, set } = useStates({ initialStates });
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { year, month, origin, lastSelected } = states;
   

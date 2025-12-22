@@ -61,7 +61,7 @@ export const AudiosUploader = (props) => {
         selectedAudioIndex: null, // for multiple audios
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isAudioLoading, isAudioSelected, selectedAudioIndex } = states;
 

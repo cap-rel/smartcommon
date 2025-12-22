@@ -19,7 +19,7 @@ export const useForm = (props = {}) => {
     errors: {},
   }
 
-  const st = useStates({ initialStates });
+  const st = useStates({ initialStates, debug: false });
 
   const { values, errors } = st.values;
 

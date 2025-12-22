@@ -38,7 +38,7 @@ export const SignaturePad = (props) => {
     isSignatureValidated: false
   };
 
-  const { states, set } = useStates({ initialStates });
+  const { states, set } = useStates({ initialStates, debug: false });
 
   const { isSignatureValidated } = states;
 

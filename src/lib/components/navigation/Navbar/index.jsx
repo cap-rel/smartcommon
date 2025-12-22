@@ -37,7 +37,7 @@ export const Navbar = (props) => {
         upperNavbarWidth: 0
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { navbarHeight, navbarWidth, upperNavbarHeight, upperNavbarWidth } = states;
 

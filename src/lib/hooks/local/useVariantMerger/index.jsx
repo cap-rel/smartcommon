@@ -17,7 +17,7 @@ export const useVariantMerger = (componentKey, props) => {
 
     const initialStates = { params: {} };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     const { params } = states; 
 

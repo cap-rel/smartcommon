@@ -61,7 +61,7 @@ export const useForm = (form) => {
         }
     };
 
-    const { states, set } = useStates({ initialStates });
+    const { states, set } = useStates({ initialStates, debug: false });
 
     useEffect(() => {
 
