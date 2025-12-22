@@ -33,7 +33,7 @@ export const useField = (props) => {
   };
 
   return {
-    filteredErrors: formErrors[name] ?? {},
+    filteredErrors: isControlledByForm ? formErrors[name] : {},
     currentValue,
     setValue,
     isFormSubmitting,
