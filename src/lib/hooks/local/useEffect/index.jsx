@@ -35,11 +35,10 @@ export const useEffect = (props = {}) => {
 
     const { on, deps = [], fn = () => {}, debug } = props;
 
+    throwTypeError({ value: deps, name: "deps", type: ["array"] });
     throwTypeError({ value: fn, name: "fn", type: ["function"] });
 
     const activationsRef = useRef(1);
-
-    const depsArray = isArray(deps) ? deps : [deps];
 
     useReactEffect(() => {
         if (debug) {
@@ -48,7 +47,7 @@ export const useEffect = (props = {}) => {
 
         activationsRef.current += 1;
         fn();
-    }, depsArray);
+    }, deps);
 
     return {
         activations: activationsRef.current
