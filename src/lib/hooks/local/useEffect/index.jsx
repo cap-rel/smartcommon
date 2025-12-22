@@ -33,25 +33,24 @@ import { log, throwTypeError } from "lib/utils";
 export const useEffect = (props = {}) => {
     throwTypeError({ value: props, name: "props", type: ["plain object"] });
 
-    const { on, deps, fn = () => {}, debug } = props;
+    const { on, deps = [], fn = () => {}, debug } = props;
 
     throwTypeError({ value: fn, name: "fn", type: ["function"] });
 
     const activationsRef = useRef(1);
-    let activations = activationsRef.current;
 
-    const depsArray = toArray(deps);
+    const depsArray = isArray(deps) ? deps : [deps];
 
     useReactEffect(() => {
         if (debug) {
-            log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activations}})`);
+            log.effect(`${on ? `on${upperFirst(on)}` : undefined} (${activationsRef.current}})`);
         }
 
-        activations += 1;
+        activationsRef.current += 1;
         fn();
     }, depsArray);
 
     return {
-        activations
+        activations: activationsRef.current
     }
 };
