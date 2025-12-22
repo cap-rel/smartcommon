@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { isEqual, isNil, isPlainObject, isUndefined, isArray } from "lodash";
+import { isNil, isUndefined, isArray } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
@@ -125,7 +125,7 @@ export const useStates = (props = {}) => {
       return newState;
     });
 
-    return returnStates;
+    return returnedStates;
   };
 
   // ---------------------- unset ----------------------
