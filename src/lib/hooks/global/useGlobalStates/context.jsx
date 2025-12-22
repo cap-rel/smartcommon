@@ -6,6 +6,8 @@ import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
 import { session, local, log, throwTypeError } from "lib/utils";
 
+// TODO (prevValue) => ne fonctionne pas 
+
 export const useGlobalStatesContext = (props = {}) => {
   throwTypeError({ value: props, name: "useGlobalStates props", type: ["plain object"] })
 
