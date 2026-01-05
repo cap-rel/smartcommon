@@ -71,66 +71,62 @@ export const useStates = (props = {}) => {
       return value;
     }
 
-    let returnedStates;
-
     setStates((prevState) => {
 
-    const newState = { ...prevState };
-    const parts = parsePath(path);
+      const newState = structuredClone(prevState);
+      const parts = parsePath(path);
 
-    let level = newState;
-    for (let i = 0; i < parts.length - 1; i++) {
-      const key = parts[i];
-      const nextKey = parts[i + 1];
-      const isNextPush = nextKey === "__PUSH__";
+      let level = newState;
+      for (let i = 0; i < parts.length - 1; i++) {
+        const key = parts[i];
+        const nextKey = parts[i + 1];
+        const isNextPush = nextKey === "__PUSH__";
 
-      // Remplace un scalaire par un objet ou tableau si nécessaire
-      if (level[key] !== Object(level[key])) {
-        level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
+        // Remplace un scalaire par un objet ou tableau si nécessaire
+        if (level[key] !== Object(level[key])) {
+          level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
+        }
+
+        // Crée le niveau si absent
+        if (!(key in level)) {
+          level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
+        }
+
+        level = level[key];
       }
 
-      // Crée le niveau si absent
-      if (!(key in level)) {
-        level[key] = /^\d+$/.test(nextKey) || isNextPush ? [] : {};
-      }
+      const lastKey = parts[parts.length - 1];
 
-      level = level[key];
-    }
+      // Applique la valeur (fonction ou simple valeur)
+      const applyValue = (target, keyOrIndex) => {
+        const prevValue =
+          keyOrIndex === "__PUSH__"
+            ? target[target.length - 1]
+            : target[keyOrIndex];
+        const newValue = typeof value === "function" ? value(prevValue) : value;
 
-    const lastKey = parts[parts.length - 1];
+        if (keyOrIndex === "__PUSH__") {
+          target.push(newValue);
+        } else {
+          target[keyOrIndex] = newValue;
+        }
+      };
 
-    // Applique la valeur (fonction ou simple valeur)
-    const applyValue = (target, keyOrIndex) => {
-      const prevValue =
-        keyOrIndex === "__PUSH__"
-          ? target[target.length - 1]
-          : target[keyOrIndex];
-      const newValue = typeof value === "function" ? value(prevValue) : value;
-
-      if (keyOrIndex === "__PUSH__") {
-        target.push(newValue);
+      if (lastKey === "__PUSH__") {
+        if (!isArray(level)) {
+          level = level instanceof Object ? level : [];
+        }
+        applyValue(level, "__PUSH__");
       } else {
-        target[keyOrIndex] = newValue;
+        applyValue(level, lastKey);
       }
-    };
 
-    if (lastKey === "__PUSH__") {
-      if (!isArray(level)) {
-        level = level instanceof Object ? level : [];
+      if (debug) {
+        log.state(`SET ${path} =>`, value);
       }
-      applyValue(level, "__PUSH__");
-    } else {
-      applyValue(level, lastKey);
-    }
 
-    if (debug) {
-      log.state(`SET ${path} =>`, value);
-    }
-      returnedStates = newState;
       return newState;
     });
-
-    return returnedStates;
   };
 
   // ---------------------- unset ----------------------
@@ -151,11 +147,10 @@ export const useStates = (props = {}) => {
       return states;
     }
 
-    let returnedStates;
 
     setStates((prevState) => {
 
-      const newState = { ...prevState };
+      const newState = structuredClone(prevState);
 
       let level = newState;
       
@@ -197,11 +192,9 @@ export const useStates = (props = {}) => {
           }
         }
       }
-      returnedStates = newState;
-      return newState;
-      });
 
-      return returnedStates;
+      return newState;
+    });
   };
 
   // ---------------------- return ----------------------

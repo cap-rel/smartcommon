@@ -15,47 +15,44 @@ export const useForm = (props = {}) => {
   throwTypeError({ value: defaultValues, name: "defaultValues", type: ["plain object"] });
 
   const initialStates = {
+    isFormSubmitting: false,
+    isFormSubmitted: false,
     values: defaultValues,
     errors: {},
   }
 
   const st = useStates({ initialStates, debug: false });
 
-  const { values, errors } = st.values;
-
   const setField = ({ name, value, errors }) => {
     st.set(`values.${name}`, value);
     forEach(errors, (error, key) => st.set(`errors.${name}.${key}`, error.condition));
   };
 
-  const valuesCopy = { ...values };
-  const errorsCopy = { ...errors};
+  const path = (prop, key) => `${prop}${key ? `.${key}` : ""}`;
 
-  Object.defineProperties(valuesCopy, {
-    set:{
-      value: (key, value) => st.set(`values.${key}`, value).values,
-      enumerable: false
-    },
-    unset:{
-      value: (key, value) => st.unset(`values.${key}`, value).values,
-      enumerable: false
-    }
-  });
-
-  Object.defineProperties(errorsCopy, {
-    set:{
-      value: (key, value) => st.set(`errors.${key}`, value).errors,
-      enumerable: false 
-    },
-    unset:{
-      value: (key, value) => st.unset(`errors.${key}`, value).errors,
-      enumerable: false
-    }
-  });
+  forEach(["values", "errors"], (prop) => {
+    Object.defineProperties(st.values[prop], {
+      get: {
+        value: (key) => st.get(path(prop, key)),
+        enumerable: false
+      },
+      set: {
+        value: (key, value) => st.set(path(prop, key), value),
+        enumerable: false
+      },
+      unset: {
+        value: (key, value) => st.unset(path(prop, key), value),
+        enumerable: false
+      }
+    });
+  })
 
   return {
-    values: valuesCopy,
-    errors: errorsCopy,
+    get: st.get,
+    set: st.set,
+    unset: st.unset,
+
+    ...st.values,
 
     setField,
   };

@@ -1,41 +1,43 @@
 import { throwTypeError } from 'lib/utils';
-import { useStates } from "lib/hooks";
 
 import { FormContext } from './context';
 import { every, some } from 'lodash';
+import { useEffect } from 'react';
 
 export function Form(props) {
-  const { form = {}, onPreSubmit = () => {}, onSubmit = () => {}, onPostSubmit = () => {}, children } = props;
+  const { form = {}, onPreSubmit = () => {}, onSubmit = () => {}, children } = props;
 
   throwTypeError({ value: form, name: "form", type: ["plain object"] });
   throwTypeError({ value: onPreSubmit, name: "onPreSubmit", type: ["function"] });
   throwTypeError({ value: onSubmit, name: "onSubmit", type: ["function"] });
-  throwTypeError({ value: onPostSubmit, name: "onPostSubmit", type: ["function"] });
 
-  const initialStates = { isFormSubmitting: false, isFormSubmitted: false };
-
-  const st = useStates({ initialStates, debug: false });
+  const { errors, isFormSubmitted } = form;
 
   const submit = async (e) => {
     e.preventDefault();
 
-    const filteredForm = await onPreSubmit() ?? {};
+    await onPreSubmit();
 
-    st.set("isFormSubmitted", true);
-
-    const newForm = { ...form, ...filteredForm };
-
-    if (every(newForm.errors, (field) => !some(field, Boolean))) {
-      st.set("isFormSubmitting", true);
-      await onSubmit(newForm);
-      st.set("isFormSubmitting", false);
-    }
-
-    onPostSubmit();
+    form.set("isFormSubmitted", true);
   };
 
+  useEffect(() => {
+    const submitValues = async () => {
+      console.log(form);
+      if (every(errors, (field) => !some(field, Boolean))) {
+        form.set("isFormSubmitting", true);
+        await onSubmit();
+        form.set("isFormSubmitting", false);
+      }
+    };
+
+    if (isFormSubmitted) {
+      submitValues();
+    }
+  }, [isFormSubmitted]);
+
   return (
-    <FormContext.Provider value={{ ...form, submit, ...st.values }}>
+    <FormContext.Provider value={{ ...form, submit }}>
       {children}
     </FormContext.Provider>
   );
