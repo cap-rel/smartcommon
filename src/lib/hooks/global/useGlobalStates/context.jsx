@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray, unset as lUnset } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray, unset as lUnset, get as lGet } from "lodash";
 import { useEffect } from "react";
 
 import { useLibConfig, useStates } from "lib/hooks";
@@ -210,11 +210,10 @@ export const useGlobalStatesContext = (props = {}) => {
       return startsWith(key, path) ? [key] : [];
     });
     
-    if (!isEmpty(localPathsToUnset)) {
-      forEach(localPathsToUnset, (key) => {        
-        delete localStorage[key];
-        lUnset(localStorage, key);
-      });
+    if (!isEmpty(localPathsToUnset) || !isUndefined(lGet(localStorage, path))) {
+      forEach(localPathsToUnset, (key) => delete localStorage[key]);
+
+      lUnset(localStorage, path);
 
       if (debug) {
         log.globalState(`UNSET LOCAL ${path}`);
@@ -230,11 +229,10 @@ export const useGlobalStatesContext = (props = {}) => {
       return startsWith(key, path) ? [key] : [];
     });
 
-    if (!isEmpty(sessionPathsToUnset)) {
-      forEach(sessionPathsToUnset, (key) => {
-        delete sessionStorage[key];
-        lUnset(sessionStorage, key);
-      });
+    if (!isEmpty(sessionPathsToUnset) || !isUndefined(lGet(sessionStorage, path))) {
+      forEach(sessionPathsToUnset, (key) => delete sessionStorage[key]);
+
+      lUnset(sessionStorage, path);
 
       if (debug) {
         log.globalState(`UNSET SESSION ${path}`,);
