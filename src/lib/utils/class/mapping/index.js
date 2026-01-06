@@ -30,7 +30,7 @@ export class Mapping {
             if (!isUndefined(value)) {
                 throwTypeError({ value: propSchema, name: "Mapping schemas", type: ["plain object"] });
 
-                const { key: propKey, transform, schema: nestedSchema } = propSchema;
+                const { key: propKey, from, schema: nestedSchema } = propSchema;
 
                 if (!isUndefined(propKey)) {
                     throwTypeError({ value: propKey, name: "key", type: ["string"] });
@@ -44,8 +44,8 @@ export class Mapping {
                     const nestedMapping = new Mapping({ schema: nestedSchema, strict: this.strict });
 
                     value = nestedMapping.map(value);
-                } else if (!isUndefined(transform)) {
-                    value = isFunction(transform) ? transform(value) : transform;
+                } else if (!isUndefined(from)) {
+                    value = isFunction(from) ? from(value) : from;
                 }
             }
 
@@ -72,7 +72,7 @@ export class Mapping {
             if (!isUndefined(value)) {
                 throwTypeError({ value: propSchema, name: "Mapping schemas", type: ["plain object"] });
 
-                const { schema: nestedSchema } = propSchema;
+                const { to, schema: nestedSchema } = propSchema;
 
                 key = propKey;
 
@@ -82,6 +82,8 @@ export class Mapping {
                     const nestedMapping = new Mapping({ schema: nestedSchema, strict: this.strict });
 
                     value = nestedMapping.reverse(value);
+                } else if (!isUndefined(to)) {
+                    value = isFunction(to) ? to(value) : to;
                 }
             }
 
