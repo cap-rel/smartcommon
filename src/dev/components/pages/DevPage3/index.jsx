@@ -71,22 +71,28 @@ export const DevPage3 = () => {
 
     const api = useApi();
 
-    const form = useForm();
+    const form = useForm({ defaultValues: {
+        email: "",
+        fruit: "",
+    } });
 
     const onPreSubmit = () => {        
-        const values = form.values.set("email", "blabla");
+        form.set("values.email", "blabla");
         // const errors = form.errors.unset("fruit");
 
-        return { values };
     }
+
 
     const onSubmit = async (newForm) => {
         console.log("submit");
+        // console.log(form, newForm);
         // set("isRequesting", true);
+
+        // console.log(test2(form));
+        console.log(form.values);
         
         await api
-            .login({ email: "jeangeorges", password: "MoN4fPrxUbU5", rememberMe: false }, { delay: false })
-            .then((data) => console.log(data))
+            .login({ email: "jeangeorge", password: "MoN4fPrxUbU5", rememberMe: true }, { delay: false })
             .catch((error) => {
                 // gst.session.set("error", "il y a error");
                 console.error(error)
@@ -97,11 +103,16 @@ export const DevPage3 = () => {
 
     const gst = useGlobalStates();
 
-    console.log(gst.values);
-
     const test = () => {
-        gst.session.set("user", (prev) => ({ ...prev, test: "test" }));
-    }
+        gst.session.set("user", { username: "test", age: "" });
+        gst.session.set("user.username", "test2");
+    };
+
+    const test2 = () => {
+        gst.unset("user.username");
+    };
+
+    const st = useStates({ initialStates: { test: [] } });
 
     return (
         <Page id="login-page">
@@ -115,14 +126,17 @@ export const DevPage3 = () => {
                     name="fruit"
                     type="checkbox"
                     options={["pomme", "banane"]}
-                    required
+                    // required
                 />
                 <Button
                     type="submit"
                     label="Save"
                 />
             </Form>
-            <button onClick={test}>db</button>
+            <br />
+            <button onClick={test}>test1</button>
+            <br />
+            <button onClick={test2}>test2</button>
             {/* <PhotosUploader 
                 id="photos"
                 onError={handleFormErrorsOnChange}
