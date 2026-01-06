@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith, isEqual, map, reduce, isArray, unset as lUnset } from "lodash";
 import { useEffect } from "react";
 
 import { useLibConfig, useStates } from "lib/hooks";
@@ -211,7 +211,10 @@ export const useGlobalStatesContext = (props = {}) => {
     });
     
     if (!isEmpty(localPathsToUnset)) {
-      forEach(localPathsToUnset, (key) => delete localStorage[key]);
+      forEach(localPathsToUnset, (key) => {        
+        delete localStorage[key];
+        lUnset(localStorage, key);
+      });
 
       if (debug) {
         log.globalState(`UNSET LOCAL ${path}`);
@@ -228,7 +231,10 @@ export const useGlobalStatesContext = (props = {}) => {
     });
 
     if (!isEmpty(sessionPathsToUnset)) {
-      forEach(sessionPathsToUnset, (key) => delete sessionStorage[key]);
+      forEach(sessionPathsToUnset, (key) => {
+        delete sessionStorage[key];
+        lUnset(sessionStorage, key);
+      });
 
       if (debug) {
         log.globalState(`UNSET SESSION ${path}`,);
