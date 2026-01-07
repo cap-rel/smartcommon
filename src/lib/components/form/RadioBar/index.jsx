@@ -16,7 +16,7 @@ export const RadioBar = (props) => {
         value,
         defaultValue,
         onChange = () => {},
-showErrors,
+
 
         required,
         disabled,
@@ -44,8 +44,8 @@ showErrors,
     return (
         <Label 
             { ...variantProps}
-            showErrors={isFormSubmitted ?? showErrors}
-            errors={filteredErrors ?? errors(value)}
+            showErrors={isFormSubmitted}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <div { ...mergeProps("optionsContainer", props => ({

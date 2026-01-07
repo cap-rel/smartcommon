@@ -16,7 +16,7 @@ export const Textarea = (props) => {
     defaultValue,
     value,
     onChange = () => {},
-showErrors,
+
 
     required,
     disabled,
@@ -68,8 +68,8 @@ showErrors,
   return (
     <Label 
       { ...variantProps}
-      showErrors={isFormSubmitted ?? showErrors}
-      errors={filteredErrors ?? errors(value)}
+      showErrors={isFormSubmitted}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <textarea { ...mergeProps("textarea", props => ({

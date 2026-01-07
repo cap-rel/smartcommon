@@ -16,6 +16,7 @@ export const Label = (props) => {
         suffix,
         required,
         showErrors,
+        
         errors = {},
         children,
     } = props;

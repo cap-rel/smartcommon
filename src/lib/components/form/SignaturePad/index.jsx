@@ -19,7 +19,7 @@ export const SignaturePad = (props) => {
     defaultValue,
     value,
     onChange,
-    showErrors,
+    
 
     disabled,
     required,
@@ -91,8 +91,8 @@ export const SignaturePad = (props) => {
   return (
     <Label 
       { ...variantProps}
-      showErrors={isFormSubmitted ?? showErrors}
-      errors={filteredErrors ?? errors(value)}
+      showErrors={isFormSubmitted}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <input

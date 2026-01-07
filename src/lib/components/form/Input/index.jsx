@@ -26,7 +26,7 @@ export const Input = (props) => {
     defaultValue,
     value,
     onChange = () => {},
-showErrors,
+
 
     required = false,
     disabled = false,
@@ -190,8 +190,8 @@ showErrors,
 
     <Label 
       { ...variantProps}
-      showErrors={isFormSubmitted ?? showErrors}
-      errors={filteredErrors ?? errors(value)}
+      showErrors={isFormSubmitted}
+      errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <div { ...mergeProps("inputContainer", props => ({

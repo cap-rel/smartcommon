@@ -18,7 +18,7 @@ export const ColorPicker = (props) => {
         defaultValue,
         value,
         onChange,
-        showErrors,
+        
 
         required,
         disabled,
@@ -44,8 +44,8 @@ export const ColorPicker = (props) => {
     return (
         <Label 
             { ...variantProps}
-            showErrors={isFormSubmitted ?? showErrors}
-            errors={filteredErrors ?? errors(value)}
+            showErrors={isFormSubmitted}
+            errors={filteredErrors}
             mergeProps={mergeProps}
         >
             <input { ...mergeProps("input", props => ({
