@@ -152,7 +152,7 @@ export const Navbar = (props) => {
                 ...variables
             },
             className: `
-                sticky top-0 z-20 text-app-md flex flex-col bg-primary rounded-b-app-base shadow-md
+                sticky top-0 z-20 text-app-md flex flex-col rounded-b-app-base shadow-md
                 lg:relative lg:flex-row lg:text-strong-text lg:bg-transparent lg:shadow-none lg:justify-between lg:items-center lg:col-span-full
             `
         }))}>     
