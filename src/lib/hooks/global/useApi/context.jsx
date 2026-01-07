@@ -1,5 +1,5 @@
 import ky from "ky";
-import { floor, isEmpty, isUndefined } from "lodash";
+import { floor, isEmpty, isUndefined, replace } from "lodash";
 import { v4 } from "uuid";
 
 import { log, navigatorInfo, throwTypeError } from "lib/utils";
@@ -181,8 +181,15 @@ export const useApiContext = () => {
         },
         hooks: {
             beforeRequest: [
-                async (request) => {
+                async (request, options, state) => {
+                    state.hasRefreshed = state.hasRefreshed ?? false;
+
                     if (floor(Date.now() / 1000) > tokenExpiry) {
+                        if (state.hasRefreshed) {
+                            throw new Error("Token refresh already attempted"); 
+                        }
+
+                        state.hasRefreshed = true;
                         await refresh();
                     }
 
@@ -195,10 +202,23 @@ export const useApiContext = () => {
                     const { status } = response;
 
                     if (status === 401) {
+                        const state = options.context ?? {};
+                        state.hasRetried = state.hasRetried ?? false;
+
+                        if (state.hasRetried) {
+                            openCircuit(30000);
+                            gst.unset("user");
+                            throw new Error("Unauthorized after refresh");
+                        }
+
+                        state.hasRetried = true;
                         try {
                             await refresh();
 
-                            return privateApi(request.url.replace(prefixUrl, ""), options);
+                            return privateApi(replace(request.url, prefixUrl, ""), {
+                                ...options,
+                                context: state
+                            });
                         } catch (error) {
                             openCircuit(30000);
 
