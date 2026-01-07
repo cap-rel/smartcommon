@@ -14,8 +14,10 @@ export const useField = (props) => {
 
   // const currentErrors = fromPairs(map(errors(currentValue), (error, key) => [key, error.condition]));
 
+  // && isUndefined(currentValue) don't know why it was there
+
   useEffect(() => {
-    if (isControlledByForm && isUndefined(currentValue)) {
+    if (isControlledByForm) {
       setField({ name, value: defaultValue, errors: errors(currentValue) }); // TODO put the map
     }
   }, []);
