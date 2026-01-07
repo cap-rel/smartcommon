@@ -1,7 +1,7 @@
 import { Button, Spinner } from "lib/components";
 import { useEffect } from "react";
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
-import { isNumber, isNil, isEmpty } from "lodash";
+import { isNumber, isNil, isEmpty, includes } from "lodash";
 
 import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes } from "lib/utils";
 import { Label } from "lib/components";
@@ -57,6 +57,30 @@ export const Input = (props) => {
 
   const { isPasswordVisible } = states; // isCopied
 
+  const typeMap = {
+    varchar: { type: "text" },
+    email: { type: "email" },
+    password : { type: isPasswordVisible ? "text" : "password" },
+    phoneNumber: { type: "tel" },
+    int: { type: "number" },
+    float: { type: "number" },
+    double: { type: "number" },
+    search: { type: "search" },
+    url: { type: "url" },
+    ip: { type: "text" },
+    timestamp: { type: "number" },
+    date: { type: "date" },
+    datetime: { type: "datetime-local" },
+    time: { type: "time" },
+  };
+
+  const filteredType = typeMap[type]?.type ?? "text";
+
+  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
+  const datetimeTypes = ["date", "datetime-local"];
+  const numberTypes = ["number"];
+  const timeTypes = ["time"];
+
   const errors = (currentValue) => ({
     // email: { 
     //   condition: type === "email" && !yup.email().isValidSync(currentValue),
@@ -66,15 +90,15 @@ export const Input = (props) => {
     //   condition: type === "email" && !yup.email().isValidSync(currentValue),
     //   message: "Ce champ est requis." 
     // },
-    // url: { 
+    // url: {
     //   condition: required && isEmpty(currentValue),
     //   message: "Ce champ est requis." 
     // },
 
-    // number: { 
-    //   condition: type === "number" && isNumber(currentValue),
-    //   message: "Veuillez rentrer un nombre valide." 
-    // },
+    number: { 
+      condition: includes(numberTypes, filteredType) && isNumber(currentValue),
+      message: "Veuillez rentrer un nombre valide." 
+    },
     required: { 
       condition: required && isEmpty(currentValue),
       message: "Ce champ est requis." 
@@ -129,11 +153,6 @@ export const Input = (props) => {
   //   time: minutesToTime(currentValue)
   // };
 
-  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
-  const datetimeTypes = ["date", "datetime-local"];
-  const numberTypes = ["number"];
-  const timeTypes = ["time"];
-
   const handleInputOnChange = e => {
     if (!disabled && !readOnly && !isFormSubmitting) {
       let value = e.target.value;
@@ -165,23 +184,6 @@ export const Input = (props) => {
   // };
 
   const isPassword = type === "password";
-
-  const typeMap = {
-    varchar: { type: "text" },
-    email: { type: "email" },
-    password : { type: isPasswordVisible ? "text" : "password" },
-    phoneNumber: { type: "tel" },
-    int: { type: "number" },
-    float: { type: "number" },
-    double: { type: "number" },
-    search: { type: "search" },
-    url: { type: "url" },
-    ip: { type: "text" },
-    timestamp: { type: "number" },
-    date: { type: "date" },
-    datetime: { type: "datetime-local" },
-    time: { type: "time" },
-  };
 
   return (
 
@@ -223,7 +225,7 @@ export const Input = (props) => {
             applyFunctionIfNotNil(props.onChange, e);
           },
           value: currentValue,
-          ...typeMap[type] ?? {},
+          type: filteredType
         }))} />
 
         {!isNil(step) &&
