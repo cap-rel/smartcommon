@@ -20,7 +20,7 @@ export const Navbar = (props) => {
         left,
         right,
         bottom,
-        title
+        title,
     } = variantProps;
 
     // useEffect(() => {
@@ -211,6 +211,8 @@ export const Navbar = (props) => {
                     {bottom}
                 </div>
             }
+
+            {children}
 
         </motion.div>
     );
