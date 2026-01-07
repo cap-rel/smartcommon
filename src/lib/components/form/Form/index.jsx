@@ -23,7 +23,7 @@ export function Form(props) {
 
   useEffect(() => {
     const submitValues = async () => {
-      if (every(errors, (field) => !some(field, Boolean))) {
+      if (every(errors, (field) => !Object.values(field).some(Boolean))) { // !some(field, Boolean)
         form.set("isFormSubmitting", true);
         await onSubmit();
         form.set("isFormSubmitting", false);
