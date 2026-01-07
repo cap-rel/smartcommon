@@ -72,7 +72,7 @@ export class Db {
                         store,
                         itemId: key,
                         action: "create",
-                        data: { ...item },
+                        // data: { ...item },
                         createdAt: dateNow
                     });
                 });
@@ -93,8 +93,9 @@ export class Db {
                         itemId: key,
                         action: "update",
                         data: {
-                            before: { ...item },
-                            after: { ...item, ...updates }
+                            // before: { ...item },
+                            updates: { ...updates }
+                            // after: { ...item, ...updates }
                         },
                         createdAt: dateNow
                     });
@@ -111,7 +112,7 @@ export class Db {
                         store,
                         itemId: key,
                         action: "delete",
-                        data: { ...item },
+                        // data: { ...item },
                         createdAt: floor(Date.now() / 1000)
                     });
                 });
