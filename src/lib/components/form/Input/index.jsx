@@ -75,10 +75,10 @@ export const Input = (props) => {
     //   condition: type === "number" && isNumber(currentValue),
     //   message: "Veuillez rentrer un nombre valide." 
     // },
-    // required: { 
-    //   condition: required && isEmpty(currentValue),
-    //   message: "Ce champ est requis." 
-    // },
+    required: { 
+      condition: required && isEmpty(currentValue),
+      message: "Ce champ est requis." 
+    },
 
     // minTime: { 
     //   condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
@@ -122,7 +122,6 @@ export const Input = (props) => {
     //   message: patternError 
     // },
   });
-
 
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
@@ -168,15 +167,19 @@ export const Input = (props) => {
   const isPassword = type === "password";
 
   const typeMap = {
-    text: { type: "text" },
+    varchar: { type: "text" },
     email: { type: "email" },
     password : { type: isPasswordVisible ? "text" : "password" },
-    tel: { type: "tel" },
-    number: { type: "number" },
+    phoneNumber: { type: "tel" },
+    int: { type: "number" },
+    float: { type: "number" },
+    double: { type: "number" },
     search: { type: "search" },
     url: { type: "url" },
+    ip: { type: "text" },
+    timestamp: { type: "number" },
     date: { type: "date" },
-    "datetime-local": { type: "datetime-local" },
+    datetime: { type: "datetime-local" },
     time: { type: "time" },
   };
 
