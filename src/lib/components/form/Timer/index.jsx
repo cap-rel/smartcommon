@@ -88,7 +88,7 @@ showErrors,
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted ?? showErrors}
-            errors={filteredErrors}
+            errors={filteredErrors ?? errors(value)}
             mergeProps={mergeProps}
         >
             <input
