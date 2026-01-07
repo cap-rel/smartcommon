@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { isNil, isObject, isEmpty } from "lodash";
 
 import { Label } from "lib/components";
@@ -18,6 +17,7 @@ export const Select = (props) => {
     value,
     defaultValue,
     onChange = () => {},
+showErrors,
 
     required,
     disabled,
@@ -66,7 +66,7 @@ export const Select = (props) => {
   return (
     <Label 
       { ...variantProps}
-      showErrors={isFormSubmitted}
+      showErrors={isFormSubmitted ?? showErrors}
       errors={filteredErrors}
       mergeProps={mergeProps}
     >

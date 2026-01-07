@@ -16,6 +16,7 @@ export const Timer = (props) => {
         defaultValue,
         value,
         onChange = () => {},
+showErrors,
 
         required,
         disabled,
@@ -86,7 +87,7 @@ export const Timer = (props) => {
     return (
         <Label 
             { ...variantProps}
-            showErrors={isFormSubmitted}
+            showErrors={isFormSubmitted ?? showErrors}
             errors={filteredErrors}
             mergeProps={mergeProps}
         >

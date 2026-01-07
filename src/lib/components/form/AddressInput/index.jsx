@@ -119,7 +119,7 @@ export const AddressInput = (props) => {
   return (
     <Label
       { ...variantProps}
-      showErrors={isFormSubmitted}
+      showErrors={isFormSubmitted ?? showErrors}
       errors={filteredErrors}
       mergeProps={mergeProps}
     >

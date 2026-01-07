@@ -16,6 +16,7 @@ export const Range = (props) => {
         defaultValue,
         value,
         onChange = () => {},
+showErrors,
 
         required,
         disabled,
@@ -55,7 +56,7 @@ export const Range = (props) => {
     return (
         <Label 
             { ...variantProps}
-            showErrors={isFormSubmitted}
+            showErrors={isFormSubmitted ?? showErrors}
             errors={filteredErrors}
             mergeProps={mergeProps}
         >

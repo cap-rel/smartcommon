@@ -18,6 +18,7 @@ export const Rater = (props) => {
         defaultValue,
         value,
         onChange = () => {},
+showErrors,
 
         required,
         disabled,
@@ -57,7 +58,7 @@ export const Rater = (props) => {
     return (
         <Label 
             { ...variantProps}
-            showErrors={isFormSubmitted}
+            showErrors={isFormSubmitted ?? showErrors}
             errors={filteredErrors}
             mergeProps={mergeProps}
         >

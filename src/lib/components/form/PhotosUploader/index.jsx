@@ -19,6 +19,7 @@ export const PhotosUploader = (props) => {
         value,
         defaultValue,
         onChange = () => {},
+showErrors,
 
         required,
         disabled,
@@ -308,7 +309,7 @@ export const PhotosUploader = (props) => {
     return (
         <Label
             { ...variantProps}
-            showErrors={isFormSubmitted}
+            showErrors={isFormSubmitted ?? showErrors}
             errors={filteredErrors}
             mergeProps={mergeProps}
         >
