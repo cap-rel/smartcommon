@@ -6,3 +6,4 @@ export * from "./variant";
 export * from "./tailwindMerge";
 export * from "./intl";
 export * from "./consoleLogs";
+export * from "./lodashComplement"
