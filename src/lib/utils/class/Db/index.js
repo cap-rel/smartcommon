@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import { floor, forEach, keys, isEqual, get } from "lodash";
+import { floor, forEach, keys, isEqual, get, set } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
@@ -82,8 +82,9 @@ export class Db {
                 const filteredUpdates = {};
 
                 forEach(updates, (value, key) => {
-                    if (!isEqual(get(updates, key), get(item, key))) {
-                        filteredUpdates[key] = value;
+                    if (!isEqual(updates[key], get(item, key))) {
+                        // filteredUpdates[key] = value;
+                        set(filteredUpdates, key, value);
                     }
                 });
 
