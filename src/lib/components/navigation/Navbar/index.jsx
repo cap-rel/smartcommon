@@ -161,7 +161,7 @@ export const Navbar = (props) => {
                 ...props,
                 ref: upperNavbarRef,
                 className: `
-                    p-app-base flex justify-between items-center
+                    p-app-base flex justify-between items-center bg-primary
                     ${isBottomEmpty ? "rounded-b-app-base" : "rounded-b-none"}
                 `
             }))}>
