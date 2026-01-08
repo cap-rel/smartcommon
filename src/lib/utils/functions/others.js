@@ -208,10 +208,6 @@ import { isArray, isEmpty } from "lodash";
     return [fileName.substring(0, firstDotIndex).replaceAll("_", " "), fileName.substring(firstDotIndex)];
   }
   
-  export function isLast(array, index) {
-    return array.length - 1 == index ? true : false;
-  } 
-  
   export function print(value) {
     const formatted = JSON.stringify(value, null, 2);
     document.write("<pre>" + formatted + "</pre>");
