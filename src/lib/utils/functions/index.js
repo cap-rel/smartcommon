@@ -10,3 +10,4 @@ export * from "./tailwindMerge";
 export * from "./intl";
 export * from "./consoleLogs";
 export * from "./typeErrors";
+export * from "./lodashComplement";
