@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import { floor, forEach, keys } from "lodash";
+import { floor, forEach, keys, isEqual, get } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
@@ -79,8 +79,16 @@ export class Db {
             });
 
             db[store].hook("updating", (updates, key, item) => {
+                const filteredUpdates = {};
+
+                forEach(updates, (value, key) => {
+                    if (!isEqual(get(updates, key), get(item, key))) {
+                        filteredUpdates[key] = value;
+                    }
+                });
+
                 if (debug) {
-                    log.db(`UPDATE in ${store} - key =`, key, ", updates =", updates);
+                    log.db(`UPDATE in ${store} - key =`, key, ", updates =", filteredUpdates);
                 }
 
                 const dateNow = floor(Date.now() / 1000);
@@ -94,7 +102,8 @@ export class Db {
                         action: "update",
                         data: {
                             // before: { ...item },
-                            updates: { ...updates }
+                            updates: { ...updates },
+                            filteredUpdates
                             // after: { ...item, ...updates }
                         },
                         createdAt: dateNow
