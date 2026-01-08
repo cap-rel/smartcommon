@@ -1,7 +1,5 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { isNil, isEmpty } from "lodash";
-
-import { filter, map, some } from "lodash";
+import { isNil, isEmpty,filter, map, some } from "lodash";
 
 // IDEA Mini-popup for help
 
@@ -87,7 +85,7 @@ export const Label = (props) => {
             {(help || (some(errors, Boolean) && showErrors)) &&
                 <div { ...mergeProps("footer", props => ({
                     ...props,
-                    className: `${(showErrors && !isEmpty(errors)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
+                    className: `${(showErrors && !some(errors, Boolean)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
                 }))}>
                     <IoMdInformationCircleOutline { ...mergeProps("helpIcon", props => ({
                         ...props,
