@@ -1,4 +1,4 @@
-import { isArray, isNull, isNumber, isObject, isString, values } from "lodash";
+import { floor, isArray, isDate, isNull, isNumber, isObject, isString, values } from "lodash";
 
 export function isLast(value, item) {
   if (isArray(value)) {
@@ -36,6 +36,14 @@ export function isFirst(value, item) {
   }
 
   return false;
+}
+
+export function toSTimestamp(date) {
+  return floor((isDate(date) ? date.getTime() : date) / 1000);
+}
+
+export function toMsTimestamp(date) {
+  return isDate(date) ? date.getTime() : (date * 1000);
 }
 
 export function position() {}
