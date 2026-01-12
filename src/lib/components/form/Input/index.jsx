@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
 import { isNumber, isNil, isEmpty, includes } from "lodash";
 
-import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes } from "lib/utils";
+import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes, minutesToTime } from "lib/utils";
 import { Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
@@ -150,9 +150,31 @@ export const Input = (props) => {
 
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
-  // const currentValueFormat = {
-  //   time: minutesToTime(currentValue)
-  // };
+  // Format the value for display in the input element
+  // Timestamps need to be converted back to the format expected by HTML inputs
+  const getDisplayValue = () => {
+    if (isNil(currentValue) || currentValue === "") return "";
+
+    if (datetimeTypes.includes(filteredType) && isNumber(currentValue)) {
+      // Convert timestamp to date string (yyyy-MM-dd or yyyy-MM-ddTHH:mm)
+      const date = new Date(currentValue);
+      if (isNaN(date.getTime())) return "";
+
+      if (filteredType === "date") {
+        return date.toISOString().split("T")[0]; // yyyy-MM-dd
+      } else {
+        // datetime-local format: yyyy-MM-ddTHH:mm
+        return date.toISOString().slice(0, 16);
+      }
+    }
+
+    if (timeTypes.includes(filteredType) && isNumber(currentValue)) {
+      // Convert minutes to time string (HH:mm)
+      return minutesToTime(currentValue);
+    }
+
+    return currentValue;
+  };
 
   const handleInputOnChange = e => {
     if (!disabled && !readOnly && !isFormSubmitting) {
@@ -217,7 +239,7 @@ export const Input = (props) => {
         }
 
         <input { ...mergeProps("input", props => ({
-          placeholder, 
+          placeholder,
           ...props,
           ...mergeQuickProps(["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
@@ -225,7 +247,7 @@ export const Input = (props) => {
             handleInputOnChange(e);
             applyFunctionIfNotNil(props.onChange, e);
           },
-          value: currentValue,
+          value: getDisplayValue(),
           type: filteredType
         }))} />
 
