@@ -3,6 +3,7 @@ import { isFunction, toString } from "lodash";
 
 import { useLibConfig } from "lib/hooks";
 import { log } from "lib/utils";
+import { unsetUser } from "lib/global-state/slices/userSlice";
 
 export const useLogout = (deviceId) => {
     const { api } = useLibConfig();
