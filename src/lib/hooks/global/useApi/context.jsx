@@ -329,11 +329,39 @@ export const useApiContext = () => {
 
     // ---------------------- stable API methods ----------------------
 
-    const get = useMemo(() => (url, options) => privateApi.get(url, options).json(), [privateApi]);
-    const post = useMemo(() => (url, options) => privateApi.post(url, options).json(), [privateApi]);
-    const put = useMemo(() => (url, options) => privateApi.put(url, options).json(), [privateApi]);
-    const patch = useMemo(() => (url, options) => privateApi.patch(url, options).json(), [privateApi]);
-    const del = useMemo(() => (url, options) => privateApi.delete(url, options).json(), [privateApi]);
+    // Helper to handle raw vs json response based on options
+    // raw is for pictures for example or all binary data
+    const handleResponse = (response, options) => {
+        if (options?.raw) {
+            return response;
+        }
+        return response.json();
+    };
+
+    const get = useMemo(() => (url, options) => {
+        const response = privateApi.get(url, options);
+        return handleResponse(response, options);
+    }, [privateApi]);
+
+    const post = useMemo(() => (url, options) => {
+        const response = privateApi.post(url, options);
+        return handleResponse(response, options);
+    }, [privateApi]);
+
+    const put = useMemo(() => (url, options) => {
+        const response = privateApi.put(url, options);
+        return handleResponse(response, options);
+    }, [privateApi]);
+
+    const patch = useMemo(() => (url, options) => {
+        const response = privateApi.patch(url, options);
+        return handleResponse(response, options);
+    }, [privateApi]);
+
+    const del = useMemo(() => (url, options) => {
+        const response = privateApi.delete(url, options);
+        return handleResponse(response, options);
+    }, [privateApi]);
 
     // ---------------------- return ----------------------
 
