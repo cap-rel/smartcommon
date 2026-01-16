@@ -37,5 +37,12 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
       { allowConstantExport: true },
     ],
     'no-unused-vars': 'off',
+
+    // Safety rules to prevent undefined/null access errors
+    'no-unsafe-optional-chaining': 'error',
+    'array-callback-return': ['error', { allowImplicit: true }],
+    'no-prototype-builtins': 'error',
+    'eqeqeq': ['error', 'always', { null: 'ignore' }],
+    'no-implicit-coercion': 'warn',
   },
 }, ...storybook.configs["flat/recommended"]];
