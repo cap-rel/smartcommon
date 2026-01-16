@@ -137,6 +137,14 @@ export const useVariantMerger = (componentKey, props) => {
 
     const mergeDefaultElementProps = (defaultProps = {}, props = {}) => ({        
         ...defaultProps,
+        ref: (el) => { 
+            defaultProps.ref?.current = el;
+            if (isFunction(props.ref)) {
+                props.ref(el);
+            } else {
+                props.ref?.current = el;
+            }
+        },
         style: { ...(defaultProps.style || {}), ...(props.style || {})},
         className: twMerge(defaultProps.className, props.className) 
     });
