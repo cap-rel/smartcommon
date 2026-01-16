@@ -1,8 +1,12 @@
 # JavaScript/React - Defensive Programming Guide
 
-This document explains the code security improvements made to prevent `TypeError: can't access property "X", Y is undefined` errors.
+This document explains the code security improvements made to prevent common runtime errors:
+- `TypeError: can't access property "X", Y is undefined`
+- `TypeError: Ta(...) is undefined` (function call on undefined)
 
-## The Problem
+## The Problems
+
+### Problem 1: Property Access on Undefined
 
 In JavaScript, accessing a property or calling a method on `undefined` or `null` throws a runtime error:
 
@@ -13,6 +17,19 @@ myObject.property       // TypeError: can't access property "property", myObject
 myArray[0].name         // TypeError: can't access property "name", myArray[0] is undefined
 myArray.length          // TypeError: can't access property "length", myArray is undefined
 ```
+
+### Problem 2: Function Call on Non-Function (Minified: `Ta(...) is undefined`)
+
+Calling something as a function when it's not a function throws a runtime error:
+
+```javascript
+// These will crash if the variable is not a function:
+icon()                  // TypeError: icon is not a function (if icon is a JSX element)
+props.onClick()         // Immediately invokes onClick, wrong if you meant to pass it as reference
+callback(params)        // TypeError: callback is not a function (if callback is undefined)
+```
+
+In production builds, the variable names are minified (e.g., `Ta`), making debugging difficult.
 
 ## Solutions Applied
 
@@ -82,6 +99,74 @@ if (audioRefs.current?.[index]) {
 }
 ```
 
+### 6. Safe Icon Rendering (Function vs JSX Element)
+
+Icons can be passed as functions (React components) or JSX elements. Always check before calling:
+
+```javascript
+// BEFORE (unsafe) - crashes if icon is a JSX element
+{icon()}
+
+// AFTER (safe) - handles both functions and elements
+{typeof icon === 'function' ? icon() : icon}
+```
+
+### 7. Safe Function Calls with `applyFunctionIfFunction`
+
+```javascript
+// BEFORE (unsafe) - crashes if value is not a function
+value(params)
+
+// AFTER (safe) - utility function that checks first
+export function applyFunctionIfFunction(value, ...params) {
+    if (typeof value === 'function') {
+        return value(...params);
+    }
+    return undefined;
+}
+```
+
+**Important:** Spread the params, don't pass them as an array:
+```javascript
+// WRONG - passes params as array
+value(params)
+
+// RIGHT - spreads params as individual arguments
+value(...params)
+```
+
+### 8. Avoid Premature Function Invocation
+
+```javascript
+// BEFORE (bug) - onClick() is called immediately during render!
+onClick: e => {
+    if (props.onClick) {
+        return applyFunctionIfFunction(props.onClick(), e);  // BUG: () calls it!
+    }
+}
+
+// AFTER (fixed) - onClick is passed as reference
+onClick: e => {
+    if (props.onClick) {
+        return applyFunctionIfFunction(props.onClick, e);  // Correct: no ()
+    }
+}
+```
+
+### 9. Correct Logic for Form Submission State
+
+```javascript
+// BEFORE (bug) - blocks actions when form is NOT submitting
+if (!disabled && !readOnly && isFormSubmitting) {
+    // Actions blocked during normal use
+}
+
+// AFTER (fixed) - allows actions when form is NOT submitting
+if (!disabled && !readOnly && !isFormSubmitting) {
+    // Actions allowed during normal use
+}
+```
+
 ## Common Patterns
 
 ### Safe Array Iteration
@@ -135,6 +220,8 @@ const newArray = [...safeArray.slice(0, index), ...safeArray.slice(index + 1)];
 
 ## Files Modified
 
+### Property Access Safety
+
 | File | Issues Fixed |
 |------|--------------|
 | `Tags/index.jsx` | `=` vs `===` bug, unsafe `.find().color` |
@@ -151,6 +238,17 @@ const newArray = [...safeArray.slice(0, index), ...safeArray.slice(index + 1)];
 | `Sidebar/index.jsx` | `links.map()` |
 | `useFormBuilder/index.jsx` | `children.map()`, `tabs.map()`, `form.map()` |
 | `filters/smart.js` | `attributes[key]` access |
+
+### Function Call Safety
+
+| File | Issues Fixed |
+|------|--------------|
+| `Button/index.jsx` | `icon()` → `typeof icon === 'function' ? icon() : icon` |
+| `Input/index.jsx` | `inputIcon()` → safe icon rendering |
+| `LowerNavbarItem/index.jsx` | `currentIcon()` → safe icon rendering, `props.onClick()` → `props.onClick` |
+| `TabbarItem/index.jsx` | `currentIcon()` → safe icon rendering |
+| `AudiosUploader/index.jsx` | `isFormSubmitting` → `!isFormSubmitting` (inverted logic fix) |
+| `type/index.js` | `value(params)` → `value(...params)` (spread params) |
 
 ## Best Practices
 
@@ -236,13 +334,17 @@ export default defineConfig({
 });
 ```
 
-**Test file:** `src/lib/tests/nullSafety.test.jsx`
+**Test files:**
+- `src/lib/tests/nullSafety.test.jsx` - Property access safety
+- `src/lib/tests/functionCallSafety.test.jsx` - Function call safety
 
 Tests each component with:
 - `undefined` props
 - `null` props
 - Empty arrays `[]`
 - Missing required props
+- Icon as function vs JSX element
+- Callback functions vs undefined
 
 **Usage:**
 ```bash
@@ -252,8 +354,9 @@ npm run test:safety   # Run only null safety tests
 npm run test:coverage # Run with coverage report
 ```
 
-### Example Test
+### Example Tests
 
+**Property Access Safety:**
 ```javascript
 it('PhotosUploader: should handle undefined/null value', async () => {
   const { PhotosUploader } = await import('lib/components/form/PhotosUploader');
@@ -263,6 +366,39 @@ it('PhotosUploader: should handle undefined/null value', async () => {
   expect(() => render(<PhotosUploader value={undefined} multiple />)).not.toThrow();
   expect(() => render(<PhotosUploader value={null} />)).not.toThrow();
   expect(() => render(<PhotosUploader value={[]} multiple />)).not.toThrow();
+});
+```
+
+**Function Call Safety:**
+```javascript
+it('should safely render icon whether function or JSX element', () => {
+  const renderIcon = (icon) => {
+    if (!icon) return null;
+    return typeof icon === 'function' ? icon() : icon;
+  };
+
+  // undefined/null - should not crash
+  expect(() => renderIcon(undefined)).not.toThrow();
+  expect(() => renderIcon(null)).not.toThrow();
+
+  // JSX element - should return as-is (not crash trying to call it)
+  const jsxIcon = <span>icon</span>;
+  expect(() => renderIcon(jsxIcon)).not.toThrow();
+
+  // Function - should call and return result
+  const IconFn = () => <span>icon</span>;
+  expect(() => renderIcon(IconFn)).not.toThrow();
+});
+
+it('applyFunctionIfFunction: should spread params correctly', async () => {
+  const { applyFunctionIfFunction } = await import('lib/utils/functions/type/index.js');
+
+  const mockFn = vi.fn();
+  applyFunctionIfFunction(mockFn, 'a', 'b', 'c');
+
+  // Should receive individual args, NOT an array
+  expect(mockFn).toHaveBeenCalledWith('a', 'b', 'c');
+  expect(mockFn).not.toHaveBeenCalledWith(['a', 'b', 'c']);
 });
 ```
 
