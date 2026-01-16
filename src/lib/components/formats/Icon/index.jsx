@@ -1,3 +1,4 @@
-// export const Icon = () => {
-//     return("");
-// };
+// TODO: Implement Icon format component
+export const Icon = () => {
+    return null;
+};

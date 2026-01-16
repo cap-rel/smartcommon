@@ -1,3 +1,8 @@
+// TODO: Implement SearchBar component
+export const SearchBar = () => {
+    return null;
+};
+
 // import { Icon } from "../..";
 // import { useEffect, useRef, useState } from "react";
 // import { isEmpty } from "lib/utils/functions";
