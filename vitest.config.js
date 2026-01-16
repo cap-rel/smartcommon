@@ -13,6 +13,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/lib/tests/setup.js'],
     include: ['src/**/*.{test,spec}.{js,jsx}'],
+    isolate: false,
+    fileParallelism: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
