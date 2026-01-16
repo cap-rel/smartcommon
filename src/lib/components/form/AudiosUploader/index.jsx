@@ -81,7 +81,7 @@ export const AudiosUploader = (props) => {
     };
 
     const deleteAudio = index => {
-        if (!disabled && !readOnly && isFormSubmitting) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
@@ -97,7 +97,7 @@ export const AudiosUploader = (props) => {
     }
 
     const selectAudio = index => {
-        if (!disabled && !readOnly && isFormSubmitting) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             if (multiple) {
                 set("selectedAudioIndex", index);
             } else {
@@ -109,7 +109,7 @@ export const AudiosUploader = (props) => {
     const { resizeImage } = useFile();
 
     const addAudio = async file => {
-        if (!disabled && !readOnly && isFormSubmitting) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             set("isAudioLoading", true);
 
             // const base64 = await resizeImage(file);
@@ -132,7 +132,7 @@ export const AudiosUploader = (props) => {
     };
 
     const updateAudioInfo = (prop, value) => {
-        if (!disabled && !readOnly && isFormSubmitting) {
+        if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
 
             if (multiple) {
