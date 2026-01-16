@@ -138,11 +138,15 @@ export const useVariantMerger = (componentKey, props) => {
     const mergeDefaultElementProps = (defaultProps = {}, props = {}) => ({        
         ...defaultProps,
         ref: (el) => { 
-            defaultProps.ref?.current = el;
+            if (defaultProps.ref?.current) {
+                defaultProps.ref.current = el;
+            }
             if (isFunction(props.ref)) {
                 props.ref(el);
             } else {
-                props.ref?.current = el;
+                if (props.ref?.current) {
+                    props.ref.current = el;
+                }
             }
         },
         style: { ...(defaultProps.style || {}), ...(props.style || {})},
