@@ -3,6 +3,8 @@ import { toString, isFunction } from "lodash";
 
 import { useLibConfig } from "lib/hooks";
 import { log } from "lib/utils";
+import { setUser } from "lib/global-state/slices/userSlice";
+
 
 import { apiMap } from "../apiMap";
 
@@ -20,7 +22,7 @@ export const loginMap = data => apiMap({
 
 export const useLogin = (deviceId) => {
     const { api } = useLibConfig();
-    
+
     const { url, errors: apiErrors } = api ?? {};
 
     const dispatch = useDispatch();
@@ -41,16 +43,16 @@ export const useLogin = (deviceId) => {
         const mappedData = loginMap(data);
 
         const { ok, status } = response;
-        
+
         if (!ok) {
             const errorAction = errors[status] ?? apiErrors[status];
-            
+
             if (isFunction(errorAction)) {
                 errorAction();
             }
 
             log.apiError(`POST - ${toString(status).toUpperCase()}`, `${url}login`, data.message);
-            
+
             throw new Error(data);
         }
 
@@ -62,6 +64,6 @@ export const useLogin = (deviceId) => {
 
         return mappedData;
     };
-    
+
     return login;
 };

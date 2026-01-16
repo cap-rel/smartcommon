@@ -410,8 +410,8 @@ export const PhotosUploader = (props) => {
             </div>
             {/* </Panel> */}
 
-            {multiple 
-                ?   currentValue.map(PhotoPopup)
+            {multiple
+                ?   (currentValue ?? []).map(PhotoPopup)
                 :   PhotoPopup(currentValue)
             }
         </Label>
