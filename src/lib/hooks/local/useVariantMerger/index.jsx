@@ -135,19 +135,23 @@ export const useVariantMerger = (componentKey, props) => {
 
     let variantProps = [...variant, props].reduce((acc, variant) => mergeVariant(acc, variant), {});
 
+    const setRef = (ref, value) => {
+        if (!ref) {
+            return;
+        }
+
+        if (isFunction(ref)) {
+            ref(value);
+        } else {
+            ref.current = value;
+        }
+    };
+
     const mergeDefaultElementProps = (defaultProps = {}, props = {}) => ({        
         ...defaultProps,
         ref: (el) => { 
-            if (defaultProps.ref?.current) {
-                defaultProps.ref.current = el;
-            }
-            if (isFunction(props.ref)) {
-                props.ref(el);
-            } else {
-                if (props.ref?.current) {
-                    props.ref.current = el;
-                }
-            }
+            setRef(defaultProps.ref, el);
+            setRef(props.ref, el);
         },
         style: { ...(defaultProps.style || {}), ...(props.style || {})},
         className: twMerge(defaultProps.className, props.className) 
