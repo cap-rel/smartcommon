@@ -3,7 +3,8 @@
 // import { Icon } from "../Icon";
 // import { useWindow } from "lib/hooks";
 
-export const Help = (props) => {
+export const Help = () => {
+    // export const Help = (props) => {
     // OLD CODE but can be useful in the future
 
     // const title   = props.title;

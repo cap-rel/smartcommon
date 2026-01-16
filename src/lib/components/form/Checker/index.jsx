@@ -41,16 +41,16 @@ export const Checker = (props) => {
             condition: required && isEmpty(currentValue),
             message: "Une case doit être cochée."
         },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
+        min: {
+            condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
             message: `${min} cases doivent être cochées au minimum.`
         },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
+        max: {
+            condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
             message: `${max} cases doivent être cochées au maximum.`
         },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+        exact: {
+            condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
             message: `Exactement ${exact} cases doivent être cochées.`
         },
     });
@@ -62,7 +62,8 @@ export const Checker = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = currentValue.includes(optionValue) ? currentValue.filter(checkedOption => checkedOption !== optionValue) : [...currentValue, optionValue];
+                const safeCurrentValue = currentValue ?? [];
+                newValue = safeCurrentValue.includes(optionValue) ? safeCurrentValue.filter(checkedOption => checkedOption !== optionValue) : [...safeCurrentValue, optionValue];
             } else {
                 newValue = currentValue === optionValue ? "" : optionValue;
             }
@@ -86,7 +87,7 @@ export const Checker = (props) => {
                     {options.map((option, OI) => {
                         const optionValue = isObject(option) ? option.value : option;
                         const optionLabel = isObject(option) ? option.label : option;
-                        const checked = multiple ? currentValue.includes(optionValue) : currentValue === optionValue;
+                        const checked = multiple ? (currentValue ?? []).includes(optionValue) : currentValue === optionValue;
 
                         return (
                             <div key={`option${OI}`} { ...mergeProps("option", props => ({

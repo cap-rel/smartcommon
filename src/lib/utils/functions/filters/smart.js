@@ -7,8 +7,10 @@ export const useFilter = (attributes) => {
   const setFiltersForSearchBar = (listItem) => {
     const values = [];
     Object.entries(listItem).forEach(([key, value]) => {
-      const searchable = attributes[key].searchall || true;
-      switch (attributes[key].type) {
+      const attribute = attributes?.[key];
+      if (!attribute) return;
+      const searchable = attribute.searchall || true;
+      switch (attribute.type) {
         case "boolean"         : return ;// Non // formulaire
         case "checkbox"        : return ;// Non // formulaire
         case "multiCheckbox": return searchable && values.push(...value); // Inclure les réponses // formulaire

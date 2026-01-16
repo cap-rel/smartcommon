@@ -57,7 +57,7 @@ export const Array = ({
 
   const addItem = (e) => {
     if (!isEmpty(inputValue.trim()) && e.key === "Enter") {
-      const newValue = [...realValue, inputValue];
+      const newValue = [...(realValue ?? []), inputValue];
       if (isNil(value)) {
         set("localValue", newValue);
       } else {
@@ -68,7 +68,7 @@ export const Array = ({
   };
 
   const deleteItem = (index) => {
-    const newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+    const newValue = [...(realValue ?? []).slice(0, index), ...(realValue ?? []).slice(index + 1)];
     if (isNil(value)) {
       set("localValue", newValue);
     } else {

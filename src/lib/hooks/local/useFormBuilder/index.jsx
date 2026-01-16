@@ -28,7 +28,7 @@ export const useForm = (form) => {
     const setInitialSelectedTabs = (components) => {
         return components.reduce((acc, component) => {
             if (component.type === "tabs") {
-                acc[component.id] = component.children[0].id
+                acc[component.id] = component.children?.[0]?.id
             }
 
             if (component.children) {
@@ -98,17 +98,17 @@ export const useForm = (form) => {
                         style={{ flexBasis: basisOnRow, width: widthOnCol }}
                     >
                         {title && <span className={`text-smt font-semibold`}>{title}</span>}
-                        <div 
+                        <div
                             className={`flex ${title ? "gap-4" : "gap-6"}`}
-                                // ${component.divide 
-                                //     ? (direction === "row" 
-                                //         ? "divide-x" 
-                                //         : (direction === "column" ? "divide-y" : "gap-4")) 
+                                // ${component.divide
+                                //     ? (direction === "row"
+                                //         ? "divide-x"
+                                //         : (direction === "column" ? "divide-y" : "gap-4"))
                                 //     : "gap-4"
                                 // }
                             style={{ flexDirection: direction }}
                         >
-                            {children.map(child => renderComponent(child, component))}
+                            {(children ?? []).map(child => renderComponent(child, component))}
                         </div>
                     </div>
                 );
@@ -122,7 +122,7 @@ export const useForm = (form) => {
                         <div className={`row-v-center gap-4 px-4 py-2`}>
                             {title && <span className={`text-smt font-semibold`}>{title}</span>}
                             <div className={`row-v-center gap-2`}>
-                                {tabs.map((tab, TI) => 
+                                {(tabs ?? []).map((tab, TI) => 
                                     <button
                                         key={`tab${TI}`}
                                         onClick={() => {
@@ -146,7 +146,7 @@ export const useForm = (form) => {
                         </div>
 
                         <div className={`p-4 ${states.opacityTransitions.tabs[id] ? "opacity-100 duration-300" : "opacity-0"}`}>
-                            {children.map((child, CI) => 
+                            {(children ?? []).map((child, CI) => 
                                 <div 
                                     key={`child${CI}`}
                                     className={`${states.selectedTabs[id] !== child.id && "hidden"}`}
@@ -172,7 +172,7 @@ export const useForm = (form) => {
         }
     };
 
-    const buildForm = () => { return form.map(component => renderComponent(component, null)) };
+    const buildForm = () => { return (form ?? []).map(component => renderComponent(component, null)) };
 
     return { formValues: states.formValues, buildForm };
 };

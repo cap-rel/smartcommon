@@ -40,7 +40,7 @@ export const Sidebar = (props) => {
         // }
       }))}>
 
-        {links.map((link, LI) => {
+        {(links ?? []).map((link, LI) => {
           const { badge, icon, activeIcon, disabled, label, active: activeManually, onClick = () => {} } = link;
         
           const { to } = link;

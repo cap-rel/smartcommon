@@ -248,8 +248,8 @@ export const Calendar = (props) => {
     return false;
   };
 
-  useEffect(() => onMonthChange(month), [month]);
-  useEffect(() => onYearChange(year), [year]);
+  useEffect(() => onMonthChange?.(month), [month]);
+  useEffect(() => onYearChange?.(year), [year]);
 
   return (
     <div { ...mergeProps("container", props => ({
@@ -298,7 +298,7 @@ export const Calendar = (props) => {
                   className: `relative`
               }))}>
 
-                {months[month - 1].name}
+                {months?.[month - 1]?.name}
 
                 <select { ...mergeProps("monthSelect", props => ({
                   ...props,
@@ -367,7 +367,7 @@ export const Calendar = (props) => {
             className: `flex items-center overflow-x-auto text-app-sm mx-app-xs`
         }))}>
         
-          {months[month - 1].days.map((day, DI) => {
+          {(months?.[month - 1]?.days ?? []).map((day, DI) => {
             const { number, weekday } = day;
             const date = ISOFormat(new Date(year, month - 1, number), "date");
             const badge = items.filter(item => item === date).length;

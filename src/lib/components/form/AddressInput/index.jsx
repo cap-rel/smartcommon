@@ -75,7 +75,7 @@ export const AddressInput = (props) => {
     await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
       .then(response => response.json())
       .then(json => {
-        const suggestions = json.map((item) => {        
+        const suggestions = (json ?? []).map((item) => {        
           const { house_number, building_number, road, street, highway, postcode, zipcode, postal_code, city, municipality, town, village, hamlet, country, state, nation } = item.address;
 
           const finalNumber   = house_number ?? building_number ?? "";

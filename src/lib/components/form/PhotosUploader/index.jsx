@@ -39,16 +39,16 @@ export const PhotosUploader = (props) => {
             condition: required && isEmpty(currentValue),
             message: "Vous devez prendre au moins 1 photo."
         },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
+        min: {
+            condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
             message: `Vous devez prendre ${min} photos minimum.`
         },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
+        max: {
+            condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
             message: `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`
         },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+        exact: {
+            condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
             message: `Vous devez prendre exactement ${exact} photos.`
         },
     });
@@ -86,7 +86,7 @@ export const PhotosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedPhotoIndex", null);
             } else {
                 newValue = null;
@@ -128,7 +128,7 @@ export const PhotosUploader = (props) => {
                 }
 
                 const newPhoto = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-                const newValue = multiple ? [...currentValue, newPhoto] : newPhoto;
+                const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
                 setValue(newValue);
                 // set("selectedPhotoIndex", localValue.length);                    
                 // } else {
@@ -147,8 +147,10 @@ export const PhotosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue];
-                newValue[selectedPhotoIndex][prop] = value;
+                newValue = [...(currentValue ?? [])];
+                if (newValue[selectedPhotoIndex]) {
+                    newValue[selectedPhotoIndex][prop] = value;
+                }
             } else {
                 newValue = { ...currentValue, [prop]: value };
             }
@@ -324,7 +326,7 @@ export const PhotosUploader = (props) => {
             {/* <Button { ...mergeProps("FloatingButton", props => ({
                 icon: <FaCamera />,
                 ...props,
-                badge: multiple ? currentValue.length : (!isNil(currentValue) ? 1 : null),
+                badge: multiple ? (currentValue?.length ?? 0) : (!isNil(currentValue) ? 1 : null),
                 buttonProps: {
                     ...props.buttonProps,
                     className: "p-app-base fixed right-app-base bottom-app-base",
@@ -358,8 +360,8 @@ export const PhotosUploader = (props) => {
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)
-                        ?   (multiple 
-                                ?   currentValue.map(Photo)
+                        ?   (multiple
+                                ?   (currentValue ?? []).map(Photo)
                                 :   Photo(currentValue)
                             )
                         :   <div { ...mergeProps("emptyPhoto", props => ({

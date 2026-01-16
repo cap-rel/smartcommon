@@ -38,16 +38,16 @@ export const AudiosUploader = (props) => {
             condition: required && isEmpty(currentValue),
             message: "Vous devez enregistrer au moins 1 audio."
         },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
+        min: {
+            condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
             message: `Vous devez enregistrer ${min} audios minimum.`
         },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
+        max: {
+            condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
             message: `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`
         },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+        exact: {
+            condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
             message: `Vous devez enregistrer exactement ${exact} audios.`
         },
     });
@@ -85,7 +85,7 @@ export const AudiosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedAudioIndex", null);
             } else {
                 newValue = null;
@@ -125,7 +125,7 @@ export const AudiosUploader = (props) => {
             }
 
             const newAudio = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-            const newValue = multiple ? [...currentValue, newAudio] : newAudio;
+            const newValue = multiple ? [...(currentValue ?? []), newAudio] : newAudio;
             setValue(newValue);
             set("isAudioLoading", false);
         }
@@ -136,8 +136,10 @@ export const AudiosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue];
-                newValue[selectedAudioIndex][prop] = value;
+                newValue = [...(currentValue ?? [])];
+                if (newValue[selectedAudioIndex]) {
+                    newValue[selectedAudioIndex][prop] = value;
+                }
             } else {
                 newValue = { ...currentValue, [prop]: value };
             }
@@ -148,12 +150,16 @@ export const AudiosUploader = (props) => {
 
     const closePopup = (index) => {
         if (multiple) {
-            audioRefs.current[index].pause();
-            audioRefs.current[index].currentTime = 0;
+            audioRefs.current?.[index]?.pause?.();
+            if (audioRefs.current?.[index]) {
+                audioRefs.current[index].currentTime = 0;
+            }
             set("selectedAudioIndex", null);
         } else {
-            audioRefs.current.pause();
-            audioRefs.current.currentTime = 0;
+            audioRefs.current?.pause?.();
+            if (audioRefs.current) {
+                audioRefs.current.currentTime = 0;
+            }
             set("isAudioSelected", false);
         }
     };
@@ -229,7 +235,7 @@ export const AudiosUploader = (props) => {
                  <audio { ...mergeProps("audioPlayer", props => ({
                     ...props,
                     ref: el => multiple ? (audioRefs.current[index] = el) : (audioRefs.current = el),
-                    src: audio.src,
+                    src: audio?.src,
                     controls: true,
                     // onLoadedMetadata={(e) => {
                     //     const newValue = [...value];
@@ -299,8 +305,8 @@ export const AudiosUploader = (props) => {
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)
-                        ?   (multiple 
-                                ?   currentValue.map(Audio)
+                        ?   (multiple
+                                ?   (currentValue ?? []).map(Audio)
                                 :   Audio(currentValue)
                             )
                         :   <div { ...mergeProps("emptyAudio", props => ({
@@ -350,8 +356,8 @@ export const AudiosUploader = (props) => {
                 </div>
             </div>
 
-            {multiple 
-                ?   currentValue.map(AudioPopup)
+            {multiple
+                ?   (currentValue ?? []).map(AudioPopup)
                 :   AudioPopup(currentValue)
             }
         </Label>

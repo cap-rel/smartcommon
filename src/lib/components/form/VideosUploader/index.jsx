@@ -38,16 +38,16 @@ export const VideosUploader = (props) => {
             condition: required && isEmpty(currentValue),
             message: "Vous devez enregistrer au moins 1 vidéo."
         },
-        min: { 
-            condition: !isNil(min) && multiple && currentValue.length < min,
+        min: {
+            condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
             message: `Vous devez prendre ${min} vidéos minimum.`
         },
-        max: { 
-            condition: !isNil(max) && multiple && currentValue.length > max,
+        max: {
+            condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
             message: `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`
         },
-        exact: { 
-            condition: !isNil(exact) && multiple && currentValue.length !== exact,
+        exact: {
+            condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
             message: `Vous devez prendre exactement ${exact} vidéos.`
         },
     });
@@ -85,7 +85,7 @@ export const VideosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue.slice(0, index), ...currentValue.slice(index + 1)];
+                newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedVideoIndex", null);
             } else {
                 newValue = null;
@@ -125,7 +125,7 @@ export const VideosUploader = (props) => {
             }
 
             const newVideo = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-            const newValue = multiple ? [...currentValue, newVideo] : newVideo;
+            const newValue = multiple ? [...(currentValue ?? []), newVideo] : newVideo;
             setValue(newValue);
             set("isVideoLoading", false);
         }
@@ -136,8 +136,10 @@ export const VideosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...currentValue];
-                newValue[selectedVideoIndex][prop] = value;
+                newValue = [...(currentValue ?? [])];
+                if (newValue[selectedVideoIndex]) {
+                    newValue[selectedVideoIndex][prop] = value;
+                }
             } else {
                 newValue = { ...currentValue, [prop]: value };
             }
@@ -148,12 +150,16 @@ export const VideosUploader = (props) => {
 
     const closePopup = (index) => {
         if (multiple) {
-            videosRef.current[index].pause();
-            videosRef.current[index].currentTime = 0;
+            videosRef.current?.[index]?.pause?.();
+            if (videosRef.current?.[index]) {
+                videosRef.current[index].currentTime = 0;
+            }
             set("selectedVideoIndex", null);
         } else {
-            videosRef.current.pause();
-            videosRef.current.currentTime = 0;
+            videosRef.current?.pause?.();
+            if (videosRef.current) {
+                videosRef.current.currentTime = 0;
+            }
             set("isVideoSelected", false);
         }
     };
@@ -226,7 +232,7 @@ export const VideosUploader = (props) => {
                 <video { ...mergeProps("videoPlayer", props => ({
                     ...props,
                     ref: el => multiple ? (videosRef.current[index] = el) : (videosRef.current = el),
-                    src: video.src,
+                    src: video?.src,
                     controls: true,
                     // onLoadedMetadata={(e) => {
                     //     const newValue = [...value];
@@ -296,8 +302,8 @@ export const VideosUploader = (props) => {
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)
-                        ?   (multiple 
-                                ?   currentValue.map(Video)
+                        ?   (multiple
+                                ?   (currentValue ?? []).map(Video)
                                 :   Video(currentValue)
                             )
                         :   <div { ...mergeProps("emptyVideo", props => ({
@@ -347,8 +353,8 @@ export const VideosUploader = (props) => {
                 </div>
             </div>
 
-            {multiple 
-                ?   currentValue.map(VideoPopup)
+            {multiple
+                ?   (currentValue ?? []).map(VideoPopup)
                 :   VideoPopup(currentValue)
             }
         </Label>

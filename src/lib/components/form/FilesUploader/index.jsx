@@ -71,7 +71,7 @@ export const FilesUploader = ({
 
     const realValue = value ?? localValue
 
-    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue.url);
+    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue?.url);
 
     const handleFilesUploaderOnChange = (e) => {
         set("isFileLoading", true);
@@ -80,7 +80,7 @@ export const FilesUploader = ({
             const url = URL.createObjectURL(file);
             // if (isNull(selectedFileId)) {
             const newFile = { url: url, title: splitFileExtension(file.name)[0], description: "", type: file.type };
-            const newValue = multiple ? [...realValue, newFile] : newFile;
+            const newValue = multiple ? [...(realValue ?? []), newFile] : newFile;
             if (isNil(value)) {
                 set("localValue", newValue);
             } else {
@@ -103,7 +103,7 @@ export const FilesUploader = ({
         let newValue;
 
         if (multiple) {
-            newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+            newValue = [...(realValue ?? []).slice(0, index), ...(realValue ?? []).slice(index + 1)];
         } else {
             newValue = emptyFile;
         }
@@ -133,8 +133,10 @@ export const FilesUploader = ({
         let newValue;
 
         if (multiple) {
-            newValue = [...realValue];
-            newValue[selectedFileId][prop] = newProp;
+            newValue = [...(realValue ?? [])];
+            if (newValue[selectedFileId]) {
+                newValue[selectedFileId][prop] = newProp;
+            }
         } else {
             newValue = { ...realValue, [prop]: newProp };
         }
@@ -158,18 +160,18 @@ export const FilesUploader = ({
                         { ...urlInputProps}
                         name={name}
                         onChange={() => {}}
-                        value={file.url}
+                        value={file?.url}
                         className={twMerge(`hidden`, urlInputProps?.className)}
                     />
-                    <FaFile 
-                        { ...iconProps} 
+                    <FaFile
+                        { ...iconProps}
                         className={twMerge(`text-xl text-primary shrink-0`, iconProps?.className)}
                     />
-                    <div 
+                    <div
                         { ...titleProps}
                         className={twMerge(`truncate grow`, titleProps?.className)}
                     >
-                        {isEmpty(file.title) ? "Sans titre" : file.title}
+                        {isEmpty(file?.title) ? "Sans titre" : file?.title}
                     </div>
                     <Button
                         left={RiCloseLargeFill}
@@ -230,10 +232,10 @@ export const FilesUploader = ({
                     className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
                 >
                     {
-                        multiple 
-                            ?   !isEmpty(realValue) && realValue.map((file, FI) => File(file, FI))
-                            :   !isEmpty(realValue.url) && File(realValue)
-                        
+                        multiple
+                            ?   !isEmpty(realValue) && (realValue ?? []).map((file, FI) => File(file, FI))
+                            :   !isEmpty(realValue?.url) && File(realValue)
+
                     }
                 </ul>
                 <Button 
