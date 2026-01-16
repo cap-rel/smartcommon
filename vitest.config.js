@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 export default defineConfig({
   plugins: [react()],
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     globals: true,
     setupFiles: ['./src/lib/tests/setup.js'],
     include: ['src/**/*.{test,spec}.{js,jsx}'],
