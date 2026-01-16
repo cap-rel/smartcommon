@@ -12,7 +12,7 @@ const usersSlice = createSlice({
         state.data.push(action.payload);
     },
     deleteUser(state, action) {
-        state.data = state.data.filter(user => user.id != action.payload);
+        state.data = state.data.filter(user => user.id !== action.payload);
     }
   },
 });

@@ -127,7 +127,7 @@ import { isArray, isEmpty } from "lodash";
     const decH = secs / 60 / 60;
     const h = ("0" + Math.floor(decH)).slice(-2);
     const m = ("0" + Math.floor(("0." + decH.toString().split(".")[1]) * 60)).slice(-2);
-    return h != "00" ? h + " h " + m : m != "00" ? m + " min" : "moins d'une minute";
+    return h !== "00" ? h + " h " + m : m !== "00" ? m + " min" : "moins d'une minute";
   }
   
   export const mToKm = (meters) => {
