@@ -170,5 +170,5 @@ export const Panel = (props) => {
     );
 };
 
-Panel.prototypes = propTypes;
+Panel.propTypes = propTypes;
 Panel.defaultProps = defaultProps;

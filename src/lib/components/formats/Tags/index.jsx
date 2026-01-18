@@ -39,4 +39,4 @@ export const Tags = (props) => {
     );
 };
 
-Tags.prototypes = propTypes;
+Tags.propTypes = propTypes;
