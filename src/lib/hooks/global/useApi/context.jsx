@@ -338,30 +338,32 @@ export const useApiContext = () => {
         return response.json();
     };
 
-    const get = useMemo(() => async (url, options) => {
-        const response = await privateApi.get(url, options);
-        return handleResponse(response, options);
-    }, [privateApi]);
+    // Helper to create API method with error handling
+    const createApiMethod = (method) => async (url, options) => {
+        const { debug: currentDebug } = valuesRef.current;
+        try {
+            const response = await privateApi[method](url, options);
+            return handleResponse(response, options);
+        } catch (error) {
+            if (currentDebug) {
+                log.apiError(`${method.toUpperCase()} failed`, url, error.message);
+            }
+            // Enrich error with context
+            error.url = url;
+            error.method = method.toUpperCase();
+            throw error;
+        }
+    };
 
-    const post = useMemo(() => async (url, options) => {
-        const response = await privateApi.post(url, options);
-        return handleResponse(response, options);
-    }, [privateApi]);
+    const get = useMemo(() => createApiMethod('get'), [privateApi]);
 
-    const put = useMemo(() => async (url, options) => {
-        const response = await privateApi.put(url, options);
-        return handleResponse(response, options);
-    }, [privateApi]);
+    const post = useMemo(() => createApiMethod('post'), [privateApi]);
 
-    const patch = useMemo(() => async (url, options) => {
-        const response = await privateApi.patch(url, options);
-        return handleResponse(response, options);
-    }, [privateApi]);
+    const put = useMemo(() => createApiMethod('put'), [privateApi]);
 
-    const del = useMemo(() => async (url, options) => {
-        const response = await privateApi.delete(url, options);
-        return handleResponse(response, options);
-    }, [privateApi]);
+    const patch = useMemo(() => createApiMethod('patch'), [privateApi]);
+
+    const del = useMemo(() => createApiMethod('delete'), [privateApi]);
 
     // ---------------------- return ----------------------
 
