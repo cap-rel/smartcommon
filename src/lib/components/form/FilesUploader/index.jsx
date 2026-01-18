@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { FaFile } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
@@ -72,11 +72,17 @@ export const FilesUploader = ({
     // Track created object URLs for cleanup
     const objectUrlsRef = useRef([]);
 
-    // Cleanup object URLs on unmount to prevent memory leaks
+    // Track setTimeout for cleanup
+    const timeoutRef = useRef(null);
+
+    // Cleanup object URLs and timeout on unmount to prevent memory leaks
     useEffect(() => {
         return () => {
             objectUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
             objectUrlsRef.current = [];
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
         };
     }, []);
 
@@ -86,7 +92,7 @@ export const FilesUploader = ({
 
     const handleFilesUploaderOnChange = (e) => {
         set("isFileLoading", true);
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const file = e.target.files[0];
             const url = URL.createObjectURL(file);
             // Track URL for cleanup on unmount
