@@ -25,7 +25,7 @@ export const Calendar = (props) => {
     onYearChange
   } = variantProps;
 
-  const { currentValue, setValue } = useField(defaultValue ?? null, value, onChange);
+  const { currentValue, setValue } = useField({ name, defaultValue: defaultValue ?? null, value, onChange, errors: () => ({}) });
 
   const allYears = [];
   for (let year = yearsInterval[0]; year <= yearsInterval[1]; year++) {
