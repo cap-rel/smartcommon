@@ -68,7 +68,7 @@ export const useWindow = () => {
         return () => {
             window.removeEventListener("resize", handleResize);
             window.removeEventListener("scroll", handleScroll);
-            window.addEventListener("load", handleLoad);
+            window.removeEventListener("load", handleLoad);
             window.matchMedia("(prefers-color-scheme: dark)").removeEventListener("change", handleDarkMode);
         }
     }, [])
