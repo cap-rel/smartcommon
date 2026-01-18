@@ -338,28 +338,28 @@ export const useApiContext = () => {
         return response.json();
     };
 
-    const get = useMemo(() => (url, options) => {
-        const response = privateApi.get(url, options);
+    const get = useMemo(() => async (url, options) => {
+        const response = await privateApi.get(url, options);
         return handleResponse(response, options);
     }, [privateApi]);
 
-    const post = useMemo(() => (url, options) => {
-        const response = privateApi.post(url, options);
+    const post = useMemo(() => async (url, options) => {
+        const response = await privateApi.post(url, options);
         return handleResponse(response, options);
     }, [privateApi]);
 
-    const put = useMemo(() => (url, options) => {
-        const response = privateApi.put(url, options);
+    const put = useMemo(() => async (url, options) => {
+        const response = await privateApi.put(url, options);
         return handleResponse(response, options);
     }, [privateApi]);
 
-    const patch = useMemo(() => (url, options) => {
-        const response = privateApi.patch(url, options);
+    const patch = useMemo(() => async (url, options) => {
+        const response = await privateApi.patch(url, options);
         return handleResponse(response, options);
     }, [privateApi]);
 
-    const del = useMemo(() => (url, options) => {
-        const response = privateApi.delete(url, options);
+    const del = useMemo(() => async (url, options) => {
+        const response = await privateApi.delete(url, options);
         return handleResponse(response, options);
     }, [privateApi]);
 
