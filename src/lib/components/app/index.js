@@ -3,6 +3,7 @@ export * from "./Toaster";
 export * from "./Provider";
 export * from "./ReduxProvider";
 export * from "./Router";
+export * from "./ErrorBoundary";
 
 export * from "./LibConfigProvider";
 export * from "./LibConfigProvider/context";
