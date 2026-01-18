@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { FaFile } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
@@ -69,6 +69,17 @@ export const FilesUploader = ({
 
     const { selectedFileId, isFileSelected, localValue, isFileLoading } = states;
 
+    // Track created object URLs for cleanup
+    const objectUrlsRef = useRef([]);
+
+    // Cleanup object URLs on unmount to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            objectUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+            objectUrlsRef.current = [];
+        };
+    }, []);
+
     const realValue = value ?? localValue
 
     const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue?.url);
@@ -78,6 +89,8 @@ export const FilesUploader = ({
         setTimeout(() => {
             const file = e.target.files[0];
             const url = URL.createObjectURL(file);
+            // Track URL for cleanup on unmount
+            objectUrlsRef.current.push(url);
             // if (isNull(selectedFileId)) {
             const newFile = { url: url, title: splitFileExtension(file.name)[0], description: "", type: file.type };
             const newValue = multiple ? [...(realValue ?? []), newFile] : newFile;
@@ -86,14 +99,13 @@ export const FilesUploader = ({
             } else {
                 onValueChange(newValue);
             }
-            // set("selectedFileId", localValue.length);                    
+            // set("selectedFileId", localValue.length);
             // } else {
             //     const newFiles = [...localValue];
             //     newFiles[selectedFileId].url = url;
-            //     set("localValue", newFiles);    
+            //     set("localValue", newFiles);
             // }
             set("isFileLoading", false);
-            return () => URL.revokeObjectURL(url);
         }, 1000);
     };
 
@@ -101,6 +113,13 @@ export const FilesUploader = ({
         e.preventDefault();
         e.stopPropagation();
         let newValue;
+
+        // Revoke the object URL to free memory
+        const fileToDelete = multiple ? realValue?.[index] : realValue;
+        if (fileToDelete?.url?.startsWith('blob:')) {
+            URL.revokeObjectURL(fileToDelete.url);
+            objectUrlsRef.current = objectUrlsRef.current.filter(u => u !== fileToDelete.url);
+        }
 
         if (multiple) {
             newValue = [...(realValue ?? []).slice(0, index), ...(realValue ?? []).slice(index + 1)];
