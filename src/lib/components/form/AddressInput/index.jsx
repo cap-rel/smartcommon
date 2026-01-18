@@ -72,25 +72,33 @@ export const AddressInput = (props) => {
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const fetchSuggestions = async (query) => {
-    await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`)
-      .then(response => response.json())
-      .then(json => {
-        const suggestions = (json ?? []).map((item) => {        
-          const { house_number, building_number, road, street, highway, postcode, zipcode, postal_code, city, municipality, town, village, hamlet, country, state, nation } = item.address;
+    try {
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`);
 
-          const finalNumber   = house_number ?? building_number ?? "";
-          const finalRoad     = road ?? street ?? highway ?? "";
-          const finalCode     = postcode ?? zipcode ?? postal_code ?? "";
-          const finalCity     = city ?? municipality ?? town ?? village ?? hamlet ?? "";
-          const finalCountry  = country ?? state ?? nation ?? "";
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
 
-          return `${finalNumber && finalNumber + " "}${finalRoad && finalRoad + " "}${finalCode && finalCode + " "}${finalCity && finalCity + " "}${finalCountry}`;
-        });
-  
-        set("suggestions", suggestions);
-      })
-      .catch(error => console.error(error.message));
-    set("isSearching", false);
+      const json = await response.json();
+      const suggestions = (json ?? []).map((item) => {
+        const { house_number, building_number, road, street, highway, postcode, zipcode, postal_code, city, municipality, town, village, hamlet, country, state, nation } = item.address ?? {};
+
+        const finalNumber   = house_number ?? building_number ?? "";
+        const finalRoad     = road ?? street ?? highway ?? "";
+        const finalCode     = postcode ?? zipcode ?? postal_code ?? "";
+        const finalCity     = city ?? municipality ?? town ?? village ?? hamlet ?? "";
+        const finalCountry  = country ?? state ?? nation ?? "";
+
+        return `${finalNumber && finalNumber + " "}${finalRoad && finalRoad + " "}${finalCode && finalCode + " "}${finalCity && finalCity + " "}${finalCountry}`;
+      });
+
+      set("suggestions", suggestions);
+    } catch (error) {
+      set("suggestions", []);
+      console.error("Address search failed:", error.message);
+    } finally {
+      set("isSearching", false);
+    }
   };
 
   const searchTimeoutRef = useRef(null);
