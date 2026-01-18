@@ -92,5 +92,5 @@ export const Popup = (props) => {
     );
 };
 
-Popup.prototypes = propTypes;
+Popup.propTypes = propTypes;
 Popup.defaultProps = defaultProps;
