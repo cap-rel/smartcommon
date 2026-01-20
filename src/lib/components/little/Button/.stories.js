@@ -116,4 +116,4 @@ import { ButtonWithIcon as ButIco, IconButton as IcoBut } from "./stories";
 
 export { Button } from "./stories";
 export const ButtonWithIcon = { name: "Button with Icon", ...ButIco };
-export const IconButton = { name: "Icon Button", ...IcoBut };
+export const IconButtonStory = { name: "Icon Button", ...IcoBut };

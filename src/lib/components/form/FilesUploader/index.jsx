@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import { FaFile } from "react-icons/fa6";
 import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
@@ -69,31 +69,49 @@ export const FilesUploader = ({
 
     const { selectedFileId, isFileSelected, localValue, isFileLoading } = states;
 
+    // Track created object URLs for cleanup
+    const objectUrlsRef = useRef([]);
+
+    // Track setTimeout for cleanup
+    const timeoutRef = useRef(null);
+
+    // Cleanup object URLs and timeout on unmount to prevent memory leaks
+    useEffect(() => {
+        return () => {
+            objectUrlsRef.current.forEach(url => URL.revokeObjectURL(url));
+            objectUrlsRef.current = [];
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current);
+            }
+        };
+    }, []);
+
     const realValue = value ?? localValue
 
-    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue.url);
+    const isRealValueEmpty = multiple ? isEmpty(realValue) : isEmpty(realValue?.url);
 
     const handleFilesUploaderOnChange = (e) => {
         set("isFileLoading", true);
-        setTimeout(() => {
+        timeoutRef.current = setTimeout(() => {
             const file = e.target.files[0];
             const url = URL.createObjectURL(file);
+            // Track URL for cleanup on unmount
+            objectUrlsRef.current.push(url);
             // if (isNull(selectedFileId)) {
             const newFile = { url: url, title: splitFileExtension(file.name)[0], description: "", type: file.type };
-            const newValue = multiple ? [...realValue, newFile] : newFile;
+            const newValue = multiple ? [...(realValue ?? []), newFile] : newFile;
             if (isNil(value)) {
                 set("localValue", newValue);
             } else {
                 onValueChange(newValue);
             }
-            // set("selectedFileId", localValue.length);                    
+            // set("selectedFileId", localValue.length);
             // } else {
             //     const newFiles = [...localValue];
             //     newFiles[selectedFileId].url = url;
-            //     set("localValue", newFiles);    
+            //     set("localValue", newFiles);
             // }
             set("isFileLoading", false);
-            return () => URL.revokeObjectURL(url);
         }, 1000);
     };
 
@@ -102,8 +120,15 @@ export const FilesUploader = ({
         e.stopPropagation();
         let newValue;
 
+        // Revoke the object URL to free memory
+        const fileToDelete = multiple ? realValue?.[index] : realValue;
+        if (fileToDelete?.url?.startsWith('blob:')) {
+            URL.revokeObjectURL(fileToDelete.url);
+            objectUrlsRef.current = objectUrlsRef.current.filter(u => u !== fileToDelete.url);
+        }
+
         if (multiple) {
-            newValue = [...realValue.slice(0, index), ...realValue.slice(index + 1)];
+            newValue = [...(realValue ?? []).slice(0, index), ...(realValue ?? []).slice(index + 1)];
         } else {
             newValue = emptyFile;
         }
@@ -133,8 +158,10 @@ export const FilesUploader = ({
         let newValue;
 
         if (multiple) {
-            newValue = [...realValue];
-            newValue[selectedFileId][prop] = newProp;
+            newValue = [...(realValue ?? [])];
+            if (newValue[selectedFileId]) {
+                newValue[selectedFileId][prop] = newProp;
+            }
         } else {
             newValue = { ...realValue, [prop]: newProp };
         }
@@ -158,18 +185,18 @@ export const FilesUploader = ({
                         { ...urlInputProps}
                         name={name}
                         onChange={() => {}}
-                        value={file.url}
+                        value={file?.url}
                         className={twMerge(`hidden`, urlInputProps?.className)}
                     />
-                    <FaFile 
-                        { ...iconProps} 
+                    <FaFile
+                        { ...iconProps}
                         className={twMerge(`text-xl text-primary shrink-0`, iconProps?.className)}
                     />
-                    <div 
+                    <div
                         { ...titleProps}
                         className={twMerge(`truncate grow`, titleProps?.className)}
                     >
-                        {isEmpty(file.title) ? "Sans titre" : file.title}
+                        {isEmpty(file?.title) ? "Sans titre" : file?.title}
                     </div>
                     <Button
                         left={RiCloseLargeFill}
@@ -230,10 +257,10 @@ export const FilesUploader = ({
                     className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
                 >
                     {
-                        multiple 
-                            ?   !isEmpty(realValue) && realValue.map((file, FI) => File(file, FI))
-                            :   !isEmpty(realValue.url) && File(realValue)
-                        
+                        multiple
+                            ?   !isEmpty(realValue) && (realValue ?? []).map((file, FI) => File(file, FI))
+                            :   !isEmpty(realValue?.url) && File(realValue)
+
                     }
                 </ul>
                 <Button 

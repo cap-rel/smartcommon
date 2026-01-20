@@ -52,7 +52,7 @@ export const RadioBar = (props) => {
                 ...props,
                 className: `bg-strong-bg flex flex-wrap items-center p-app-xxs gap-app-xxs inset-shadow-sm rounded-app-md ${disabled && "brightness-soft"}`
             }))}>
-                {options.map((option, OI) => {
+                {(options ?? []).map((option, OI) => {
                     const optionValue = isObject(option) ? option.value : option;
                     const optionLabel = isObject(option) ? option.label : option;
                     const isChecked = currentValue === optionValue;

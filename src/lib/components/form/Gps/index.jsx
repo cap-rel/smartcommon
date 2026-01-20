@@ -113,7 +113,7 @@ export const Gps = props => {
 
   const deleteGpsPoints = (e, index) => {
     e.preventDefault();
-    const newValue = multiple ? [...currentValue.slice(0, index), ...currentValue.slice(index + 1)] : ["", ""];
+    const newValue = multiple ? [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)] : ["", ""];
 
     setValue(newValue);
   };
@@ -176,13 +176,13 @@ export const Gps = props => {
         <input
           name={name}
           onChange={() => {}}
-          value={currentValue[0]}
+          value={currentValue?.[0]}
           hidden
         />
         <input
           name={name}
           onChange={() => {}}
-          value={currentValue[1]}
+          value={currentValue?.[1]}
           hidden
         />
         <Button { ...mergeProps("LocateButton", props => ({

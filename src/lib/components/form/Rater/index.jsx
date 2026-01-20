@@ -50,7 +50,7 @@ export const Rater = (props) => {
 
     const updateRating = (index) => {
         if (!disabled && !readOnly && !isFormSubmitting) {
-            const newValue = currentValue == Number(index) + 1  ? index : Number(index) + 1;
+            const newValue = currentValue === Number(index) + 1  ? index : Number(index) + 1;
             setValue(newValue);
         }
     };

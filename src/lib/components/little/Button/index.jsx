@@ -68,7 +68,7 @@ export const Button = (props) => {
                     ...props,
                     className: `shrink-0`
                 }))}>
-                    {icon()}
+                    {typeof icon === 'function' ? icon() : icon}
                 </div>
             }
 

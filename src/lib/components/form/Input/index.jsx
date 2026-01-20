@@ -234,7 +234,7 @@ export const Input = (props) => {
             ...props,
             className: `shrink-0 text-soft-text`
           }))}>
-            {inputIcon()}
+            {typeof inputIcon === 'function' ? inputIcon() : inputIcon}
           </div>
         }
 

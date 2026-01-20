@@ -206,8 +206,8 @@ export function isInvalid(value) {
 // }
 
 export function applyFunctionIfNotNil(value, ...params) {
-    if (!isNil(value)) {
-        return value(params);
+    if (!isNil(value) && isFunction(value)) {
+        return value(...params);
     }
 
     return undefined;
@@ -215,7 +215,7 @@ export function applyFunctionIfNotNil(value, ...params) {
 
 export function applyFunctionIfFunction(value, ...params) {
     if (isFunction(value)) {
-        return value(params);
+        return value(...params);
     }
 
     return undefined;

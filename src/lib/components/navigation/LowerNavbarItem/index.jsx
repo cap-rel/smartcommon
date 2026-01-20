@@ -39,16 +39,16 @@ export const LowerNavbarItem = (props) => {
             `,
             onClick: e => {
                 if (props.onClick) {
-                    return applyFunctionIfFunction(props.onClick(), e);
+                    return applyFunctionIfFunction(props.onClick, e);
                 }
-                onClick();
+                onClick(e);
             }
         }))}>
             {/* border-b-4 */}
 
-            {icon && 
+            {icon &&
                 <div { ...mergeProps("icon", props => props)}>
-                    {currentIcon()}
+                    {typeof currentIcon === 'function' ? currentIcon() : currentIcon}
                 </div>
             }
 

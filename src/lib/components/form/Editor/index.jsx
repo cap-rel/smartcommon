@@ -1,5 +1,6 @@
 import { FaEye, FaMarkdown } from "react-icons/fa6";
 import { marked } from "marked";
+import DOMPurify from "dompurify";
 import { twMerge } from "tailwind-merge";
 import { isNil } from "lodash";
 
@@ -90,7 +91,7 @@ export const Editor = ({
         />
         <div
           { ...htmlProps}
-          dangerouslySetInnerHTML={{ __html: marked(realValue) }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(realValue)) }}
           style={{ "--height": `${document.querySelector("textarea")?.getBoundingClientRect().height}px`, ...htmlProps?.style }}
           className={twMerge(`p-2 rounded-t-md border border-b-0 bg-strong border-soft-border overflow-y-auto h-(--height) ${!isViewMode && "hidden"}`, htmlProps?.className)}
         />

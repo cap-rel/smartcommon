@@ -3,7 +3,8 @@
 // import { Icon } from "../Icon";
 // import { useWindow } from "lib/hooks";
 
-export const Help = (props) => {
+export const Help = () => {
+    // export const Help = (props) => {
     // OLD CODE but can be useful in the future
 
     // const title   = props.title;
@@ -26,11 +27,11 @@ export const Help = (props) => {
         //     className={`${className} text-soft-smt`}
         // />
     );
-  
+
     // const listenForSettingPosition = () => {
     //     const iconRect = iconRef.current.getBoundingClientRect();
     //     const helpRect = helpRef.current.getBoundingClientRect();
-    
+
     //     const windowWidth = window.innerWidth;
     //     const windowHeight = window.innerHeight;
 
@@ -72,7 +73,7 @@ export const Help = (props) => {
     //                 setIsClicked(false);
     //             }, 5000);
     //         }
-           
+
     //         window.addEventListener('resize', listenForSettingPosition);
     //         window.addEventListener('scroll', listenForSettingPosition);
 
@@ -86,7 +87,7 @@ export const Help = (props) => {
 
 
     // return (
-            {/* ref={iconRef} */}
+            // {/* ref={iconRef} */}
                 // onClick={() => {
                 //     setIsClicked(true);
                 //     setIsOpened(true);
@@ -102,31 +103,31 @@ export const Help = (props) => {
                 //     }
                 // }}
                 // onFocus
-            {/* {!isEmpty(content) &&
-                <div 
-                    className={`
-                        col gap-1 w-48 p-4 pr-10 border bg-white shadow-md dark:border-gray-600 z-10 rounded-md 
-                        ${position} ${!isOpened && "hidden"}
-                    `}
-                    ref={helpRef}
-                >
-                    {/* <div className={`left-0 w-0 h-0 border-r-8 -translate-x-full border-y-4 border-y-transparent border-r-white absolute-v-center`} /> */}
-                    {/* <div className="w-6 h-6">
-                        <div className={`left-0 z-10 w-6 h-6 bg-white border-b border-l rotate-45 -translate-x-1/2 absolute-v-center`} />
-                    </div> */}
-                    
-                    {/* {!isEmpty(title) && <p className={`text-sm font-bold`}>{title}</p>} */}
-                    {/* <p className={`text-sm text-justify text-gray-500`}>{content}</p>
-                    <Icon
-                        library="rx"
-                        name="RxCross2"
-                        className={`absolute top-2 right-2 text-xl text-gray-400`}
-                        onClick={() => {
-                            setIsOpened(false);
-                            setIsClicked(false);
-                        }}
-                    />
-                </div>
-            } */}
+            // {/* {!isEmpty(content) &&
+            //     <div
+            //         className={`
+            //             col gap-1 w-48 p-4 pr-10 border bg-white shadow-md dark:border-gray-600 z-10 rounded-md
+            //             ${position} ${!isOpened && "hidden"}
+            //         `}
+            //         ref={helpRef}
+            //     >
+            //         {/* <div className={`left-0 w-0 h-0 border-r-8 -translate-x-full border-y-4 border-y-transparent border-r-white absolute-v-center`} /> */}
+            //         {/* <div className="w-6 h-6">
+            //             <div className={`left-0 z-10 w-6 h-6 bg-white border-b border-l rotate-45 -translate-x-1/2 absolute-v-center`} />
+            //         </div> */}
+
+            //         {/* {!isEmpty(title) && <p className={`text-sm font-bold`}>{title}</p>} */}
+            //         {/* <p className={`text-sm text-justify text-gray-500`}>{content}</p>
+            //         <Icon
+            //             library="rx"
+            //             name="RxCross2"
+            //             className={`absolute top-2 right-2 text-xl text-gray-400`}
+            //             onClick={() => {
+            //                 setIsOpened(false);
+            //                 setIsClicked(false);
+            //             }}
+            //         />
+            //     </div>
+            // } */}
     // );
 };

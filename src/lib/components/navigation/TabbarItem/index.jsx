@@ -37,7 +37,7 @@ export const TabbarItem = (props) => {
                 `
             }))}>
 
-                {icon && 
+                {icon &&
                     <div { ...mergeProps("icon", props => ({
                         ...props,
                         className: `
@@ -45,7 +45,7 @@ export const TabbarItem = (props) => {
                             ${responsive && "lg:p-0 lg:bg-transparent"}
                         `
                     }))}>
-                        {currentIcon()}
+                        {typeof currentIcon === 'function' ? currentIcon() : currentIcon}
                     </div>
                 }
 
