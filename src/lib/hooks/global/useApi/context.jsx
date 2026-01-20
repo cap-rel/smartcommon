@@ -280,36 +280,6 @@ export const useApiContext = () => {
             });
     };
 
-<<<<<<< HEAD
-=======
-    // Helper to create API method with error handling
-    const createApiMethod = (method) => async (url, options) => {
-        const { debug: currentDebug } = valuesRef.current;
-        try {
-            const response = await privateApi[method](url, options);
-            return handleResponse(response, options);
-        } catch (error) {
-            if (currentDebug) {
-                log.apiError(`${method.toUpperCase()} failed`, url, error.message);
-            }
-            // Enrich error with context
-            error.url = url;
-            error.method = method.toUpperCase();
-            throw error;
-        }
-    };
-
-    const get = useMemo(() => createApiMethod('get'), [privateApi]);
-
-    const post = useMemo(() => createApiMethod('post'), [privateApi]);
-
-    const put = useMemo(() => createApiMethod('put'), [privateApi]);
-
-    const patch = useMemo(() => createApiMethod('patch'), [privateApi]);
-
-    const del = useMemo(() => createApiMethod('delete'), [privateApi]);
-
->>>>>>> 20da456196f1b64353a489498aeb4fd9810d0136
     // ---------------------- return ----------------------
 
     return {
