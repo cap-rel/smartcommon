@@ -27,9 +27,9 @@ export const propTypes = {
   patternMessage: PropTypes.string,
 
   name: PropTypes.string,
-  value: PropTypes.bool,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
-  defaultValue: PropTypes.bool,
+  defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 
   formSubmitted: PropTypes.bool,
   onError: PropTypes.func,
