@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { isEmpty } from "lodash";
 
 import { useStates } from "lib/hooks";
@@ -63,8 +63,16 @@ export const useForm = (form) => {
 
     const { states, set } = useStates({ initialStates, debug: false });
 
-    useEffect(() => {
+    // Track tab transition timeout for proper cleanup
+    const tabTransitionTimeoutRef = useRef(null);
 
+    // Cleanup timeout on unmount to prevent memory leaks and setState on unmounted component
+    useEffect(() => {
+        return () => {
+            if (tabTransitionTimeoutRef.current) {
+                clearTimeout(tabTransitionTimeoutRef.current);
+            }
+        };
     }, []);
 
     const setPadding = (parent, component) => {
@@ -128,10 +136,13 @@ export const useForm = (form) => {
                                         onClick={() => {
                                             if (states.selectedTabs[id] !== children[TI].id) {
                                                 set(`opacityTransitions.tabs.${id}`, false);
-                                                const timeout = setTimeout(() => {
+                                                // Clear any pending timeout to avoid race conditions on rapid clicks
+                                                if (tabTransitionTimeoutRef.current) {
+                                                    clearTimeout(tabTransitionTimeoutRef.current);
+                                                }
+                                                tabTransitionTimeoutRef.current = setTimeout(() => {
                                                     set(`selectedTabs.${id}`, children[TI].id);
                                                     set(`opacityTransitions.tabs.${id}`, true);
-                                                    return clearTimeout(timeout);
                                                 }, 10);
                                             }
                                         }}
