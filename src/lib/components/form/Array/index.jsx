@@ -93,10 +93,12 @@ export const Array = ({
           { ...tagsContainerProps}
           className={twMerge(`gap-2 wrap-v-center`, tagsContainerProps?.className)}
         >
+          {/* Use item value + index as key to ensure stable identity during add/delete operations.
+            Index-only keys cause React reconciliation issues when items are removed. */}
           {!isEmpty(realValue) &&
-            realValue.map((item, II) => 
-              <div 
-                key={`item${II}`}
+            realValue.map((item, II) =>
+              <div
+                key={`${item}-${II}`}
                 { ...tagProps}
                 onClick={() => deleteItem(II)}
                 className={twMerge(`px-2 py-1 font-semibold text-sm tracking-wide uppercase text-primary bg-primary/10 rounded-md`, tagProps?.className)}

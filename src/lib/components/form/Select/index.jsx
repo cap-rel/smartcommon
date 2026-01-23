@@ -86,13 +86,15 @@ export const Select = (props) => {
           outline-none ${disabled ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-strong-bg inset-shadow-sm`
         }))}>
           <option value="">{placeholder}</option>
-          {!isEmpty(options) && 
+          {/* Use optionValue as key since it should be unique within options list.
+              Avoids React reconciliation issues with index-based keys. */}
+          {!isEmpty(options) &&
             options.map((option, OI) => {
               const optionValue = isObject(option) ? option.value : option;
               const optionLabel = isObject(option) ? option.label : option;
 
               return (
-                <option key={`option${OI}`} { ...mergeProps("option", props => ({
+                <option key={optionValue} { ...mergeProps("option", props => ({
                   ...props,
                   value: optionValue,
                   className: `truncate`
