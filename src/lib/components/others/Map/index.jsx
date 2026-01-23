@@ -107,7 +107,10 @@ export const Map = (props) => {
         language: 'fr'
       }).addTo(map);
 
-      document.querySelector('.leaflet-routing-container').style.display = 'none';
+      // Store reference to routing container to avoid repeated DOM queries
+      // and add null check to prevent errors if element doesn't exist yet
+      const routingContainer = document.querySelector('.leaflet-routing-container');
+      if (routingContainer) routingContainer.style.display = 'none';
 
       const colors = ['#33FFC7', '#336CFF', '#FF33E9'];
 
@@ -122,12 +125,12 @@ export const Map = (props) => {
             L.marker(latlng),
             L.marker(latlng2)
           ]);
-    
+
           map.fitBounds(markersGroup.getBounds());
-  
-          document.querySelector('.leaflet-routing-container').style.display = 'block';
+
+          if (routingContainer) routingContainer.style.display = 'block';
         } else {
-          document.querySelector('.leaflet-routing-container').style.display = 'none';
+          if (routingContainer) routingContainer.style.display = 'none';
         }
       }
 
