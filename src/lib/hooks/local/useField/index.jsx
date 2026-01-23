@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { fromPairs, isEqual, isUndefined } from "lodash";
 
 import { FormContext } from "lib/components";
@@ -14,31 +14,32 @@ export const useField = (props) => {
 
   // const currentErrors = fromPairs(map(errors(currentValue), (error, key) => [key, error.condition]));
 
-  // && isUndefined(currentValue) don't know why it was there
+  // Track which field names have been initialized (supports dynamic name changes)
+  const initializedRef = useRef({});
+  // Track previous defaultValue to detect when async data arrives (undefined -> value)
+  const prevDefaultValueRef = useRef(defaultValue);
 
-  // TODO REVIEW - useEffect dependencies issue
-  // ---------------------------------------------------------
-  // This useEffect has an empty dependency array [] but uses:
-  // - name, defaultValue, errors, setField, isControlledByForm, currentValue
-  //
-  // Current behavior: runs ONLY on mount (initialization)
-  // Potential issues:
-  // 1. If `name` changes dynamically, field won't re-register
-  // 2. If `defaultValue` comes from async data (API), it will be undefined on first render
-  // 3. Uses `errors(currentValue)` but currentValue isn't set yet at init
-  //    -> should probably be `errors(defaultValue)` instead
-  //
-  // Options to discuss:
-  // A) Keep as-is + add eslint-disable comment (if mount-only is intentional)
-  // B) Add [name] to deps (re-init if field name changes)
-  // C) Use a ref to track initialization + full deps array
-  // ---------------------------------------------------------
+  // Register field in form context on mount or when relevant props change
+  // Handles two scenarios:
+  // 1. Initial mount: field is registered with its defaultValue
+  // 2. Async defaultValue: when defaultValue changes from undefined to a value
+  //    (e.g., when data is fetched from API after initial render)
   useEffect(() => {
     if (isControlledByForm) {
-      setField({ name, value: defaultValue, errors: errors(currentValue) }); // TODO put the map
+      const wasUndefined = prevDefaultValueRef.current === undefined;
+      const isNowDefined = defaultValue !== undefined;
+      // Re-init if: never initialized for this name OR defaultValue just became defined
+      const shouldInit = !initializedRef.current[name] || (wasUndefined && isNowDefined);
+
+      if (shouldInit) {
+        // Use errors(defaultValue) not errors(currentValue) since currentValue
+        // is not yet set in form context at initialization time
+        setField({ name, value: defaultValue, errors: errors(defaultValue) });
+        initializedRef.current[name] = true;
+      }
+      prevDefaultValueRef.current = defaultValue;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [name, defaultValue, isControlledByForm, setField, errors]);
 
   const setValue = (newValue) => {
     if (!isEqual(currentValue, newValue)) {
