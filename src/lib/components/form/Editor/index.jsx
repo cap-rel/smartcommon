@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { FaEye, FaMarkdown } from "react-icons/fa6";
 import { marked } from "marked";
 import DOMPurify from "dompurify";
@@ -46,14 +47,18 @@ export const Editor = ({
 
   const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...textareaPsForLabel };
 
+  // Ref to access textarea element for height measurement
+  const textareaContainerRef = useRef(null);
+
   const initialStates = {
     localValue: defaultValue ?? "",
-    isViewMode: false
+    isViewMode: false,
+    textareaHeight: 200 // Default fallback height
   };
 
   const { states, set } = useStates({ initialStates, debug: false });
 
-  const { localValue, isViewMode } = states;
+  const { localValue, isViewMode, textareaHeight } = states;
 
   const realValue = value ?? localValue;
 
@@ -72,13 +77,19 @@ export const Editor = ({
 
   const switchToView = (e) => {
     e.preventDefault();
+    // Capture textarea height before switching to view mode
+    const textarea = textareaContainerRef.current?.querySelector("textarea");
+    if (textarea) {
+      set("textareaHeight", textarea.getBoundingClientRect().height);
+    }
     set("isViewMode", true);
   };
 
   return (
     <Label { ...allLabelPs} mergeProps={mergeProps}>
       <div
-        { ...textareaContainerProps} 
+        ref={textareaContainerRef}
+        { ...textareaContainerProps}
         className={twMerge(`rounded-md col`, textareaContainerProps?.className)}
       >
         <Textarea
@@ -92,7 +103,7 @@ export const Editor = ({
         <div
           { ...htmlProps}
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(realValue)) }}
-          style={{ "--height": `${document.querySelector("textarea")?.getBoundingClientRect().height}px`, ...htmlProps?.style }}
+          style={{ "--height": `${textareaHeight}px`, ...htmlProps?.style }}
           className={twMerge(`p-2 rounded-t-md border border-b-0 bg-strong border-soft-border overflow-y-auto h-(--height) ${!isViewMode && "hidden"}`, htmlProps?.className)}
         />
         <div
