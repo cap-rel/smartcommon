@@ -1,4 +1,3 @@
-import { isUndefined } from "lodash";
 import { useContext } from "react";
 import { isNil } from "lodash";
 
@@ -26,9 +25,11 @@ export const Button = (props) => {
         onClick = () => {}
     } = variantProps;
 
-    const { submit = () => {}, isFormSubmitting } = useContext(FormContext) ?? {};
+    const formContext = useContext(FormContext);
+    const { submit = () => {}, isFormSubmitting } = formContext ?? {};
 
-    const isInForm = !isUndefined(FormContext);
+    // Check if button is inside a Form provider (not just if FormContext type exists)
+    const isInForm = !isNil(formContext);
 
     const isSubmitType = type === "submit";
 
