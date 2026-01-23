@@ -9,6 +9,7 @@ export const ListItem = (props) => {
         id,
         responsive = true,
         logo,
+        logoAlt = "Logo", // Default alt text for accessibility
         icon,
         link = false,
         status,
@@ -28,7 +29,7 @@ export const ListItem = (props) => {
                 `}
             >
                 {logo
-                    ? <img src={logo} className="size-12" />
+                    ? <img src={logo} alt={logoAlt} className="size-12" />
                     : icon &&
                         <div className={`p-app-sm bg-primary/15 rounded-app-md relative text-primary text-app-xl`}>
                             {icon?.()} 
