@@ -46,13 +46,13 @@ export const ListItem = (props) => {
                         {status}
                     </div>
                     <div className="flex gap-app-sm justify-between items-center">
-                        <div className={`text-soft-text italic`}>
-                            03/08/2003
+                        <div className={`text-soft-text italic ${!subtitle && "opacity-0"}`}>
+                            {subtitle}
                         </div>
                     </div>
                     <div className="flex gap-app-sm justify-between items-center">
                         <div className={`text-strong-text line-clamp-1 ${!description && "opacity-0"}`}>
-                            label label
+                            {description}
                         </div>
                         <div className="flex items-center gap-app-xxs text-app-lg uppercase font-app-semibold">
                             {/* {true && <IoWarning className={`text-urgent`} />} */}
