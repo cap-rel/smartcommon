@@ -70,14 +70,34 @@ export const AudiosUploader = (props) => {
 
     const audioRefs = useRef(multiple ? [] : null)
 
+    // Ref to track input click timeout for proper cleanup
+    const inputClickTimeoutRef = useRef(null);
+
+    // Cleanup timeout on unmount to prevent memory leaks and setState on unmounted component
+    useEffect(() => {
+        return () => {
+            if (inputClickTimeoutRef.current) {
+                clearTimeout(inputClickTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const captureAudio = () => {
         set("isInputInCaptureMode", true);
-        setTimeout(() => inputRef.current.click(), 0);
+        // Clear any pending timeout to avoid race conditions on rapid clicks
+        if (inputClickTimeoutRef.current) {
+            clearTimeout(inputClickTimeoutRef.current);
+        }
+        inputClickTimeoutRef.current = setTimeout(() => inputRef.current.click(), 0);
     };
 
     const importAudio = () => {
         set("isInputInCaptureMode", false);
-        setTimeout(() => inputRef.current.click(), 0);
+        // Clear any pending timeout to avoid race conditions on rapid clicks
+        if (inputClickTimeoutRef.current) {
+            clearTimeout(inputClickTimeoutRef.current);
+        }
+        inputClickTimeoutRef.current = setTimeout(() => inputRef.current.click(), 0);
     };
 
     const deleteAudio = index => {

@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { FaLocationDot } from "react-icons/fa6";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { isNil, isEmpty } from "lodash";
 
 import { applyFunctionIfNotNil, locate } from "lib/utils";
@@ -82,12 +82,28 @@ export const Gps = props => {
 
   const { isLocating } = states;
 
+  // Ref to track geolocation timeout for proper cleanup
+  const geoLocateTimeoutRef = useRef(null);
+
+  // Cleanup timeout on unmount to prevent memory leaks and setState on unmounted component
+  useEffect(() => {
+    return () => {
+      if (geoLocateTimeoutRef.current) {
+        clearTimeout(geoLocateTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // const isRealValueEmpty = multiple ? isEmpty(currentValue) : isEmpty(currentValue[0]);
 
   const geoLocate = () => {
     if (!disabled && !readOnly && !isFormSubmitting) {
       set("isLocating", true);
-      setTimeout(() => {
+      // Clear any pending timeout to avoid race conditions on rapid clicks
+      if (geoLocateTimeoutRef.current) {
+        clearTimeout(geoLocateTimeoutRef.current);
+      }
+      geoLocateTimeoutRef.current = setTimeout(() => {
         locate(
           coords => {
             setValue(coords);

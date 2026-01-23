@@ -1,5 +1,5 @@
 import { FaCamera, FaFileImport, FaTrashCan, FaImage } from "react-icons/fa6";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
 import { isNil, isEmpty } from "lodash";
@@ -71,14 +71,34 @@ export const PhotosUploader = (props) => {
 
     const inputRef = useRef(null);
 
+    // Ref to track input click timeout for proper cleanup
+    const inputClickTimeoutRef = useRef(null);
+
+    // Cleanup timeout on unmount to prevent memory leaks and setState on unmounted component
+    useEffect(() => {
+        return () => {
+            if (inputClickTimeoutRef.current) {
+                clearTimeout(inputClickTimeoutRef.current);
+            }
+        };
+    }, []);
+
     const capturePhoto = () => {
         set("isInputInCaptureMode", true);
-        setTimeout(() => inputRef.current.click(), 0);
+        // Clear any pending timeout to avoid race conditions on rapid clicks
+        if (inputClickTimeoutRef.current) {
+            clearTimeout(inputClickTimeoutRef.current);
+        }
+        inputClickTimeoutRef.current = setTimeout(() => inputRef.current.click(), 0);
     };
 
     const importPhoto = () => {
         set("isInputInCaptureMode", false);
-        setTimeout(() => inputRef.current.click(), 0);
+        // Clear any pending timeout to avoid race conditions on rapid clicks
+        if (inputClickTimeoutRef.current) {
+            clearTimeout(inputClickTimeoutRef.current);
+        }
+        inputClickTimeoutRef.current = setTimeout(() => inputRef.current.click(), 0);
     };
 
     const deletePhoto = index => {
