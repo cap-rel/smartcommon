@@ -368,6 +368,7 @@ export const useApiContext = () => {
     // ---------------------- return ----------------------
 
     return useMemo(() => ({
+        user,
         entities,
         getEntities: entities,
         login,
@@ -381,5 +382,5 @@ export const useApiContext = () => {
         put,
         patch,
         del,
-    }), [entities, login, logout, device, publicApi, privateApi, get, post, put, patch, del]);
+    }), [user, entities, login, logout, device, publicApi, privateApi, get, post, put, patch, del]);
 };
