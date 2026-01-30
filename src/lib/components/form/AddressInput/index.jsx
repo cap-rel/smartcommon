@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { FaSearchLocation } from 'react-icons/fa';
 import { isEmpty } from 'lodash';
 
@@ -72,8 +72,17 @@ export const AddressInput = (props) => {
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
   const fetchSuggestions = async (query) => {
+    // Abort any pending request before starting a new one
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
+
     try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`);
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(query)}&format=json&addressdetails=1&limit=10`,
+        { signal: abortControllerRef.current.signal }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
@@ -94,6 +103,10 @@ export const AddressInput = (props) => {
 
       set("suggestions", suggestions);
     } catch (error) {
+      // Ignore abort errors (normal behavior when request is cancelled)
+      if (error.name === "AbortError") {
+        return;
+      }
       set("suggestions", []);
       console.error("Address search failed:", error.message);
     } finally {
@@ -102,6 +115,19 @@ export const AddressInput = (props) => {
   };
 
   const searchTimeoutRef = useRef(null);
+  const abortControllerRef = useRef(null);
+
+  // Cleanup timeout and abort pending fetch on unmount
+  useEffect(() => {
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   const handleInputOnChange = (newValue) => {
     set("suggestions", []);
