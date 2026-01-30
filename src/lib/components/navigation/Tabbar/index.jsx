@@ -43,10 +43,11 @@ export const Tabbar = (props) => {
     "--tabbar-width": `${tabbarWidth}px`
   };
 
+  // Update global CSS variables when tabbar dimensions change
   useEffect(() => {
     setGlobalVariables(id, variables);
     setParams({ tabbarHeight, tabbarWidth });
-  }, [tabbarHeight, tabbarWidth]);
+  }, [id, tabbarHeight, tabbarWidth, setParams]);
 
   const [isOpen, setIsOpen] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
@@ -64,6 +65,9 @@ export const Tabbar = (props) => {
 
   const isDesktop = navigatorInfo.device.type === "desktop";
 
+  // Handle scroll-based hide/show animation
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only re-register listeners when lastScrollY changes;
+  // other values (hideOnScroll, isDesktop, positions, etc.) are stable after mount
   useEffect(() => {
     if (!hideOnScroll || isDesktop) { return; }
 
@@ -96,7 +100,7 @@ export const Tabbar = (props) => {
           setIsOpen(true);
         }
       }
-      
+
     };
 
     if (scrollElement) {
@@ -112,6 +116,9 @@ export const Tabbar = (props) => {
     }
   }, [lastScrollY]);
 
+  // Animate tabbar position when open state changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- Only animate when isOpen changes;
+  // other values are stable or derived from stable values
   useEffect(() => {
     if (!hideOnScroll || isDesktop) { return; }
     animate(y, tabbarPosition, { duration });

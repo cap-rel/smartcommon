@@ -59,10 +59,11 @@ export const Navbar = (props) => {
         "--upper-navbar-width": `${upperNavbarWidth}px`
     };
 
+    // Update global CSS variables when navbar dimensions change
     useEffect(() => {
         setGlobalVariables(id, variables);
         // setParams
-    }, [navbarHeight, navbarWidth, upperNavbarHeight, upperNavbarWidth]);
+    }, [id, navbarHeight, navbarWidth, upperNavbarHeight, upperNavbarWidth]);
 
     // useEffect(() => {
     //     setParams({ navbarHeight, navbarWidth });
@@ -88,6 +89,9 @@ export const Navbar = (props) => {
 
     const isDesktop = navigatorInfo.device.type === "desktop";
 
+    // Handle scroll-based hide/show animation
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only re-register listeners when lastScrollY changes;
+    // other values (hideOnScroll, isDesktop, positions, etc.) are stable after mount
     useEffect(() => {
         if (!hideOnScroll || isDesktop) { return; }
 
@@ -120,7 +124,7 @@ export const Navbar = (props) => {
                     setIsOpen(true);
                 }
             }
-        
+
         };
 
         if (scrollElement) {
@@ -137,6 +141,9 @@ export const Navbar = (props) => {
 
     }, [lastScrollY]);
 
+    // Animate navbar position when open state changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Only animate when isOpen changes;
+    // other values are stable or derived from stable values
     useEffect(() => {
         if (!hideOnScroll || isDesktop) { return; }
         animate(y, tabbarPosition, { duration });
