@@ -45,4 +45,12 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
     'eqeqeq': ['error', 'always', { null: 'ignore' }],
     'no-implicit-coercion': 'warn',
   },
+}, {
+  files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],
+  languageOptions: {
+    globals: {
+      ...globals.browser,
+      ...globals.node,
+    },
+  },
 }, ...storybook.configs["flat/recommended"]];
