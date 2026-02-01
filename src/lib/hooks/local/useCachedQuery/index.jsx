@@ -85,6 +85,10 @@ export const useCachedQuery = ({
     const { isOnline } = useOnlineStatus();
     const mountedRef = useRef(true);
     const executingRef = useRef(false);
+    const isOnlineRef = useRef(isOnline);
+    const fetchFnRef = useRef(fetchFn);
+    isOnlineRef.current = isOnline;
+    fetchFnRef.current = fetchFn;
 
     const [state, setState] = useState({
         data: null,
@@ -140,13 +144,13 @@ export const useCachedQuery = ({
     }, [getStore, key]);
 
     const fetchFromNetwork = useCallback(async () => {
-        if (!fetchFn) {
+        if (!fetchFnRef.current) {
             throw new Error('useCachedQuery: fetchFn is required');
         }
-        const data = await fetchFn();
+        const data = await fetchFnRef.current();
         await saveToCache(data);
         return data;
-    }, [fetchFn, saveToCache]);
+    }, [saveToCache]);
 
     const execute = useCallback(async () => {
         if (!enabled || executingRef.current) return;
@@ -177,7 +181,7 @@ export const useCachedQuery = ({
                         break;
                     }
 
-                    if (isOnline) {
+                    if (isOnlineRef.current) {
                         const data = await fetchFromNetwork();
                         if (!mountedRef.current) break;
                         setState({
@@ -216,7 +220,7 @@ export const useCachedQuery = ({
                             lastFetch: cached.cachedAt
                         });
 
-                        if (cached.isStale && isOnline) {
+                        if (cached.isStale && isOnlineRef.current) {
                             fetchFromNetwork()
                                 .then(data => {
                                     if (!mountedRef.current) return;
@@ -235,7 +239,7 @@ export const useCachedQuery = ({
                         break;
                     }
 
-                    if (isOnline) {
+                    if (isOnlineRef.current) {
                         const data = await fetchFromNetwork();
                         if (!mountedRef.current) break;
                         setState({
@@ -254,7 +258,7 @@ export const useCachedQuery = ({
 
                 case CACHE_STRATEGIES.NETWORK_FIRST:
                 default: {
-                    if (isOnline) {
+                    if (isOnlineRef.current) {
                         try {
                             const data = await fetchFromNetwork();
                             if (!mountedRef.current) break;
@@ -311,16 +315,21 @@ export const useCachedQuery = ({
         } finally {
             executingRef.current = false;
         }
-    }, [enabled, strategy, isOnline, getCached, fetchFromNetwork]);
+    }, [enabled, strategy, getCached, fetchFromNetwork]);
 
+    // Store execute in ref to avoid useEffect dependency
+    const executeRef = useRef(execute);
+    executeRef.current = execute;
+
+    // Only trigger on mount and when key/enabled change
     useEffect(() => {
         mountedRef.current = true;
-        execute();
+        executeRef.current();
 
         return () => {
             mountedRef.current = false;
         };
-    }, [execute]);
+    }, [key, enabled]);
 
     const invalidate = useCallback(async () => {
         const tableStore = getStore();
@@ -332,13 +341,13 @@ export const useCachedQuery = ({
             }
         }
         executingRef.current = false;
-        await execute();
-    }, [getStore, key, execute]);
+        await executeRef.current();
+    }, [getStore, key]);
 
     const refetch = useCallback(async () => {
         executingRef.current = false;
-        await execute();
-    }, [execute]);
+        await executeRef.current();
+    }, []);
 
     return {
         data: state.data,
