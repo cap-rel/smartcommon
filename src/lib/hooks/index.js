@@ -3,6 +3,7 @@ export * from "./useApiTest";
 export * from "./useApiTest2";
 export * from "./useFile";
 export * from "./useIntl";
+export * from "./useIsDesktop";
 export * from "./useListDnD";
 export * from "./useStatesWorking";
 export * from "./useWindow";

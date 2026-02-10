@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
-import { useLibConfig, useStates, useVariantMerger } from "lib/hooks";
+import { useLibConfig, useStates, useVariantMerger, useIsDesktop } from "lib/hooks";
 import { log, navigatorInfo } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
@@ -54,6 +54,7 @@ export const Page = (props) => {
     const { id, responsive = true, location, children } = variantProps;
 
     const libConfig = useLibConfig();
+    const isDesktop = useIsDesktop();
 
     const { debug } = libConfig;
 
@@ -148,7 +149,8 @@ export const Page = (props) => {
                 "--page-tabbar-width": `${tabbarWidth}px`
             },
             className: `
-                text-strong-text text-app-sm fixed inset-0 overflow-y-auto bg-medium-bg
+                text-strong-text text-app-sm overflow-y-auto bg-medium-bg
+                ${isDesktop ? "min-h-screen" : "fixed inset-0"}
                 ${tabbarHeight > 0 && "pb-(--page-tabbar-height)"}
                 ${responsive && `
                     lg:px-20 lg:py-app-xl
