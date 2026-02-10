@@ -33,9 +33,24 @@ export const useSyncClient = ({
 } = {}) => {
     // Online status from SmartCommon
     const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
-        healthCheckUrl: `${apiUrl}/sync/status`,
+        healthCheckUrl: apiUrl ? `${apiUrl}/sync/status` : null,
         healthCheckInterval: 60000
     });
+
+    // Refs to stabilize callbacks and avoid re-renders
+    const getAccessTokenRef = useRef(getAccessToken);
+    const scopeRef = useRef(scope);
+    const onConflictRef = useRef(onConflict);
+    const onSyncStartRef = useRef(onSyncStart);
+    const onSyncCompleteRef = useRef(onSyncComplete);
+    const onSyncErrorRef = useRef(onSyncError);
+
+    getAccessTokenRef.current = getAccessToken;
+    scopeRef.current = scope;
+    onConflictRef.current = onConflict;
+    onSyncStartRef.current = onSyncStart;
+    onSyncCompleteRef.current = onSyncComplete;
+    onSyncErrorRef.current = onSyncError;
 
     // State
     const [isRegistered, setIsRegistered] = useState(false);
@@ -66,13 +81,13 @@ export const useSyncClient = ({
 
                 const api = new SyncApi({
                     baseUrl: apiUrl,
-                    getAccessToken
+                    getAccessToken: () => getAccessTokenRef.current?.()
                 });
 
                 const engine = new SyncEngine({
                     storage,
                     api,
-                    scope,
+                    scope: scopeRef.current,
                     pushChunkSize: 50
                 });
 
@@ -112,7 +127,7 @@ export const useSyncClient = ({
                 storageRef.current.close();
             }
         };
-    }, [apiUrl, dbName, getAccessToken, scope]);
+    }, [apiUrl, dbName]);
 
     // Refresh counts
     const refreshCounts = useCallback(async () => {
@@ -148,8 +163,8 @@ export const useSyncClient = ({
         setIsSyncing(true);
         setSyncError(null);
 
-        if (onSyncStart) {
-            onSyncStart();
+        if (onSyncStartRef.current) {
+            onSyncStartRef.current();
         }
 
         try {
@@ -162,25 +177,25 @@ export const useSyncClient = ({
             setConflictsCount(status.conflictsCount);
 
             // Notify about conflicts
-            if (result.conflicts.length > 0 && onConflict) {
-                onConflict(result.conflicts);
+            if (result.conflicts.length > 0 && onConflictRef.current) {
+                onConflictRef.current(result.conflicts);
             }
 
-            if (onSyncComplete) {
-                onSyncComplete(result);
+            if (onSyncCompleteRef.current) {
+                onSyncCompleteRef.current(result);
             }
 
             return result;
         } catch (error) {
             setSyncError(error);
-            if (onSyncError) {
-                onSyncError(error);
+            if (onSyncErrorRef.current) {
+                onSyncErrorRef.current(error);
             }
             throw error;
         } finally {
             setIsSyncing(false);
         }
-    }, [isSyncing, onConflict, onSyncComplete, onSyncError, onSyncStart]);
+    }, [isSyncing]);
 
     // Push only
     const push = useCallback(async () => {
@@ -310,6 +325,14 @@ export const useSyncClient = ({
         setSyncError(null);
     }, []);
 
+    // Store sync in ref to avoid useEffect dependency
+    const syncRef = useRef(sync);
+    syncRef.current = sync;
+
+    // Store pendingCount in ref for auto-sync check
+    const pendingCountRef = useRef(pendingCount);
+    pendingCountRef.current = pendingCount;
+
     // Auto-sync on return online
     useEffect(() => {
         if (!isInitialized || !autoSync) {
@@ -325,9 +348,9 @@ export const useSyncClient = ({
 
             autoSyncTimeoutRef.current = setTimeout(async () => {
                 // Only sync if there are pending changes
-                if (pendingCount > 0) {
+                if (pendingCountRef.current > 0) {
                     try {
-                        await sync();
+                        await syncRef.current();
                     } catch (error) {
                         console.error('Auto-sync failed:', error);
                     }
@@ -342,7 +365,15 @@ export const useSyncClient = ({
                 clearTimeout(autoSyncTimeoutRef.current);
             }
         };
-    }, [isOnline, isServerReachable, isInitialized, autoSync, pendingCount, sync]);
+    }, [isOnline, isServerReachable, isInitialized, autoSync]);
+
+    // Store isOnline/isServerReachable/isSyncing in refs for interval check
+    const isOnlineRef = useRef(isOnline);
+    const isServerReachableRef = useRef(isServerReachable);
+    const isSyncingRef = useRef(isSyncing);
+    isOnlineRef.current = isOnline;
+    isServerReachableRef.current = isServerReachable;
+    isSyncingRef.current = isSyncing;
 
     // Periodic sync interval
     useEffect(() => {
@@ -351,9 +382,9 @@ export const useSyncClient = ({
         }
 
         syncIntervalRef.current = setInterval(async () => {
-            if (isOnline && isServerReachable && !isSyncing) {
+            if (isOnlineRef.current && isServerReachableRef.current && !isSyncingRef.current) {
                 try {
-                    await sync();
+                    await syncRef.current();
                 } catch (error) {
                     console.error('Periodic sync failed:', error);
                 }
@@ -365,7 +396,7 @@ export const useSyncClient = ({
                 clearInterval(syncIntervalRef.current);
             }
         };
-    }, [isInitialized, syncInterval, isOnline, isServerReachable, isSyncing, sync]);
+    }, [isInitialized, syncInterval]);
 
     return {
         // Connection state
