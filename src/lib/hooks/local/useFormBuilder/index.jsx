@@ -3,8 +3,6 @@ import { isEmpty } from "lodash";
 
 import { useStates } from "lib/hooks";
 
-const FormItem = () => null;
-
 export const useForm = (form) => {
     const setInitialFormValues = (components) => {
         return components.reduce((acc, component) => {
@@ -169,14 +167,10 @@ export const useForm = (form) => {
                     </div>
                 );  
             default:
+                // TODO: implement FormItem component
                 return (
                     <div style={{ flexBasis: basisOnRow, width: widthOnCol }}>
-                        <FormItem
-                            key={id}
-                            value={states.formValues[id]}
-                            onChange={(newState) => set(`formValues.${id}`, newState)}
-                            { ...component}
-                        />
+                        {null}
                     </div>
                 );
                

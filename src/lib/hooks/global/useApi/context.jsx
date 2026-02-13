@@ -279,7 +279,9 @@ export const useApiContext = () => {
                             try {
                                 const body = await error.response.clone().json();
                                 error.apiMessage = body?.error || body?.message;
-                            } catch {}
+                            } catch {
+                                // Response may not be JSON
+                            }
                         }
                         return error;
                     }
