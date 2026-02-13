@@ -17,11 +17,12 @@ export default defineConfig({
       cssFileName: "smartcommon-style"
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', 'react-hot-toast'],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
+          'react-hot-toast': 'reactHotToast',
         },
       },
     },

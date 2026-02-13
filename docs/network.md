@@ -177,6 +177,68 @@ const data = await api.get('endpoint', {
 
 ## Gestion des erreurs
 
+### Callback d'erreur automatique (global)
+
+Si un callback `onApiError` est configuré dans la config du Provider, toutes les erreurs API sont automatiquement signalées :
+
+- **Erreurs HTTP (4xx, 5xx)** : le message est extrait du body JSON (`error` ou `message`) et passé au callback
+- **Erreurs applicatives** : si une réponse HTTP 200 contient un champ `error` dans le body, le callback est aussi appelé
+
+L'erreur est enrichie avec `error.apiMessage` (le message extrait du body) pour les composants qui veulent l'utiliser.
+
+#### Configuration
+
+```jsx
+import toast from "react-hot-toast";
+
+const config = {
+    api: {
+        prefixUrl: API_URL,
+        onApiError: (message) => toast.error(message),
+    },
+};
+
+<Provider config={config}>...</Provider>
+```
+
+#### Utilisation
+
+```jsx
+// L'erreur est automatiquement signalée via onApiError
+try {
+    const data = await api.post('items', { json: formData });
+    if (data?.id) {
+        navigate(`/items/${data.id}`);
+    }
+} catch (error) {
+    // Le callback a déjà été appelé automatiquement
+    // error.apiMessage contient le message de l'API si disponible
+    console.error('Failed:', error);
+}
+```
+
+### Option `silent`
+
+Pour supprimer le callback automatique (par exemple si le composant gère ses propres messages d'erreur) :
+
+```jsx
+try {
+    const data = await api.post('password/change', {
+        json: { current_password: oldPwd, new_password: newPwd },
+        silent: true  // Pas de callback automatique
+    });
+} catch (error) {
+    // Gestion personnalisée
+    if (error?.response?.status === 403) {
+        toast.error('Mot de passe actuel incorrect');
+    } else {
+        toast.error('Erreur lors du changement');
+    }
+}
+```
+
+### Erreurs réseau et circuit breaker
+
 ```jsx
 try {
     const data = await api.get('users');
@@ -186,7 +248,7 @@ try {
     } else if (error.message === 'Circuit breaker open – requests blocked') {
         // Too many errors, requests are temporarily blocked
     } else {
-        // Other errors
+        // Other errors (callback already called if apiMessage exists)
     }
 }
 ```
@@ -196,4 +258,5 @@ try {
 - Les requêtes `get`, `post`, `put`, `patch`, `del` sont automatiquement authentifiées (utilisent `privateApi`)
 - Le refresh token est géré automatiquement en cas d'expiration
 - Un circuit breaker bloque les requêtes pendant 10 secondes après une erreur réseau
-- L'option `raw: true` est implémentée dans [context.jsx:332-339](../src/lib/hooks/global/useApi/context.jsx#L332-L339)
+- L'option `raw: true` est implémentée dans [context.jsx:347-352](../src/lib/hooks/global/useApi/context.jsx#L347-L352)
+- Le callback `onApiError` est appelé automatiquement pour les erreurs API (supprimable avec `{ silent: true }`)

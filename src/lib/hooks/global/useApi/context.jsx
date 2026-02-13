@@ -13,7 +13,7 @@ export const useApiContext = () => {
 
     const { debug: libDebug, api } = libConfig;
 
-    const { prefixUrl, timeout, debug: apiDebug } = api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug, onApiError } = api ?? {};
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
@@ -57,7 +57,8 @@ export const useApiContext = () => {
         deviceId,
         gst,
         debug,
-        prefixUrl
+        prefixUrl,
+        onApiError
     });
 
     // Update ref on each render
@@ -71,7 +72,8 @@ export const useApiContext = () => {
         deviceId,
         gst,
         debug,
-        prefixUrl
+        prefixUrl,
+        onApiError
     };
 
     // ---------------------- refreshPromise ref ----------------------
@@ -269,6 +271,18 @@ export const useApiContext = () => {
                         }
 
                     }
+                ],
+                beforeError: [
+                    async (error) => {
+                        // Extract API error message from response body before ky throws
+                        if (error.response) {
+                            try {
+                                const body = await error.response.clone().json();
+                                error.apiMessage = body?.error || body?.message;
+                            } catch {}
+                        }
+                        return error;
+                    }
                 ]
             }
         });
@@ -338,19 +352,36 @@ export const useApiContext = () => {
         return response.json();
     };
 
-    // Helper to create API method with error handling
+    // Helper to create API method with error handling and global error callback
+    // Pass { silent: true } in options to suppress the automatic error notification
     const createApiMethod = (method) => async (url, options) => {
-        const { debug: currentDebug } = valuesRef.current;
+        const { silent, ...kyOptions } = options ?? {};
+        const { debug: currentDebug, onApiError: errorCallback } = valuesRef.current;
         try {
-            const response = await privateApi[method](url, options);
-            return handleResponse(response, options);
+            const response = await privateApi[method](url, kyOptions);
+            const data = await handleResponse(response, kyOptions);
+
+            // Defensive: check for application-level errors in response body (HTTP 200 with error field)
+            if (!silent && !kyOptions?.raw && data && typeof data === "object" && data.error && errorCallback) {
+                errorCallback(data.error);
+            }
+
+            return data;
         } catch (error) {
             if (currentDebug) {
                 log.apiError(`${method.toUpperCase()} failed`, url, error.message);
             }
+
             // Enrich error with context
             error.url = url;
             error.method = method.toUpperCase();
+
+            // Call error callback for API errors unless silenced
+            // apiMessage is set by the beforeError hook in privateApi
+            if (!silent && error.apiMessage && errorCallback) {
+                errorCallback(error.apiMessage);
+            }
+
             throw error;
         }
     };
