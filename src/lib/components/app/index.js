@@ -16,3 +16,6 @@ export * from "./ApiProvider/context";
 
 export * from "./GlobalStatesProvider";
 export * from "./GlobalStatesProvider/context";
+
+export * from "./ConfirmProvider";
+export * from "./ConfirmProvider/context";

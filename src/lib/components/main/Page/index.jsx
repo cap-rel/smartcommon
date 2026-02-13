@@ -150,7 +150,7 @@ export const Page = (props) => {
             },
             className: `
                 text-strong-text text-app-sm overflow-y-auto bg-medium-bg
-                ${isDesktop ? "min-h-screen" : "fixed inset-0"}
+                ${isDesktop ? "min-h-screen" : "fixed inset-x-0 top-0 h-dvh"}
                 ${tabbarHeight > 0 && "pb-(--page-tabbar-height)"}
                 ${responsive && `
                     lg:px-20 lg:py-app-xl
