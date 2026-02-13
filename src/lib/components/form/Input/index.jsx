@@ -248,7 +248,7 @@ export const Input = (props) => {
             applyFunctionIfNotNil(props.onChange, e);
           },
           value: getDisplayValue(),
-          type: filteredType
+          type: props.type || filteredType
         }))} />
 
         {!isNil(step) &&
