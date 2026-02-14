@@ -1,9 +1,9 @@
 import { AnimatePresence } from "framer-motion";
 
-import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary } from "lib/components";
+import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt } from "lib/components";
 
 export const Provider = (props) => {
-  const { children, config, onError, errorFallback, ErrorFallbackComponent } = props;
+  const { children, config, onError, errorFallback, ErrorFallbackComponent, pwaUpdate } = props;
   // TODO voir à quoi sert réellement AnimatePresence car ça fonctionne sans
   return (
   <ErrorBoundary onError={onError} fallback={errorFallback} FallbackComponent={ErrorFallbackComponent}>
@@ -19,6 +19,7 @@ export const Provider = (props) => {
               </NavigationProvider>
             </Router>
             <Toaster />
+            {pwaUpdate && <UpdatePrompt {...pwaUpdate} />}
           </ApiProvider>
         </GlobalStatesProvider>
       </ReduxProvider>
