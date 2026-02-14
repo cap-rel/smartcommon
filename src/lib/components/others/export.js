@@ -5,6 +5,7 @@ export * from "./DataTable";
 export * from "./LazyLink";
 export * from "./Map";
 export * from "./Overlay";
+export * from "./Modal";
 // export * from "./popupTest";
 export * from "./SearchBar";
 export * from "./Stepper";
