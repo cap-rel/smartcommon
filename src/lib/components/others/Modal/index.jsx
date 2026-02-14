@@ -5,6 +5,46 @@ import { FaXmark } from "react-icons/fa6";
 
 import { propTypes } from "./props";
 
+/**
+ * Modal component - A reusable modal dialog
+ *
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Controls modal visibility (required)
+ * @param {function} props.onClose - Callback when modal should close
+ * @param {string} props.title - Title displayed in the header
+ * @param {React.ReactNode} props.children - Modal content
+ * @param {boolean} props.showCloseButton - Show X button in header (default: true)
+ * @param {boolean} props.closeOnOverlayClick - Close when clicking backdrop (default: true)
+ * @param {string} props.size - Modal width: "sm" | "md" | "lg" | "xl" | "full" (default: "md")
+ * @param {string} props.position - Position: "center" | "bottom" (default: "center")
+ *   - "center": Centered on screen, rounded corners
+ *   - "bottom": Mobile-style bottom sheet (full width, rounded top), centered on desktop
+ * @param {number} props.zIndex - CSS z-index (default: 50)
+ *
+ * @example
+ * // Basic usage
+ * <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} title="My Modal">
+ *   <div className="p-4">Content here</div>
+ * </Modal>
+ *
+ * @example
+ * // Bottom sheet style (mobile-friendly)
+ * <Modal isOpen={isOpen} onClose={handleClose} title="Select option" position="bottom">
+ *   <div className="p-4">
+ *     <button>Option 1</button>
+ *     <button>Option 2</button>
+ *   </div>
+ * </Modal>
+ *
+ * @example
+ * // Large modal without close button
+ * <Modal isOpen={isOpen} onClose={handleClose} size="lg" showCloseButton={false}>
+ *   <div className="p-6">
+ *     <h2>Custom header here</h2>
+ *     <p>Content...</p>
+ *   </div>
+ * </Modal>
+ */
 export const Modal = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Modal", props);
     const {
@@ -31,7 +71,7 @@ export const Modal = (props) => {
         };
     }, [isOpen]);
 
-    // Handle escape key
+    // Handle escape key to close modal
     useEffect(() => {
         const handleEscape = (e) => {
             if (e.key === "Escape" && isOpen) {
@@ -44,6 +84,7 @@ export const Modal = (props) => {
 
     if (!isOpen) return null;
 
+    // Size classes for desktop (mobile is always full width)
     const sizeClasses = {
         sm: "lg:max-w-sm",
         md: "lg:max-w-md",
@@ -52,6 +93,7 @@ export const Modal = (props) => {
         full: "lg:max-w-4xl",
     };
 
+    // Position classes for flex container
     const positionClasses = {
         center: "items-center justify-center",
         bottom: "items-end lg:items-center lg:justify-center",
@@ -81,7 +123,7 @@ export const Modal = (props) => {
                     } max-h-[90vh] overflow-hidden flex flex-col`,
                 }))}
             >
-                {/* Header */}
+                {/* Header with title and close button */}
                 {(title || showCloseButton) && (
                     <div
                         {...mergeProps("header", (p) => ({
@@ -113,7 +155,7 @@ export const Modal = (props) => {
                     </div>
                 )}
 
-                {/* Body */}
+                {/* Body content (scrollable) */}
                 <div
                     {...mergeProps("body", (p) => ({
                         ...p,
