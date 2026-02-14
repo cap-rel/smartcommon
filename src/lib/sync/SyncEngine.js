@@ -467,6 +467,60 @@ class SyncEngine {
     }
 
     /**
+     * Upsert an entity locally (create if not exists, update if exists)
+     * This is useful for caching data without syncing to server
+     * @param {string} table - Table name
+     * @param {number|string} id - Entity ID
+     * @param {Object} data - Entity data
+     * @param {boolean} queueChange - Whether to queue change for sync (default: false for cache-only)
+     */
+    async upsertLocal(table, id, data, queueChange = false) {
+        const existing = await this.storage.getEntity(table, id);
+        const now = new Date().toISOString();
+
+        if (existing) {
+            // Update existing entity
+            const updatedData = { ...existing.data, ...data };
+            await this.storage.putEntity(
+                table,
+                id,
+                updatedData,
+                existing.server_tms,
+                now
+            );
+
+            if (queueChange) {
+                await this.storage.addPendingChange({
+                    table,
+                    action: 'update',
+                    id,
+                    base_tms: existing.server_tms,
+                    data
+                });
+            }
+        } else {
+            // Create new entity (cache-only, no temp_id)
+            await this.storage.putEntity(
+                table,
+                id,
+                { ...data, id },
+                null,
+                now
+            );
+
+            if (queueChange) {
+                await this.storage.addPendingChange({
+                    table,
+                    action: 'create',
+                    temp_id: id,
+                    data,
+                    base_tms: null
+                });
+            }
+        }
+    }
+
+    /**
      * Delete an entity locally (offline-capable)
      * @param {string} table - Table name
      * @param {number|string} id - Entity ID

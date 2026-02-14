@@ -255,6 +255,19 @@ export const useSyncClient = ({
         await refreshCounts();
     }, [refreshCounts]);
 
+    // Upsert entity locally (create if not exists, update if exists)
+    // Useful for caching without sync
+    const upsert = useCallback(async (table, id, data, queueChange = false) => {
+        if (!engineRef.current) {
+            throw new Error('SyncClient not initialized');
+        }
+
+        await engineRef.current.upsertLocal(table, id, data, queueChange);
+        if (queueChange) {
+            await refreshCounts();
+        }
+    }, [refreshCounts]);
+
     // Get single entity
     const getEntity = useCallback(async (table, id) => {
         if (!storageRef.current) {
@@ -423,6 +436,7 @@ export const useSyncClient = ({
         create,
         update,
         remove,
+        upsert,
 
         // Reading
         getEntity,
