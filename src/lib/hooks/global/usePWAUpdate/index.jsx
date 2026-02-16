@@ -20,6 +20,7 @@ export const usePWAUpdate = (options = {}) => {
 
     const [updateAvailable, setUpdateAvailable] = useState(false);
     const [updateActivated, setUpdateActivated] = useState(false);
+    const [isApplying, setIsApplying] = useState(false);
     const [registration, setRegistration] = useState(null);
     const waitingWorkerRef = useRef(null);
 
@@ -43,11 +44,16 @@ export const usePWAUpdate = (options = {}) => {
 
     // Apply the pending update (skip waiting and reload)
     const applyUpdate = useCallback(() => {
+        setIsApplying(true);
         const waitingWorker = waitingWorkerRef.current;
 
         if (waitingWorker) {
             // Tell waiting SW to skip waiting and take control
             waitingWorker.postMessage({ type: "SKIP_WAITING" });
+            // Give the SW time to activate, then reload
+            setTimeout(() => {
+                window.location.reload();
+            }, 500);
         } else {
             // No waiting worker, just reload
             window.location.reload();
@@ -136,6 +142,7 @@ export const usePWAUpdate = (options = {}) => {
     return {
         updateAvailable,
         updateActivated,
+        isApplying,
         registration,
         checkForUpdates,
         applyUpdate,
