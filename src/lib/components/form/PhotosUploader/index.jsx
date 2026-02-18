@@ -32,6 +32,9 @@ export const PhotosUploader = (props) => {
         accept = "image/*",
 
         compressOptions,
+
+        // Output format: "base64" (default) or "blob"
+        outputFormat = "base64",
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -83,6 +86,21 @@ export const PhotosUploader = (props) => {
         };
     }, []);
 
+    // Cleanup preview URLs on unmount (blob mode only)
+    useEffect(() => {
+        return () => {
+            if (outputFormat === "blob" && currentValue) {
+                const photos = multiple ? (currentValue ?? []) : [currentValue];
+                photos.forEach(photo => {
+                    if (photo?.previewUrl) {
+                        URL.revokeObjectURL(photo.previewUrl);
+                    }
+                });
+            }
+        };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const capturePhoto = () => {
         set("isInputInCaptureMode", true);
         // Clear any pending timeout to avoid race conditions on rapid clicks
@@ -104,13 +122,21 @@ export const PhotosUploader = (props) => {
     const deletePhoto = index => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
+            let photoToDelete;
 
             if (multiple) {
+                photoToDelete = (currentValue ?? [])[index];
                 newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedPhotoIndex", null);
             } else {
+                photoToDelete = currentValue;
                 newValue = null;
                 set("isPhotoSelected", false);
+            }
+
+            // Revoke preview URL to free memory (blob mode only)
+            if (photoToDelete?.previewUrl) {
+                URL.revokeObjectURL(photoToDelete.previewUrl);
             }
 
             setValue(newValue);
@@ -132,33 +158,47 @@ export const PhotosUploader = (props) => {
     const addPhoto = async file => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             set("isPhotoLoading", true);
-            // setTimeout(() => {
-                // const file = e.target.files[0];
-                // const url = URL.createObjectURL(file);
+
+            let gpsPoints = [null, null];
+
+            if (isInputInCaptureMode) {
+                locate(
+                    coords => { gpsPoints = coords },
+                    error => toast.error("Echec de géolocatisation de la capture.")
+                );
+            }
+
+            const title = splitFileExtension(file.name)[0];
+            let newPhoto;
+
+            if (outputFormat === "blob") {
+                // Blob mode: store original file/blob with preview URL
+                const previewUrl = URL.createObjectURL(file);
+                newPhoto = {
+                    blob: file,
+                    previewUrl,
+                    gpsPoints,
+                    title,
+                    description: "",
+                    capture: isInputInCaptureMode,
+                    mimeType: file.type,
+                    filename: file.name
+                };
+            } else {
+                // Base64 mode: legacy behavior
                 const base64 = await resizeImage(file, compressOptions);
-            
-                // if (isNull(selectedPhotoIndex)) {
-                let gpsPoints = [null, null];
+                newPhoto = {
+                    src: base64,
+                    gpsPoints,
+                    title,
+                    description: "",
+                    capture: isInputInCaptureMode
+                };
+            }
 
-                if (isInputInCaptureMode) {
-                    locate(
-                        coords => { gpsPoints = coords },
-                        error => toast.error("Echec de géolocatisation de la capture.")
-                    );
-                }
-
-                const newPhoto = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
-                const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
-                setValue(newValue);
-                // set("selectedPhotoIndex", localValue.length);                    
-                // } else {
-                //     const newPhotos = [...localValue];>
-                //     newPhotos[selectedPhotoIndex].url = url;
-                //     set("localValue", newPhotos);    
-                // }
-                set("isPhotoLoading", false);
-                // return () => URL.revokeObjectURL(url);
-            // }, 1000);
+            const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
+            setValue(newValue);
+            set("isPhotoLoading", false);
         }
     };
 
@@ -182,30 +222,35 @@ export const PhotosUploader = (props) => {
     const Photo = (photo, index) => {
         return (
             <>
-                <input
-                    name={name}
-                    value={photo?.src}
-                    onChange={() => {}}
-                    hidden
-                />
-                <input
-                    name={name}
-                    value={photo?.capture}
-                    onChange={() => {}}
-                    hidden
-                />
-                <input
-                    name={name}
-                    value={photo?.gpsPoints?.[0]}
-                    onChange={() => {}}
-                    hidden
-                />
-                <input
-                    name={name}
-                    value={photo?.gpsPoints?.[1]}
-                    onChange={() => {}}
-                    hidden
-                />
+                {/* Hidden inputs for form submission (base64 mode only) */}
+                {outputFormat === "base64" && (
+                    <>
+                        <input
+                            name={name}
+                            value={photo?.src}
+                            onChange={() => {}}
+                            hidden
+                        />
+                        <input
+                            name={name}
+                            value={photo?.capture}
+                            onChange={() => {}}
+                            hidden
+                        />
+                        <input
+                            name={name}
+                            value={photo?.gpsPoints?.[0]}
+                            onChange={() => {}}
+                            hidden
+                        />
+                        <input
+                            name={name}
+                            value={photo?.gpsPoints?.[1]}
+                            onChange={() => {}}
+                            hidden
+                        />
+                    </>
+                )}
                 <div { ...mergeProps("photo", props => ({
                     ...props,
                     onClick: e => {
@@ -216,10 +261,10 @@ export const PhotosUploader = (props) => {
                     className: `self-start max-w-30 flex flex-col gap-app-xs ${!disabled && "active:brightness-soft"}
                     rounded-app-md bg-strong-bg p-app-sm duration-(--quick)`
                 }))}>
-                    {photo?.src
+                    {(photo?.previewUrl || photo?.src)
                         ? <img { ...mergeProps("img", props => ({
                             ...props,
-                            src: photo?.src,
+                            src: photo?.previewUrl || photo?.src,
                             className: "border border-border"
                         }))} />
                         : <FaImage className="text-soft-text text-[80px]" />
@@ -271,10 +316,10 @@ export const PhotosUploader = (props) => {
                             className: "text-app-lg "
                         }
                     }))} />
-                    {photo?.src
+                    {(photo?.previewUrl || photo?.src)
                     ? <img { ...mergeProps("popupImg", props => ({
                         ...props,
-                        src: photo?.src,
+                        src: photo?.previewUrl || photo?.src,
                         className: `w-full border border-border`
                     }))} />
                     : <FaImage className="w-full text-soft-text text-[80px]" />

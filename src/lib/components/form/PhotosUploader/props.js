@@ -11,6 +11,11 @@ export const propTypes = {
 
     accept: PropTypes.string,
 
+    // Output format: "base64" (default, legacy) or "blob" (more efficient for IndexedDB)
+    // When "blob", value format is { blob: Blob, previewUrl: string, title, description, gpsPoints, capture }
+    // When "base64", value format is { src: base64string, title, description, gpsPoints, capture }
+    outputFormat: PropTypes.oneOf(["base64", "blob"]),
+
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,
