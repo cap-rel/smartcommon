@@ -28,8 +28,10 @@ export const SearchableSelect = (props) => {
         required,
         disabled,
         placeholder = "Rechercher...",
-        options = [],
     } = variantProps;
+
+    // Get options directly from props to avoid variantMerger issues
+    const options = props.options || [];
 
     const [isOpen, setIsOpen] = useState(false);
     const [search, setSearch] = useState("");
@@ -138,7 +140,7 @@ export const SearchableSelect = (props) => {
                 {isOpen && !disabled && (
                     <div {...mergeProps("dropdown", p => ({
                         ...p,
-                        className: `absolute z-50 top-full left-0 right-0 mt-1 max-h-60 overflow-y-auto
+                        className: `absolute z-50 top-full left-0 mt-1 max-h-60 overflow-y-auto min-w-full
                             bg-strong-bg border border-border rounded-app-md shadow-lg ${p?.className || ""}`
                     }))}>
                         {filteredOptions.length === 0 ? (
