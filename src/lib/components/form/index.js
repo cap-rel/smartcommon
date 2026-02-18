@@ -12,6 +12,7 @@ export * from "./tools";
 export * from "./Range";
 export * from "./Rater";
 export * from "./Select";
+export * from "./SearchableSelect";
 export * from "./SignaturePad";
 export * from "./Textarea";
 export * from "./FilesUploader";
