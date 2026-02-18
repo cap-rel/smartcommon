@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback, useRef } from "react";
 import { isNil, isUndefined, isArray } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
@@ -12,14 +12,18 @@ export const useStates = (props = {}) => {
   const libConfig = useLibConfig();
 
   const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
-  
+  const debugRef = useRef(debug);
+  debugRef.current = debug;
+
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] })
 
   const [states, setStates] = useState(initialStates);
+  const statesRef = useRef(states);
+  statesRef.current = states;
 
   // ---------------------- parsePath (Parser) ----------------------
-  
-  const parsePath = (path) => {
+
+  const parsePath = useCallback((path) => {
     const parts = [];
     path.split(".").forEach(segment => {
       const regex = /([\w-]+)|\[(\d*)\]/g;
@@ -35,15 +39,15 @@ export const useStates = (props = {}) => {
       }
     });
     return parts;
-  };
+  }, []);
 
   // ---------------------- get ----------------------
 
-  const get = (path) => {
+  const get = useCallback((path) => {
     throwTypeError({ value: path, name: "get path", type: ["string"], required: true });
 
-    let level = states;
-    
+    let level = statesRef.current;
+
     if (!isNil(path)) {
       const parts = parsePath(path);
 
@@ -51,17 +55,17 @@ export const useStates = (props = {}) => {
         if (part === "__PUSH__" || level == null || !(part in level)) {
           return undefined;
         }
-        
+
         level = level[part];
       }
     }
 
     return level;
-  };
+  }, [parsePath]);
 
   // ---------------------- set ----------------------
 
-  const set = (path, value) => {
+  const set = useCallback((path, value) => {
     throwTypeError({ value: path, name: "set path", type: ["string"] });
 
     if (isUndefined(path)) {
@@ -121,30 +125,30 @@ export const useStates = (props = {}) => {
         applyValue(level, lastKey);
       }
 
-      if (debug) {
+      if (debugRef.current) {
         log.state(`SET ${path} =>`, value);
       }
 
       return newState;
     });
-  };
+  }, [parsePath]);
 
   // ---------------------- unset ----------------------
 
-  const unset = (path) => {
+  const unset = useCallback((path) => {
     throwTypeError({ value: path, name: "unset path", type: ["string"] });
 
      if (isUndefined(path)) {
-        if (debug) {
+        if (debugRef.current) {
           log.state("UNSET");
         }
 
         setStates({});
-        return {};  
+        return {};
       }
 
     if (isUndefined(get(path))) {
-      return states;
+      return statesRef.current;
     }
 
 
@@ -153,12 +157,12 @@ export const useStates = (props = {}) => {
       const newState = structuredClone(prevState);
 
       let level = newState;
-      
+
       const parts = parsePath(path);
       const last = parts.pop();
-      
+
       for (const part of parts) {
-        // impossible d’remove[] → ignore
+        // impossible d'remove[] → ignore
         if (part === "__PUSH__") {
           return newState;
         }
@@ -178,8 +182,8 @@ export const useStates = (props = {}) => {
         const index = Number(last);
         if (index >= 0 && index < level.length) {
           level.splice(index, 1);
-          
-          if (debug) {
+
+          if (debugRef.current) {
             log.state(`UNSET ${path}`);
           }
         }
@@ -187,7 +191,7 @@ export const useStates = (props = {}) => {
         if (last in level) {
           delete level[last];
 
-          if (debug) {
+          if (debugRef.current) {
             log.state(`UNSET ${path}`);
           }
         }
@@ -195,11 +199,11 @@ export const useStates = (props = {}) => {
 
       return newState;
     });
-  };
+  }, [get, parsePath]);
 
   // ---------------------- return ----------------------
 
-  return { 
+  return {
     values: states,
     states,
     set,
