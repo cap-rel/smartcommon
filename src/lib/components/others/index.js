@@ -1,5 +1,6 @@
 export * from "./Calculator";
 export * from "./Chart";
+export * from "./Fab";
 export * from "./DataTable";
 // export * from "./Icon";
 export * from "./LazyLink";
