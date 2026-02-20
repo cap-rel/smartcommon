@@ -48,7 +48,7 @@ export const SignaturePad = (props) => {
   const blocked = disabled || readOnly || isFormSubmitting;
 
   useEffect(() => {
-    if (!isNil(padRef.current) && blocked) {
+    if (!isNil(padRef.current) && !isNil(padRef.current._sigPad) && blocked) {
       padRef.current.off();
     }
   }, [padRef.current, blocked]);
