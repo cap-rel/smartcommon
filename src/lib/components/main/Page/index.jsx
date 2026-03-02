@@ -139,10 +139,9 @@ export const Page = (props) => {
     // pb-(--test-tabbar-height) lg:mb-0 lg:ml-(--test-tabbar-width)
 
     return (
-        <motion.div { ...mergeProps("page", props => ({
+        <motion.div key={pathname} { ...mergeProps("page", props => ({
             ...props,
             "data-component": "Page",
-            key: pathname,
             ref: pageRef,
             style: { 
                 "--page-tabbar-height": `${tabbarHeight}px`,
