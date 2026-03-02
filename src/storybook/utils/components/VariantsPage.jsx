@@ -22,15 +22,14 @@ export const VariantsPage = (props) => {
                         </thead>
                         <tbody className="docblock-argstable-body st-tbody">
                             {Object.keys(variants).map((variant, VI) => {
+                                const story = of[toFirstUppercase(variant)];
+                                if (!story) return null;
                                 return (
                                     <tr key={`variant${VI}`}>
                                         <td className="first-td"><span className="first-span">{variant}</span></td>
-                                        {/* <td><div><span>Description</span></div></td> */}
-                                        <td><Description of={of[toFirstUppercase(variant)]} /></td>
-                                        <td><Canvas of={of[toFirstUppercase(variant)]} /></td>
-                                        {/* <td style={{ marginBottom: "-12px" }}><Source code={outlined.toString()} /></td> */}
-                                    </tr>   
-                                    
+                                        <td><Description of={story} /></td>
+                                        <td><Canvas of={story} /></td>
+                                    </tr>
                                 )
                             })}
                         </tbody>

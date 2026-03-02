@@ -7,13 +7,12 @@ export const PropsPage = (props) => {
             <Title />
             <Description />
 
-            <Canvas sourceState="none" of={of.Default} />
+            {of?.Default && <Canvas sourceState="none" of={of.Default} />}
 
-            <Source of={of.Default} />
+            {of?.Default && <Source of={of.Default} />}
 
             <div className="h2" style={{ fontSize: "13px" }}>Props</div>
             <ArgTypes />
-            {/* <Controls /> */}
         </>
     );
 };
