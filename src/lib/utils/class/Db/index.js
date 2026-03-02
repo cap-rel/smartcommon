@@ -3,6 +3,8 @@ import { floor, forEach, keys, isEqual, get, set } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
+const LOGS_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+
 export class Db {
     db;
     name;
@@ -15,12 +17,16 @@ export class Db {
         throwTypeError({ value: stores, name: "Db stores", type: ["plain object"] });
 
         this.name = name;
-        this.debug = debug;
-        
+        this.debug = debug ?? (typeof import.meta !== "undefined" && !!import.meta.env?.DEV);
+
         this.db = new Dexie(name, options);
 
         this._initStores(version, stores);
         this._initHooks(stores);
+
+        if (debug) {
+            this._purgeLogs();
+        }
     }
 
     _initStores(version, stores) {
@@ -29,34 +35,26 @@ export class Db {
             store,
             itemId,
             action,
-            data,
             createdAt
         `;
 
         this.db.version(version).stores({ ...stores, logs: logsIndexes });
     }
 
+    _purgeLogs() {
+        const cutoff = floor(Date.now() / 1000) - LOGS_MAX_AGE_SECONDS;
+
+        this.db.logs
+            .where("createdAt")
+            .below(cutoff)
+            .delete()
+            .catch((err) => log.db("Failed to purge old logs:", err));
+    }
+
     _initHooks(stores) {
         const { db, debug } = this;
 
         forEach(keys(stores), (store) => {
-            // db[store].hook('reading', (item) => {
-            //     if (debug) {
-            //         log.db("READ item =", item);
-            //     }
-
-            //     setTimeout(() => {
-            //         db.logs.add({
-            //             store,
-            //             action: "read",
-            //             data: structuredClone(item),
-            //             createdAt: floor(Date.now() / 1000)
-            //         });
-            //     });
-
-            //     return item;
-            // });
-
             db[store].hook("creating", (key, item) => {
                 if (debug) {
                     log.db(`CREATE in ${store} - key =`, key, ", item =", item);
@@ -67,15 +65,16 @@ export class Db {
                 item.createdAt = dateNow;
                 item.updatedAt = dateNow;
 
-                setTimeout(() => {
-                    db.logs.add({
-                        store,
-                        itemId: key,
-                        action: "create",
-                        // data: { ...item },
-                        createdAt: dateNow
+                if (debug) {
+                    setTimeout(() => {
+                        db.logs.add({
+                            store,
+                            itemId: key,
+                            action: "create",
+                            createdAt: dateNow
+                        }).catch((err) => log.db("Failed to log create:", err));
                     });
-                });
+                }
             });
 
             db[store].hook("updating", (updates, key, item) => {
@@ -83,7 +82,6 @@ export class Db {
 
                 forEach(updates, (value, key) => {
                     if (!isEqual(updates[key], get(item, key))) {
-                        // filteredUpdates[key] = value;
                         set(filteredUpdates, key, value);
                     }
                 });
@@ -96,20 +94,20 @@ export class Db {
 
                 item.updatedAt = dateNow;
 
-                setTimeout(() => {
-                    db.logs.add({
-                        store,
-                        itemId: key,
-                        action: "update",
-                        data: {
-                            // before: { ...item },
-                            updates: { ...updates },
-                            filteredUpdates
-                            // after: { ...item, ...updates }
-                        },
-                        createdAt: dateNow
+                if (debug) {
+                    setTimeout(() => {
+                        db.logs.add({
+                            store,
+                            itemId: key,
+                            action: "update",
+                            data: {
+                                updates: { ...updates },
+                                filteredUpdates
+                            },
+                            createdAt: dateNow
+                        }).catch((err) => log.db("Failed to log update:", err));
                     });
-                });
+                }
             });
 
             db[store].hook("deleting", (key, item) => {
@@ -117,20 +115,21 @@ export class Db {
                     log.db(`DELETE in ${store} - key =`, key);
                 }
 
-                setTimeout(() => {
-                    db.logs.add({
-                        store,
-                        itemId: key,
-                        action: "delete",
-                        // data: { ...item },
-                        createdAt: floor(Date.now() / 1000)
+                if (debug) {
+                    setTimeout(() => {
+                        db.logs.add({
+                            store,
+                            itemId: key,
+                            action: "delete",
+                            createdAt: floor(Date.now() / 1000)
+                        }).catch((err) => log.db("Failed to log delete:", err));
                     });
-                });
+                }
             });
         });
     }
 
-    /** Accès direct à Dexie si nécessaire */
+    /** Direct access to Dexie if needed */
     get instance() {
         return this.db;
     }
