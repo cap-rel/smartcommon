@@ -27,13 +27,13 @@ export const SignaturePad = (props) => {
   } = variantProps; 
 
   const errors = (currentValue) => ({
-    required: { 
-      condition: required && isEmpty(currentValue.src),
-      message: "Ce champ est requis." 
+    required: {
+      condition: required && isEmpty(currentValue?.src),
+      message: "Ce champ est requis."
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue: defaultValue ?? { src: "", signer: "" }, value, onChange, errors });
 
   const initialStates = {
     isSignatureValidated: false
@@ -98,13 +98,13 @@ export const SignaturePad = (props) => {
       <input
         name={name}
         onChange={() => {}}
-        value={currentValue.src}
+        value={currentValue?.src ?? ""}
         hidden
       />
       <input
         name={name}
         onChange={() => {}}
-        value={currentValue.signer}
+        value={currentValue?.signer ?? ""}
         hidden
       />
       {/* TODO gpsPoints is possibly not an array */}
@@ -197,7 +197,7 @@ export const SignaturePad = (props) => {
             required: props.required ?? required,
             disabled: props.disabled ?? disabled,
             readOnly: isFormSubmitting || (props.readOnly ?? readOnly),
-            value: currentValue.signer,
+            value: currentValue?.signer ?? "",
             onChange: value => setValue({ ...currentValue, signer: value }),
             inputContainerProps: {
               ...props.inputContainerProps,
