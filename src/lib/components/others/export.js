@@ -1,4 +1,5 @@
 export * from "./Calculator";
+export * from "./Calculator/useCalculator";
 export * from "./Chart";
 export * from "./DataTable";
 // export * from "./Help";

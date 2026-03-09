@@ -39,7 +39,6 @@ export const useField = (props) => {
       }
       prevDefaultValueRef.current = defaultValue;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [name, defaultValue, isControlledByForm, setField]);
 
   const setValue = (newValue) => {

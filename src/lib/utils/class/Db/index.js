@@ -17,7 +17,7 @@ export class Db {
         throwTypeError({ value: stores, name: "Db stores", type: ["plain object"] });
 
         this.name = name;
-        this.debug = debug ?? (typeof import.meta !== "undefined" && !!import.meta.env?.DEV);
+        this.debug = debug ?? (typeof import.meta !== "undefined" && Boolean(import.meta.env?.DEV));
 
         this.db = new Dexie(name, options);
 

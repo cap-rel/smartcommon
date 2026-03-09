@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, createContext, useContext } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { FaCalculator, FaBackspace } from "react-icons/fa";
 import { RiCloseLargeLine } from "react-icons/ri";
 import { isNil } from "lodash";
@@ -7,17 +7,7 @@ import { Button, Overlay } from "lib/components";
 import { useVariantMerger } from "lib/hooks";
 
 import { defaultProps, propTypes } from "./props";
-
-// Calculator Context for global control
-const CalculatorContext = createContext(null);
-
-export const useCalculator = () => {
-    const context = useContext(CalculatorContext);
-    if (!context) {
-        throw new Error("useCalculator must be used within a CalculatorProvider");
-    }
-    return context;
-};
+import { CalculatorContext } from "./useCalculator";
 
 // Calculator logic hook
 const useCalculatorLogic = () => {

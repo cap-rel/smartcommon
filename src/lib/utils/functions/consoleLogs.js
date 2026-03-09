@@ -44,7 +44,7 @@ const getLogLevel = () => {
         if (stored && LEVELS[stored] !== undefined) return stored;
     } catch (_) { /* SSR or restricted access */ }
 
-    return (typeof process !== "undefined" && process.env?.NODE_ENV === "production") ? "warn" : "debug";
+    return (typeof import.meta !== "undefined" && import.meta.env?.PROD) ? "warn" : "debug";
 };
 
 /**

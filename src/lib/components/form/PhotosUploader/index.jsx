@@ -98,7 +98,6 @@ export const PhotosUploader = (props) => {
                 });
             }
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const capturePhoto = () => {
