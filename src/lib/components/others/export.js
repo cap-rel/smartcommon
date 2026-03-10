@@ -11,4 +11,4 @@ export * from "./Modal";
 // export * from "./popupTest";
 export * from "./SearchBar";
 export * from "./Stepper";
-export * from "./DebugConsole";
+// DebugConsole: lazy-loaded by Provider (debug prop), not statically exported
