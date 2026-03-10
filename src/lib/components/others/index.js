@@ -9,4 +9,4 @@ export * from "./Map";
 export * from "./Overlay";
 // export * from "./popupTest";
 export * from "./SearchBar";
-// DebugConsole: lazy-loaded by Provider (debug prop), not statically exported
+export * from "./DebugConsole";
