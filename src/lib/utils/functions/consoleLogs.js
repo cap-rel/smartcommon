@@ -34,6 +34,48 @@ const getBadgeCSS = (color) =>
 
 const getResetCSS = () => "background-color: transparent; color: inherit; font-weight: normal;";
 
+// --- Subscriber system for DebugConsole ---
+const subscribers = new Set();
+let broadcastChannel = null;
+
+try {
+    broadcastChannel = new BroadcastChannel("smartcommon-logs");
+} catch (_) { /* BroadcastChannel not supported */ }
+
+/**
+ * Subscribe to all log entries. Returns an unsubscribe function.
+ * Each callback receives a log entry object:
+ * { id, timestamp, level, label, labelColor, namespace, namespaceColor, messages }
+ */
+export const subscribeToLogs = (callback) => {
+    subscribers.add(callback);
+    return () => subscribers.delete(callback);
+};
+
+let logIdCounter = 0;
+
+const notifySubscribers = (entry) => {
+    for (const cb of subscribers) {
+        try { cb(entry); } catch (_) { /* subscriber error */ }
+    }
+    if (broadcastChannel) {
+        try {
+            // Serialize messages for BroadcastChannel (strip non-cloneable values)
+            const serialized = {
+                ...entry,
+                messages: entry.messages.map(m => {
+                    if (m instanceof Error) return { __type: "Error", message: m.message, stack: m.stack };
+                    if (typeof m === "object" && m !== null) {
+                        try { return JSON.parse(JSON.stringify(m)); } catch (_) { return String(m); }
+                    }
+                    return m;
+                }),
+            };
+            broadcastChannel.postMessage(serialized);
+        } catch (_) { /* serialization error */ }
+    }
+};
+
 /**
  * Returns the current effective log level.
  * Checks localStorage.LOG_LEVEL first, falls back to "debug" in dev, "warn" in prod.
@@ -113,6 +155,18 @@ const logCore = (label, color, level, namespace, ...messages) => {
     styles.push(getResetCSS());
 
     consoleFn(parts.join(""), ...styles, ...messages);
+
+    // Notify subscribers (always, regardless of console level filtering)
+    notifySubscribers({
+        id: ++logIdCounter,
+        timestamp: Date.now(),
+        level,
+        label,
+        labelColor: color,
+        namespace,
+        namespaceColor: namespace ? getNamespaceColor(namespace) : null,
+        messages,
+    });
 };
 
 /**
@@ -162,3 +216,7 @@ export const createLogger = (namespace) => {
 
 // Default logger (no namespace) — backwards compatible with existing `log.xxx()` calls
 export const log = createLogger(null);
+
+// Expose constants for DebugConsole
+export const LOG_LEVELS = LEVELS;
+export const LOG_BADGES = BADGES;

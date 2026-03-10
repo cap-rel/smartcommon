@@ -11,3 +11,4 @@ export * from "./Modal";
 // export * from "./popupTest";
 export * from "./SearchBar";
 export * from "./Stepper";
+export * from "./DebugConsole";
