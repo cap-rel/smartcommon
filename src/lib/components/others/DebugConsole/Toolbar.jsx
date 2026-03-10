@@ -1,10 +1,25 @@
 import { useState } from "react";
 
-const levelColors = {
-    debug: { bg: "bg-gray-600", active: "bg-gray-500", text: "text-gray-300" },
-    info: { bg: "bg-blue-900", active: "bg-blue-700", text: "text-blue-300" },
-    warn: { bg: "bg-yellow-900", active: "bg-yellow-700", text: "text-yellow-300" },
-    error: { bg: "bg-red-900", active: "bg-red-700", text: "text-red-300" },
+const levelStyles = {
+    debug: { active: { background: "#6b7280", color: "#d1d5db" }, inactive: { background: "#4b5563", color: "#6b7280" } },
+    info:  { active: { background: "#1d4ed8", color: "#93c5fd" }, inactive: { background: "#1e3a5f", color: "#6b7280" } },
+    warn:  { active: { background: "#a16207", color: "#fcd34d" }, inactive: { background: "#713f12", color: "#6b7280" } },
+    error: { active: { background: "#b91c1c", color: "#fca5a5" }, inactive: { background: "#7f1d1d", color: "#6b7280" } },
+};
+
+const S = {
+    toolbar: { display: "flex", flexDirection: "column", gap: 6, padding: "6px 8px", background: "#1f2937", borderBottom: "1px solid #374151" },
+    row: { display: "flex", alignItems: "center", gap: 6 },
+    rowWrap: { display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" },
+    input: { flex: 1, minWidth: 0, padding: "4px 8px", background: "#111827", border: "1px solid #374151", borderRadius: 4, color: "#e5e7eb", fontSize: 12, outline: "none", fontFamily: "inherit" },
+    btn: { padding: "4px 8px", fontSize: 11, background: "#374151", color: "#9ca3af", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "inherit" },
+    levelBtn: { padding: "2px 6px", fontSize: 10, fontWeight: "bold", textTransform: "uppercase", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "inherit" },
+    nsContainer: { position: "relative" },
+    nsBtn: { padding: "2px 8px", fontSize: 10, background: "#374151", color: "#d1d5db", border: "none", borderRadius: 4, cursor: "pointer", fontFamily: "inherit" },
+    nsDropdown: { position: "absolute", top: "100%", left: 0, marginTop: 4, background: "#1f2937", border: "1px solid #4b5563", borderRadius: 4, minWidth: 160, maxHeight: 200, overflowY: "auto", zIndex: 50, boxShadow: "0 4px 12px rgba(0,0,0,0.5)" },
+    nsLabel: { display: "flex", alignItems: "center", gap: 6, padding: "4px 8px", cursor: "pointer", fontSize: 12, color: "#d1d5db" },
+    nsLabelFirst: { borderBottom: "1px solid #374151" },
+    count: { marginLeft: "auto", fontSize: 10, color: "#6b7280" },
 };
 
 export const Toolbar = ({
@@ -26,93 +41,65 @@ export const Toolbar = ({
     const [nsDropdownOpen, setNsDropdownOpen] = useState(false);
 
     return (
-        <div className="flex flex-col gap-1.5 px-2 py-1.5 bg-gray-800 border-b border-gray-700">
+        <div style={S.toolbar}>
             {/* Row 1: Search + actions */}
-            <div className="flex items-center gap-1.5">
+            <div style={S.row}>
                 <input
                     type="text"
                     placeholder="Filter..."
                     value={search}
                     onChange={(e) => onSearchChange(e.target.value)}
-                    className="flex-1 min-w-0 px-2 py-1 bg-gray-900 border border-gray-700 rounded text-xs text-gray-200 placeholder-gray-500 outline-none focus:border-blue-500"
+                    style={S.input}
                 />
-                <button
-                    onClick={onClear}
-                    className="px-2 py-1 text-xs text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded"
-                    title="Clear logs"
-                >
-                    Clear
-                </button>
+                <button onClick={onClear} style={S.btn} title="Clear logs">Clear</button>
                 {onDetach && (
-                    <button
-                        onClick={onDetach}
-                        className="px-2 py-1 text-xs text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded"
-                        title="Open in separate window"
-                    >
-                        ⧉
-                    </button>
+                    <button onClick={onDetach} style={S.btn} title="Open in separate window">{"\u29C9"}</button>
                 )}
                 {onClose && (
-                    <button
-                        onClick={onClose}
-                        className="px-2 py-1 text-xs text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded"
-                        title="Close console"
-                    >
-                        ✕
-                    </button>
+                    <button onClick={onClose} style={S.btn} title="Close console">{"\u2715"}</button>
                 )}
             </div>
 
             {/* Row 2: Level toggles + namespace dropdown + count */}
-            <div className="flex items-center gap-1.5 flex-wrap">
-                {/* Level toggles */}
-                {Object.keys(levelColors).map(level => {
+            <div style={S.rowWrap}>
+                {Object.keys(levelStyles).map(level => {
                     const active = enabledLevels[level];
-                    const colors = levelColors[level];
+                    const colors = active ? levelStyles[level].active : levelStyles[level].inactive;
                     return (
                         <button
                             key={level}
                             onClick={() => onToggleLevel(level)}
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-bold uppercase transition-opacity ${
-                                active ? `${colors.active} ${colors.text} opacity-100` : `${colors.bg} text-gray-500 opacity-50`
-                            }`}
+                            style={{ ...S.levelBtn, ...colors, opacity: active ? 1 : 0.5 }}
                         >
                             {level}
                         </button>
                     );
                 })}
 
-                {/* Namespace dropdown */}
                 {knownNamespaces.length > 0 && (
-                    <div className="relative">
-                        <button
-                            onClick={() => setNsDropdownOpen(prev => !prev)}
-                            className="px-2 py-0.5 text-[10px] text-gray-300 bg-gray-700 hover:bg-gray-600 rounded"
-                        >
-                            Namespaces ▾
+                    <div style={S.nsContainer}>
+                        <button onClick={() => setNsDropdownOpen(prev => !prev)} style={S.nsBtn}>
+                            Namespaces {"\u25BE"}
                         </button>
                         {nsDropdownOpen && (
-                            <div className="absolute top-full left-0 mt-1 bg-gray-800 border border-gray-600 rounded shadow-lg z-50 min-w-[160px] max-h-48 overflow-y-auto">
-                                {/* All toggle */}
-                                <label className="flex items-center gap-2 px-2 py-1 hover:bg-gray-700 cursor-pointer border-b border-gray-700">
+                            <div style={S.nsDropdown}>
+                                <label style={{ ...S.nsLabel, ...S.nsLabelFirst }}>
                                     <input
                                         type="checkbox"
                                         checked={allNamespacesEnabled}
                                         onChange={onToggleAllNamespaces}
-                                        className="accent-blue-500"
                                     />
-                                    <span className="text-xs text-gray-300 font-bold">All</span>
+                                    <span style={{ fontWeight: "bold" }}>All</span>
                                 </label>
                                 {knownNamespaces.map(ns => (
-                                    <label key={ns} className="flex items-center gap-2 px-2 py-1 hover:bg-gray-700 cursor-pointer">
+                                    <label key={ns} style={S.nsLabel}>
                                         <input
                                             type="checkbox"
                                             checked={allNamespacesEnabled || enabledNamespaces.has(ns)}
                                             onChange={() => onToggleNamespace(ns)}
                                             disabled={allNamespacesEnabled}
-                                            className="accent-blue-500"
                                         />
-                                        <span className="text-xs text-gray-300">{ns}</span>
+                                        <span>{ns}</span>
                                     </label>
                                 ))}
                             </div>
@@ -120,8 +107,7 @@ export const Toolbar = ({
                     </div>
                 )}
 
-                {/* Log count */}
-                <span className="ml-auto text-[10px] text-gray-500">
+                <span style={S.count}>
                     {logCount}{totalCount !== logCount ? `/${totalCount}` : ""}
                 </span>
             </div>

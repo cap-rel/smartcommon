@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const MONO = "ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', 'Liberation Mono', Menlo, Monaco, Consolas, monospace";
+
 const formatTime = (ts) => {
     const d = new Date(ts);
     return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit", second: "2-digit", fractionalSecondDigits: 3 });
@@ -16,11 +18,16 @@ const formatMessage = (msg) => {
     return String(msg);
 };
 
-const levelRowColors = {
-    error: "bg-red-950/30 border-l-red-500",
-    warn: "bg-yellow-950/20 border-l-yellow-500",
-    info: "border-l-transparent",
-    debug: "border-l-transparent",
+const levelRowBg = { error: "rgba(127,29,29,0.2)", warn: "rgba(113,63,18,0.15)" };
+const levelBorderColor = { error: "#ef4444", warn: "#eab308" };
+
+const S = {
+    row: { display: "flex", alignItems: "flex-start", gap: 6, padding: "3px 8px", borderLeft: "2px solid transparent", cursor: "pointer", fontSize: 12, fontFamily: MONO },
+    timestamp: { color: "#6b7280", flexShrink: 0, userSelect: "none" },
+    badge: { flexShrink: 0, padding: "0 5px", borderRadius: 999, color: "white", fontSize: 10, lineHeight: "16px", fontWeight: "bold", userSelect: "none", whiteSpace: "nowrap" },
+    message: { flex: 1, minWidth: 0, color: "#e5e7eb", wordBreak: "break-all" },
+    expandIndicator: { color: "#6b7280", marginLeft: 4, userSelect: "none" },
+    expandedData: { marginTop: 4, padding: 6, background: "rgba(0,0,0,0.3)", borderRadius: 4, color: "#d1d5db", fontSize: 11, whiteSpace: "pre-wrap", overflowX: "auto", fontFamily: MONO },
 };
 
 export const LogEntry = ({ entry }) => {
@@ -42,42 +49,35 @@ export const LogEntry = ({ entry }) => {
         return String(m);
     }).join(" ");
 
-    return (
-        <div
-            className={`flex items-start gap-2 px-2 py-1 border-l-2 text-xs font-mono hover:bg-white/5 cursor-pointer ${levelRowColors[entry.level] || ""}`}
-            onClick={() => hasExpandable && setExpanded(prev => !prev)}
-        >
-            {/* Timestamp */}
-            <span className="text-gray-500 shrink-0 select-none">{formatTime(entry.timestamp)}</span>
+    const rowStyle = {
+        ...S.row,
+        ...(levelRowBg[entry.level] ? { background: levelRowBg[entry.level] } : {}),
+        ...(levelBorderColor[entry.level] ? { borderLeftColor: levelBorderColor[entry.level] } : {}),
+    };
 
-            {/* Namespace badge */}
+    return (
+        <div style={rowStyle} onClick={() => hasExpandable && setExpanded(prev => !prev)}>
+            <span style={S.timestamp}>{formatTime(entry.timestamp)}</span>
+
             {entry.namespace && (
-                <span
-                    className="shrink-0 px-1.5 rounded-full text-white text-[10px] leading-4 font-bold select-none"
-                    style={{ backgroundColor: entry.namespaceColor || "#607d8b" }}
-                >
+                <span style={{ ...S.badge, backgroundColor: entry.namespaceColor || "#607d8b" }}>
                     {entry.namespace}
                 </span>
             )}
 
-            {/* Label badge */}
             {entry.label && (
-                <span
-                    className="shrink-0 px-1.5 rounded-full text-white text-[10px] leading-4 font-bold select-none"
-                    style={{ backgroundColor: entry.labelColor || "grey" }}
-                >
+                <span style={{ ...S.badge, backgroundColor: entry.labelColor || "grey" }}>
                     {entry.label}
                 </span>
             )}
 
-            {/* Message content */}
-            <div className="flex-1 min-w-0">
-                <span className="text-gray-200 break-all">{inlineText}</span>
+            <div style={S.message}>
+                <span>{inlineText}</span>
                 {hasExpandable && (
-                    <span className="text-gray-500 ml-1 select-none">{expanded ? "▼" : "▶"}</span>
+                    <span style={S.expandIndicator}>{expanded ? "\u25BC" : "\u25B6"}</span>
                 )}
                 {expanded && (
-                    <pre className="mt-1 p-2 bg-black/30 rounded text-gray-300 text-[11px] overflow-x-auto whitespace-pre-wrap">
+                    <pre style={S.expandedData}>
                         {entry.messages
                             .filter(m => typeof m === "object" && m !== null && !(m instanceof Error) && !m?.__type)
                             .map((m, i) => <div key={i}>{formatMessage(m)}</div>)

@@ -1,22 +1,66 @@
 import { useState, useRef, useEffect, useCallback } from "react";
-import { useVariantMerger } from "lib/hooks";
-import { defaultProps, propTypes } from "./props";
 import { useDebugConsole } from "./useDebugConsole";
 import { LogEntry } from "./LogEntry";
 import { Toolbar } from "./Toolbar";
 import { openDetachedWindow } from "./detachedWindow";
 
-export const DebugConsole = (props) => {
-    const { variantProps, mergeProps } = useVariantMerger("DebugConsole", props);
+const S = {
+    fab: {
+        position: "fixed",
+        bottom: 16,
+        left: 16,
+        zIndex: 9998,
+        width: 40,
+        height: 40,
+        background: "#1f2937",
+        color: "#d1d5db",
+        border: "1px solid #4b5563",
+        borderRadius: "50%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 14,
+        fontFamily: "monospace",
+        cursor: "pointer",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.4)",
+    },
+    panel: {
+        position: "fixed",
+        zIndex: 9999,
+        background: "#111827",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: "0 -4px 24px rgba(0,0,0,0.5)",
+    },
+    logs: {
+        flex: 1,
+        overflowY: "auto",
+        overflowX: "hidden",
+    },
+    empty: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100%",
+        color: "#4b5563",
+        fontSize: 12,
+    },
+};
 
-    const {
-        defaultOpen,
-        position,
-        height,
-        maxLogs,
-        showFab,
-    } = variantProps;
+const borderSide = {
+    bottom: { borderTop: "1px solid #374151" },
+    top: { borderBottom: "1px solid #374151" },
+    left: { borderRight: "1px solid #374151" },
+    right: { borderLeft: "1px solid #374151" },
+};
 
+export const DebugConsole = ({
+    defaultOpen = false,
+    position = "bottom",
+    height = "40vh",
+    maxLogs = 500,
+    showFab = true,
+}) => {
     const [isOpen, setIsOpen] = useState(defaultOpen);
     const logsEndRef = useRef(null);
     const detachedWindowRef = useRef(null);
@@ -72,11 +116,8 @@ export const DebugConsole = (props) => {
             {/* FAB toggle button */}
             {showFab && !isOpen && (
                 <button
-                    {...mergeProps("fab", (p) => ({
-                        ...p,
-                        onClick: () => setIsOpen(true),
-                        className: "fixed bottom-4 left-4 z-[9998] w-10 h-10 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded-full shadow-lg flex items-center justify-center text-sm font-mono border border-gray-600 transition-colors",
-                    }))}
+                    onClick={() => setIsOpen(true)}
+                    style={S.fab}
                 >
                     &gt;_
                 </button>
@@ -85,16 +126,8 @@ export const DebugConsole = (props) => {
             {/* Console panel */}
             {isOpen && (
                 <div
-                    {...mergeProps("container", (p) => ({
-                        ...p,
-                        "data-component": "DebugConsole",
-                        style: { ...positionStyles[position], ...(p.style || {}) },
-                        className: `fixed z-[9999] bg-gray-900 border-gray-700 flex flex-col shadow-2xl ${
-                            position === "bottom" ? "border-t" :
-                            position === "top" ? "border-b" :
-                            position === "left" ? "border-r" : "border-l"
-                        } ${p.className || ""}`,
-                    }))}
+                    data-component="DebugConsole"
+                    style={{ ...S.panel, ...positionStyles[position], ...borderSide[position] }}
                 >
                     <Toolbar
                         search={search}
@@ -114,16 +147,9 @@ export const DebugConsole = (props) => {
                     />
 
                     {/* Log entries */}
-                    <div
-                        {...mergeProps("logs", (p) => ({
-                            ...p,
-                            className: `flex-1 overflow-y-auto overflow-x-hidden ${p.className || ""}`,
-                        }))}
-                    >
+                    <div style={S.logs}>
                         {logs.length === 0 ? (
-                            <div className="flex items-center justify-center h-full text-gray-600 text-xs">
-                                No logs yet
-                            </div>
+                            <div style={S.empty}>No logs yet</div>
                         ) : (
                             logs.map(entry => (
                                 <LogEntry key={entry.id} entry={entry} />
@@ -136,6 +162,3 @@ export const DebugConsole = (props) => {
         </>
     );
 };
-
-DebugConsole.propTypes = propTypes;
-DebugConsole.defaultProps = defaultProps;
