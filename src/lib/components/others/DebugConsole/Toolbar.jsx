@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+const LOG_LEVEL_KEY = "LOG_LEVEL";
 
 const levelStyles = {
     debug: { active: { background: "#6b7280", color: "#d1d5db" }, inactive: { background: "#4b5563", color: "#6b7280" } },
@@ -39,6 +41,19 @@ export const Toolbar = ({
     totalCount,
 }) => {
     const [nsDropdownOpen, setNsDropdownOpen] = useState(false);
+    const [verboseMode, setVerboseMode] = useState(() => {
+        try { return localStorage.getItem(LOG_LEVEL_KEY) === "debug"; } catch (_) { return false; }
+    });
+
+    useEffect(() => {
+        try {
+            if (verboseMode) {
+                localStorage.setItem(LOG_LEVEL_KEY, "debug");
+            } else {
+                localStorage.removeItem(LOG_LEVEL_KEY);
+            }
+        } catch (_) { /* ignore */ }
+    }, [verboseMode]);
 
     return (
         <div style={S.toolbar}>
@@ -51,6 +66,15 @@ export const Toolbar = ({
                     onChange={(e) => onSearchChange(e.target.value)}
                     style={S.input}
                 />
+                <label style={{ display: "flex", alignItems: "center", gap: 4, cursor: "pointer", fontSize: 11, color: verboseMode ? "#34d399" : "#6b7280", whiteSpace: "nowrap" }} title="Enable verbose logging (localStorage LOG_LEVEL=debug)">
+                    <input
+                        type="checkbox"
+                        checked={verboseMode}
+                        onChange={(e) => setVerboseMode(e.target.checked)}
+                        style={{ accentColor: "#34d399" }}
+                    />
+                    Verbose
+                </label>
                 <button onClick={onClear} style={S.btn} title="Clear logs">Clear</button>
                 {onDetach && (
                     <button onClick={onDetach} style={S.btn} title="Open in separate window">{"\u29C9"}</button>
