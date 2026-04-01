@@ -136,6 +136,30 @@ export const Page = (props) => {
         set("tabbarWidth", tabbar?.offsetWidth);
     }, []);
 
+    // Adjust height to visual viewport on mobile when virtual keyboard opens
+    useEffect(() => {
+        if (isDesktop) return;
+
+        const viewport = window.visualViewport;
+        if (!viewport) return;
+
+        const handleResize = () => {
+            if (pageRef.current) {
+                pageRef.current.style.height = `${viewport.height}px`;
+                pageRef.current.style.top = `${viewport.offsetTop}px`;
+            }
+        };
+
+        viewport.addEventListener("resize", handleResize);
+        viewport.addEventListener("scroll", handleResize);
+        handleResize();
+
+        return () => {
+            viewport.removeEventListener("resize", handleResize);
+            viewport.removeEventListener("scroll", handleResize);
+        };
+    }, [isDesktop]);
+
     // pb-(--test-tabbar-height) lg:mb-0 lg:ml-(--test-tabbar-width)
 
     return (

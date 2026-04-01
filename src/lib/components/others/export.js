@@ -12,3 +12,4 @@ export * from "./Modal";
 export * from "./SearchBar";
 export * from "./Stepper";
 export * from "./DebugConsole";
+export * from "./KeyboardStickyAction";
