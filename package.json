@@ -1,7 +1,7 @@
 {
   "name": "@cap-rel/smartcommon",
   "private": false,
-  "version": "1.0.293",
+  "version": "1.0.294",
   "type": "module",
   "description": "Common package for all smart* applications (PWA for dolibarr)",
   "homepage": "https://cap-rel.fr/smartcommon",
@@ -39,7 +39,7 @@
     "react-helmet": "^6.1.0",
     "react-icons": "^5.4.0",
     "react-image-file-resizer": "^0.4.8",
-    "react-signature-canvas": "^1.0.7",
+    "signature_pad": "^2.3.2",
     "redux-persist": "^6.0.0",
     "redux-persist-indexeddb-storage": "^1.0.4",
     "rgb-hex": "^4.1.0",
