@@ -43,6 +43,10 @@ export const Timer = (props) => {
 
     const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
 
+    // Guarantee a finite number for duration maths - currentValue may be undefined
+    // (before field init) or a non-numeric string coming from a parent form.
+    const safeCurrentValue = isNumber(currentValue) && !Number.isNaN(currentValue) ? currentValue : 0;
+
     const units = {
         days: { label: "Jours", seconds: 60 * 60 * 24, max: 9999 },
         hours: { label: "Heures", seconds: 60 * 60, max: 23 },
@@ -59,8 +63,8 @@ export const Timer = (props) => {
             const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0; 
             const unit = units[unitKey];
             if (numberValue <= unit.max) {
-                const unitLastValue = secsToDuration(currentValue)[unitKey] * unit.seconds;
-                const newValue = currentValue - unitLastValue + numberValue * unit.seconds; 
+                const unitLastValue = secsToDuration(safeCurrentValue)[unitKey] * unit.seconds;
+                const newValue = safeCurrentValue - unitLastValue + numberValue * unit.seconds;
                 setValue(newValue);
             }
         }
@@ -72,7 +76,7 @@ export const Timer = (props) => {
         label: unit.label,
         prefix: `:`,
         suffix: `:`,
-        value: key === "days" ? secsToDuration(currentValue)[key] : formatUnit(secsToDuration(currentValue)[key]),
+        value: key === "days" ? secsToDuration(safeCurrentValue)[key] : formatUnit(secsToDuration(safeCurrentValue)[key]),
         onChange: value => handleInputOnChange(key, value),
         inputProps: { ...props.inputProps, className: `text-app-xl text-center` }, 
         inputContainerProps: { ...props.inputContainerProps, className: `p-0 border-0 has-[input:focus]:ring-0` },

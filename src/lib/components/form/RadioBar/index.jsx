@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { isObject, isEmpty } from "lodash";
 
 import { applyFunctionIfNotNil } from "lib/utils";
@@ -58,7 +58,7 @@ export const RadioBar = (props) => {
                     const isChecked = currentValue === optionValue;
 
                     return (
-                        <>
+                        <Fragment key={optionValue}>
                             <input
                                 type={`checkbox`}
                                 onChange={() => {}}
@@ -78,7 +78,7 @@ export const RadioBar = (props) => {
                             }))}>
                                 {optionLabel}
                             </div>
-                        </>
+                        </Fragment>
                     );
                 })}
             </div>

@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion";
 
-import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt, DebugConsole } from "lib/components";
+import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt, DebugConsole, DebugWarnings } from "lib/components";
 
 export const Provider = (props) => {
   const { children, config, onError, errorFallback, ErrorFallbackComponent, pwaUpdate, debug } = props;
@@ -21,6 +21,7 @@ export const Provider = (props) => {
             <Toaster />
             {pwaUpdate && <UpdatePrompt {...pwaUpdate} />}
             {debug && <DebugConsole />}
+            {debug && <DebugWarnings />}
           </ApiProvider>
         </GlobalStatesProvider>
       </ReduxProvider>

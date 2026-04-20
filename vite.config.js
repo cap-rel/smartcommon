@@ -7,9 +7,15 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+// MINIFY=false npm run build -> readable output + sourcemap for easy debugging
+// Default (no env var) -> minified production build + sourcemap
+const shouldMinify = process.env.MINIFY !== "false";
+
 export default defineConfig({
   base: "./",
   build: {
+    sourcemap: true,
+    minify: shouldMinify,
     lib: {
       entry: path.resolve(__dirname, 'src/index.js'),
       name: 'smartcommon',

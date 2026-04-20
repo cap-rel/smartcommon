@@ -10,4 +10,5 @@ export * from "./Overlay";
 // export * from "./popupTest";
 export * from "./SearchBar";
 export * from "./DebugConsole";
+export * from "./DebugWarnings";
 export * from "./KeyboardStickyAction";
