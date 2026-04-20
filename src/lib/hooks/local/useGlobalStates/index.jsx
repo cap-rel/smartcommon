@@ -161,7 +161,6 @@ export const useGlobalStates = (props = {}) => {
         set(null, path, value);
       }
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ---------------------- useEffect dispatch ----------------------
