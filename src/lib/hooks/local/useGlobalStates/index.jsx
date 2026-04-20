@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith } from "lodash";
-import { useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 
 import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
@@ -12,7 +12,7 @@ export const useGlobalStates = (props = {}) => {
   const { initialStates = {}, debug = false } = props;
 
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] });
-  
+
   const { local: initialLocal, session: initialSession, ...initialMemory } = initialStates;
 
   const dispatch = useDispatch();
@@ -20,44 +20,23 @@ export const useGlobalStates = (props = {}) => {
 
   const st = useStates({ initialStates: globalStates });
 
-  // ---------------------- useEffect ----------------------
+  // Stable references to st methods (already memoized in useStates)
+  const { set: stSet, get: stGet, unset: stUnset, values: stValues } = st;
 
-  useEffect(() => {
-    forEach(initialLocal, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set("local", path, value);
-      }
-    });
-
-    forEach(initialSession, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set("session", path, value);
-      }
-    });
-
-    forEach(initialMemory, (value, path) => {
-      if (isUndefined(st.get(path))) {
-        set(null, path, value);
-      }
-    });
-  }, []);
-
-  // ---------------------- useEffect dispatch ----------------------
-
-  useEffect(() => {
-    dispatch(setGlobalStates(st.values));
-  }, [st.values]);
+  // Keep latest debug value accessible inside memoized callbacks without bloating deps
+  const debugRef = useRef(debug);
+  debugRef.current = debug;
 
   // ---------------------- get ----------------------
 
-  const get = (path) => {
-    return st.get(path);
-  };
+  const get = useCallback((path) => {
+    return stGet(path);
+  }, [stGet]);
 
   // ---------------------- getStorage ----------------------
 
-  const getStorage = (path) => {
-    if (isUndefined(get(path))) {
+  const getStorage = useCallback((path) => {
+    if (isUndefined(stGet(path))) {
       return undefined;
     }
 
@@ -70,14 +49,14 @@ export const useGlobalStates = (props = {}) => {
     }
 
     return "memory";
-  };
+  }, [stGet]);
 
   // ---------------------- set ----------------------
 
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
   // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
-  const set = (storage, path, value) => {
-    st.set(path, value);
+  const set = useCallback((storage, path, value) => {
+    stSet(path, value);
 
     const localStorage = local.get("global") ?? {};
     const sessionStorage = session.get("global") ?? {};
@@ -89,33 +68,33 @@ export const useGlobalStates = (props = {}) => {
     session.set("global", sessionStorage);
 
     if (storage === "local") {
-      if (debug) {
+      if (debugRef.current) {
         log.globalState(`SET LOCAL ${path} =>`, value);
       }
 
       return local.set("global", { ...local.get("global"), [path]: value });
-    } 
+    }
 
     if (storage === "session") {
-      if (debug) {
+      if (debugRef.current) {
         log.globalState(`SET SESSION ${path} =>`, value);
       }
 
       return session.set("global", { ...session.get("global"), [path]: value });
     }
 
-    if (debug) {
+    if (debugRef.current) {
       log.globalState(`SET ${path} =>`, value);
     }
-  };
+  }, [stSet]);
 
   // ---------------------- unset ----------------------
 
-  const unset = (path) => {
-    st.unset(path);
+  const unset = useCallback((path) => {
+    stUnset(path);
 
     if (isNil(path)) {
-      if (debug) {
+      if (debugRef.current) {
         log.globalState("UNSET");
       }
 
@@ -125,15 +104,15 @@ export const useGlobalStates = (props = {}) => {
 
     const localStorage = local.get("global") ?? {};
 
-    const localPathsToUnset = flatMap(localStorage, (value, path) => {
+    const localPathsToUnset = flatMap(localStorage, (_, p) => {
       // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(path, path) ? [path] : [];
+      return startsWith(p, path) ? [p] : [];
     });
-    
-    if (!isEmpty(localPathsToUnset)) {
-      forEach(localPathsToUnset, (path) => delete localStorage[path]);
 
-      if (debug) {
+    if (!isEmpty(localPathsToUnset)) {
+      forEach(localPathsToUnset, (p) => delete localStorage[p]);
+
+      if (debugRef.current) {
         log.globalState(`UNSET LOCAL ${path}`);
       }
 
@@ -142,39 +121,74 @@ export const useGlobalStates = (props = {}) => {
 
     const sessionStorage = session.get("global") ?? {};
 
-    const sessionPathsToUnset = flatMap(sessionStorage, (value, path) => {
+    const sessionPathsToUnset = flatMap(sessionStorage, (_, p) => {
       // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(path, path) ? [path] : [];
+      return startsWith(p, path) ? [p] : [];
     });
 
     if (!isEmpty(sessionPathsToUnset)) {
-      forEach(sessionPathsToUnset, (path) => delete sessionStorage[path]);
+      forEach(sessionPathsToUnset, (p) => delete sessionStorage[p]);
 
-      if (debug) {
+      if (debugRef.current) {
         log.globalState(`UNSET SESSION ${path}`,);
       }
 
       return session.set("global", sessionStorage);
     }
 
-    if (debug) {
+    if (debugRef.current) {
       log.globalState(`UNSET ${path}`,);
     }
-  };
+  }, [stUnset]);
 
-  // ---------------------- return ----------------------
+  // ---------------------- initial seeding ----------------------
 
-  return { 
+  useEffect(() => {
+    forEach(initialLocal, (value, path) => {
+      if (isUndefined(stGet(path))) {
+        set("local", path, value);
+      }
+    });
+
+    forEach(initialSession, (value, path) => {
+      if (isUndefined(stGet(path))) {
+        set("session", path, value);
+      }
+    });
+
+    forEach(initialMemory, (value, path) => {
+      if (isUndefined(stGet(path))) {
+        set(null, path, value);
+      }
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ---------------------- useEffect dispatch ----------------------
+
+  useEffect(() => {
+    dispatch(setGlobalStates(stValues));
+  }, [dispatch, stValues]);
+
+  // ---------------------- scoped setters (stable) ----------------------
+
+  const localScope = useMemo(() => ({
+    set: (path, value) => set("local", path, value),
+  }), [set]);
+
+  const sessionScope = useMemo(() => ({
+    set: (path, value) => set("session", path, value),
+  }), [set]);
+
+  // ---------------------- return (stable object) ----------------------
+
+  return useMemo(() => ({
     values: globalStates,
     get,
     getStorage,
     set,
     unset,
-    local: {
-      set: (path, value) => set("local", path, value),
-    },
-    session: {
-      set: (path, value) => set("session", path, value),
-    }
-  };
+    local: localScope,
+    session: sessionScope,
+  }), [globalStates, get, getStorage, set, unset, localScope, sessionScope]);
 };

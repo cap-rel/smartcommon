@@ -1,4 +1,5 @@
 import { isArray, isFunction, isNil, isString, isUndefined, toArray } from "lodash";
+import { useCallback } from "react";
 
 import { mergeObj, twMerge } from "lib/utils";
 import { useLibConfig, useStates } from "lib/hooks";
@@ -21,7 +22,7 @@ export const useVariantMerger = (componentKey, props) => {
 
     const { params } = states; 
 
-    const setParams = (newParams) => set("params", newParams);
+    const setParams = useCallback((newParams) => set("params", newParams), [set]);
 
     const isComponent = (key) => /^[A-Z]/.test(key);
     
