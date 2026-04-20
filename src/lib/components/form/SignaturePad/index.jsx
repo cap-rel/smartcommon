@@ -1,8 +1,8 @@
 import toast from "react-hot-toast";
-import SignatureCanvas from 'react-signature-canvas'
+import SignaturePadLib from "signature_pad";
 import { useEffect, useRef } from "react";
 import { FaEraser, FaSignature } from "react-icons/fa6";
-import { isNil, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 
 import { Button, Label, Input } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
@@ -19,12 +19,11 @@ export const SignaturePad = (props) => {
     defaultValue,
     value,
     onChange,
-    
 
     disabled,
     required,
     readOnly,
-  } = variantProps; 
+  } = variantProps;
 
   const errors = (currentValue) => ({
     required: {
@@ -33,7 +32,13 @@ export const SignaturePad = (props) => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue: defaultValue ?? { src: "", signer: "" }, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({
+    name,
+    defaultValue: defaultValue ?? { src: "", signer: "" },
+    value,
+    onChange,
+    errors
+  });
 
   const initialStates = {
     isSignatureValidated: false
@@ -43,19 +48,61 @@ export const SignaturePad = (props) => {
 
   const { isSignatureValidated } = states;
 
+  const canvasRef = useRef(null);
   const padRef = useRef(null);
+
+  // Refs used to keep onEnd always reading the freshest value/setter,
+  // since the SignaturePad instance is created once at mount.
+  const currentValueRef = useRef(currentValue);
+  currentValueRef.current = currentValue;
+  const setValueRef = useRef(setValue);
+  setValueRef.current = setValue;
 
   const blocked = disabled || readOnly || isFormSubmitting;
 
+  // Mount: set up the underlying signature_pad instance on the canvas
   useEffect(() => {
-    if (!isNil(padRef.current) && !isNil(padRef.current._sigPad) && blocked) {
-      padRef.current.off();
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
     }
-  }, [padRef.current, blocked]);
+
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    canvas.width = canvas.offsetWidth * ratio;
+    canvas.height = canvas.offsetHeight * ratio;
+    canvas.getContext("2d").scale(ratio, ratio);
+
+    const pad = new SignaturePadLib(canvas, {
+      backgroundColor: "transparent",
+      penColor: "black",
+      onEnd: () => {
+        setValueRef.current({ ...currentValueRef.current, src: pad.toDataURL() });
+      }
+    });
+    padRef.current = pad;
+
+    return () => {
+      pad.off();
+      padRef.current = null;
+    };
+  }, []);
+
+  // Enable/disable drawing based on readOnly/disabled/submitting state
+  useEffect(() => {
+    const pad = padRef.current;
+    if (!pad) {
+      return;
+    }
+    if (blocked) {
+      pad.off();
+    } else {
+      pad.on();
+    }
+  }, [blocked]);
 
   const validateCanvas = async () => {
     if (isSignatureValidated) {
-      return toast("La signature est déjà validée... Pour refaire la signature cliquez sur la gomme")
+      return toast("La signature est déjà validée... Pour refaire la signature cliquez sur la gomme");
     }
 
     if (padRef.current.isEmpty()) {
@@ -73,23 +120,16 @@ export const SignaturePad = (props) => {
         coords => setValue({ ...currentValue, gpsPoints: coords }),
         error => toast.error("Echec de géolocatisation de la capture.")
       );
-
     }
   };
 
   const eraseCanvas = () => {
-    // if (isSignatureValidated) {
-    //   set("isSignatureValidated", false);
-    //   padRef.current.on();
-    //   setValue({ ...currentValue, src: "" });
-    // }
-    
-    padRef.current.clear();
+    padRef.current?.clear();
     setValue({ ...currentValue, src: "" });
   };
 
   return (
-    <Label 
+    <Label
       { ...variantProps}
       showErrors={isFormSubmitted}
       errors={filteredErrors}
@@ -107,25 +147,12 @@ export const SignaturePad = (props) => {
         value={currentValue?.signer ?? ""}
         hidden
       />
-      {/* TODO gpsPoints is possibly not an array */}
-      {/* <input
-        name={name}
-        onChange={() => {}}
-        value={currentValue.gpsPoints[0]}
-        hidden
-      />
-      <input
-        name={name}
-        onChange={() => {}}
-        value={currentValue.gpsPoints[1]}
-        hidden
-      /> */}
 
       <div { ...mergeProps("mainContainer", props => ({
         ...props,
         className: `rounded-md flex flex-col gap-app-base border border-border bg-soft-bg p-app-base`
       }))}>
-    
+
         <div { ...mergeProps("header", props => ({
           ...props,
           className: `flex justify-between items-center -m-app-xs`
@@ -142,7 +169,7 @@ export const SignaturePad = (props) => {
             onClick: e => {
               e.preventDefault();
               eraseCanvas();
-              applyFunctionIfNotNil(props.onClick, e); 
+              applyFunctionIfNotNil(props.onClick, e);
             }
           }))} />
 
@@ -168,47 +195,39 @@ export const SignaturePad = (props) => {
               // applyFunctionIfNotNil(props.onClick, e);
             },
           }))} />
-          
+
         </div>
 
-          <div { ...mergeProps("signatureContainer", props => ({
+        <div { ...mergeProps("signatureContainer", props => ({
+          ...props,
+          className: `bg-strong-bg h-60 inset-shadow-sm`
+        }))}>
+          <canvas { ...mergeProps("Pad", props => ({
             ...props,
-            className: `bg-strong-bg h-60 inset-shadow-sm`
-          }))}>
-            <SignatureCanvas { ...mergeProps("Pad", props => ({
-              backgroundColor: `transparent`,
-              penColor: `black`,
-              clearOnResize: false,
-              ...props,
-              ref: padRef,
-              canvasProps: {
-                ...props.canvasProps,
-                className: `size-full`
-              },
-              onEnd: () => {
-                setValue({ ...currentValue, src: padRef.current.toDataURL() });
-              }
-            }))} />
-          </div>
-          <Input { ...mergeProps("SignerInput", props => ({
-            // inputIcon: <FaUser />,
-            placeholder: "Nom du signataire",
-            ...props,
-            required: props.required ?? required,
-            disabled: props.disabled ?? disabled,
-            readOnly: isFormSubmitting || (props.readOnly ?? readOnly),
-            value: currentValue?.signer ?? "",
-            onChange: value => setValue({ ...currentValue, signer: value }),
-            inputContainerProps: {
-              ...props.inputContainerProps,
-              className: `rounded-none border-0 border-b-2 has-[input:focus]:ring-0 pt-0`
-            },
-            inputProps: {
-              ...props.inputProps,
-              className: `text-center`
-            }
+            ref: canvasRef,
+            className: `size-full touch-none`
           }))} />
-  
+        </div>
+
+        <Input { ...mergeProps("SignerInput", props => ({
+          // inputIcon: <FaUser />,
+          placeholder: "Nom du signataire",
+          ...props,
+          required: props.required ?? required,
+          disabled: props.disabled ?? disabled,
+          readOnly: isFormSubmitting || (props.readOnly ?? readOnly),
+          value: currentValue?.signer ?? "",
+          onChange: value => setValue({ ...currentValue, signer: value }),
+          inputContainerProps: {
+            ...props.inputContainerProps,
+            className: `rounded-none border-0 border-b-2 has-[input:focus]:ring-0 pt-0`
+          },
+          inputProps: {
+            ...props.inputProps,
+            className: `text-center`
+          }
+        }))} />
+
       </div>
     </Label>
   )
