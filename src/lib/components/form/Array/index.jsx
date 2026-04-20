@@ -1,48 +1,52 @@
 import { twMerge } from "tailwind-merge";
 import { isNil, isEmpty } from "lodash";
 
-import { useStates } from "lib/hooks";
+import { useStates, useVariantMerger } from "lib/hooks";
 import { Input, Label } from "lib/components";
 
 import { arrayPropTypes } from "./props";
 
-export const Array = ({
-  label,
-  help,
-  icon,
-  prefix,
-  suffix,
-  hasCopyButton = false,
+export const Array = (rawProps) => {
+  const { variantProps, mergeProps } = useVariantMerger("Array", rawProps);
 
-  min,
-  max,
+  const {
+    label,
+    help,
+    icon,
+    prefix,
+    suffix,
+    hasCopyButton = false,
 
-  name,
-  defaultValue,
-  value,
-  onValueChange = () => {},
+    min,
+    max,
 
-  containerProps,
-  labelContainerProps,
-  labelProps,
-  requiredStarProps,
-  helpProps,
-  childrenContainerProps,
-  prefixProps,
-  suffixProps,
+    name,
+    defaultValue,
+    value,
+    onValueChange = () => {},
 
-  arrayContainerProps,
-  arrayInputProps,
-  tagsContainerProps,
-  tagProps,
-  inputProps,
-  ...props
-}) => {
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    helpProps,
+    childrenContainerProps,
+    prefixProps,
+    suffixProps,
+
+    arrayContainerProps,
+    arrayInputProps,
+    tagsContainerProps,
+    tagProps,
+    inputProps,
+    ...props
+  } = variantProps;
+
   const inputPs = { ...props, ...inputProps };
 
   const { required, readOnly, disabled, id } = inputPs;
 
-  const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps  };
+  const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps };
 
   const initialStates = {
     localValue: defaultValue ?? [],
@@ -77,7 +81,7 @@ export const Array = ({
   }
 
   return (
-    <Label { ...allLabelPs}>
+    <Label { ...allLabelPs} mergeProps={mergeProps}>
       <div 
         { ...arrayContainerProps}
         className={twMerge(`gap-2 col`, arrayContainerProps?.className)}
