@@ -65,7 +65,7 @@ export const Rater = (props) => {
             <input
                 name={name}
                 onChange={() => {}}
-                value={currentValue}
+                value={currentValue ?? ""}
                 hidden
             />
             <div { ...mergeProps("ratingContainer", props => ({

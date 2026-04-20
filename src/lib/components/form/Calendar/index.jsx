@@ -258,13 +258,13 @@ export const Calendar = (props) => {
     }))}>
         <input
           name={name}
-          value={isArray(currentValue) ? currentValue[0] : null}
+          value={isArray(currentValue) ? (currentValue[0] ?? "") : ""}
           onChange={() => {}}
           hidden
         />
         <input
           name={name}
-          value={isArray(currentValue) ? currentValue[1] : null}
+          value={isArray(currentValue) ? (currentValue[1] ?? "") : ""}
           onChange={() => {}}
           hidden
         />

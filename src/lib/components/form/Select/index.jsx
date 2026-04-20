@@ -77,7 +77,7 @@ export const Select = (props) => {
         <select { ...mergeProps("select", props => ({
           ...props,
           ...mergeQuickProps(["name", "multiple", "disabled", "readOnly", "onBlur", "onFocus"]),
-          value: currentValue,
+          value: currentValue ?? (multiple ? [] : ""),
           onChange: e => {
             handleSelectOnChange(e);
             applyFunctionIfNotNil(props.onChange, e);

@@ -56,7 +56,7 @@ export const ColorPicker = (props) => {
                     handleColorOnChange(e);
                     applyFunctionIfNotNil(props.onChange, e);
                 },
-                value: currentValue,
+                value: currentValue ?? "",
                 className: `size-6 border-border duration-(--really-quick) ${disabled ? "brightness-soft" : "active:brightness-soft"}`,
             }))} />
         </Label>

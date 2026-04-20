@@ -94,7 +94,7 @@ export const Timer = (props) => {
             <input
                 name={name}
                 onChange={() => {}}
-                value={currentValue}
+                value={currentValue ?? ""}
                 hidden
             />
             <div { ...mergeProps("durationContainer", props => ({

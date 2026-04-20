@@ -81,7 +81,7 @@ export const Textarea = (props) => {
         cols,
         wrap,
         name,
-        value: currentValue,
+        value: currentValue ?? "",
         onChange: e => {
           handleValueOnChange(e);
           applyFunctionIfNotNil(props.onChange, e);
