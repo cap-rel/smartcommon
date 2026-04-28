@@ -11,10 +11,24 @@ export const propTypes = {
 
     accept: PropTypes.string,
 
-    // Output format: "base64" (default, legacy) or "blob" (more efficient for IndexedDB)
-    // When "blob", value format is { blob: Blob, previewUrl: string, title, description, gpsPoints, capture }
-    // When "base64", value format is { src: base64string, title, description, gpsPoints, capture }
-    outputFormat: PropTypes.oneOf(["base64", "blob"]),
+    // Output format. Three modes:
+    //   - "base64" (default, legacy): value is { src: base64string, title, description, gpsPoints, capture }
+    //   - "blob": value is { blob: Blob, previewUrl, title, description, gpsPoints, capture, mimeType, filename }
+    //     (caller handles the upload itself)
+    //   - "upload": photo is POSTed to the smartauth /upload endpoint and
+    //     value becomes { uploadId, previewUrl, title, description, gpsPoints,
+    //     capture, mimeType, filename, size, sha256 }. The business module
+    //     references uploadId from its own JSON payload and consumes the
+    //     staged file server-side via SmartAuth\Api\UploadHelper.
+    outputFormat: PropTypes.oneOf(["base64", "blob", "upload"]),
+
+    // Override of the upload endpoint path (default: "upload"). Only
+    // used when outputFormat === "upload".
+    uploadEndpoint: PropTypes.string,
+
+    // Optional callback when an upload fails (outputFormat === "upload").
+    // Defaults to a toast.error notification.
+    onUploadError: PropTypes.func,
 
     required: PropTypes.bool,
     disabled: PropTypes.bool,

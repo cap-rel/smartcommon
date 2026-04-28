@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
 import { isNil, isEmpty } from "lodash";
 
-import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
+import { useFile, useStates, useField, useVariantMerger, useUpload } from "lib/hooks";
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
@@ -33,8 +33,24 @@ export const PhotosUploader = (props) => {
 
         compressOptions,
 
-        // Output format: "base64" (default) or "blob"
+        // Output format:
+        //   - "base64" (default, legacy): inlines a base64 string in value.src
+        //   - "blob": keeps a Blob+previewUrl in value, caller assembles
+        //     the upload itself (used by dsd today, kept for compat)
+        //   - "upload": POSTs each photo to the smartauth /upload route
+        //     and stores the returned upload_id in value.uploadId. The
+        //     business module then references that id from its own JSON
+        //     payload (server-side: SmartAuth\Api\UploadHelper).
         outputFormat = "base64",
+
+        // For outputFormat="upload" only: optional override of the
+        // upload endpoint path (default: "upload"). Useful when the
+        // module re-exposes the route under its own prefix.
+        uploadEndpoint,
+
+        // For outputFormat="upload" only: optional callback invoked
+        // when an upload fails. Receives the underlying error.
+        onUploadError,
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -86,10 +102,10 @@ export const PhotosUploader = (props) => {
         };
     }, []);
 
-    // Cleanup preview URLs on unmount (blob mode only)
+    // Cleanup preview URLs on unmount (blob and upload modes)
     useEffect(() => {
         return () => {
-            if (outputFormat === "blob" && currentValue) {
+            if ((outputFormat === "blob" || outputFormat === "upload") && currentValue) {
                 const photos = multiple ? (currentValue ?? []) : [currentValue];
                 photos.forEach(photo => {
                     if (photo?.previewUrl) {
@@ -133,9 +149,17 @@ export const PhotosUploader = (props) => {
                 set("isPhotoSelected", false);
             }
 
-            // Revoke preview URL to free memory (blob mode only)
+            // Revoke preview URL to free memory (blob and upload modes).
             if (photoToDelete?.previewUrl) {
                 URL.revokeObjectURL(photoToDelete.previewUrl);
+            }
+
+            // Best-effort cleanup of the staged upload server-side.
+            // Failure is non-fatal: the staging directory is GC'd on TTL.
+            if (outputFormat === "upload" && photoToDelete?.uploadId) {
+                cancelUpload(photoToDelete.uploadId).catch(err => {
+                    console.warn("PhotosUploader: failed to cancel staged upload", err);
+                });
             }
 
             setValue(newValue);
@@ -153,6 +177,7 @@ export const PhotosUploader = (props) => {
     };
 
     const { resizeImage } = useFile();
+    const { uploadFile, cancelUpload } = useUpload({ endpoint: uploadEndpoint });
 
     const addPhoto = async file => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -170,34 +195,71 @@ export const PhotosUploader = (props) => {
             const title = splitFileExtension(file.name)[0];
             let newPhoto;
 
-            if (outputFormat === "blob") {
-                // Blob mode: store original file/blob with preview URL
-                const previewUrl = URL.createObjectURL(file);
-                newPhoto = {
-                    blob: file,
-                    previewUrl,
-                    gpsPoints,
-                    title,
-                    description: "",
-                    capture: isInputInCaptureMode,
-                    mimeType: file.type,
-                    filename: file.name
-                };
-            } else {
-                // Base64 mode: legacy behavior
-                const base64 = await resizeImage(file, compressOptions);
-                newPhoto = {
-                    src: base64,
-                    gpsPoints,
-                    title,
-                    description: "",
-                    capture: isInputInCaptureMode
-                };
-            }
+            try {
+                if (outputFormat === "upload") {
+                    // Upload mode: POST the binary to smartauth /upload,
+                    // keep an upload_id for the form payload and a local
+                    // previewUrl for rendering. The business module then
+                    // references newPhoto.uploadId from its own JSON
+                    // payload. Server-side, it consumes the staged file
+                    // via SmartAuth\Api\UploadHelper::consumeUpload().
+                    const previewUrl = URL.createObjectURL(file);
+                    let uploadResult;
+                    try {
+                        uploadResult = await uploadFile(file);
+                    } catch (err) {
+                        URL.revokeObjectURL(previewUrl);
+                        // Always log: silent failures hide regressions.
+                        console.error("PhotosUploader upload failed:", err);
+                        if (onUploadError) {
+                            onUploadError(err);
+                        } else {
+                            toast.error("Echec de l'envoi de la photo.");
+                        }
+                        return;
+                    }
+                    newPhoto = {
+                        uploadId: uploadResult?.upload_id,
+                        previewUrl,
+                        gpsPoints,
+                        title,
+                        description: "",
+                        capture: isInputInCaptureMode,
+                        mimeType: uploadResult?.mime ?? file.type,
+                        filename: uploadResult?.filename ?? file.name,
+                        size: uploadResult?.size,
+                        sha256: uploadResult?.sha256,
+                    };
+                } else if (outputFormat === "blob") {
+                    // Blob mode: store original file/blob with preview URL
+                    const previewUrl = URL.createObjectURL(file);
+                    newPhoto = {
+                        blob: file,
+                        previewUrl,
+                        gpsPoints,
+                        title,
+                        description: "",
+                        capture: isInputInCaptureMode,
+                        mimeType: file.type,
+                        filename: file.name
+                    };
+                } else {
+                    // Base64 mode: legacy behavior
+                    const base64 = await resizeImage(file, compressOptions);
+                    newPhoto = {
+                        src: base64,
+                        gpsPoints,
+                        title,
+                        description: "",
+                        capture: isInputInCaptureMode
+                    };
+                }
 
-            const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
-            setValue(newValue);
-            set("isPhotoLoading", false);
+                const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
+                setValue(newValue);
+            } finally {
+                set("isPhotoLoading", false);
+            }
         }
     };
 

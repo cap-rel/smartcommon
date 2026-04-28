@@ -31,6 +31,11 @@ vi.mock('lib/hooks', () => ({
   useFile: () => ({
     resizeImage: vi.fn(),
   }),
+  useUpload: () => ({
+    uploadFile: vi.fn(),
+    uploadFiles: vi.fn(),
+    cancelUpload: vi.fn(),
+  }),
 }));
 
 vi.mock('lib/components', () => ({
