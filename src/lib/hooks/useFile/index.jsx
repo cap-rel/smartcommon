@@ -1,59 +1,53 @@
+import imageCompression from "browser-image-compression";
 
-// export const useFile = (props) => {
-//   const resizeImage = (image) => {
-//     return new Promise((resolve, reject) => {
-//       const reader = new FileReader();
-//       reader.onload = (event) => {
-//         const img = new Image();
-//         img.onload = () => {
-//           const canvas = document.createElement("canvas");
-//           const ctx = canvas.getContext("2d");
-//           const maxWidth = 3840;
-//           const maxHeight = 2160;
-//           let width = img.width;
-//           let height = img.height;
+// Resize/compress an image while preserving EXIF metadata (orientation, GPS, etc.).
+// Uses browser-image-compression which keeps EXIF for JPEG output.
+//
+// options:
+//   - maxWidthOrHeight: longest side in pixels (default 1920)
+//   - maxSizeMB: target max size in MB (default 2)
+//   - quality: 0..1 (default 0.85) - mapped to initialQuality
+//   - outputType: "base64" (default), "blob" or "file"
+//
+// Notes:
+//   - To preserve EXIF, the output MUST stay JPEG. PNG would strip metadata.
+//   - "file" wraps the compressed Blob into a File preserving the original
+//     filename so server-side handlers see something sensible.
+export const useFile = () => {
+  const resizeImage = async (image, options = {}) => {
+    const {
+      maxWidthOrHeight = 1920,
+      maxSizeMB = 2,
+      quality = 0.85,
+      outputType = "base64",
+      // Backwards compat with previous API (react-image-file-resizer):
+      maxWidth,
+      maxHeight,
+    } = options;
 
-//           if (width > height) {
-//             if (width > maxWidth) {
-//               height *= maxWidth / width;
-//               width = maxWidth;
-//             }
-//           } else {
-//             if (height > maxHeight) {
-//               width *= maxHeight / height;
-//               height = maxHeight;
-//             }
-//           }
+    const compressed = await imageCompression(image, {
+      maxSizeMB,
+      maxWidthOrHeight: maxWidthOrHeight ?? Math.max(maxWidth ?? 0, maxHeight ?? 0) ?? 1920,
+      initialQuality: quality,
+      useWebWorker: true,
+      preserveExif: true,
+      fileType: "image/jpeg",
+    });
 
-//           canvas.width = width;
-//           canvas.height = height;
-//           ctx.drawImage(img, 0, 0, width, height);
-//           resolve(canvas.toDataURL("image/jpeg", 0.9));
-//         };
-//         img.onerror = reject;
-//         img.src = event.target.result;
-//       };
-//       reader.onerror = reject;
-//       reader.readAsDataURL(image);
-//     });
-//   };
+    if (outputType === "blob") {
+      return compressed;
+    }
 
-//   return { resizeImage };
-// };
+    if (outputType === "file") {
+      const baseName = (image?.name || "image").replace(/\.[^.]+$/, "");
+      return new File([compressed], `${baseName}.jpg`, {
+        type: compressed.type || "image/jpeg",
+        lastModified: Date.now(),
+      });
+    }
 
-//TODO
-// old code -----------------
-
-import Resizer from "react-image-file-resizer";
-
-export const useFile = (props) => {
-  const resizeImage = (image, options = {}) => {
-    const { maxWidth = 3840, maxHeight = 2160, quality = 90 } = options;
-    return new Promise((resolve) =>
-      Resizer.imageFileResizer(image, maxWidth, maxHeight, "JPEG", quality, 0, (uri) => resolve(uri), "base64")
-    );
+    return imageCompression.getDataUrlFromFile(compressed);
   };
-  // await resizeFile(file).then(base64 => base64);
 
   return { resizeImage };
 };

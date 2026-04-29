@@ -196,6 +196,13 @@ export const PhotosUploader = (props) => {
             let newPhoto;
 
             try {
+                // Resize/compress the file before upload to avoid hitting
+                // server upload limits. EXIF (orientation, GPS, etc.) is
+                // preserved by browser-image-compression for JPEG output.
+                // Pass compressOptions={ skip: true } to opt out.
+                const shouldCompress = file?.type?.startsWith("image/")
+                    && compressOptions?.skip !== true;
+
                 if (outputFormat === "upload") {
                     // Upload mode: POST the binary to smartauth /upload,
                     // keep an upload_id for the form payload and a local
@@ -203,10 +210,13 @@ export const PhotosUploader = (props) => {
                     // references newPhoto.uploadId from its own JSON
                     // payload. Server-side, it consumes the staged file
                     // via SmartAuth\Api\UploadHelper::consumeUpload().
-                    const previewUrl = URL.createObjectURL(file);
+                    const fileToSend = shouldCompress
+                        ? await resizeImage(file, { ...compressOptions, outputType: "file" })
+                        : file;
+                    const previewUrl = URL.createObjectURL(fileToSend);
                     let uploadResult;
                     try {
-                        uploadResult = await uploadFile(file);
+                        uploadResult = await uploadFile(fileToSend);
                     } catch (err) {
                         URL.revokeObjectURL(previewUrl);
                         // Always log: silent failures hide regressions.
@@ -225,27 +235,37 @@ export const PhotosUploader = (props) => {
                         title,
                         description: "",
                         capture: isInputInCaptureMode,
-                        mimeType: uploadResult?.mime ?? file.type,
-                        filename: uploadResult?.filename ?? file.name,
+                        mimeType: uploadResult?.mime ?? fileToSend.type,
+                        filename: uploadResult?.filename ?? fileToSend.name,
                         size: uploadResult?.size,
                         sha256: uploadResult?.sha256,
                     };
                 } else if (outputFormat === "blob") {
-                    // Blob mode: store original file/blob with preview URL
-                    const previewUrl = URL.createObjectURL(file);
+                    // Blob mode: store compressed file/blob with preview URL.
+                    const fileToStore = shouldCompress
+                        ? await resizeImage(file, { ...compressOptions, outputType: "file" })
+                        : file;
+                    const previewUrl = URL.createObjectURL(fileToStore);
                     newPhoto = {
-                        blob: file,
+                        blob: fileToStore,
                         previewUrl,
                         gpsPoints,
                         title,
                         description: "",
                         capture: isInputInCaptureMode,
-                        mimeType: file.type,
-                        filename: file.name
+                        mimeType: fileToStore.type,
+                        filename: fileToStore.name
                     };
                 } else {
                     // Base64 mode: legacy behavior
-                    const base64 = await resizeImage(file, compressOptions);
+                    const base64 = shouldCompress
+                        ? await resizeImage(file, compressOptions)
+                        : await new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onload = () => resolve(reader.result);
+                            reader.onerror = () => reject(reader.error);
+                            reader.readAsDataURL(file);
+                        });
                     newPhoto = {
                         src: base64,
                         gpsPoints,
