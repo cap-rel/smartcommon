@@ -4,6 +4,7 @@ import { FaQrcode } from "react-icons/fa6";
 
 import { useApi } from "lib/hooks";
 import { Input, Button, Select, Boolean, BarcodeScanner } from "lib/components";
+import { twMerge } from "lib/utils";
 
 import { DEFAULT_LABELS, defaultProps, extractPairingId, propTypes } from "./props";
 
@@ -230,12 +231,12 @@ export const LoginComponent = (props) => {
         <div
             data-component="LoginComponent"
             {...containerProps}
-            className={`flex flex-col gap-4 ${containerProps.className || ""}`}
+            className={twMerge("flex flex-col gap-4", containerProps.className)}
         >
             <form
                 onSubmit={handleSubmit}
                 {...formProps}
-                className={`flex flex-col gap-4 ${formProps.className || ""}`}
+                className={twMerge("flex flex-col gap-4", formProps.className)}
             >
                 <Input
                     id="login-email"
@@ -293,7 +294,7 @@ export const LoginComponent = (props) => {
                     <p
                         role="alert"
                         {...errorAlertProps}
-                        className={`text-red-600 text-sm ${errorAlertProps.className || ""}`}
+                        className={twMerge("text-red-600 text-sm", errorAlertProps.className)}
                     >
                         {submitError}
                     </p>
@@ -314,7 +315,10 @@ export const LoginComponent = (props) => {
                     onClick={startQrFlow}
                     disabled={isFormDisabled}
                     {...scanQrButtonProps}
-                    className={`flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 ${scanQrButtonProps.className || ""}`}
+                    className={twMerge(
+                        "flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50",
+                        scanQrButtonProps.className
+                    )}
                 >
                     <FaQrcode />
                     <span>{labels.scanQrLabel}</span>
@@ -325,7 +329,10 @@ export const LoginComponent = (props) => {
                 <div
                     role="alert"
                     {...qrErrorAlertProps}
-                    className={`rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700 ${qrErrorAlertProps.className || ""}`}
+                    className={twMerge(
+                        "rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700",
+                        qrErrorAlertProps.className
+                    )}
                 >
                     <p>{qrError}</p>
                     <button
