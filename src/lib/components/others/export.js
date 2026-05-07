@@ -1,3 +1,4 @@
+export * from "./AboutModal";
 export * from "./Calculator";
 export * from "./Calculator/useCalculator";
 export * from "./Chart";

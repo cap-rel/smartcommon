@@ -1,3 +1,4 @@
+export * from "./AboutModal";
 export * from "./Calculator";
 export * from "./Calculator/useCalculator";
 export * from "./Chart";
@@ -6,6 +7,7 @@ export * from "./DataTable";
 // export * from "./Icon";
 export * from "./LazyLink";
 export * from "./Map";
+export * from "./Modal";
 export * from "./Overlay";
 // export * from "./popupTest";
 export * from "./SearchBar";
