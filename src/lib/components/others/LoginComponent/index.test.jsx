@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 
-import { extractPairingId } from "./props";
+import { extractPairingId, buildDefaultGetQrErrorLabel, DEFAULT_LABELS } from "./props";
 
 const { fakeApi, scannerProps } = vi.hoisted(() => ({
     fakeApi: {
@@ -607,5 +607,179 @@ describe("LoginComponent - QR pair mode", () => {
 
         expect(screen.getByRole("alert")).toBeDefined();
         expect(onError).toHaveBeenCalled();
+    });
+
+    describe("idempotence guard", () => {
+        it("ignores a duplicate scan of the same code", async () => {
+            const id = "deadbeef".repeat(4);
+            fakeApi.claimQrPair = vi.fn().mockResolvedValue({
+                status: "claimed",
+                claim_token: "tok-1",
+            });
+            fakeApi.pollQrPair = vi.fn().mockResolvedValue({ status: "pending" });
+
+            render(
+                <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />
+            );
+
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+
+            await act(async () => {
+                await scannerProps.current.onScan(id);
+                await scannerProps.current.onScan(id);
+                await scannerProps.current.onScan(id);
+            });
+
+            expect(fakeApi.claimQrPair).toHaveBeenCalledTimes(1);
+        });
+
+        it("ignores a scan while polling is in progress", async () => {
+            const id = "deadbeef".repeat(4);
+            fakeApi.claimQrPair = vi.fn().mockResolvedValue({
+                status: "claimed",
+                claim_token: "tok-1",
+            });
+            fakeApi.pollQrPair = vi.fn().mockResolvedValue({ status: "pending" });
+
+            render(
+                <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />
+            );
+
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+
+            await act(async () => {
+                await scannerProps.current.onScan(id);
+            });
+
+            // While in qr-polling, a stray scan must not start a second claim
+            await act(async () => {
+                await scannerProps.current.onScan("aaaaaaaa".repeat(4));
+            });
+
+            expect(fakeApi.claimQrPair).toHaveBeenCalledTimes(1);
+        });
+    });
+
+    describe("getQrErrorLabel mapping", () => {
+        const id = "deadbeef".repeat(4);
+
+        const claimReject = (err) => {
+            fakeApi.claimQrPair = vi.fn().mockRejectedValue(err);
+        };
+
+        it("shows 'already claimed' on HTTP 409", async () => {
+            claimReject({ response: { status: 409 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/déjà été utilisé/);
+        });
+
+        it("shows 'pairing not found' on HTTP 404", async () => {
+            claimReject({ response: { status: 404 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/n'est plus valide/);
+        });
+
+        it("shows 'pairing expired' on HTTP 410", async () => {
+            claimReject({ response: { status: 410 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/expiré/);
+        });
+
+        it("shows 'rate limited' on HTTP 429", async () => {
+            claimReject({ response: { status: 429 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/Trop de tentatives/);
+        });
+
+        it("prefers apiCode (set by useApi.beforeError) over status", async () => {
+            // Status 500 alone would fall back to claimError, but apiCode wins
+            claimReject({ apiCode: "pairing_not_claimable", response: { status: 500 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/déjà été utilisé/);
+        });
+
+        it("falls back to claimError on unmapped status", async () => {
+            claimReject({ response: { status: 502 } });
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(screen.getByRole("alert").textContent).toMatch(/revendiquer/);
+        });
+
+        it("uses a custom getQrErrorLabel when provided", async () => {
+            claimReject({ response: { status: 409 } });
+            const getQrErrorLabel = vi.fn(() => "Custom QR message");
+
+            render(
+                <LoginComponent
+                    onSuccess={() => {}}
+                    showEntities={false}
+                    enableQrPair
+                    getQrErrorLabel={getQrErrorLabel}
+                />
+            );
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            await act(async () => { await scannerProps.current.onScan(id); });
+
+            expect(getQrErrorLabel).toHaveBeenCalled();
+            // textContent includes the embedded "OK" button label, so we
+            // check for the message as a substring instead.
+            expect(screen.getByText("Custom QR message")).toBeDefined();
+        });
+    });
+});
+
+describe("buildDefaultGetQrErrorLabel (helper)", () => {
+    const map = buildDefaultGetQrErrorLabel(DEFAULT_LABELS);
+
+    it("maps pairing_not_claimable / 409", () => {
+        expect(map({ apiCode: "pairing_not_claimable" })).toBe(DEFAULT_LABELS.pairingAlreadyClaimed);
+        expect(map({ response: { status: 409 } })).toBe(DEFAULT_LABELS.pairingAlreadyClaimed);
+    });
+
+    it("maps pairing_not_found / 404", () => {
+        expect(map({ apiCode: "pairing_not_found" })).toBe(DEFAULT_LABELS.pairingNotFound);
+        expect(map({ response: { status: 404 } })).toBe(DEFAULT_LABELS.pairingNotFound);
+    });
+
+    it("maps pairing_expired / 410", () => {
+        expect(map({ apiCode: "pairing_expired" })).toBe(DEFAULT_LABELS.pairingExpired);
+        expect(map({ response: { status: 410 } })).toBe(DEFAULT_LABELS.pairingExpired);
+    });
+
+    it("maps rate_limited / 429", () => {
+        expect(map({ apiCode: "rate_limited" })).toBe(DEFAULT_LABELS.rateLimited);
+        expect(map({ response: { status: 429 } })).toBe(DEFAULT_LABELS.rateLimited);
+    });
+
+    it("maps invalid_pairing_id / 400", () => {
+        expect(map({ apiCode: "invalid_pairing_id" })).toBe(DEFAULT_LABELS.invalidQrError);
+        expect(map({ response: { status: 400 } })).toBe(DEFAULT_LABELS.invalidQrError);
+    });
+
+    it("falls back to claimError for unmapped errors", () => {
+        expect(map({})).toBe(DEFAULT_LABELS.claimError);
+        expect(map({ response: { status: 503 } })).toBe(DEFAULT_LABELS.claimError);
+        expect(map({ apiCode: "unknown_code" })).toBe(DEFAULT_LABELS.claimError);
+    });
+
+    it("prefers apiCode over HTTP status when both are present", () => {
+        expect(map({ apiCode: "rate_limited", response: { status: 500 } })).toBe(DEFAULT_LABELS.rateLimited);
     });
 });

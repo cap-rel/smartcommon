@@ -6,13 +6,20 @@ import { useApi } from "lib/hooks";
 import { Input, Button, Select, Boolean, BarcodeScanner } from "lib/components";
 import { twMerge } from "lib/utils";
 
-import { DEFAULT_LABELS, defaultProps, extractPairingId, propTypes } from "./props";
+import {
+    DEFAULT_LABELS,
+    buildDefaultGetQrErrorLabel,
+    defaultProps,
+    extractPairingId,
+    propTypes,
+} from "./props";
 
 export const LoginComponent = (props) => {
     const {
         onSuccess,
         onError,
         getErrorLabel,
+        getQrErrorLabel,
         showEntities = true,
         showRememberMe = false,
         enableQrPair = true,
@@ -40,6 +47,7 @@ export const LoginComponent = (props) => {
     const labels = { ...DEFAULT_LABELS, ...userLabels };
     const resolvedEntitiesTimeoutMs = entitiesTimeoutMs ?? abortTimeoutMs;
     const resolvedLoginTimeoutMs = loginTimeoutMs ?? abortTimeoutMs;
+    const resolveQrErrorLabel = getQrErrorLabel ?? buildDefaultGetQrErrorLabel(labels);
 
     const api = useApi();
 
@@ -66,8 +74,10 @@ export const LoginComponent = (props) => {
 
     const onSuccessRef = useRef(onSuccess);
     const onErrorRef = useRef(onError);
+    const resolveQrErrorLabelRef = useRef(resolveQrErrorLabel);
     useEffect(() => { onSuccessRef.current = onSuccess; }, [onSuccess]);
     useEffect(() => { onErrorRef.current = onError; }, [onError]);
+    useEffect(() => { resolveQrErrorLabelRef.current = resolveQrErrorLabel; });
 
     // ---------------------- entities load ----------------------
 
@@ -160,7 +170,7 @@ export const LoginComponent = (props) => {
                 }
             } catch (err) {
                 cleanupPolling();
-                setQrError(labels.claimError);
+                setQrError(resolveQrErrorLabelRef.current(err));
                 setMode("qr-error");
                 onErrorRef.current?.(err);
             }
@@ -172,9 +182,15 @@ export const LoginComponent = (props) => {
             setQrError(labels.pairingTimeout);
             setMode("qr-error");
         }, qrTimeoutMs);
-    }, [api, qrPollIntervalMs, qrTimeoutMs, cleanupPolling, labels.pairingCancelled, labels.pairingExpired, labels.pairingTimeout, labels.claimError]);
+    }, [api, qrPollIntervalMs, qrTimeoutMs, cleanupPolling, labels.pairingCancelled, labels.pairingExpired, labels.pairingTimeout]);
 
     const handleQrScan = useCallback(async (rawText) => {
+        // Idempotence guard: a scanner that detects the same QR twice in
+        // rapid succession (very common on Android with autofocus) would
+        // otherwise trigger a second claim that is guaranteed to 409.
+        // Anything past 'qr-scanning' means we've already started a claim.
+        if (pairingIdRef.current) return;
+
         const pairingId = extractPairingId(rawText);
         if (!pairingId) {
             setQrError(labels.invalidQrError);
@@ -196,11 +212,11 @@ export const LoginComponent = (props) => {
             setMode("qr-polling");
             startPolling(pairingId, claimResponse.claim_token);
         } catch (err) {
-            setQrError(labels.claimError);
+            setQrError(resolveQrErrorLabelRef.current(err));
             setMode("qr-error");
             onErrorRef.current?.(err);
         }
-    }, [api, deviceLabel, deviceUuid, startPolling, labels.invalidQrError, labels.claimError]);
+    }, [api, deviceLabel, deviceUuid, startPolling, labels.invalidQrError]);
 
     const handleQrClose = useCallback(() => {
         cleanupPolling();

@@ -6,6 +6,15 @@ export const propTypes = {
     // Override the inline error label by inspecting the thrown error
     // (typically err.response?.status). Default returns labels.loginError.
     getErrorLabel: PropTypes.func,
+    // Override the QR error label by inspecting the thrown error.
+    // Default maps the smartAuth QrPairController error codes:
+    //   pairing_not_claimable / 409 -> labels.pairingAlreadyClaimed
+    //   pairing_not_found     / 404 -> labels.pairingNotFound
+    //   pairing_expired       / 410 -> labels.pairingExpired
+    //   rate_limited          / 429 -> labels.rateLimited
+    //   invalid_pairing_id    / 400 -> labels.invalidQrError
+    //   default                     -> labels.claimError
+    getQrErrorLabel: PropTypes.func,
 
     showEntities: PropTypes.bool,
     showRememberMe: PropTypes.bool,
@@ -57,6 +66,9 @@ export const propTypes = {
         pairingExpired: PropTypes.string,
         pairingCancelled: PropTypes.string,
         pairingTimeout: PropTypes.string,
+        pairingAlreadyClaimed: PropTypes.string,
+        pairingNotFound: PropTypes.string,
+        rateLimited: PropTypes.string,
         requiredField: PropTypes.string,
     }),
 };
@@ -95,7 +107,30 @@ export const DEFAULT_LABELS = {
     pairingExpired: "Ce QR code a expiré, demandez-en un nouveau.",
     pairingCancelled: "Pairing annulé depuis l'ordinateur.",
     pairingTimeout: "Délai d'attente dépassé, réessayez.",
+    pairingAlreadyClaimed: "Ce QR code a déjà été utilisé. Demandez-en un nouveau sur l'ordinateur.",
+    pairingNotFound: "Ce QR code n'est plus valide. Demandez-en un nouveau sur l'ordinateur.",
+    rateLimited: "Trop de tentatives. Patientez quelques instants avant de réessayer.",
     requiredField: "Ce champ est requis.",
+};
+
+// Default QR-pair error mapping. Inspects the thrown error and returns the
+// best-matching label. Tries multiple error shapes to be robust:
+//   - error.apiCode / error.apiMessage : set by our useApi beforeError hook
+//   - error.response.status : ky HTTPError (raw HTTP status)
+//   - error.status / error.code : generic fallbacks
+export const buildDefaultGetQrErrorLabel = (labels) => (err) => {
+    const status = err?.response?.status ?? err?.status;
+    const code = err?.apiCode
+        ?? err?.code
+        ?? err?.response?.body?.error
+        ?? err?.body?.error;
+
+    if (code === "pairing_not_claimable" || status === 409) return labels.pairingAlreadyClaimed;
+    if (code === "pairing_not_found"     || status === 404) return labels.pairingNotFound;
+    if (code === "pairing_expired"       || status === 410) return labels.pairingExpired;
+    if (code === "rate_limited"          || status === 429) return labels.rateLimited;
+    if (code === "invalid_pairing_id"    || status === 400) return labels.invalidQrError;
+    return labels.claimError;
 };
 
 // Extracts a 32-hex pairing_id from a scanned QR payload. Accepts:

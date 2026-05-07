@@ -138,6 +138,24 @@ export const useApiContext = () => {
                         }
                     }
                 }
+            ],
+            beforeError: [
+                async (error) => {
+                    // Extract API error message + code from response body before
+                    // ky throws. Applies to ALL extended apis (public + private)
+                    // so that consumers like the QR pair flow can read
+                    // error.apiMessage and error.apiCode.
+                    if (error.response) {
+                        try {
+                            const body = await error.response.clone().json();
+                            error.apiMessage = body?.error || body?.message;
+                            error.apiCode = body?.error;
+                        } catch {
+                            // Response may not be JSON, leave the fields undefined.
+                        }
+                    }
+                    return error;
+                }
             ]
         }
     }), [prefixUrl, timeout, deviceId]);
@@ -327,20 +345,8 @@ export const useApiContext = () => {
 
                     }
                 ],
-                beforeError: [
-                    async (error) => {
-                        // Extract API error message from response body before ky throws
-                        if (error.response) {
-                            try {
-                                const body = await error.response.clone().json();
-                                error.apiMessage = body?.error || body?.message;
-                            } catch {
-                                // Response may not be JSON
-                            }
-                        }
-                        return error;
-                    }
-                ]
+                // beforeError is now defined on baseApi above so it applies
+                // to public + private alike (needed for QR pair flow).
             }
         });
         return api;
