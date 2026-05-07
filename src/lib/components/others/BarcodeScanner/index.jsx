@@ -10,6 +10,32 @@ import {
 
 const SCANNER_ELEMENT_ID = "barcode-scanner-region";
 
+// Html5QrcodeScannerState enum values:
+//   NOT_STARTED = 1, SCANNING = 2, PAUSED = 3
+// stop() throws synchronously when called from any state other than
+// SCANNING/PAUSED, so the .catch() we put after it never fires. Hard-code
+// the values here so we don't have to keep a reference to the lazy-loaded
+// module just for the enum.
+const SCANNER_STATE_SCANNING = 2;
+const SCANNER_STATE_PAUSED = 3;
+
+// Safely stop a Html5Qrcode instance: never throw, no-op if the scanner
+// isn't in a stoppable state, and tolerant to a dead instance whose
+// getState() itself throws.
+const safeStopScanner = (scanner) => {
+    if (!scanner) return;
+    try {
+        const state = typeof scanner.getState === "function"
+            ? scanner.getState()
+            : SCANNER_STATE_SCANNING; // assume started if no introspection
+        if (state === SCANNER_STATE_SCANNING || state === SCANNER_STATE_PAUSED) {
+            scanner.stop().catch(() => {});
+        }
+    } catch (_) {
+        // getState() threw - the scanner instance is probably dead.
+    }
+};
+
 export const BarcodeScanner = (props) => {
     const {
         open,
@@ -114,7 +140,7 @@ export const BarcodeScanner = (props) => {
                     onScanRef.current(decodedText);
 
                     if (!continuousRef.current) {
-                        html5QrCode.stop().catch(() => {});
+                        safeStopScanner(html5QrCode);
                         onCloseRef.current();
                     }
                 },
@@ -133,17 +159,19 @@ export const BarcodeScanner = (props) => {
         return () => {
             cancelled = true;
             if (html5QrCodeRef.current) {
-                html5QrCodeRef.current.stop().catch(() => {});
-                html5QrCodeRef.current.clear().catch(() => {});
+                safeStopScanner(html5QrCodeRef.current);
+                try {
+                    html5QrCodeRef.current.clear()?.catch?.(() => {});
+                } catch (_) {
+                    // clear() can also throw synchronously on a stopped scanner.
+                }
                 html5QrCodeRef.current = null;
             }
         };
     }, [open]);
 
     const handleClose = useCallback(() => {
-        if (html5QrCodeRef.current) {
-            html5QrCodeRef.current.stop().catch(() => {});
-        }
+        safeStopScanner(html5QrCodeRef.current);
         onClose();
     }, [onClose]);
 

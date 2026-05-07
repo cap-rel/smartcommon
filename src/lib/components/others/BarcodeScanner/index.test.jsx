@@ -16,16 +16,23 @@ const { instances, capturedCb, formats } = vi.hoisted(() => ({
 }));
 
 vi.mock("html5-qrcode", () => {
+    // Html5QrcodeScannerState: NOT_STARTED=1, SCANNING=2, PAUSED=3
     class FakeHtml5Qrcode {
         constructor(elementId, options) {
             this.elementId = elementId;
             this.options = options;
+            this.state = 1; // NOT_STARTED until start() resolves
             this.start = vi.fn().mockImplementation((camera, config, onSuccess) => {
+                this.state = 2; // SCANNING
                 capturedCb.successCallback = onSuccess;
                 return Promise.resolve();
             });
-            this.stop = vi.fn().mockResolvedValue(undefined);
+            this.stop = vi.fn().mockImplementation(() => {
+                this.state = 1; // back to NOT_STARTED
+                return Promise.resolve();
+            });
             this.clear = vi.fn().mockResolvedValue(undefined);
+            this.getState = vi.fn().mockImplementation(() => this.state);
             instances.push(this);
         }
     }
@@ -152,6 +159,78 @@ describe("BarcodeScanner", () => {
 
             expect(instances[0].stop).toHaveBeenCalled();
             expect(instances[0].clear).toHaveBeenCalled();
+        });
+    });
+
+    describe("safe stop guard", () => {
+        it("does not call stop() when the scanner is in NOT_STARTED state", async () => {
+            const { unmount } = render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances.length).toBe(1);
+            });
+
+            // Simulate an instance that was reset / never actually started
+            instances[0].state = 1; // NOT_STARTED
+            instances[0].stop.mockClear();
+
+            unmount();
+
+            // The guard must short-circuit so stop() is never called
+            expect(instances[0].stop).not.toHaveBeenCalled();
+        });
+
+        it("does call stop() when the scanner is in PAUSED state", async () => {
+            const { unmount } = render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances.length).toBe(1);
+            });
+
+            instances[0].state = 3; // PAUSED
+            instances[0].stop.mockClear();
+
+            unmount();
+
+            expect(instances[0].stop).toHaveBeenCalled();
+        });
+
+        it("tolerates getState() throwing without crashing the cleanup", async () => {
+            const { unmount } = render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances.length).toBe(1);
+            });
+
+            instances[0].getState = () => {
+                throw new Error("dead instance");
+            };
+
+            expect(() => unmount()).not.toThrow();
+        });
+
+        it("does not throw when handleClose is called twice", async () => {
+            const onClose = vi.fn();
+            render(<BarcodeScanner open onClose={onClose} onScan={() => {}} />);
+
+            await waitFor(() => {
+                expect(instances.length).toBe(1);
+            });
+
+            // First close: scanner gets stopped, state is NOT_STARTED
+            // Second close: must not throw despite stop() being a no-op now
+            const closeButton = screen.getByLabelText("Close");
+            expect(() => {
+                fireEvent.click(closeButton);
+                fireEvent.click(closeButton);
+            }).not.toThrow();
+            expect(onClose).toHaveBeenCalledTimes(2);
         });
     });
 

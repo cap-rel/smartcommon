@@ -101,6 +101,25 @@ describe("ErrorBoundary", () => {
         expect(wasLoggedByBoundary).toBe(true);
     });
 
+    it("logs the error stack and the component stack explicitly", () => {
+        render(
+            <ErrorBoundary>
+                <Boom message="stack-test" />
+            </ErrorBoundary>
+        );
+
+        const boundaryCall = consoleErrorSpy.mock.calls.find(
+            (args) => typeof args[0] === "string" && args[0].includes("ErrorBoundary caught an error")
+        );
+        expect(boundaryCall).toBeDefined();
+        // Args layout: [prefix, message, "\nStack:", error.stack, "\nComponent stack:", componentStack]
+        const flat = boundaryCall.join(" ");
+        expect(flat).toMatch(/Stack:/);
+        expect(flat).toMatch(/Component stack:/);
+        // The component stack mentions the throwing component (Boom)
+        expect(flat).toMatch(/Boom/);
+    });
+
     it("resets state when the default Réessayer button is clicked", () => {
         let shouldThrow = true;
         const Toggle = () => {

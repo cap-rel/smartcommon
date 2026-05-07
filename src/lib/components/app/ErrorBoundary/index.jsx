@@ -14,8 +14,16 @@ export class ErrorBoundary extends Component {
     componentDidCatch(error, errorInfo) {
         this.setState({ errorInfo });
 
-        // Log to console in development
-        console.error("ErrorBoundary caught an error:", error, errorInfo);
+        // Log to console with the error's own stack first (more useful than
+        // React's componentStack which is minified in production builds and
+        // requires sourcemaps to be readable). The componentStack is still
+        // dumped after for context.
+        console.error(
+            "ErrorBoundary caught an error:",
+            error?.message || error,
+            "\nStack:", error?.stack,
+            "\nComponent stack:", errorInfo?.componentStack
+        );
 
         // Call optional onError callback
         if (this.props.onError) {
