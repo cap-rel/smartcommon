@@ -46,11 +46,21 @@ export const Button = (props) => {
             `,
             disabled: loading || disabled || isFormSubmitting,
             onClick: (e) => {
-                e.preventDefault();
-                onClick(e);
-
-                if (isInForm && isSubmitType) {
+                // type=submit + smartcommon <Form> provider: cancel native
+                // submit and route through the provider state machine.
+                // type=submit + no provider: let the browser dispatch the
+                // native submit so a plain <form onSubmit> consumer fires.
+                // Other types: cancel to avoid the implicit-submit pitfall
+                // when the button is nested in a <form>.
+                if (isSubmitType && isInForm) {
+                    e.preventDefault();
+                    onClick(e);
                     submit(e);
+                } else if (!isSubmitType) {
+                    e.preventDefault();
+                    onClick(e);
+                } else {
+                    onClick(e);
                 }
             }
         }))}>

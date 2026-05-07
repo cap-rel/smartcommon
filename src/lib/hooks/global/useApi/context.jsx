@@ -272,13 +272,28 @@ export const useApiContext = () => {
                     const { gst: currentGst } = valuesRef.current;
                     const expiresIn = data.expires_in ?? 0;
 
+                    // Mirror loginMap: surface devices_choice as deviceOptions
+                    // so the consumer's RouteGuard routes the user through
+                    // the same device-naming/selection page as /login does.
                     currentGst.local.set("user", {
                         accessToken: data.access_token,
                         refreshToken: data.refresh_token,
                         expiresIn,
                         deviceUuid: data.device_uuid,
+                        deviceOptions: data.devices_choice,
                         tokenExpiry: floor(Date.now() / 1000) + expiresIn,
                     });
+
+                    // Echo the camelCase aliases on the resolved value too,
+                    // so consumer onSuccess({ ...data }) handlers that
+                    // hydrate a Redux store see id / username / deviceOptions
+                    // exactly like loginMap returns for /login.
+                    return {
+                        ...data,
+                        id: data.userid,
+                        username: data.user,
+                        deviceOptions: data.devices_choice,
+                    };
                 }
 
                 return data;

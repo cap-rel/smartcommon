@@ -256,7 +256,7 @@ export const LoginComponent = (props) => {
                 <Input
                     id="login-email"
                     name="email"
-                    type="email"
+                    type="text"
                     label={labels.emailLabel}
                     placeholder={labels.emailPlaceholder}
                     value={email}
