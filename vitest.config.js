@@ -13,8 +13,11 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/lib/tests/setup.js'],
     include: ['src/**/*.{test,spec}.{js,jsx}'],
-    isolate: false,
-    fileParallelism: false,
+    // isolate:true (Vitest default) is required so vi.mock() factories don't
+    // leak across files and previously-resolved modules aren't cached without
+    // their mock. Setting isolate:false caused mocked provider hooks to be
+    // shadowed by real imports loaded by an earlier test file.
+    isolate: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
