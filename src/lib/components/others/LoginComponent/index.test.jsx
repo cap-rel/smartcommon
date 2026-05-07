@@ -609,6 +609,78 @@ describe("LoginComponent - QR pair mode", () => {
         expect(onError).toHaveBeenCalled();
     });
 
+    describe("dedicated overlay during claim/poll", () => {
+        const id = "deadbeef".repeat(4);
+
+        it("closes the scanner and opens the dedicated overlay during qr-claiming", async () => {
+            // Make claim hang so we observe the qr-claiming state cleanly
+            let resolveClaim;
+            fakeApi.claimQrPair = vi.fn(() => new Promise((r) => { resolveClaim = r; }));
+
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+
+            await act(async () => {
+                scannerProps.current.onScan(id);
+            });
+
+            // Scanner closed
+            expect(screen.queryByTestId("scanner-stub")).toBeNull();
+            // Overlay visible with the claiming message
+            expect(screen.getByRole("status")).toBeDefined();
+            expect(screen.getByText(/Connexion au serveur/)).toBeDefined();
+
+            // cleanup so the pending promise doesn't leak
+            await act(async () => {
+                resolveClaim?.({ status: "claimed", claim_token: "tok-1" });
+            });
+        });
+
+        it("shows the polling message during qr-polling", async () => {
+            fakeApi.claimQrPair = vi.fn().mockResolvedValue({
+                status: "claimed",
+                claim_token: "tok-1",
+            });
+            // Hang the poll so we stay in qr-polling
+            fakeApi.pollQrPair = vi.fn(() => new Promise(() => {}));
+
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+
+            await act(async () => {
+                await scannerProps.current.onScan(id);
+            });
+
+            expect(screen.queryByTestId("scanner-stub")).toBeNull();
+            expect(screen.getByText(/En attente de la confirmation/)).toBeDefined();
+        });
+
+        it("returns to password mode when the overlay 'Annuler' button is clicked", async () => {
+            fakeApi.claimQrPair = vi.fn().mockResolvedValue({
+                status: "claimed",
+                claim_token: "tok-1",
+            });
+            fakeApi.pollQrPair = vi.fn(() => new Promise(() => {}));
+
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+
+            await act(async () => {
+                await scannerProps.current.onScan(id);
+            });
+
+            expect(screen.getByRole("status")).toBeDefined();
+
+            await act(async () => {
+                fireEvent.click(screen.getByRole("button", { name: "Annuler" }));
+            });
+
+            // Overlay gone, scan button visible again (password mode)
+            expect(screen.queryByRole("status")).toBeNull();
+            expect(screen.getByText(/Scanner un QR code/i)).toBeDefined();
+        });
+    });
+
     describe("idempotence guard", () => {
         it("ignores a duplicate scan of the same code", async () => {
             const id = "deadbeef".repeat(4);

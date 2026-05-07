@@ -42,6 +42,7 @@ export const propTypes = {
     submitButtonProps: PropTypes.object,
     scanQrButtonProps: PropTypes.object,
     qrSeparatorProps: PropTypes.object,
+    qrOverlayProps: PropTypes.object,
     errorAlertProps: PropTypes.object,
     qrErrorAlertProps: PropTypes.object,
 

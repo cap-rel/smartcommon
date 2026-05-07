@@ -39,6 +39,7 @@ export const LoginComponent = (props) => {
         submitButtonProps = {},
         scanQrButtonProps = {},
         qrSeparatorProps = {},
+        qrOverlayProps = {},
         errorAlertProps = {},
         qrErrorAlertProps = {},
         labels: userLabels = {},
@@ -234,15 +235,12 @@ export const LoginComponent = (props) => {
     // ---------------------- render ----------------------
 
     const isFormDisabled = isLoggingIn || isGettingEntities;
-    const scannerOpen = mode === "qr-scanning"
-        || mode === "qr-claiming"
-        || mode === "qr-polling";
-
-    const scannerFeedback = mode === "qr-claiming"
-        ? <p className="text-white text-center">{labels.claimingMessage}</p>
-        : mode === "qr-polling"
-            ? <p className="text-white text-center">{labels.pollingMessage}</p>
-            : null;
+    // Scanner is only open during the actual scan. Once we have the pairing
+    // id and start /claim or /poll, we close the camera and show a
+    // dedicated full-screen overlay (clearer UX than overlaying text on the
+    // viewfinder, and a single Cancel button gets the user back).
+    const scannerOpen = mode === "qr-scanning";
+    const isClaimingOrPolling = mode === "qr-claiming" || mode === "qr-polling";
 
     return (
         <div
@@ -391,8 +389,31 @@ export const LoginComponent = (props) => {
                     onScan={handleQrScan}
                     formats={["QR_CODE"]}
                     labels={{ title: labels.scannerTitle }}
-                    feedbackContent={scannerFeedback}
                 />
+            )}
+
+            {isClaimingOrPolling && (
+                <div
+                    role="status"
+                    aria-live="polite"
+                    {...qrOverlayProps}
+                    className={twMerge(
+                        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 text-white p-6",
+                        qrOverlayProps.className
+                    )}
+                >
+                    <div className="size-16 border-4 border-white/30 border-t-white rounded-full animate-spin" />
+                    <p className="mt-6 text-center text-lg max-w-md">
+                        {mode === "qr-claiming" ? labels.claimingMessage : labels.pollingMessage}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={handleQrClose}
+                        className="mt-8 px-6 py-2 rounded-full border border-white/40 hover:bg-white/10"
+                    >
+                        {labels.cancelQrLabel}
+                    </button>
+                </div>
             )}
         </div>
     );
