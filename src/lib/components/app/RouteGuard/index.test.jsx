@@ -20,6 +20,7 @@ const renderAt = (initial, ui) =>
                 <Route path="/login" element={<p>login page</p>} />
                 <Route path="/" element={<p>home page</p>} />
                 <Route path="/dashboard" element={ui} />
+                <Route path="/identify-device" element={<p>identify device page</p>} />
                 <Route path="/custom-redirect" element={<p>custom destination</p>} />
             </Routes>
         </MemoryRouter>
@@ -145,6 +146,116 @@ describe("RouteGuard", () => {
                 </RouteGuard>
             );
             expect(screen.getByText("conflicted content")).toBeDefined();
+        });
+    });
+
+    describe("requireDeviceIdentification (Pre layout)", () => {
+        it("renders when authenticated user has deviceOptions", () => {
+            fakeApi.user = { id: 1, deviceOptions: [{ id: 1, label: "Tablet 1" }] };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentification>
+                    <p>device identification form</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("device identification form")).toBeDefined();
+        });
+
+        it("redirects to / when authenticated user has no deviceOptions", () => {
+            fakeApi.user = { id: 1 };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentification>
+                    <p>device identification form</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("home page")).toBeDefined();
+        });
+
+        it("redirects to /login when no user is authenticated", () => {
+            fakeApi.user = undefined;
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentification>
+                    <p>device identification form</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("login page")).toBeDefined();
+        });
+
+        it("uses a custom redirectTo when user is identified already", () => {
+            fakeApi.user = { id: 1 };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentification redirectTo="/custom-redirect">
+                    <p>device identification form</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("custom destination")).toBeDefined();
+        });
+    });
+
+    describe("requireDeviceIdentified (Post layout)", () => {
+        it("renders when authenticated user has no deviceOptions (already identified)", () => {
+            fakeApi.user = { id: 1 };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentified>
+                    <p>private content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("private content")).toBeDefined();
+        });
+
+        it("redirects to /identify-device when user still has deviceOptions", () => {
+            fakeApi.user = { id: 1, deviceOptions: [{ id: 1, label: "Tablet 1" }] };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentified>
+                    <p>private content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("identify device page")).toBeDefined();
+        });
+
+        it("redirects to /login when no user is authenticated", () => {
+            fakeApi.user = undefined;
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentified>
+                    <p>private content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("login page")).toBeDefined();
+        });
+
+        it("uses a custom redirectTo when user still needs to identify a device", () => {
+            fakeApi.user = { id: 1, deviceOptions: [{ id: 1, label: "Tablet 1" }] };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentified redirectTo="/custom-redirect">
+                    <p>private content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("custom destination")).toBeDefined();
+        });
+    });
+
+    describe("device modes conflict", () => {
+        it("warns and falls back to requireDeviceIdentification when both device modes are set", () => {
+            fakeApi.user = { id: 1, deviceOptions: [{ id: 1, label: "Tablet 1" }] };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireDeviceIdentification requireDeviceIdentified>
+                    <p>conflicted device content</p>
+                </RouteGuard>
+            );
+            // requireDeviceIdentification wins -> with deviceOptions present,
+            // the content is rendered.
+            expect(screen.getByText("conflicted device content")).toBeDefined();
+            expect(consoleWarnSpy).toHaveBeenCalledWith(
+                expect.stringMatching(/RouteGuard.*device.*both/i)
+            );
         });
     });
 

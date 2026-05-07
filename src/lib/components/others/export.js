@@ -4,6 +4,7 @@ export * from "./Calculator";
 export * from "./Calculator/useCalculator";
 export * from "./Chart";
 export * from "./DataTable";
+export * from "./DeviceIdentificationComponent";
 // export * from "./Help";
 // export * from "./Icon";
 export * from "./LazyLink";
