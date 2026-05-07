@@ -15,7 +15,7 @@ export const LoginComponent = (props) => {
         getErrorLabel,
         showEntities = true,
         showRememberMe = false,
-        enableQrPair = false,
+        enableQrPair = true,
         qrPollIntervalMs = 2000,
         qrTimeoutMs = 120000,
         deviceLabel,
@@ -31,6 +31,7 @@ export const LoginComponent = (props) => {
         booleanProps = {},
         submitButtonProps = {},
         scanQrButtonProps = {},
+        qrSeparatorProps = {},
         errorAlertProps = {},
         qrErrorAlertProps = {},
         labels: userLabels = {},
@@ -310,19 +311,41 @@ export const LoginComponent = (props) => {
             </form>
 
             {enableQrPair && (
-                <button
-                    type="button"
-                    onClick={startQrFlow}
-                    disabled={isFormDisabled}
-                    {...scanQrButtonProps}
-                    className={twMerge(
-                        "flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50",
-                        scanQrButtonProps.className
-                    )}
-                >
-                    <FaQrcode />
-                    <span>{labels.scanQrLabel}</span>
-                </button>
+                <>
+                    <div
+                        {...qrSeparatorProps}
+                        className={twMerge(
+                            "relative my-2",
+                            qrSeparatorProps.className
+                        )}
+                    >
+                        <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-border" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="px-3 bg-soft-bg text-soft-text">
+                                {labels.qrSeparator}
+                            </span>
+                        </div>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={startQrFlow}
+                        disabled={isFormDisabled}
+                        {...scanQrButtonProps}
+                        className={twMerge(
+                            "flex items-center justify-center gap-3 w-full py-3 px-4 " +
+                            "rounded-app-md border border-border bg-soft-bg " +
+                            "hover:brightness-soft shadow-sm font-app-medium text-app-base " +
+                            "transition-all disabled:opacity-50",
+                            scanQrButtonProps.className
+                        )}
+                    >
+                        <FaQrcode className="text-xl text-primary" />
+                        <span>{labels.scanQrLabel}</span>
+                    </button>
+                </>
             )}
 
             {mode === "qr-error" && qrError && (

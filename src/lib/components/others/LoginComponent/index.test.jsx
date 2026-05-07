@@ -376,9 +376,36 @@ describe("LoginComponent - QR pair mode", () => {
         vi.clearAllMocks();
     });
 
-    it("hides the QR scan button when enableQrPair is false", () => {
-        render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
+    it("hides the QR scan button when enableQrPair is explicitly false", () => {
+        render(
+            <LoginComponent
+                onSuccess={() => {}}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
         expect(screen.queryByText(/Scanner un QR code/i)).toBeNull();
+    });
+
+    it("shows the QR scan button by default (smartAuth assumed)", () => {
+        render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
+        expect(screen.getByText(/Scanner un QR code/i)).toBeDefined();
+    });
+
+    it("shows the 'or' separator above the QR button when enabled", () => {
+        render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
+        expect(screen.getByText("ou")).toBeDefined();
+    });
+
+    it("hides the 'or' separator when QR is disabled", () => {
+        render(
+            <LoginComponent
+                onSuccess={() => {}}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+        expect(screen.queryByText("ou")).toBeNull();
     });
 
     it("opens the scanner when the QR button is clicked", () => {

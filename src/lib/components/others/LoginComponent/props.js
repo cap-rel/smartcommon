@@ -32,6 +32,7 @@ export const propTypes = {
     booleanProps: PropTypes.object,
     submitButtonProps: PropTypes.object,
     scanQrButtonProps: PropTypes.object,
+    qrSeparatorProps: PropTypes.object,
     errorAlertProps: PropTypes.object,
     qrErrorAlertProps: PropTypes.object,
 
@@ -45,6 +46,7 @@ export const propTypes = {
         rememberMeLabel: PropTypes.string,
         submitLabel: PropTypes.string,
         scanQrLabel: PropTypes.string,
+        qrSeparator: PropTypes.string,
         cancelQrLabel: PropTypes.string,
         scannerTitle: PropTypes.string,
         claimingMessage: PropTypes.string,
@@ -62,7 +64,10 @@ export const propTypes = {
 export const defaultProps = {
     showEntities: true,
     showRememberMe: false,
-    enableQrPair: false,
+    // QR pair is on by default: smartcommon assumes a smartAuth backend, and
+    // smartAuth ships the /qr-pair endpoints. Pass false explicitly only if
+    // your backend genuinely doesn't expose them.
+    enableQrPair: true,
     qrPollIntervalMs: 2000,
     qrTimeoutMs: 120000,
     abortTimeoutMs: 15000,
@@ -79,6 +84,7 @@ export const DEFAULT_LABELS = {
     rememberMeLabel: "Se souvenir de moi",
     submitLabel: "Se connecter",
     scanQrLabel: "Scanner un QR code",
+    qrSeparator: "ou",
     cancelQrLabel: "Annuler",
     scannerTitle: "Scanner le QR code de pairing",
     claimingMessage: "Connexion au serveur...",
