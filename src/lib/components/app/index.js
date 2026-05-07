@@ -4,6 +4,7 @@ export * from "./Provider";
 export * from "./ReduxProvider";
 export * from "./Router";
 export * from "./ErrorBoundary";
+export * from "./RouteGuard";
 export * from "./UpdatePrompt";
 
 export * from "./LibConfigProvider";
