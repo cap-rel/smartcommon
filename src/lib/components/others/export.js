@@ -1,4 +1,5 @@
 export * from "./AboutModal";
+export * from "./BarcodeScanner";
 export * from "./Calculator";
 export * from "./Calculator/useCalculator";
 export * from "./Chart";
@@ -15,3 +16,4 @@ export * from "./Stepper";
 export * from "./DebugConsole";
 export * from "./DebugWarnings";
 export * from "./KeyboardStickyAction";
+export * from "./LoginComponent";

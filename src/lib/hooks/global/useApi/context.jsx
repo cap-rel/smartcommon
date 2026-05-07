@@ -212,6 +212,61 @@ export const useApiContext = () => {
             });
     }, [publicApi]);
 
+    // ---------------------- QR pairing (smartAuth) ----------------------
+    //
+    // claimQrPair: mobile claims a pairing_id displayed by the PC side.
+    //   POST /qr-pair/{pairing_id}/claim  body: { device_label?, device_uuid? }
+    //   200 -> { status: 'claimed', claim_token }
+    //
+    // pollQrPair: mobile polls until the PC user confirms in Dolibarr.
+    //   POST /qr-pair/{pairing_id}/poll   body: { claim_token }
+    //   200 -> one of:
+    //     { status: 'pending'   }                 keep polling
+    //     { status: 'cancelled' | 'expired' }     stop
+    //     { status: 'consumed', access_token, refresh_token, expires_in,
+    //       device_uuid }                         logged in
+    // When status === 'consumed' we persist the user in local storage
+    // (QR pairing is by design "this is a trusted device").
+
+    const claimQrPair = useMemo(() => (pairingId, body = {}, options = {}) => {
+        throwTypeError({ value: body, name: "body (param)", type: ["plain object"] });
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return publicApi
+            .post(`qr-pair/${pairingId}/claim`, {
+                json: body,
+                ...options,
+            })
+            .json();
+    }, [publicApi]);
+
+    const pollQrPair = useMemo(() => (pairingId, claimToken, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return publicApi
+            .post(`qr-pair/${pairingId}/poll`, {
+                json: { claim_token: claimToken },
+                ...options,
+            })
+            .json()
+            .then((data) => {
+                if (data?.status === "consumed" && data?.access_token) {
+                    const { gst: currentGst } = valuesRef.current;
+                    const expiresIn = data.expires_in ?? 0;
+
+                    currentGst.local.set("user", {
+                        accessToken: data.access_token,
+                        refreshToken: data.refresh_token,
+                        expiresIn,
+                        deviceUuid: data.device_uuid,
+                        tokenExpiry: floor(Date.now() / 1000) + expiresIn,
+                    });
+                }
+
+                return data;
+            });
+    }, [publicApi]);
+
     // ---------------------- privateApi ----------------------
 
     const privateApi = useMemo(() => {
@@ -408,6 +463,8 @@ export const useApiContext = () => {
         logout,
         device,
         identifyDevice: device,
+        claimQrPair,
+        pollQrPair,
         public: publicApi,
         private: privateApi,
         get,
@@ -415,5 +472,5 @@ export const useApiContext = () => {
         put,
         patch,
         del,
-    }), [user, entities, login, logout, device, publicApi, privateApi, get, post, put, patch, del]);
+    }), [user, entities, login, logout, device, claimQrPair, pollQrPair, publicApi, privateApi, get, post, put, patch, del]);
 };
