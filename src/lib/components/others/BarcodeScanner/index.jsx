@@ -1,0 +1,247 @@
+import { useState, useEffect, useRef, useCallback } from "react";
+import { FaXmark, FaKeyboard } from "react-icons/fa6";
+
+import {
+    DEFAULT_FORMATS,
+    DEFAULT_LABELS,
+    defaultProps,
+    propTypes,
+} from "./props";
+
+const SCANNER_ELEMENT_ID = "barcode-scanner-region";
+
+export const BarcodeScanner = (props) => {
+    const {
+        open,
+        onClose,
+        onScan,
+        continuous = false,
+        formats = DEFAULT_FORMATS,
+        fps = 10,
+        qrbox = { width: 280, height: 150 },
+        debounceMs = 1500,
+        feedbackContent,
+        labels: userLabels = {},
+    } = props;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+    const html5QrCodeRef = useRef(null);
+    const lastScanRef = useRef(null);
+    const onScanRef = useRef(onScan);
+    const onCloseRef = useRef(onClose);
+    const continuousRef = useRef(continuous);
+    const debounceMsRef = useRef(debounceMs);
+    const formatsRef = useRef(formats);
+    const fpsRef = useRef(fps);
+    const qrboxRef = useRef(qrbox);
+    const cameraErrorLabelRef = useRef(labels.cameraError);
+    const cameraPermissionLabelRef = useRef(labels.cameraPermissionDenied);
+
+    const [cameraError, setCameraError] = useState(null);
+    const [showManualEntry, setShowManualEntry] = useState(false);
+    const [manualBarcode, setManualBarcode] = useState("");
+
+    useEffect(() => { onScanRef.current = onScan; }, [onScan]);
+    useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+    useEffect(() => { continuousRef.current = continuous; }, [continuous]);
+    useEffect(() => { debounceMsRef.current = debounceMs; }, [debounceMs]);
+    useEffect(() => { formatsRef.current = formats; }, [formats]);
+    useEffect(() => { fpsRef.current = fps; }, [fps]);
+    useEffect(() => { qrboxRef.current = qrbox; }, [qrbox]);
+    useEffect(() => {
+        cameraErrorLabelRef.current = labels.cameraError;
+        cameraPermissionLabelRef.current = labels.cameraPermissionDenied;
+    });
+
+    useEffect(() => {
+        if (!open) return undefined;
+
+        setCameraError(null);
+        setShowManualEntry(false);
+        setManualBarcode("");
+        lastScanRef.current = null;
+
+        let cancelled = false;
+
+        // html5-qrcode is heavy (~150kB). Lazy-load it only when the scanner
+        // actually opens so projects that never scan don't pay for it.
+        (async () => {
+            let mod;
+            try {
+                mod = await import("html5-qrcode");
+            } catch (err) {
+                console.error("[BarcodeScanner] failed to load html5-qrcode:", err);
+                if (!cancelled) {
+                    setCameraError(cameraErrorLabelRef.current);
+                }
+                return;
+            }
+            if (cancelled) return;
+
+            const { Html5Qrcode, Html5QrcodeSupportedFormats } = mod;
+
+            const formatsToSupport = formatsRef.current
+                .map((name) => Html5QrcodeSupportedFormats[name])
+                .filter((v) => v !== undefined);
+
+            const html5QrCode = new Html5Qrcode(SCANNER_ELEMENT_ID, {
+                formatsToSupport,
+                verbose: false,
+            });
+            html5QrCodeRef.current = html5QrCode;
+
+            const config = { fps: fpsRef.current, qrbox: qrboxRef.current };
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                config,
+                (decodedText) => {
+                    const now = Date.now();
+                    if (
+                        lastScanRef.current
+                        && lastScanRef.current.text === decodedText
+                        && now - lastScanRef.current.time < debounceMsRef.current
+                    ) {
+                        return;
+                    }
+                    lastScanRef.current = { text: decodedText, time: now };
+
+                    if (navigator.vibrate) {
+                        navigator.vibrate(100);
+                    }
+
+                    onScanRef.current(decodedText);
+
+                    if (!continuousRef.current) {
+                        html5QrCode.stop().catch(() => {});
+                        onCloseRef.current();
+                    }
+                },
+                () => {}
+            ).catch((err) => {
+                if (cancelled) return;
+                const message = typeof err === "string" ? err : err?.message || "";
+                if (message.toLowerCase().includes("permission")) {
+                    setCameraError(cameraPermissionLabelRef.current);
+                } else {
+                    setCameraError(cameraErrorLabelRef.current);
+                }
+            });
+        })();
+
+        return () => {
+            cancelled = true;
+            if (html5QrCodeRef.current) {
+                html5QrCodeRef.current.stop().catch(() => {});
+                html5QrCodeRef.current.clear().catch(() => {});
+                html5QrCodeRef.current = null;
+            }
+        };
+    }, [open]);
+
+    const handleClose = useCallback(() => {
+        if (html5QrCodeRef.current) {
+            html5QrCodeRef.current.stop().catch(() => {});
+        }
+        onClose();
+    }, [onClose]);
+
+    const handleManualSubmit = useCallback(() => {
+        const trimmed = manualBarcode.trim();
+        if (!trimmed) return;
+
+        if (navigator.vibrate) {
+            navigator.vibrate(100);
+        }
+
+        onScan(trimmed);
+
+        if (!continuous) {
+            handleClose();
+        } else {
+            setManualBarcode("");
+        }
+    }, [manualBarcode, onScan, continuous, handleClose]);
+
+    if (!open) return null;
+
+    return (
+        <div
+            data-component="BarcodeScanner"
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col"
+        >
+            <div className="flex items-center justify-between px-4 py-3 bg-black/50">
+                <h2 className="text-white font-semibold text-lg">{labels.title}</h2>
+                <button
+                    type="button"
+                    onClick={handleClose}
+                    className="p-2 rounded-full text-white hover:bg-white/20"
+                    aria-label="Close"
+                >
+                    <FaXmark className="text-xl" />
+                </button>
+            </div>
+
+            <div className="flex-1 flex flex-col items-center justify-center px-4">
+                {cameraError ? (
+                    <div className="bg-red-900/50 border border-red-500 rounded-xl p-6 max-w-sm text-center">
+                        <p className="text-red-200 mb-4">{cameraError}</p>
+                        <button
+                            type="button"
+                            onClick={() => setShowManualEntry(true)}
+                            className="px-4 py-2 bg-white text-gray-900 rounded-lg font-medium"
+                        >
+                            {labels.enterManually}
+                        </button>
+                    </div>
+                ) : (
+                    <div
+                        id={SCANNER_ELEMENT_ID}
+                        className="w-full max-w-md rounded-xl overflow-hidden"
+                    />
+                )}
+            </div>
+
+            {feedbackContent && (
+                <div className="px-4 py-2">{feedbackContent}</div>
+            )}
+
+            <div className="px-4 pb-6 pt-2">
+                {showManualEntry || cameraError ? (
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={manualBarcode}
+                            onChange={(e) => setManualBarcode(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+                            placeholder={labels.manualPlaceholder}
+                            className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/50 border border-white/20 focus:border-primary focus:outline-none"
+                            autoFocus
+                        />
+                        <button
+                            type="button"
+                            onClick={handleManualSubmit}
+                            disabled={!manualBarcode.trim()}
+                            className="px-6 py-3 bg-primary text-white rounded-xl font-semibold disabled:opacity-50"
+                        >
+                            {labels.validate}
+                        </button>
+                    </div>
+                ) : (
+                    <button
+                        type="button"
+                        onClick={() => setShowManualEntry(true)}
+                        className="w-full flex items-center justify-center gap-2 py-3 text-white/70 hover:text-white"
+                    >
+                        <FaKeyboard />
+                        <span>{labels.enterManually}</span>
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
+BarcodeScanner.propTypes = propTypes;
+BarcodeScanner.defaultProps = defaultProps;
