@@ -11,6 +11,7 @@ export const LoginComponent = (props) => {
     const {
         onSuccess,
         onError,
+        getErrorLabel,
         showEntities = true,
         showRememberMe = false,
         enableQrPair = false,
@@ -19,10 +20,24 @@ export const LoginComponent = (props) => {
         deviceLabel,
         deviceUuid,
         abortTimeoutMs = 15000,
+        entitiesTimeoutMs,
+        loginTimeoutMs,
+        containerProps = {},
+        formProps = {},
+        inputProps = {},
+        passwordInputProps = {},
+        selectProps = {},
+        booleanProps = {},
+        submitButtonProps = {},
+        scanQrButtonProps = {},
+        errorAlertProps = {},
+        qrErrorAlertProps = {},
         labels: userLabels = {},
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const resolvedEntitiesTimeoutMs = entitiesTimeoutMs ?? abortTimeoutMs;
+    const resolvedLoginTimeoutMs = loginTimeoutMs ?? abortTimeoutMs;
 
     const api = useApi();
 
@@ -60,7 +75,7 @@ export const LoginComponent = (props) => {
         let cancelled = false;
         setIsGettingEntities(true);
 
-        api.getEntities({ signal: AbortSignal.timeout(abortTimeoutMs) })
+        api.getEntities({ signal: AbortSignal.timeout(resolvedEntitiesTimeoutMs) })
             .then((data) => {
                 if (cancelled) return;
                 setEntities(data?.entities ?? []);
@@ -75,16 +90,15 @@ export const LoginComponent = (props) => {
             });
 
         return () => { cancelled = true; };
-    }, [showEntities, api, abortTimeoutMs]);
+    }, [showEntities, api, resolvedEntitiesTimeoutMs]);
 
     // ---------------------- password submit ----------------------
 
+    // HTML5 `required` on the inputs handles the empty-fields case at the
+    // browser level (focus + native bubble per field). We don't duplicate
+    // that with a JS-only "required field" message.
     const handleSubmit = useCallback(async (e) => {
         if (e) e.preventDefault();
-        if (!email || !password) {
-            setSubmitError(labels.requiredField);
-            return;
-        }
         setSubmitError(null);
         setIsLoggingIn(true);
 
@@ -96,16 +110,17 @@ export const LoginComponent = (props) => {
                     entity: entity || undefined,
                     rememberMe,
                 },
-                { signal: AbortSignal.timeout(abortTimeoutMs) }
+                { signal: AbortSignal.timeout(resolvedLoginTimeoutMs) }
             );
             onSuccessRef.current?.(data);
         } catch (err) {
-            setSubmitError(labels.loginError);
+            const message = getErrorLabel?.(err) ?? labels.loginError;
+            setSubmitError(message);
             onErrorRef.current?.(err);
         } finally {
             setIsLoggingIn(false);
         }
-    }, [api, email, password, entity, rememberMe, abortTimeoutMs, labels.loginError, labels.requiredField]);
+    }, [api, email, password, entity, rememberMe, resolvedLoginTimeoutMs, labels.loginError, getErrorLabel]);
 
     // ---------------------- QR pairing ----------------------
 
@@ -212,8 +227,16 @@ export const LoginComponent = (props) => {
             : null;
 
     return (
-        <div data-component="LoginComponent" className="flex flex-col gap-4">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <div
+            data-component="LoginComponent"
+            {...containerProps}
+            className={`flex flex-col gap-4 ${containerProps.className || ""}`}
+        >
+            <form
+                onSubmit={handleSubmit}
+                {...formProps}
+                className={`flex flex-col gap-4 ${formProps.className || ""}`}
+            >
                 <Input
                     id="login-email"
                     name="email"
@@ -224,6 +247,7 @@ export const LoginComponent = (props) => {
                     onChange={setEmail}
                     readOnly={isFormDisabled}
                     required
+                    {...inputProps}
                 />
                 <Input
                     id="login-password"
@@ -235,6 +259,7 @@ export const LoginComponent = (props) => {
                     onChange={setPassword}
                     readOnly={isFormDisabled}
                     required
+                    {...passwordInputProps}
                 />
 
                 {showEntities && !isEmpty(entities) && (
@@ -247,6 +272,7 @@ export const LoginComponent = (props) => {
                         onChange={setEntity}
                         readOnly={isFormDisabled}
                         options={entities.map(({ id, label }) => ({ label, value: id }))}
+                        {...selectProps}
                     />
                 )}
 
@@ -259,11 +285,18 @@ export const LoginComponent = (props) => {
                         value={rememberMe}
                         onChange={setRememberMe}
                         readOnly={isFormDisabled}
+                        {...booleanProps}
                     />
                 )}
 
                 {submitError && (
-                    <p role="alert" className="text-red-600 text-sm">{submitError}</p>
+                    <p
+                        role="alert"
+                        {...errorAlertProps}
+                        className={`text-red-600 text-sm ${errorAlertProps.className || ""}`}
+                    >
+                        {submitError}
+                    </p>
                 )}
 
                 <Button
@@ -271,6 +304,7 @@ export const LoginComponent = (props) => {
                     label={labels.submitLabel}
                     loading={isLoggingIn}
                     disabled={isFormDisabled}
+                    {...submitButtonProps}
                 />
             </form>
 
@@ -279,7 +313,8 @@ export const LoginComponent = (props) => {
                     type="button"
                     onClick={startQrFlow}
                     disabled={isFormDisabled}
-                    className="flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50"
+                    {...scanQrButtonProps}
+                    className={`flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-gray-900 disabled:opacity-50 ${scanQrButtonProps.className || ""}`}
                 >
                     <FaQrcode />
                     <span>{labels.scanQrLabel}</span>
@@ -287,7 +322,11 @@ export const LoginComponent = (props) => {
             )}
 
             {mode === "qr-error" && qrError && (
-                <div role="alert" className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700">
+                <div
+                    role="alert"
+                    {...qrErrorAlertProps}
+                    className={`rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700 ${qrErrorAlertProps.className || ""}`}
+                >
                     <p>{qrError}</p>
                     <button
                         type="button"

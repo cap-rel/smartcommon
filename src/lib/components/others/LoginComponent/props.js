@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 export const propTypes = {
     onSuccess: PropTypes.func.isRequired,
     onError: PropTypes.func,
+    // Override the inline error label by inspecting the thrown error
+    // (typically err.response?.status). Default returns labels.loginError.
+    getErrorLabel: PropTypes.func,
 
     showEntities: PropTypes.bool,
     showRememberMe: PropTypes.bool,
@@ -13,7 +16,24 @@ export const propTypes = {
     deviceLabel: PropTypes.string,
     deviceUuid: PropTypes.string,
 
+    // abortTimeoutMs is the fallback when entitiesTimeoutMs / loginTimeoutMs
+    // are not provided. Kept for backward compatibility.
     abortTimeoutMs: PropTypes.number,
+    entitiesTimeoutMs: PropTypes.number,
+    loginTimeoutMs: PropTypes.number,
+
+    // Styling slots: each one is spread onto the corresponding child so the
+    // consumer can match its own design system without a CSS override.
+    containerProps: PropTypes.object,
+    formProps: PropTypes.object,
+    inputProps: PropTypes.object,
+    passwordInputProps: PropTypes.object,
+    selectProps: PropTypes.object,
+    booleanProps: PropTypes.object,
+    submitButtonProps: PropTypes.object,
+    scanQrButtonProps: PropTypes.object,
+    errorAlertProps: PropTypes.object,
+    qrErrorAlertProps: PropTypes.object,
 
     labels: PropTypes.shape({
         emailLabel: PropTypes.string,
