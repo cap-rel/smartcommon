@@ -6,7 +6,7 @@ import { defaultProps, propTypes } from "./props";
 
 const LOGIN_PATH = "/login";
 const HOME_PATH = "/";
-const IDENTIFY_DEVICE_PATH = "/identify-device";
+const IDENTIFY_DEVICE_PATH = "/device-identification";
 
 export const RouteGuard = (props) => {
     const {

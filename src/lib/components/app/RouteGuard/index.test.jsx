@@ -20,7 +20,7 @@ const renderAt = (initial, ui) =>
                 <Route path="/login" element={<p>login page</p>} />
                 <Route path="/" element={<p>home page</p>} />
                 <Route path="/dashboard" element={ui} />
-                <Route path="/identify-device" element={<p>identify device page</p>} />
+                <Route path="/device-identification" element={<p>identify device page</p>} />
                 <Route path="/custom-redirect" element={<p>custom destination</p>} />
             </Routes>
         </MemoryRouter>
@@ -207,7 +207,7 @@ describe("RouteGuard", () => {
             expect(screen.getByText("private content")).toBeDefined();
         });
 
-        it("redirects to /identify-device when user still has deviceOptions", () => {
+        it("redirects to /device-identification when user still has deviceOptions", () => {
             fakeApi.user = { id: 1, deviceOptions: [{ id: 1, label: "Tablet 1" }] };
             renderAt(
                 "/dashboard",

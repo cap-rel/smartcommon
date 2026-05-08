@@ -19,7 +19,7 @@ export const propTypes = {
     //   requireAuth                  -> "/login"
     //   requireGuest                 -> "/"
     //   requireDeviceIdentification  -> "/" (user already identified)
-    //   requireDeviceIdentified      -> "/identify-device"
+    //   requireDeviceIdentified      -> "/device-identification"
     // For requireDeviceIdentification/Identified, when the user is missing
     // we always redirect to "/login" regardless of redirectTo.
     redirectTo: PropTypes.string,

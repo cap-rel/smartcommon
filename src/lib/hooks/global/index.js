@@ -1,4 +1,5 @@
 export * from "./useApi";
+export * from "./useConfirm";
 export * from "./useLibConfig";
 export * from "./useNavigation";
 export * from "./useGlobalStates";
