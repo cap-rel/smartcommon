@@ -234,7 +234,13 @@ export const LoginComponent = (props) => {
 
     // ---------------------- render ----------------------
 
-    const isFormDisabled = isLoggingIn || isGettingEntities;
+    // Only freeze the form while a login request is actually in flight.
+    // Locking the inputs while entities are loading (which can take seconds
+    // on a cold backend) silently swallowed every keystroke, including the
+    // ones from automated test runners that fill very quickly. Entities
+    // loading remains visible via the (still hidden) Select that only shows
+    // up once `entities` is non-empty.
+    const isFormDisabled = isLoggingIn;
     // Scanner is only open during the actual scan. Once we have the pairing
     // id and start /claim or /poll, we close the camera and show a
     // dedicated full-screen overlay (clearer UX than overlaying text on the

@@ -38,6 +38,13 @@ export const Button = (props) => {
     return (
         <button { ...mergeProps("button", props => ({
             ...props,
+            // Forward `type` to the DOM button so that consumers passing
+            // type="submit" still trigger native form submit (when the button
+            // sits in a plain <form> with onSubmit), and consumers passing
+            // type="button" don't accidentally submit a parent form.
+            // Default "button" matches HTML default for standalone buttons
+            // but is safer than "submit" inside a <form>.
+            type: type ?? "button",
             className: `relative flex justify-center items-center
             gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary

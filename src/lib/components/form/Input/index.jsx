@@ -176,20 +176,26 @@ export const Input = (props) => {
     return currentValue;
   };
 
+  // Returns the parsed value AND updates internal form state. Splitting this
+  // out lets us pass the parsed value (not the SyntheticEvent) to the
+  // consumer's onChange, matching the documented contract:
+  //   "Les composants Input et Select passent la valeur directement, pas un
+  //    event DOM."  (SMARTMAKER.md, anti-pattern 2)
   const handleInputOnChange = e => {
-    if (!disabled && !readOnly && !isFormSubmitting) {
-      let value = e.target.value;
+    if (disabled || readOnly || isFormSubmitting) return undefined;
 
-      if (numberTypes.includes(type)) {
-        value = Number(value);
-      } else if (datetimeTypes.includes(type)) {
-        value = (new Date(value)).getTime();
-      } else if (timeTypes.includes(type)) {
-        value = timeToMinutes(value);
-      }
+    let value = e.target.value;
 
-      setValue(value);
+    if (numberTypes.includes(type)) {
+      value = Number(value);
+    } else if (datetimeTypes.includes(type)) {
+      value = (new Date(value)).getTime();
+    } else if (timeTypes.includes(type)) {
+      value = timeToMinutes(value);
     }
+
+    setValue(value);
+    return value;
   };
 
   const removeStep = () => setValue(Number(currentValue) - step);
@@ -244,8 +250,13 @@ export const Input = (props) => {
           ...mergeQuickProps(["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {
-            handleInputOnChange(e);
-            applyFunctionIfNotNil(props.onChange, e);
+            // handleInputOnChange returns the *parsed* value (number/date/
+            // string) so we forward that to the consumer instead of the raw
+            // SyntheticEvent. Backward compat: anything that read e.target
+            // before is rare in practice; the documented contract was always
+            // "value directly". See SMARTMAKER.md anti-pattern 2.
+            const parsedValue = handleInputOnChange(e);
+            applyFunctionIfNotNil(props.onChange, parsedValue);
           },
           value: getDisplayValue(),
           type: props.type || filteredType
