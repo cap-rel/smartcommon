@@ -1,4 +1,5 @@
 export * from "./I18nextProvider";
+export * from "./RoutingAnimationLayout";
 export * from "./Toaster";
 export * from "./Provider";
 export * from "./ReduxProvider";
