@@ -3,7 +3,7 @@ default:
   cache:
     key:
       files:
-        - package-lock.json
+        - package.json
     paths:
       - node_modules/
   interruptible: true
@@ -26,7 +26,7 @@ test:
   extends: .skip-if-tagged
   stage: test
   script:
-    - npm ci
+    - npm install
     - npm run lint
     - npm run test:run
   rules:
@@ -41,7 +41,7 @@ publish-npm:
   rules:
     - if: $CI_COMMIT_TAG =~ /^v.*/
   script:
-    - npm ci
+    - npm install
     - npm run build
     - |
       cat > .npmrc <<EOF
