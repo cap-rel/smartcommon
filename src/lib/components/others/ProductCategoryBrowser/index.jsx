@@ -35,6 +35,11 @@ export const ProductCategoryBrowser = (props) => {
         defaultQty = 1,
         defaultDiscountPercent = 0,
 
+        // When provided in mode "quantity" / "quantity-discount", the browser
+        // opens directly on the confirm step with this product preselected.
+        // Used by callers that edit an existing line (annotation, cart row).
+        prefillProduct,
+
         showAllProductsTile = true,
         showUncategorizedTile = true,
 
@@ -68,17 +73,25 @@ export const ProductCategoryBrowser = (props) => {
     const [cart, setCart] = useState([]);
 
     // Reset internal state every time the modal opens, so a previous run does
-    // not leak into the next one.
+    // not leak into the next one. If prefillProduct is provided in a quantity
+    // mode, jump straight to the confirm step (edit-an-existing-line flow).
     useEffect(() => {
         if (!open) return;
-        setStep("browse");
         setParentId(null);
         setCategoryPath([]);
         setSearchInput("");
         setSearchDebounced("");
-        setSelectedProduct(null);
         setCart([]);
-    }, [open]);
+        const canPrefill = prefillProduct
+            && (mode === "quantity" || mode === "quantity-discount");
+        if (canPrefill) {
+            setStep("confirm");
+            setSelectedProduct(prefillProduct);
+        } else {
+            setStep("browse");
+            setSelectedProduct(null);
+        }
+    }, [open, prefillProduct, mode]);
 
     // Body scroll lock + escape key.
     useEffect(() => {

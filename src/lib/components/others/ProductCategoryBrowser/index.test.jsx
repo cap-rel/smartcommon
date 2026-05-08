@@ -434,6 +434,65 @@ describe("ProductCategoryBrowser - mode quantity-discount", () => {
     });
 });
 
+describe("ProductCategoryBrowser - edit / prefillProduct", () => {
+    afterEach(() => { vi.clearAllMocks(); });
+
+    it("jumps straight to the confirm step when prefillProduct is provided", async () => {
+        const existing = { id: 200, ref: "EDIT-1", label: "Edited line" };
+        const { onSelect, onClose } = renderBrowser({
+            mode: "quantity-discount",
+            prefillProduct: existing,
+            defaultQty: 5,
+            defaultDiscountPercent: 15,
+        });
+
+        await waitFor(() => {
+            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+        });
+
+        // Pre-filled values are visible.
+        expect(screen.getByDisplayValue("5")).toBeDefined();
+        expect(screen.getByDisplayValue("15")).toBeDefined();
+        expect(screen.getByText("Edited line")).toBeDefined();
+
+        fireEvent.click(screen.getByRole("button", { name: /Confirmer$/ }));
+
+        const payload = onSelect.mock.calls[0][0];
+        expect(payload.product).toMatchObject({ id: 200 });
+        expect(payload.qty).toBe(5);
+        expect(payload.discountPercent).toBe(15);
+        expect(onClose).toHaveBeenCalled();
+    });
+
+    it("ignores prefillProduct in mode 'select'", async () => {
+        const existing = { id: 200, ref: "EDIT-1", label: "Edited line" };
+        renderBrowser({ mode: "select", prefillProduct: existing });
+        // Should still show the categories grid, not the confirm step.
+        await waitFor(() => {
+            expect(screen.getByText("Plomberie")).toBeDefined();
+        });
+        expect(screen.queryByText(/Confirmer la sélection/i)).toBeNull();
+    });
+
+    it("'Changer de produit' from confirm step returns to browse", async () => {
+        const existing = { id: 200, ref: "EDIT-1", label: "Edited line" };
+        renderBrowser({
+            mode: "quantity",
+            prefillProduct: existing,
+        });
+        await waitFor(() => {
+            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: /Changer de produit/i }));
+
+        await waitFor(() => {
+            expect(screen.getByText("Plomberie")).toBeDefined();
+        });
+        expect(screen.queryByText(/Confirmer la sélection/i)).toBeNull();
+    });
+});
+
 describe("ProductCategoryBrowser - labels override", () => {
     afterEach(() => { vi.clearAllMocks(); });
 

@@ -51,6 +51,11 @@ export const propTypes = {
     defaultQty: PropTypes.number,
     defaultDiscountPercent: PropTypes.number,
 
+    // Existing product to preselect; opens directly on the confirm step.
+    // Pair with `defaultQty` / `defaultDiscountPercent` for a full edit
+    // pre-fill. Only meaningful when mode is "quantity" or "quantity-discount".
+    prefillProduct: PropTypes.object,
+
     // Layout for the special "all products" / "uncategorized" tiles at root.
     // Defaults to true for both. Set false to hide.
     showAllProductsTile: PropTypes.bool,
