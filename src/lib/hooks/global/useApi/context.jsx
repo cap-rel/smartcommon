@@ -219,10 +219,25 @@ export const useApiContext = () => {
                 const mappedData = loginMap(data);
                 const { gst: currentGst } = valuesRef.current;
 
-                const { rememberMe: loginRememberMe, expiresIn } = mappedData;
+                // Source of truth for `rememberMe` is the request body we
+                // just sent. The smartAuth backend does not echo it back in
+                // the login response, so reading it from `mappedData` (which
+                // comes from `loginMap(data)` = the response) would always
+                // be undefined and silently demote the auth to sessionStorage
+                // even when the user opted into persistence.
+                const effectiveRememberMe = body?.rememberMe === true;
+                const { expiresIn } = mappedData;
 
-                currentGst[loginRememberMe ? "local" : "session"].set("user", {
+                if (!effectiveRememberMe) {
+                    log.info(
+                        `[useApi.login] persisting user in sessionStorage ` +
+                        `(rememberMe=${body?.rememberMe ?? "undefined"})`
+                    );
+                }
+
+                currentGst[effectiveRememberMe ? "local" : "session"].set("user", {
                     ...mappedData,
+                    rememberMe: effectiveRememberMe,
                     tokenExpiry: floor(Date.now() / 1000) + expiresIn
                 });
 
@@ -275,12 +290,19 @@ export const useApiContext = () => {
                     // Mirror loginMap: surface devices_choice as deviceOptions
                     // so the consumer's RouteGuard routes the user through
                     // the same device-naming/selection page as /login does.
+                    // rememberMe: true is required so the subsequent
+                    // identifyDevice() call (which reads currentRememberMe
+                    // from this user) keeps the persistence on local
+                    // storage instead of silently demoting to session
+                    // storage. QR pairing = trusted device by design
+                    // (see comment block at the top of this section).
                     currentGst.local.set("user", {
                         accessToken: data.access_token,
                         refreshToken: data.refresh_token,
                         expiresIn,
                         deviceUuid: data.device_uuid,
                         deviceOptions: data.devices_choice,
+                        rememberMe: true,
                         tokenExpiry: floor(Date.now() / 1000) + expiresIn,
                     });
 

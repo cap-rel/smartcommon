@@ -3,7 +3,7 @@ import { isEmpty } from "lodash";
 import { FaQrcode } from "react-icons/fa6";
 
 import { useApi } from "lib/hooks";
-import { Input, Button, Select, Boolean, BarcodeScanner } from "lib/components";
+import { Input, Button, Select, BarcodeScanner } from "lib/components";
 import { twMerge } from "lib/utils";
 
 import {
@@ -304,16 +304,34 @@ export const LoginComponent = (props) => {
                 )}
 
                 {showSharedDevice && (
-                    <Boolean
-                        id="login-shared-device"
-                        name="sharedDevice"
-                        type="checkbox"
-                        label={labels.sharedDeviceLabel}
-                        value={sharedDevice}
-                        onChange={setSharedDevice}
-                        readOnly={isFormDisabled}
+                    // Native <label> wrapping the input + span: clicking
+                    // anywhere in the styled container toggles the checkbox.
+                    // Keeps the case + text on a single visual row even when
+                    // the label is long (the span wraps inside the row).
+                    <label
+                        htmlFor="login-shared-device"
                         {...booleanProps}
-                    />
+                        className={twMerge(
+                            "flex items-start gap-app-sm p-app-sm rounded-app-md " +
+                            "border border-border bg-soft-bg cursor-pointer " +
+                            "hover:brightness-soft",
+                            isFormDisabled && "opacity-60 cursor-not-allowed",
+                            booleanProps.className
+                        )}
+                    >
+                        <input
+                            id="login-shared-device"
+                            name="sharedDevice"
+                            type="checkbox"
+                            checked={sharedDevice}
+                            onChange={(e) => setSharedDevice(e.target.checked)}
+                            disabled={isFormDisabled}
+                            className="mt-1 size-4 accent-primary cursor-pointer flex-shrink-0"
+                        />
+                        <span className="text-app-sm leading-snug">
+                            {labels.sharedDeviceLabel}
+                        </span>
+                    </label>
                 )}
 
                 {submitError && (
