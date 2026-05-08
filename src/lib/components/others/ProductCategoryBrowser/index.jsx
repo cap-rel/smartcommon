@@ -462,3 +462,4 @@ ProductCategoryBrowser.propTypes = propTypes;
 ProductCategoryBrowser.defaultProps = defaultProps;
 
 export { ALL_PRODUCTS_ID, UNCATEGORIZED_ID } from "./props";
+export { createDexieProductCategoryAdapters } from "./createDexieProductCategoryAdapters";
