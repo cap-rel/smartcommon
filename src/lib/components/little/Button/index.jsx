@@ -12,7 +12,7 @@ import { propTypes, defaultProps } from "./props";
 export const Button = (props) => {
     const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("Button", props);
 
-    const { 
+    const {
         id,
         label,
         type,
@@ -22,6 +22,9 @@ export const Button = (props) => {
         badge,
         children,
         disabled = false,
+        href,
+        target,
+        rel,
         onClick = () => {}
     } = variantProps;
 
@@ -31,12 +34,45 @@ export const Button = (props) => {
     // Check if button is inside a Form provider (not just if FormContext type exists)
     const isInForm = !isNil(formContext);
 
-    const isSubmitType = type === "submit";
+    const isLink = !isNil(href);
+    const isSubmitType = !isLink && type === "submit";
+
+    if (isLink && type === "submit" && typeof console !== "undefined") {
+        // Anchor cannot submit a form; ignore type="submit" when href is set.
+        console.warn("[Button] type=\"submit\" is ignored when href is provided.");
+    }
 
     const isLoading = loading || (isSubmitType && isFormSubmitting);
-    
-    return (
-        <button { ...mergeProps("button", props => ({
+    const isInactive = loading || disabled || isFormSubmitting;
+
+    const sharedClassName = `relative flex justify-center items-center
+            gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
+            text-white duration-(--really-quick) bg-primary
+            not-disabled:active:brightness-soft disabled:brightness-soft
+            ${(!disabled && !loading) && "cursor-pointer"}
+            `;
+
+    const Tag = isLink ? "a" : "button";
+
+    const rootProps = isLink
+        ? mergeProps("button", props => ({
+            ...props,
+            // Anchor: only navigate when not inactive. aria-disabled exposes
+            // the inactive state to AT (no native `disabled` on <a>).
+            href: isInactive ? undefined : href,
+            target,
+            rel: target === "_blank" ? (rel ?? "noopener noreferrer") : rel,
+            "aria-disabled": isInactive ? "true" : undefined,
+            className: `${sharedClassName}${isInactive ? " pointer-events-none opacity-60" : ""}`,
+            onClick: (e) => {
+                if (isInactive) {
+                    e.preventDefault();
+                    return;
+                }
+                onClick(e);
+            }
+        }))
+        : mergeProps("button", props => ({
             ...props,
             // Forward `type` to the DOM button so that consumers passing
             // type="submit" still trigger native form submit (when the button
@@ -45,32 +81,29 @@ export const Button = (props) => {
             // Default "button" matches HTML default for standalone buttons
             // but is safer than "submit" inside a <form>.
             type: type ?? "button",
-            className: `relative flex justify-center items-center
-            gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
-            text-white duration-(--really-quick) bg-primary
-            not-disabled:active:brightness-soft disabled:brightness-soft
-            ${(!disabled && !loading) && "cursor-pointer"}
-            `,
-            disabled: loading || disabled || isFormSubmitting,
+            className: sharedClassName,
+            disabled: isInactive,
             onClick: (e) => {
                 // type=submit + smartcommon <Form> provider: cancel native
                 // submit and route through the provider state machine.
                 // type=submit + no provider: let the browser dispatch the
                 // native submit so a plain <form onSubmit> consumer fires.
-                // Other types: cancel to avoid the implicit-submit pitfall
-                // when the button is nested in a <form>.
+                // Other types: just call the consumer onClick. We do NOT
+                // call e.preventDefault() here because a <button type="button">
+                // has no default action of its own, and calling preventDefault
+                // would cancel the click on any ancestor <a> (tel:/mailto:/href).
                 if (isSubmitType && isInForm) {
                     e.preventDefault();
                     onClick(e);
                     submit(e);
-                } else if (!isSubmitType) {
-                    e.preventDefault();
-                    onClick(e);
                 } else {
                     onClick(e);
                 }
             }
-        }))}>
+        }));
+
+    return (
+        <Tag { ...rootProps }>
             {isLoading &&
                 <Spinner { ...mergeProps("Spinner", props => ({
                     ...props,
@@ -109,7 +142,7 @@ export const Button = (props) => {
 
             {children}
 
-        </button>
+        </Tag>
     );
 };
 

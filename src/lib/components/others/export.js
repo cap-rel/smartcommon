@@ -2,8 +2,8 @@ export * from "./AboutModal";
 export * from "./BarcodeScanner";
 export * from "./Calculator";
 export * from "./Calculator/useCalculator";
-export * from "./Chart";
-export * from "./DataTable";
+// Chart and DataTable were empty stubs - removed from public exports
+// pending real implementations (see roadmap-dolibarr-components.md).
 export * from "./DeviceIdentificationComponent";
 // export * from "./Help";
 // export * from "./Icon";

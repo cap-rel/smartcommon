@@ -20,6 +20,16 @@ export const propTypes = {
     disabled: PropTypes.bool,
     /** UI button component for user interaction */
     onClick: PropTypes.func,
+    /** When set, the Button renders as an <a> element. Useful for
+     * tel:/mailto:/maps: and external navigation where you want native
+     * browser handling (right-click, "open in new tab", URL preview).
+     * `type="submit"` is ignored when `href` is provided. */
+    href: PropTypes.string,
+    /** Anchor target. Only used when `href` is set. */
+    target: PropTypes.string,
+    /** Anchor rel. Auto-set to "noopener noreferrer" when target="_blank"
+     * and rel is unspecified. Only used when `href` is set. */
+    rel: PropTypes.string,
     /** UI button component for user interaction */
     buttonProps: PropTypes.object,
     /** UI button component for user interaction */

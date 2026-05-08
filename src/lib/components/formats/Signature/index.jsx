@@ -1,37 +1,32 @@
-import { useStates, useVariantMerger } from "lib/hooks";
-import { Popup } from "lib/components";
+import { isNil } from "lodash";
+
+import { useVariantMerger } from "lib/hooks";
 
 import { propTypes } from "./props";
 
 export const Signature = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Signature", props);
+    const { variantProps, mergeProps } = useVariantMerger("Signature", props);
 
     const { value } = variantProps;
 
-    const { signature, signer, coordinates, signedAt } = value;
+    if (isNil(value)) {
+        return null;
+    }
 
-    const initialStates = {
-        isPopupOpen: false
-    };
+    const src = typeof value === "string" ? value : value?.signature;
+    if (!src) {
+        return null;
+    }
 
-    const { states, set } = useStates({ initialStates, debug: false });
-
-    const { isOpen } = states;
+    const signer = typeof value === "object" ? value?.signer : undefined;
 
     return (
-        <>
-            <img { ...mergeProps("img", props => ({
-                src: signature,
-                ...props,
-            }))} />
-            <Popup { ...mergeProps("Popup", props => ({
-                ...props,
-                className: "",
-            }))}>
-
-            </Popup>
-        </>
-       
+        <img { ...mergeProps("img", props => ({
+            src,
+            alt: signer ?? "signature",
+            "data-component": "Signature",
+            ...props,
+        }))} />
     );
 };
 

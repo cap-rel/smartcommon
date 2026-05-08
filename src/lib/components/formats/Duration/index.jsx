@@ -1,33 +1,65 @@
+import { isNil, isPlainObject } from "lodash";
+
 import { useVariantMerger } from "lib/hooks";
 import { secsToDuration } from "lib/utils";
 
 import { propTypes } from "./props";
 
-// TODO Intl DurationFormat
+const fallbackFormat = ({ days, hours, minutes, seconds }) => {
+    const parts = [];
+    if (days) parts.push(`${days} j`);
+    if (hours || days) parts.push(`${hours} h`);
+    if (minutes || hours || days) parts.push(`${minutes} min`);
+    parts.push(`${seconds} s`);
+    return parts.join(" ");
+};
+
+const intlSupported = () => typeof Intl !== "undefined" && typeof Intl.DurationFormat === "function";
 
 export const Duration = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Duration", props);
 
-    const { value } = variantProps;
+    const {
+        value,
+        locale = "default",
+        style = "narrow",
+        options = {},
+    } = variantProps;
 
-    // const formattedDuration = Intl.DurationFormat("fr-FR", { style: "short" }).format({ seconds: value });
+    if (isNil(value)) {
+        return null;
+    }
 
-    const { days, hours, minutes, seconds } = secsToDuration(value);
+    let duration;
+    if (isPlainObject(value)) {
+        duration = value;
+    } else {
+        const numericValue = typeof value === "number" ? value : parseFloat(value);
+        if (globalThis.Number.isNaN(numericValue)) {
+            return null;
+        }
+        duration = secsToDuration(numericValue);
+    }
 
-    const formattedDays = days !== 0 ? `${days} jour(s) ` : "";
-    const formattedHours = (hours !== 0 || days !== 0) ? `${hours} h ` : "";
-    const formattedMinutes = (minutes !== 0 || hours !== 0 || days !== 0) ? `${minutes} min ` : "";
-    const formattedSeconds = (seconds !== 0 || minutes !== 0 || hours !== 0 || days !== 0) ? `${seconds} s` : "";
-
-    const formattedDuration = `${formattedDays}${formattedHours}${formattedMinutes}${formattedSeconds}`;
+    let formatted;
+    if (intlSupported()) {
+        try {
+            formatted = new Intl.DurationFormat(locale, { style, ...options }).format(duration);
+        } catch {
+            formatted = fallbackFormat(duration);
+        }
+    } else {
+        formatted = fallbackFormat(duration);
+    }
 
     return (
-        <div { ...mergeProps("duration", props => ({
+        <span { ...mergeProps("duration", props => ({
             ...props,
-            className: `italic`
-        }))} >
-            {formattedDuration}
-        </div>
+            "data-component": "Duration",
+            className: `italic`,
+        }))}>
+            {formatted}
+        </span>
     );
 };
 
