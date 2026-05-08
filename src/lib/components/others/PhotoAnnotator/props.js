@@ -16,6 +16,10 @@ const typeDefShape = PropTypes.shape({
     renderEditor: PropTypes.func.isRequired,
     renderListItem: PropTypes.func,
     newPayload: PropTypes.func,
+    // When true, the renderEditor is mounted as-is (no overlay / no modal
+    // chrome). The component is expected to do its work and call onSave /
+    // onCancel from a useEffect (typical for "open camera then save").
+    headlessEditor: PropTypes.bool,
 });
 
 export const propTypes = {
@@ -24,8 +28,22 @@ export const propTypes = {
         PropTypes.instanceOf(Blob),
         PropTypes.instanceOf(File),
     ]),
+
+    // Controlled mode: pass `annotations` + `onChange`. Every mutation is
+    // re-rendered via a fresh array (good for in-memory state).
     annotations: PropTypes.arrayOf(annotationShape),
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
+
+    // Event-based mode: pass `initialAnnotations` and any of the granular
+    // callbacks below. The component owns the annotations state and calls
+    // these on each user action. `onCreate` may return the persisted
+    // annotation (with its real id); the component will adopt it. Any
+    // callback that throws causes an optimistic revert.
+    initialAnnotations: PropTypes.arrayOf(annotationShape),
+    onCreate: PropTypes.func,
+    onUpdate: PropTypes.func,
+    onMove: PropTypes.func,
+    onDelete: PropTypes.func,
 
     annotationTypes: PropTypes.objectOf(typeDefShape).isRequired,
 

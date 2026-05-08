@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaPlus, FaMagnifyingGlassMinus } from "react-icons/fa6";
 import { twMerge } from "lib/utils";
 
@@ -12,8 +12,17 @@ import { AnnotationList } from "./AnnotationList";
 export const PhotoAnnotator = (props) => {
     const {
         src,
-        annotations = [],
+
+        // Controlled mode
+        annotations: controlledAnnotations,
         onChange,
+
+        // Event-based mode
+        initialAnnotations,
+        onCreate,
+        onUpdate,
+        onMove,
+        onDelete,
 
         annotationTypes,
 
@@ -44,20 +53,140 @@ export const PhotoAnnotator = (props) => {
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 
+    // Detect mode. Event-based wins if any of its props are present.
+    const isEventMode = Boolean(
+        onCreate || onUpdate || onMove || onDelete || initialAnnotations !== undefined
+    );
+
+    // ----- annotations state ------------------------------------------------
+    const [internalAnnotations, setInternalAnnotations] = useState(
+        () => initialAnnotations || []
+    );
+
+    // Re-sync internal state when the `initialAnnotations` array reference
+    // changes (e.g. the consumer reloaded from backend). Reference compare:
+    // pass a stable array unless you really want a reset.
+    const initialRef = useRef(initialAnnotations);
+    useEffect(() => {
+        if (!isEventMode) return;
+        if (initialAnnotations !== initialRef.current) {
+            initialRef.current = initialAnnotations;
+            setInternalAnnotations(initialAnnotations || []);
+        }
+    }, [initialAnnotations, isEventMode]);
+
+    const effectiveAnnotations = isEventMode
+        ? internalAnnotations
+        : (controlledAnnotations || []);
+
     const [zoom, setZoom] = useState(1);
     const [translate, setTranslate] = useState({ x: 0, y: 0 });
     const [selectedId, setSelectedId] = useState(null);
-
-    // editorState: { annotation, isNew } | null
-    // - isNew=true:  the staged annotation has not been added to `annotations` yet;
-    //                onSave will append it.
-    // - isNew=false: the annotation already lives in `annotations`; onSave will
-    //                replace the matching entry.
     const [editorState, setEditorState] = useState(null);
-
-    // typePicker: { x, y } | null  (image-relative percentage where the new
-    // annotation should land once the user picks a type)
     const [typePicker, setTypePicker] = useState(null);
+
+    // ----- mutation helpers (route to controlled or event mode) -------------
+
+    // Optimistically add `staged`. In event mode, fires onCreate; if it
+    // returns a final annotation with a different id, swap the local id.
+    // On failure, removes the staged entry.
+    const dispatchCreate = useCallback((staged) => {
+        if (isEventMode) {
+            setInternalAnnotations((prev) => [...prev, staged]);
+            if (onCreate) {
+                Promise.resolve(onCreate(staged))
+                    .then((final) => {
+                        if (final && final.id !== staged.id) {
+                            setInternalAnnotations((prev) =>
+                                prev.map((a) => (a.id === staged.id ? final : a))
+                            );
+                            setSelectedId((s) => (s === staged.id ? final.id : s));
+                            setEditorState((es) =>
+                                es?.annotation?.id === staged.id
+                                    ? { ...es, annotation: final }
+                                    : es
+                            );
+                        }
+                    })
+                    .catch((err) => {
+                        console.error("PhotoAnnotator.onCreate failed:", err);
+                        setInternalAnnotations((prev) =>
+                            prev.filter((a) => a.id !== staged.id)
+                        );
+                        setSelectedId((s) => (s === staged.id ? null : s));
+                        setEditorState((es) =>
+                            es?.annotation?.id === staged.id ? null : es
+                        );
+                    });
+            }
+            return;
+        }
+        onChange?.([...(controlledAnnotations || []), staged]);
+    }, [isEventMode, onCreate, onChange, controlledAnnotations]);
+
+    const dispatchUpdate = useCallback((annotation) => {
+        if (isEventMode) {
+            setInternalAnnotations((prev) =>
+                prev.map((a) => (a.id === annotation.id ? annotation : a))
+            );
+            if (onUpdate) {
+                Promise.resolve(onUpdate(annotation)).catch((err) => {
+                    console.error("PhotoAnnotator.onUpdate failed:", err);
+                });
+            }
+            return;
+        }
+        onChange?.(
+            (controlledAnnotations || []).map((a) =>
+                a.id === annotation.id ? annotation : a
+            )
+        );
+    }, [isEventMode, onUpdate, onChange, controlledAnnotations]);
+
+    const dispatchMove = useCallback((id, pos) => {
+        const current = effectiveAnnotations.find((a) => a.id === id);
+        if (!current) return;
+        const moved = { ...current, x: pos.x, y: pos.y };
+        if (isEventMode) {
+            setInternalAnnotations((prev) =>
+                prev.map((a) => (a.id === id ? moved : a))
+            );
+            if (onMove) {
+                Promise.resolve(onMove(moved, pos)).catch((err) => {
+                    console.error("PhotoAnnotator.onMove failed:", err);
+                });
+            } else if (onUpdate) {
+                Promise.resolve(onUpdate(moved)).catch((err) => {
+                    console.error("PhotoAnnotator.onUpdate (move) failed:", err);
+                });
+            }
+            return;
+        }
+        onChange?.(
+            (controlledAnnotations || []).map((a) =>
+                a.id === id ? moved : a
+            )
+        );
+    }, [effectiveAnnotations, isEventMode, onMove, onUpdate, onChange, controlledAnnotations]);
+
+    const dispatchDelete = useCallback((annotation) => {
+        if (isEventMode) {
+            setInternalAnnotations((prev) =>
+                prev.filter((a) => a.id !== annotation.id)
+            );
+            if (onDelete) {
+                Promise.resolve(onDelete(annotation)).catch((err) => {
+                    console.error("PhotoAnnotator.onDelete failed:", err);
+                });
+            }
+            return;
+        }
+        onChange?.(
+            (controlledAnnotations || []).filter((a) => a.id !== annotation.id)
+        );
+    }, [isEventMode, onDelete, onChange, controlledAnnotations]);
+
+    // ----- editor / picker handlers -----------------------------------------
 
     const resetZoom = useCallback(() => {
         setZoom(1);
@@ -92,7 +221,6 @@ export const PhotoAnnotator = (props) => {
         if (readOnly) return;
         const keys = Object.keys(annotationTypes);
         if (keys.length === 0) return;
-        // Center of the image, ready to be dragged into place.
         const x = 50;
         const y = 50;
         if (keys.length === 1) {
@@ -105,15 +233,15 @@ export const PhotoAnnotator = (props) => {
                 y,
                 payload: def.newPayload ? def.newPayload() : {},
             };
-            // Persist immediately + select so the user sees the marker and can
-            // drag it. The editor opens on top so the payload can be filled in.
-            onChange([...annotations, staged]);
+            // Persist + select + open editor on top so the payload can be
+            // filled in. dispatchCreate handles the optimistic add.
+            dispatchCreate(staged);
             setSelectedId(staged.id);
             setEditorState({ annotation: staged, isNew: false });
             return;
         }
         setTypePicker({ x, y });
-    }, [readOnly, annotationTypes, annotations, onChange]);
+    }, [readOnly, annotationTypes, dispatchCreate]);
 
     const handlePickType = useCallback((typeKey) => {
         if (!typePicker) return;
@@ -124,17 +252,15 @@ export const PhotoAnnotator = (props) => {
 
     const handleEditorSave = useCallback((partial) => {
         if (!editorState) return;
-        // Spread merge: a partial of { payload } fully replaces payload, which
-        // is the expected behaviour ("the type owns its payload").
         const merged = { ...editorState.annotation, ...(partial || {}) };
         if (editorState.isNew) {
-            onChange([...annotations, merged]);
+            dispatchCreate(merged);
             setSelectedId(merged.id);
         } else {
-            onChange(annotations.map((a) => (a.id === merged.id ? merged : a)));
+            dispatchUpdate(merged);
         }
         setEditorState(null);
-    }, [editorState, annotations, onChange]);
+    }, [editorState, dispatchCreate, dispatchUpdate]);
 
     const handleEditorCancel = useCallback(() => {
         setEditorState(null);
@@ -150,12 +276,8 @@ export const PhotoAnnotator = (props) => {
     }, [onAnnotationActivate]);
 
     const handleDragEnd = useCallback((id, pos) => {
-        onChange(
-            annotations.map((a) =>
-                a.id === id ? { ...a, x: pos.x, y: pos.y } : a
-            )
-        );
-    }, [annotations, onChange]);
+        dispatchMove(id, pos);
+    }, [dispatchMove]);
 
     const handleListEdit = useCallback((annotation) => {
         setSelectedId(annotation.id);
@@ -164,11 +286,13 @@ export const PhotoAnnotator = (props) => {
 
     const handleListDelete = useCallback((annotation) => {
         if (!window.confirm(labels.deleteConfirm)) return;
-        onChange(annotations.filter((a) => a.id !== annotation.id));
+        dispatchDelete(annotation);
         if (selectedId === annotation.id) setSelectedId(null);
-    }, [annotations, onChange, selectedId, labels.deleteConfirm]);
+    }, [dispatchDelete, selectedId, labels.deleteConfirm]);
 
-    const editorTypeDef = editorState ? annotationTypes[editorState.annotation.type] : null;
+    const editorTypeDef = editorState
+        ? annotationTypes[editorState.annotation.type]
+        : null;
 
     return (
         <div
@@ -221,7 +345,7 @@ export const PhotoAnnotator = (props) => {
             <div className={twMerge("flex flex-1 min-h-0", listPosition === "right" ? "flex-row" : "flex-col")}>
                 <ImageCanvas
                     src={src}
-                    annotations={annotations}
+                    annotations={effectiveAnnotations}
                     annotationTypes={annotationTypes}
                     selectedId={selectedId}
                     readOnly={readOnly}
@@ -241,7 +365,7 @@ export const PhotoAnnotator = (props) => {
                 />
 
                 <AnnotationList
-                    annotations={annotations}
+                    annotations={effectiveAnnotations}
                     annotationTypes={annotationTypes}
                     selectedId={selectedId}
                     readOnly={readOnly}

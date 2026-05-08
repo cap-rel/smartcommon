@@ -19,6 +19,17 @@ export const EditorWrapper = ({
 
     if (!annotation || !typeDef) return null;
 
+    // Headless editor: render the type's component as-is, no overlay or
+    // modal chrome. The component is expected to call onSave / onCancel
+    // from its own lifecycle (e.g. open a file input then save).
+    if (typeDef.headlessEditor) {
+        return typeDef.renderEditor(annotation, {
+            onSave,
+            onCancel,
+            typeDef,
+        });
+    }
+
     return (
         <div
             {...overlayProps}
