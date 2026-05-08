@@ -18,4 +18,5 @@ export * from "./DebugConsole";
 export * from "./DebugWarnings";
 export * from "./KeyboardStickyAction";
 export * from "./LoginComponent";
+export * from "./PhotoAnnotator";
 export * from "./ProductCategoryBrowser";
