@@ -17,7 +17,12 @@ export const propTypes = {
     getQrErrorLabel: PropTypes.func,
 
     showEntities: PropTypes.bool,
-    showRememberMe: PropTypes.bool,
+    // When true (default), shows a checkbox the user can tick to flag the
+    // current access as shared / untrusted. Ticked => credentials NOT
+    // persisted on this device. Unticked (default) => credentials persisted.
+    // The corresponding payload field sent to api.login is `rememberMe`
+    // (negated server-side from this UI flag).
+    showSharedDevice: PropTypes.bool,
 
     enableQrPair: PropTypes.bool,
     qrPollIntervalMs: PropTypes.number,
@@ -53,7 +58,7 @@ export const propTypes = {
         passwordPlaceholder: PropTypes.string,
         entityLabel: PropTypes.string,
         entityPlaceholder: PropTypes.string,
-        rememberMeLabel: PropTypes.string,
+        sharedDeviceLabel: PropTypes.string,
         submitLabel: PropTypes.string,
         scanQrLabel: PropTypes.string,
         qrSeparator: PropTypes.string,
@@ -76,7 +81,7 @@ export const propTypes = {
 
 export const defaultProps = {
     showEntities: true,
-    showRememberMe: false,
+    showSharedDevice: true,
     // QR pair is on by default: smartcommon assumes a smartAuth backend, and
     // smartAuth ships the /qr-pair endpoints. Pass false explicitly only if
     // your backend genuinely doesn't expose them.
@@ -94,7 +99,7 @@ export const DEFAULT_LABELS = {
     passwordPlaceholder: "••••••••",
     entityLabel: "Entité",
     entityPlaceholder: "Choisir une entité",
-    rememberMeLabel: "Se souvenir de moi",
+    sharedDeviceLabel: "Accès partagé ou non sécurisé : ne pas mémoriser ce compte",
     submitLabel: "Se connecter",
     scanQrLabel: "Scanner un QR code",
     qrSeparator: "ou",

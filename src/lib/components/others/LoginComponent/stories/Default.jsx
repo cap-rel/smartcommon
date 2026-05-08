@@ -3,7 +3,7 @@ import { setDefaultStory } from "../../../../../storybook";
 export const Default = setDefaultStory({
     args: {
         showEntities: false,
-        showRememberMe: false,
+        showSharedDevice: false,
         enableQrPair: false,
     },
     code: `

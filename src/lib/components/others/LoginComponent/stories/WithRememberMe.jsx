@@ -3,7 +3,7 @@ import { setDefaultStory } from "../../../../../storybook";
 export const WithRememberMe = setDefaultStory({
     args: {
         showEntities: false,
-        showRememberMe: true,
+        showSharedDevice: true,
         enableQrPair: false,
     },
     code: `
@@ -11,7 +11,7 @@ export const WithRememberMe = setDefaultStory({
 
         <LoginComponent
           onSuccess={(user) => navigate("/")}
-          showRememberMe
+          showSharedDevice
         />
     `,
 });

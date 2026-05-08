@@ -4,7 +4,7 @@ import { propTypes } from "../../props";
 export const LoginComponent = setTestStory({
     args: {
         showEntities: false,
-        showRememberMe: false,
+        showSharedDevice: false,
         enableQrPair: false,
     },
     props: propTypes,

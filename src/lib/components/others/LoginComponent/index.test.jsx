@@ -348,16 +348,57 @@ describe("LoginComponent - password mode", () => {
         expect(fakeApi.getEntities).not.toHaveBeenCalled();
     });
 
-    it("hides the Remember me checkbox by default", () => {
+    it("shows the shared-device checkbox by default", () => {
         render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
-        expect(screen.queryByText(/Se souvenir/i)).toBeNull();
+        expect(screen.getByText(/non sécurisé/i)).toBeDefined();
     });
 
-    it("shows the Remember me checkbox when showRememberMe is true", () => {
+    it("hides the shared-device checkbox when showSharedDevice is false", () => {
         render(
-            <LoginComponent onSuccess={() => {}} showEntities={false} showRememberMe />
+            <LoginComponent
+                onSuccess={() => {}}
+                showEntities={false}
+                showSharedDevice={false}
+            />
         );
-        expect(screen.getByText(/Se souvenir/i)).toBeDefined();
+        expect(screen.queryByText(/non sécurisé/i)).toBeNull();
+    });
+
+    it("sends rememberMe=true by default (shared-device unchecked)", async () => {
+        const { container } = render(
+            <LoginComponent onSuccess={() => {}} showEntities={false} />
+        );
+
+        fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
+        fireEvent.change(passwordInput(container), { target: { value: "secret" } });
+        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+
+        await waitFor(() => {
+            expect(fakeApi.login).toHaveBeenCalledTimes(1);
+        });
+        const [body] = fakeApi.login.mock.calls[0];
+        expect(body.rememberMe).toBe(true);
+    });
+
+    it("sends rememberMe=false when the user ticks shared-device", async () => {
+        const { container } = render(
+            <LoginComponent onSuccess={() => {}} showEntities={false} />
+        );
+
+        fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
+        fireEvent.change(passwordInput(container), { target: { value: "secret" } });
+
+        const sharedCheckbox = container.querySelector('input[name="sharedDevice"]');
+        expect(sharedCheckbox).not.toBeNull();
+        fireEvent.click(sharedCheckbox);
+
+        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+
+        await waitFor(() => {
+            expect(fakeApi.login).toHaveBeenCalledTimes(1);
+        });
+        const [body] = fakeApi.login.mock.calls[0];
+        expect(body.rememberMe).toBe(false);
     });
 });
 

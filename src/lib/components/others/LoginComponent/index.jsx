@@ -21,7 +21,7 @@ export const LoginComponent = (props) => {
         getErrorLabel,
         getQrErrorLabel,
         showEntities = true,
-        showRememberMe = false,
+        showSharedDevice = true,
         enableQrPair = true,
         qrPollIntervalMs = 2000,
         qrTimeoutMs = 120000,
@@ -55,7 +55,12 @@ export const LoginComponent = (props) => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [entity, setEntity] = useState("");
-    const [rememberMe, setRememberMe] = useState(false);
+    // sharedDevice=true means the user explicitly flagged this access
+    // as shared / untrusted (public computer, lent tablet, ...). The
+    // payload sent to api.login is `rememberMe: !sharedDevice` so the
+    // backend contract stays unchanged. Default false = trusted device,
+    // credentials persisted (the safe, opt-out UX consumers asked for).
+    const [sharedDevice, setSharedDevice] = useState(false);
 
     const [entities, setEntities] = useState([]);
     const [isGettingEntities, setIsGettingEntities] = useState(false);
@@ -121,7 +126,7 @@ export const LoginComponent = (props) => {
                     email,
                     password,
                     entity: entity || undefined,
-                    rememberMe,
+                    rememberMe: !sharedDevice,
                 },
                 { signal: AbortSignal.timeout(resolvedLoginTimeoutMs) }
             );
@@ -133,7 +138,7 @@ export const LoginComponent = (props) => {
         } finally {
             setIsLoggingIn(false);
         }
-    }, [api, email, password, entity, rememberMe, resolvedLoginTimeoutMs, labels.loginError, getErrorLabel]);
+    }, [api, email, password, entity, sharedDevice, resolvedLoginTimeoutMs, labels.loginError, getErrorLabel]);
 
     // ---------------------- QR pairing ----------------------
 
@@ -298,14 +303,14 @@ export const LoginComponent = (props) => {
                     />
                 )}
 
-                {showRememberMe && (
+                {showSharedDevice && (
                     <Boolean
-                        id="login-remember-me"
-                        name="rememberMe"
+                        id="login-shared-device"
+                        name="sharedDevice"
                         type="checkbox"
-                        label={labels.rememberMeLabel}
-                        value={rememberMe}
-                        onChange={setRememberMe}
+                        label={labels.sharedDeviceLabel}
+                        value={sharedDevice}
+                        onChange={setSharedDevice}
                         readOnly={isFormDisabled}
                         {...booleanProps}
                     />

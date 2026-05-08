@@ -10,8 +10,9 @@ export default {
             description: {
                 component:
                     "Generic Dolibarr login form. Renders email + password " +
-                    "(+ optional entity Select and remember-me checkbox) " +
-                    "and calls api.login() on submit. When `enableQrPair` " +
+                    "(+ optional entity Select and shared-device opt-out " +
+                    "checkbox) and calls api.login() on submit. When " +
+                    "`enableQrPair` " +
                     "is true, also offers a 'Scan QR' button that opens " +
                     "BarcodeScanner, calls api.claimQrPair, then polls " +
                     "api.pollQrPair until the PC user confirms (smartAuth " +
@@ -24,7 +25,7 @@ export default {
     decorators: [fakeApiDecorator],
     argTypes: {
         showEntities: { control: "boolean", table: { category: "Main" } },
-        showRememberMe: { control: "boolean", table: { category: "Main" } },
+        showSharedDevice: { control: "boolean", table: { category: "Main" } },
         enableQrPair: { control: "boolean", table: { category: "Main" } },
         qrPollIntervalMs: { control: "number", table: { category: "Main" } },
         qrTimeoutMs: { control: "number", table: { category: "Main" } },

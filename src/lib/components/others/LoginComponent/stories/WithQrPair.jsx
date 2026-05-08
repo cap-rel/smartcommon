@@ -3,7 +3,7 @@ import { setDefaultStory } from "../../../../../storybook";
 export const WithQrPair = setDefaultStory({
     args: {
         showEntities: false,
-        showRememberMe: false,
+        showSharedDevice: false,
         enableQrPair: true,
         deviceLabel: "Storybook demo",
         qrPollIntervalMs: 2000,
