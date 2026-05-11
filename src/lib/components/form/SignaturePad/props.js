@@ -13,10 +13,27 @@ export const propTypes = {
   disabled: PropTypes.bool,
   readOnly: PropTypes.bool,
 
+  // Output format. Two modes:
+  //   - "dataURL" (default, legacy): value = { src: dataURL, signer, gpsPoints? }
+  //   - "upload": canvas is converted to a PNG Blob on validate and POSTed
+  //     to smartauth /upload. value = { src: dataURL_preview, signer,
+  //     gpsPoints?, uploadId, pendingId }.
+  outputFormat: PropTypes.oneOf(["dataURL", "upload"]),
+
+  // outputFormat="upload" only: route uploads through useUploadQueue
+  // (offline-first). See ~/docs/upload-queue.md.
+  queue: PropTypes.bool,
+
+  // outputFormat="upload" only: override the /upload endpoint path.
+  uploadEndpoint: PropTypes.string,
+
+  // outputFormat="upload" only: callback when the underlying upload throws.
+  onUploadError: PropTypes.func,
+
   name: PropTypes.string,
-  value: PropTypes.bool,
+  value: PropTypes.object,
   onChange: PropTypes.func,
-  defaultValue: PropTypes.bool,
+  defaultValue: PropTypes.object,
 
   formSubmitted: PropTypes.bool,
   onError: PropTypes.func,
@@ -42,5 +59,6 @@ export const propTypes = {
   ValidateButton: PropTypes.object,
   signatureContainerProps: PropTypes.object,
   Pad: PropTypes.object,
+  pendingBadgeProps: PropTypes.object,
   SignerInput: PropTypes.object,
 };
