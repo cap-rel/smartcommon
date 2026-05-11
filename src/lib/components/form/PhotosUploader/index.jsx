@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { GiSaveArrow } from "react-icons/gi";
 import { isNil, isEmpty } from "lodash";
 
-import { useFile, useStates, useField, useVariantMerger, useUpload } from "lib/hooks";
+import { useFile, useStates, useField, useVariantMerger, useUpload, useUploadQueue } from "lib/hooks";
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
@@ -51,6 +51,15 @@ export const PhotosUploader = (props) => {
         // For outputFormat="upload" only: optional callback invoked
         // when an upload fails. Receives the underlying error.
         onUploadError,
+
+        // For outputFormat="upload" only: route the upload through the
+        // offline-first queue (useUploadQueue). When true, an upload
+        // that fails offline or due to network/5xx is persisted in
+        // IndexedDB and retried automatically; the photo is stored with
+        // a pendingId (no uploadId yet) and a "Envoi..." badge is shown.
+        // When the queue resolves it, pendingId is swapped for uploadId
+        // and the badge disappears.
+        queue: queueMode = false,
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -177,7 +186,37 @@ export const PhotosUploader = (props) => {
     };
 
     const { resizeImage } = useFile();
-    const { uploadFile, cancelUpload } = useUpload({ endpoint: uploadEndpoint });
+    const { uploadFile, cancelUpload } = useUpload({ endpoint: uploadEndpoint, queue: queueMode });
+    // Subscribe to the queue's resolution stream so we can patch back the
+    // uploadId once a previously-pending photo lands on the server. The
+    // hook is only mounted when queueMode is on so legacy users keep paying
+    // zero IDB cost.
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    const uploadQueue = queueMode ? useUploadQueue({ endpoint: uploadEndpoint }) : null;
+
+    // currentValue is read inside the onResolved callback (which is a
+    // long-lived subscription), so we keep a ref to avoid stale closure.
+    const currentValueRef = useRef(currentValue);
+    useEffect(() => { currentValueRef.current = currentValue; }, [currentValue]);
+
+    useEffect(() => {
+        if (!queueMode || !uploadQueue) return undefined;
+        return uploadQueue.onResolved(({ pending_id, upload_id }) => {
+            const value = currentValueRef.current;
+            const patch = (photo) => (
+                photo?.pendingId === pending_id
+                    ? { ...photo, pendingId: null, uploadId: upload_id }
+                    : photo
+            );
+            if (multiple) {
+                if (!Array.isArray(value)) return;
+                if (!value.some(p => p?.pendingId === pending_id)) return;
+                setValue(value.map(patch));
+            } else if (value?.pendingId === pending_id) {
+                setValue(patch(value));
+            }
+        });
+    }, [queueMode, uploadQueue, multiple, setValue]);
 
     const addPhoto = async file => {
         if (!disabled && !readOnly && !isFormSubmitting) {
@@ -229,7 +268,13 @@ export const PhotosUploader = (props) => {
                         return;
                     }
                     newPhoto = {
-                        uploadId: uploadResult?.upload_id,
+                        uploadId: uploadResult?.upload_id ?? null,
+                        // When queueMode is on and the POST was offline /
+                        // network-failed / 5xx, the result carries a
+                        // pendingId instead. The useUploadQueue.onResolved
+                        // subscription above will swap it for the real
+                        // uploadId once the server acknowledges.
+                        pendingId: uploadResult?.pending_id ?? null,
                         previewUrl,
                         gpsPoints,
                         title,
@@ -350,7 +395,18 @@ export const PhotosUploader = (props) => {
                         }))} />
                         : <FaImage className="text-soft-text text-[80px]" />
                     }
-                    
+                    {/* "Envoi..." badge shown until the queue resolves the
+                        pending upload into an uploadId. Only ever set when
+                        outputFormat="upload" + queue=true. */}
+                    {photo?.pendingId && (
+                        <div { ...mergeProps("pendingBadge", props => ({
+                            ...props,
+                            className: "text-app-xs italic text-center text-medium-text"
+                        }))}>
+                            Envoi en attente...
+                        </div>
+                    )}
+
                     <div { ...mergeProps("title", props => ({
                         ...props,
                         className: "truncate text-app-xs text-medium-text italic text-center"

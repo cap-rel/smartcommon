@@ -51,6 +51,16 @@ export const propTypes = {
     errorAlertProps: PropTypes.object,
     qrErrorAlertProps: PropTypes.object,
 
+    // Slot forwarded to the embedded <DevicePicker> that takes over the
+    // render tree when the backend sends `needs_device_pick: true` after
+    // a successful login. Useful to inject styling slots (containerProps,
+    // formProps, labelInputProps, ...) or `onCancel` if a project wants
+    // to allow bailing out of the picker.
+    devicePickerProps: PropTypes.object,
+    // Labels forwarded to <DevicePicker>. Merged with its DEFAULT_LABELS
+    // by the picker itself, so partial overrides work.
+    devicePickerLabels: PropTypes.object,
+
     labels: PropTypes.shape({
         emailLabel: PropTypes.string,
         emailPlaceholder: PropTypes.string,
@@ -76,6 +86,15 @@ export const propTypes = {
         pairingNotFound: PropTypes.string,
         rateLimited: PropTypes.string,
         requiredField: PropTypes.string,
+        // Post-login device-pick error fallbacks. The label rendered
+        // inside <DevicePicker> when api.linkUserDevice / createUserDevice
+        // throws and the error has no `apiMessage` set.
+        devicePickError: PropTypes.string,
+        // Defensive: this should never trigger in practice since
+        // useApi always wires the methods, but we still want a clean
+        // message if a project mounts <LoginComponent> against a stub
+        // useApi that's missing them.
+        devicePickMissingApiError: PropTypes.string,
     }),
 };
 
@@ -117,6 +136,8 @@ export const DEFAULT_LABELS = {
     pairingNotFound: "Ce QR code n'est plus valide. Demandez-en un nouveau sur l'ordinateur.",
     rateLimited: "Trop de tentatives. Patientez quelques instants avant de réessayer.",
     requiredField: "Ce champ est requis.",
+    devicePickError: "Impossible d'enregistrer cet appareil. Vérifiez votre connexion et réessayez.",
+    devicePickMissingApiError: "Configuration manquante : l'API user-devices n'est pas disponible.",
 };
 
 // Default QR-pair error mapping. Inspects the thrown error and returns the

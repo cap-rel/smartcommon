@@ -9,6 +9,8 @@ const { fakeApi, scannerProps } = vi.hoisted(() => ({
         getEntities: () => Promise.resolve({ entities: [] }),
         claimQrPair: () => Promise.resolve({}),
         pollQrPair: () => Promise.resolve({}),
+        linkUserDevice: () => Promise.resolve({}),
+        createUserDevice: () => Promise.resolve({}),
     },
     scannerProps: { current: null },
 }));
@@ -894,5 +896,235 @@ describe("buildDefaultGetQrErrorLabel (helper)", () => {
 
     it("prefers apiCode over HTTP status when both are present", () => {
         expect(map({ apiCode: "rate_limited", response: { status: 500 } })).toBe(DEFAULT_LABELS.rateLimited);
+    });
+});
+
+describe("LoginComponent - device-pick post-login flow", () => {
+    beforeEach(() => {
+        fakeApi.getEntities = vi.fn().mockResolvedValue({ entities: [] });
+        fakeApi.claimQrPair = vi.fn();
+        fakeApi.pollQrPair = vi.fn();
+        fakeApi.linkUserDevice = vi.fn().mockResolvedValue({ id: 12, linked: true });
+        fakeApi.createUserDevice = vi.fn().mockResolvedValue({ id: 18, linked: true });
+        scannerProps.current = null;
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    const emailInput = (container) => container.querySelector('input[name="email"]');
+    const passwordInput = (container) => container.querySelector('input[name="password"]');
+
+    const fillAndSubmitLogin = (container) => {
+        fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
+        fireEvent.change(passwordInput(container), { target: { value: "secret" } });
+        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+    };
+
+    it("renders DevicePicker after login when needsDevicePick=true with existing devices", async () => {
+        fakeApi.login = vi.fn().mockResolvedValue({
+            id: 42,
+            username: "alice",
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [
+                { id: 12, label: "mon iPhone", icon: "phone", session_count: 3 },
+            ],
+        });
+
+        const onSuccess = vi.fn();
+        const { container } = render(
+            <LoginComponent
+                onSuccess={onSuccess}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Quel appareil utilisez-vous/i)).toBeDefined();
+        });
+        // Device card visible
+        expect(screen.getByText("mon iPhone")).toBeDefined();
+        // onSuccess NOT yet called: we deferred finalisation
+        expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+    it("renders DevicePicker form directly when existing list is empty", async () => {
+        fakeApi.login = vi.fn().mockResolvedValue({
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [],
+        });
+
+        const { container } = render(
+            <LoginComponent
+                onSuccess={vi.fn()}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(screen.getByText(/Quel appareil utilisez-vous/i)).toBeDefined();
+        });
+        // The new-device form is rendered directly.
+        expect(screen.getByText("Nouvel appareil")).toBeDefined();
+    });
+
+    it("calls onSuccess with the original login payload after picking an existing device", async () => {
+        const loginPayload = {
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [
+                { id: 12, label: "mon iPhone", icon: "phone", session_count: 3 },
+            ],
+        };
+        fakeApi.login = vi.fn().mockResolvedValue(loginPayload);
+
+        const onSuccess = vi.fn();
+        const { container } = render(
+            <LoginComponent
+                onSuccess={onSuccess}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(screen.getByText("mon iPhone")).toBeDefined();
+        });
+
+        fireEvent.click(screen.getByText("mon iPhone"));
+
+        await waitFor(() => {
+            expect(fakeApi.linkUserDevice).toHaveBeenCalledWith(12);
+        });
+        await waitFor(() => {
+            expect(onSuccess).toHaveBeenCalledWith(loginPayload);
+        });
+    });
+
+    it("calls onSuccess after creating a new device", async () => {
+        const loginPayload = {
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [],
+        };
+        fakeApi.login = vi.fn().mockResolvedValue(loginPayload);
+
+        const onSuccess = vi.fn();
+        const { container } = render(
+            <LoginComponent
+                onSuccess={onSuccess}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(screen.getByText("Nouvel appareil")).toBeDefined();
+        });
+
+        // The DevicePicker's nested <Input> may not be using the
+        // mocked stub here because of the lib/components barrel cycle
+        // (well documented in smartcommon CLAUDE.md). We can still
+        // locate the text input by grabbing the first non-shared input
+        // that lives inside the form: the picker only has a text input
+        // plus the icon <select>, no other text input.
+        const form = container.querySelector('form');
+        const textInputs = form.querySelectorAll('input[type="text"]');
+        expect(textInputs.length).toBeGreaterThan(0);
+        fireEvent.change(textInputs[0], { target: { value: "mon iPhone" } });
+
+        // Submit the picker form.
+        fireEvent.submit(form);
+
+        await waitFor(() => {
+            expect(fakeApi.createUserDevice).toHaveBeenCalledWith({
+                label: "mon iPhone",
+                icon: "phone",
+            });
+        });
+        await waitFor(() => {
+            expect(onSuccess).toHaveBeenCalledWith(loginPayload);
+        });
+    });
+
+    it("surfaces the picker error and keeps the picker mounted when link fails", async () => {
+        fakeApi.login = vi.fn().mockResolvedValue({
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [
+                { id: 12, label: "mon iPhone", icon: "phone", session_count: 3 },
+            ],
+        });
+        const linkErr = new Error("oops");
+        linkErr.apiMessage = "Identifiant inconnu";
+        fakeApi.linkUserDevice = vi.fn().mockRejectedValue(linkErr);
+
+        const onSuccess = vi.fn();
+        const onError = vi.fn();
+        const { container } = render(
+            <LoginComponent
+                onSuccess={onSuccess}
+                onError={onError}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(screen.getByText("mon iPhone")).toBeDefined();
+        });
+
+        fireEvent.click(screen.getByText("mon iPhone"));
+
+        await waitFor(() => {
+            expect(screen.getByRole("alert").textContent).toBe("Identifiant inconnu");
+        });
+        // Picker is still mounted, onSuccess not called.
+        expect(onSuccess).not.toHaveBeenCalled();
+        expect(onError).toHaveBeenCalledWith(linkErr);
+    });
+
+    it("does NOT enter device-pick mode when needsDevicePick is missing or false", async () => {
+        fakeApi.login = vi.fn().mockResolvedValue({
+            id: 42,
+            accessToken: "AT",
+            // No needsDevicePick at all (legacy backend behaviour).
+        });
+
+        const onSuccess = vi.fn();
+        const { container } = render(
+            <LoginComponent
+                onSuccess={onSuccess}
+                showEntities={false}
+                enableQrPair={false}
+            />
+        );
+
+        fillAndSubmitLogin(container);
+
+        await waitFor(() => {
+            expect(onSuccess).toHaveBeenCalled();
+        });
+        // No picker rendered.
+        expect(screen.queryByText(/Quel appareil utilisez-vous/i)).toBeNull();
     });
 });

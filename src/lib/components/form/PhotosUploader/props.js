@@ -30,6 +30,12 @@ export const propTypes = {
     // Defaults to a toast.error notification.
     onUploadError: PropTypes.func,
 
+    // Route uploads through the offline-first queue. Only meaningful when
+    // outputFormat === "upload". An upload that fails offline / network /
+    // 5xx is persisted in IndexedDB; the photo carries a pendingId that
+    // is later swapped for uploadId via the queue's onResolved stream.
+    queue: PropTypes.bool,
+
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,
@@ -70,6 +76,7 @@ export const propTypes = {
     ImportButton: PropTypes.object,
     photoProps: PropTypes.object,
     imgProps: PropTypes.object,
+    pendingBadgeProps: PropTypes.object,
     titleProps: PropTypes.object,
     Popup: PropTypes.object,
     popupImgProps: PropTypes.object,

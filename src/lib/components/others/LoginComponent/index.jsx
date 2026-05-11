@@ -3,7 +3,7 @@ import { isEmpty } from "lodash";
 import { FaQrcode } from "react-icons/fa6";
 
 import { useApi } from "lib/hooks";
-import { Input, Button, Select, BarcodeScanner } from "lib/components";
+import { Input, Button, Select, BarcodeScanner, DevicePicker } from "lib/components";
 import { twMerge } from "lib/utils";
 
 import {
@@ -42,10 +42,16 @@ export const LoginComponent = (props) => {
         qrOverlayProps = {},
         errorAlertProps = {},
         qrErrorAlertProps = {},
+        // Styling slot + label overrides forwarded to the embedded
+        // <DevicePicker> when the post-login pick is in flight. Each
+        // one is optional: the picker falls back to its own defaults.
+        devicePickerProps = {},
+        devicePickerLabels: userDevicePickerLabels = {},
         labels: userLabels = {},
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const devicePickerLabels = userDevicePickerLabels;
     const resolvedEntitiesTimeoutMs = entitiesTimeoutMs ?? abortTimeoutMs;
     const resolvedLoginTimeoutMs = loginTimeoutMs ?? abortTimeoutMs;
     const resolveQrErrorLabel = getQrErrorLabel ?? buildDefaultGetQrErrorLabel(labels);
@@ -69,9 +75,23 @@ export const LoginComponent = (props) => {
     const [submitError, setSubmitError] = useState(null);
 
     // QR pairing state machine: 'password' | 'qr-scanning' | 'qr-claiming'
-    //                           | 'qr-polling' | 'qr-error'
+    //                           | 'qr-polling' | 'qr-error' | 'device-pick'
+    // 'device-pick' is entered after a successful login response that
+    // carries `needs_device_pick: true`: the access/refresh tokens are
+    // already valid (the smartAuth backend issued them anyway, the
+    // attachment to a logical user-device is a separate side-effect),
+    // and we render <DevicePicker> instead of `onSuccess` until the
+    // user has picked / created a logical device.
     const [mode, setMode] = useState("password");
     const [qrError, setQrError] = useState(null);
+
+    // Pending login response captured during password / QR success when
+    // the backend signals `needs_device_pick: true`. We keep it here so
+    // we can hand it to `onSuccess` once the user has chosen a device.
+    // null when no device-pick is in flight.
+    const [pendingDevicePick, setPendingDevicePick] = useState(null);
+    const [devicePickError, setDevicePickError] = useState(null);
+    const [devicePickLoading, setDevicePickLoading] = useState(false);
 
     const pairingIdRef = useRef(null);
     const claimTokenRef = useRef(null);
@@ -130,6 +150,23 @@ export const LoginComponent = (props) => {
                 },
                 { signal: AbortSignal.timeout(resolvedLoginTimeoutMs) }
             );
+            // If the backend signals the technical device is not yet
+            // attached to a logical user-device, defer onSuccess and
+            // switch to the device-pick mode. Tokens are already
+            // persisted by useApi.login() so the JWT-protected
+            // /account/user-devices endpoints called from <DevicePicker>
+            // work as-is.
+            if (data?.needsDevicePick === true) {
+                setPendingDevicePick({
+                    response: data,
+                    existingDevices: Array.isArray(data?.existingUserDevices)
+                        ? data.existingUserDevices
+                        : [],
+                });
+                setDevicePickError(null);
+                setMode("device-pick");
+                return;
+            }
             onSuccessRef.current?.(data);
         } catch (err) {
             const message = getErrorLabel?.(err) ?? labels.loginError;
@@ -163,6 +200,22 @@ export const LoginComponent = (props) => {
                 const data = await api.pollQrPair(pairingId, claimToken);
                 if (data?.status === "consumed") {
                     cleanupPolling();
+                    // Mirror the password path: if the QR-pair response
+                    // carries `needs_device_pick: true` (snake_case from
+                    // the backend, untouched by pollQrPair's response
+                    // shaping), defer onSuccess and switch to the
+                    // device-pick view.
+                    if (data?.needs_device_pick === true) {
+                        setPendingDevicePick({
+                            response: data,
+                            existingDevices: Array.isArray(data?.existing_user_devices)
+                                ? data.existing_user_devices
+                                : [],
+                        });
+                        setDevicePickError(null);
+                        setMode("device-pick");
+                        return;
+                    }
                     setMode("password");
                     onSuccessRef.current?.(data);
                 } else if (data?.status === "cancelled") {
@@ -237,6 +290,63 @@ export const LoginComponent = (props) => {
         setMode("qr-scanning");
     };
 
+    // ---------------------- device-pick (post-login) ----------------------
+
+    const finaliseDevicePick = useCallback(() => {
+        // Hand the pending login response back to the parent. Tokens
+        // were already persisted by useApi.login() so no extra wiring
+        // is required: the parent simply sees the auth as resolved.
+        const response = pendingDevicePick?.response;
+        setPendingDevicePick(null);
+        setDevicePickError(null);
+        setDevicePickLoading(false);
+        setMode("password");
+        onSuccessRef.current?.(response);
+    }, [pendingDevicePick]);
+
+    const handleDevicePickExisting = useCallback(async (userDeviceId) => {
+        if (!api?.linkUserDevice) {
+            setDevicePickError(labels.devicePickMissingApiError);
+            return;
+        }
+        setDevicePickLoading(true);
+        setDevicePickError(null);
+        try {
+            await api.linkUserDevice(userDeviceId);
+            finaliseDevicePick();
+        } catch (err) {
+            // Prefer the backend-provided machine code/message when
+            // available (set by useApi.beforeError) over the generic
+            // fallback label.
+            const fallback = labels.devicePickError;
+            const message = err?.apiMessage ?? fallback;
+            setDevicePickError(message);
+            onErrorRef.current?.(err);
+        } finally {
+            setDevicePickLoading(false);
+        }
+    }, [api, labels.devicePickError, labels.devicePickMissingApiError, finaliseDevicePick]);
+
+    const handleDevicePickCreate = useCallback(async (label, icon) => {
+        if (!api?.createUserDevice) {
+            setDevicePickError(labels.devicePickMissingApiError);
+            return;
+        }
+        setDevicePickLoading(true);
+        setDevicePickError(null);
+        try {
+            await api.createUserDevice({ label, icon });
+            finaliseDevicePick();
+        } catch (err) {
+            const fallback = labels.devicePickError;
+            const message = err?.apiMessage ?? fallback;
+            setDevicePickError(message);
+            onErrorRef.current?.(err);
+        } finally {
+            setDevicePickLoading(false);
+        }
+    }, [api, labels.devicePickError, labels.devicePickMissingApiError, finaliseDevicePick]);
+
     // ---------------------- render ----------------------
 
     // Only freeze the form while a login request is actually in flight.
@@ -252,6 +362,35 @@ export const LoginComponent = (props) => {
     // viewfinder, and a single Cancel button gets the user back).
     const scannerOpen = mode === "qr-scanning";
     const isClaimingOrPolling = mode === "qr-claiming" || mode === "qr-polling";
+
+    // When the post-login device-pick is in flight, take over the whole
+    // render tree: the password form and the QR section are hidden so
+    // the user can't accidentally restart the login while we wait for
+    // them to attach the device. Tokens are already persisted by the
+    // useApi.login() side-effect, so we never lose auth state if the
+    // user reloads at this point -- they would just land on the
+    // post-auth route directly (the parent's RouteGuard / router takes
+    // over from there).
+    if (mode === "device-pick" && pendingDevicePick) {
+        return (
+            <div
+                data-component="LoginComponent"
+                data-mode="device-pick"
+                {...containerProps}
+                className={twMerge("flex flex-col gap-4", containerProps.className)}
+            >
+                <DevicePicker
+                    existingDevices={pendingDevicePick.existingDevices}
+                    onPick={handleDevicePickExisting}
+                    onCreate={handleDevicePickCreate}
+                    loading={devicePickLoading}
+                    error={devicePickError}
+                    labels={devicePickerLabels}
+                    {...devicePickerProps}
+                />
+            </div>
+        );
+    }
 
     return (
         <div

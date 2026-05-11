@@ -235,13 +235,32 @@ export const useApiContext = () => {
                     );
                 }
 
+                // smartAuth >=2.1 may send `needs_device_pick` + the
+                // user's existing logical user-devices (the "mon iPhone"
+                // logical entries). `loginMap` does not rename these keys
+                // (passthrough), so we surface camelCase aliases here for
+                // consumers (LoginComponent reads `needsDevicePick`).
+                // The tokens are valid as-is: we persist them right away
+                // so the post-login UX (the picker, hitting the JWT-
+                // protected /account/user-devices endpoint) works.
+                const needsDevicePick = data?.needs_device_pick === true;
+                const existingUserDevices = Array.isArray(data?.existing_user_devices)
+                    ? data.existing_user_devices
+                    : [];
+
                 currentGst[effectiveRememberMe ? "local" : "session"].set("user", {
                     ...mappedData,
                     rememberMe: effectiveRememberMe,
-                    tokenExpiry: floor(Date.now() / 1000) + expiresIn
+                    tokenExpiry: floor(Date.now() / 1000) + expiresIn,
+                    needsDevicePick,
+                    existingUserDevices,
                 });
 
-                return mappedData;
+                return {
+                    ...mappedData,
+                    needsDevicePick,
+                    existingUserDevices,
+                };
             });
     }, [publicApi]);
 
@@ -441,6 +460,78 @@ export const useApiContext = () => {
             });
     }, [privateApi]);
 
+    // ---------------------- user devices (logical, smartAuth) ----------------------
+    //
+    // A "user-device" is the logical entity ("mon iPhone") shared by all
+    // PWAs installed on the same physical device for the same user. The
+    // smartAuth backend exposes 5 endpoints; we mirror them here.
+    //
+    // After a successful create/link, we clear the `needsDevicePick`
+    // flag stashed by the login flow so subsequent reads of the user
+    // state from RouteGuard / consumers see a fully-resolved auth.
+
+    const clearNeedsDevicePick = () => {
+        const { user: currentUser, rememberMe: currentRememberMe, gst: currentGst } = valuesRef.current;
+        if (!currentUser) return;
+        const updated = { ...currentUser, needsDevicePick: false, existingUserDevices: [] };
+        currentGst[currentRememberMe ? "local" : "session"].set("user", updated);
+    };
+
+    const listUserDevices = useMemo(() => (options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .get(options.url ?? "account/user-devices", options)
+            .json();
+    }, [privateApi]);
+
+    const createUserDevice = useMemo(() => (body, options = {}) => {
+        throwTypeError({ value: body, name: "body (param)", type: ["plain object"] });
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .post(options.url ?? "account/user-devices", {
+                json: body,
+                ...options,
+            })
+            .json()
+            .then((data) => {
+                clearNeedsDevicePick();
+                return data;
+            });
+    }, [privateApi]);
+
+    const linkUserDevice = useMemo(() => (id, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .post(options.url ?? `account/user-devices/${id}/link`, options)
+            .json()
+            .then((data) => {
+                clearNeedsDevicePick();
+                return data;
+            });
+    }, [privateApi]);
+
+    const renameUserDevice = useMemo(() => (id, label, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .post(options.url ?? `account/user-devices/${id}/rename`, {
+                json: { label },
+                ...options,
+            })
+            .json();
+    }, [privateApi]);
+
+    const deleteUserDevice = useMemo(() => (id, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .delete(options.url ?? `account/user-devices/${id}`, options)
+            .json();
+    }, [privateApi]);
+
     // ---------------------- stable API methods ----------------------
 
     // Helper to handle raw vs json response based on options
@@ -508,6 +599,11 @@ export const useApiContext = () => {
         identifyDevice: device,
         claimQrPair,
         pollQrPair,
+        listUserDevices,
+        createUserDevice,
+        linkUserDevice,
+        renameUserDevice,
+        deleteUserDevice,
         public: publicApi,
         private: privateApi,
         get,
@@ -515,5 +611,25 @@ export const useApiContext = () => {
         put,
         patch,
         del,
-    }), [user, entities, login, logout, device, claimQrPair, pollQrPair, publicApi, privateApi, get, post, put, patch, del]);
+    }), [
+        user,
+        entities,
+        login,
+        logout,
+        device,
+        claimQrPair,
+        pollQrPair,
+        listUserDevices,
+        createUserDevice,
+        linkUserDevice,
+        renameUserDevice,
+        deleteUserDevice,
+        publicApi,
+        privateApi,
+        get,
+        post,
+        put,
+        patch,
+        del,
+    ]);
 };
