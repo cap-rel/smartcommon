@@ -8,3 +8,4 @@ export * from "./useForm";
 export * from "./useOnlineStatus";
 export * from "./useCachedQuery";
 export * from "./useAuthenticatedImage";
+export * from "./useBarcodeScanner";
