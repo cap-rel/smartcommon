@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components -- Storybook story
+   files mix the story object and small demo components by design. */
 import { useEffect } from "react";
 
 import { DebugConsole } from "../";
