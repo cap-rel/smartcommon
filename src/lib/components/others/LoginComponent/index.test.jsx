@@ -77,7 +77,7 @@ vi.mock("lib/components", async () => {
                 <input
                     name={name}
                     type="checkbox"
-                    checked={!!value}
+                    checked={Boolean(value)}
                     onChange={(e) => onChange?.(e.target.checked)}
                 />
                 <span>{label}</span>

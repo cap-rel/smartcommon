@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components -- Storybook decorators
+   intentionally co-locate components + helper type registries for ergonomics. */
 import { useState } from "react";
 import {
     FaCommentDots,

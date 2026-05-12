@@ -16,5 +16,7 @@ export * from "./Modal";
 export * from "./Overlay";
 export * from "./PhotoAnnotator";
 export * from "./ProductCategoryBrowser";
+export { ALL_PRODUCTS_ID, UNCATEGORIZED_ID } from "./ProductCategoryBrowser/props";
+export { createDexieProductCategoryAdapters } from "./ProductCategoryBrowser/createDexieProductCategoryAdapters";
 export * from "./SearchBar";
 export * from "./Stepper";

@@ -22,21 +22,19 @@ export const RouteGuard = (props) => {
     // restrictive one. We log a console.warn so the dev sees it during
     // development; in production this is essentially silent.
     if (requireAuth && requireGuest) {
-        // eslint-disable-next-line no-console
         console.warn(
             "[RouteGuard] requireAuth and requireGuest were both set; falling back to requireAuth."
         );
     }
     if (requireDeviceIdentification && requireDeviceIdentified) {
-        // eslint-disable-next-line no-console
         console.warn(
             "[RouteGuard] requireDeviceIdentification and requireDeviceIdentified were both set; falling back to requireDeviceIdentification."
         );
     }
 
     const api = useApi();
-    const isAuthenticated = !!api?.user;
-    const hasDeviceOptions = !!api?.user?.deviceOptions;
+    const isAuthenticated = Boolean(api?.user);
+    const hasDeviceOptions = Boolean(api?.user?.deviceOptions);
 
     // Auth modes (mutually exclusive after the warn above)
     if (requireAuth && !isAuthenticated) {

@@ -27,7 +27,6 @@ const Component = (args) => {
                 onAnnotationActivate={(a) => {
                     // Demo: in production this would navigate to a sub-photo.
                     if (a.type === "photo") {
-                        // eslint-disable-next-line no-alert
                         window.alert(`Drill into ${a.payload?.targetPhotoId}`);
                     }
                 }}

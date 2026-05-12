@@ -474,5 +474,6 @@ export const ProductCategoryBrowser = (props) => {
 ProductCategoryBrowser.propTypes = propTypes;
 ProductCategoryBrowser.defaultProps = defaultProps;
 
-export { ALL_PRODUCTS_ID, UNCATEGORIZED_ID } from "./props";
-export { createDexieProductCategoryAdapters } from "./createDexieProductCategoryAdapters";
+// ALL_PRODUCTS_ID, UNCATEGORIZED_ID and createDexieProductCategoryAdapters
+// are exported from the parent barrel (../index.js / ../export.js) so that
+// this file only exports a React component (keeps Fast Refresh happy).

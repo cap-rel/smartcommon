@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components -- Storybook decorators
+   intentionally co-locate components + helper exports for ergonomics. */
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 import { ApiContext } from "lib/components";
