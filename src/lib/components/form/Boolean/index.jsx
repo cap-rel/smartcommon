@@ -55,7 +55,7 @@ export const Boolean = (props) => {
             <input
                 type={`checkbox`}
                 onChange={() => {}}
-                checked={!!currentValue}
+                checked={Boolean(currentValue)}
                 name={name}
                 hidden
             />
@@ -63,14 +63,14 @@ export const Boolean = (props) => {
                 <Checkbox
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
-                    checked={!!currentValue}
+                    checked={Boolean(currentValue)}
                     disabled={disabled}
                 />
             : type === "radio" ?
                 <Radio
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
-                    checked={!!currentValue}
+                    checked={Boolean(currentValue)}
                     disabled={disabled}
                 />
             : type === "icon" ?
@@ -78,13 +78,13 @@ export const Boolean = (props) => {
                     icon={checkedIcon}
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
-                    checked={!!currentValue}
+                    checked={Boolean(currentValue)}
                     disabled={disabled}
                 />
             :   <Switch
                     mergeProps={mergeProps}
                     onClick={handleOnClick}
-                    checked={!!currentValue}
+                    checked={Boolean(currentValue)}
                     disabled={disabled}
                 />
             }
