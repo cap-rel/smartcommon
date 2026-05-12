@@ -12,6 +12,7 @@ export * from "./Form/context";
 export * from "./Gps";
 export * from "./IconSelect";
 export * from "./Input";
+export * from "./NumericPad";
 export * from "./PhotosUploader";
 export * from "./RadioBar";
 export * from "./Range";
