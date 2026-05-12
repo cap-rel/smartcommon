@@ -24,12 +24,41 @@ export default defineConfig({
       cssFileName: "smartcommon-style"
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'react-hot-toast'],
+      // Every runtime peerDependency MUST stay external. Otherwise the
+      // published bundle ships its own copy, the consumer has another copy
+      // in its node_modules, and any peer that exposes a React Context (or
+      // a stateful singleton like a redux store, an i18next instance, a
+      // Dexie database) ends up with two non-interoperable instances. This
+      // is the root cause that broke <RouteGuard><Outlet /></RouteGuard>
+      // when capTodo nested its own <BrowserRouter>: two RouteContext
+      // objects, smartcommon read its own (empty) one. The bundleExternals
+      // test (src/lib/tests/bundleExternals.test.js) enforces this list.
+      external: [
+        'react',
+        'react-dom',
+        'react-hot-toast',
+        'react-i18next',
+        'react-redux',
+        '@reduxjs/toolkit',
+        'dexie',
+        'tailwind-merge',
+        // react-router-dom re-exports everything from react-router; both
+        // packages share the same RouteContext, so both must stay external.
+        // The regex also catches subpaths like "react-router/dom".
+        /^react-router(-dom)?($|\/)/,
+      ],
       output: {
         globals: {
           react: 'React',
           'react-dom': 'ReactDOM',
           'react-hot-toast': 'reactHotToast',
+          'react-i18next': 'reactI18next',
+          'react-redux': 'reactRedux',
+          '@reduxjs/toolkit': 'reduxToolkit',
+          'dexie': 'Dexie',
+          'tailwind-merge': 'tailwindMerge',
+          'react-router': 'ReactRouter',
+          'react-router-dom': 'ReactRouterDOM',
         },
       },
     },
