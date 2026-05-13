@@ -6,7 +6,7 @@ import { applyFunctionIfNotNil, ISOFormat, toMsTimestamp } from "lib/utils";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Button } from "lib/components";
 
-import { propTypes, defaultProps, DEFAULT_LABELS } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 export const PlainCalendar = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("PlainCalendar", props);
@@ -14,9 +14,9 @@ export const PlainCalendar = (props) => {
   const {
     id,
     name,
-    yearsInterval,
-    interval,
-    items,
+    yearsInterval = [2000, 2030],
+    interval = false,
+    items = [],
     defaultValue,
     value,
     onChange,
@@ -359,6 +359,8 @@ export const PlainCalendar = (props) => {
             <div key={`day${DI}`} { ...mergeProps("weekDayAndNumberContainer", p => ({
               ...p,
               "data-number": number,
+              "data-date": date,
+              "data-outside-month": isOutsideMonth ? "true" : "false",
               className: `flex w-full flex-col items-center gap-app-xxs ${p.className || ""}`,
             }))}>
               <div { ...mergeProps("number", p => ({
@@ -391,4 +393,3 @@ export const PlainCalendar = (props) => {
 };
 
 PlainCalendar.propTypes = propTypes;
-PlainCalendar.defaultProps = defaultProps;

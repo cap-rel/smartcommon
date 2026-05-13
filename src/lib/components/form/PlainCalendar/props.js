@@ -4,13 +4,6 @@ export const DEFAULT_LABELS = {
     weekdays: ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."],
 };
 
-export const defaultProps = {
-    yearsInterval: [2000, 2030],
-    items: [],
-    interval: false,
-    labels: DEFAULT_LABELS,
-};
-
 export const propTypes = {
     id: PropTypes.string,
     name: PropTypes.string,
