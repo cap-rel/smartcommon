@@ -1,0 +1,25 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+`<Fab>` n'a pas de système `useVariantMerger` à variantes nommées :
+toute la personnalisation passe par les props `size`, `color`,
+`position`, `direction` + les slots `fabProps`, `actionProps`,
+`labelProps`.
+
+Stories typiques :
+
+- **Default** : single action, `bottom-right`, `primary`, `md`.
+- **SpeedDial** : 3-4 actions déployées vers le haut.
+- **SpeedDialHorizontal** : `direction="right"` pour un FAB en
+  haut-gauche.
+- **Sizes** : démontre `sm`, `md`, `lg`.
+- **Colors** : démontre les 4 presets de couleur.
+
+<VariantsPage of={stories} variants={{}} />

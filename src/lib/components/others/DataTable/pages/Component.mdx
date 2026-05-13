@@ -6,4 +6,87 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# DataTable
+
+Tableau de données configuré par colonnes, avec **layout responsive
+automatique** (table desktop / cards mobile via Tailwind, sans media
+query JS), tri, pagination, recherche et sélection multi-rows.
+
+Pensé pour les listes "à la WordPress admin" (interventions, factures,
+contacts, …), **pas pour les data-grids type Excel**. Pour les grids
+riches (virtual scroll, grouping, pivot, column resize), regarder
+plutôt React Table / TanStack Table.
+
+## Définition de colonnes
+
+```js
+{
+    key: "name",            // accède à row[key]
+    label: "Nom",           // header (node, peut être JSX)
+    render: (row, ctx) =>   // facultatif : renvoie un node pour la cellule
+        <strong>{row.name}</strong>,
+    sortable: true,
+    width: "200px",
+    align: "left",          // "left" (défaut) | "center" | "right"
+    headerClassName: "...",
+    cellClassName: "...",
+}
+```
+
+**Attention** : la recherche full-text se base sur `row[col.key]` brut
+stringifié, **pas** sur ce que renvoie `render`. Si un `render` produit
+"En cours" depuis `row.status_id=2`, taper "en cours" ne match pas.
+Stocker la version textuelle dans les données pour matcher.
+
+## Layout responsive (`mode`)
+
+- `"auto"` (défaut) : rend **simultanément** la `<table>` (visible
+  `md:`+) et les cards (visible mobile), bascule à 768 px via Tailwind.
+  Pas de JS media query.
+- `"table"` / `"cards"` : force un mode unique à tous les viewports.
+
+## Controlled / uncontrolled symétrique
+
+Chaque axe (tri, pagination, search, selection) est indépendant : passer
+le couple `<axe>` + `on<Axe>Change` -> mode controlled. Sinon `<DataTable>`
+gère l'état interne. Pratique pour combiner par exemple tri serveur
+(controlled) et recherche client (uncontrolled).
+
+## Click sur la row + opt-out
+
+`onRowClick(row, index)` est ignoré quand le click vient d'un descendant
+marqué `data-row-action`. Permet de mettre des boutons d'action par row
+sans qu'ils déclenchent la navigation de détail :
+
+```jsx
+{
+    key: "actions",
+    render: (row) => (
+        <button data-row-action onClick={() => edit(row)}>
+            Modifier
+        </button>
+    ),
+}
+```
+
+## Sélection "tout sur la page courante"
+
+La checkbox header (mode `selectable`) coche **les rows actuellement
+visibles** (page courante + filtre courant), pas toutes les rows du
+dataset. Pour "tout cocher" sur dataset complet : action custom appelant
+`onSelectionChange(data.map(r => r[keyField]))`.
+
+## Limites
+
+- Pas de virtual scroll : >2000 lignes paginées commencent à ramer.
+- Pas de column resize / reorder / pinning.
+- Recherche basée sur les valeurs brutes, pas sur le rendu.
+- Tri client `lodash.orderBy`, pas de locale-aware sort (pour ça :
+  controlled + `Intl.Collator` côté parent).
+
+## Voir aussi
+
+Doc complète (props, slots, i18n, exemples) : `docs/data-table.md` du
+repo smartcommon.
+
 <PropsPage of={stories} />

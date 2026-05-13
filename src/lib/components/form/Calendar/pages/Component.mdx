@@ -6,4 +6,53 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Calendar
+
+Date picker "calendrier mensuel" avec navigation mois/année. Sélection
+d'une seule date (string ISO `YYYY-MM-DD`). Form-aware via `useField`
+quand monté dans un `<Form>`.
+
+> Note : un `<PlainCalendar>` (vue mensuelle/annuelle sans contexte
+> formulaire) est en cours de développement. `<Calendar>` restera
+> dédié à la saisie d'une date dans un formulaire.
+
+## Format de valeur
+
+`value` (et `defaultValue`) : **string ISO** `"YYYY-MM-DD"` ou `null`.
+Pas de support `Date` natif côté input. Convertir manuellement :
+
+```js
+const iso = new Date().toISOString().slice(0, 10);
+```
+
+## Navigation
+
+- Flèches gauche / droite : mois par mois, auto-décrément/incrément
+  année aux bornes.
+- Sélecteur d'année : borné par `yearsInterval` (défaut
+  `[2000, 2030]`).
+- `onMonthChange(month)` et `onYearChange(year)` à chaque navigation.
+
+## Locale
+
+`Date.prototype.toLocaleString` avec la locale navigateur. **Pas
+d'override via props.** L'affichage suit la langue du navigateur.
+
+## Validation
+
+`useField({ errors: () => ({}) })` : **pas de validation native**.
+Valider côté parent (controlled) ou dans `onPreSubmit` de `<Form>`.
+
+## Limites
+
+- Sélection unique (pas de range — `// IDEA interval` dans le code).
+- Pas de désactivation de dates (weekends, jours fériés, dates
+  passées) via props.
+- Pas de minutes / secondes (c'est un date picker).
+- Locale non configurable.
+
+## Voir aussi
+
+Doc complète : `docs/calendar.md` du repo smartcommon.
+
 <PropsPage of={stories} />

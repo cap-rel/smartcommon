@@ -1,5 +1,4 @@
 import { fn } from 'storybook/test';
-import { FaWifi, FaParking } from 'react-icons/fa6';
 
 import { Checker } from './';
 

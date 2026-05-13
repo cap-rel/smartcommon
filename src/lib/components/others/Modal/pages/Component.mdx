@@ -1,0 +1,47 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Modal
+
+Modale générique : overlay sombre, header (titre + bouton X), corps
+scrollable. Gère l'escape, le scroll-lock body, et propose 5 tailles +
+2 positions.
+
+## Comportement automatique
+
+- Scroll-lock `body` quand ouverte, restauré au close ou unmount.
+- Listener global `keydown` = ferme via `onClose` sur Escape.
+- Click sur l'overlay ferme (sauf si `closeOnOverlayClick=false`). Le
+  contenu intercepte le click pour ne pas fermer en cliquant dedans.
+- Quand `isOpen=false`, `<Modal>` renvoie `null` (pas de DOM résiduel).
+
+## Tailles
+
+Largeurs **desktop only** (mobile = full width) :
+
+`sm` -> `lg:max-w-sm` · `md` -> `lg:max-w-md` (défaut) · `lg` ->
+`lg:max-w-lg` · `xl` -> `lg:max-w-xl` · `full` -> `lg:max-w-4xl`.
+
+## Positions
+
+- `center` (défaut) : centré, coins arrondis, marge horizontale mobile.
+- `bottom` : mobile = bottom-sheet (ancré bas + coins haut arrondis +
+  full width), desktop = redevient centré. Idéal pour les pickers,
+  menus contextuels, confirmations.
+
+## Modal vs Popup
+
+`<Modal>` est la version moderne avec escape, body scroll-lock et
+tailles preset. `<Popup>` (dans `main/`) est gardé pour les usages
+legacy ; nouveaux écrans -> `<Modal>`.
+
+## Voir aussi
+
+Doc complète : `docs/modal.md` du repo smartcommon.
+
+<PropsPage of={stories} />

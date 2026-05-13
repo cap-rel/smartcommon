@@ -1,0 +1,26 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+`<LoginComponent>` n'utilise pas le système `useVariantMerger` (c'est un
+composant métier page-replacing). Les variantes affichées ici sont les
+**modes** de configuration qui changent la surface de l'UI :
+
+- **Default** : email + password + entity + sharedDevice + QR (config par
+  défaut).
+- **WithRememberMe** : la case "Accès partagé" pré-cochée pour démontrer
+  le flow `rememberMe: false`.
+- **WithQrPair** : focus sur le bouton "Scanner QR" + overlay claim/poll.
+
+Pour personnaliser le styling sans recompiler le composant, utiliser les
+slots `*Props` (`containerProps`, `formProps`, `submitButtonProps`, etc.)
+qui sont spread sur l'élément cible avec `twMerge` pour résoudre les
+conflits Tailwind.
+
+<VariantsPage of={stories} variants={{}} />

@@ -1,0 +1,60 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# LoginComponent
+
+Formulaire de connexion Dolibarr clé en main : email + mot de passe,
+sélection optionnelle d'entité multi-companies, case "accès partagé",
+flow QR pairing smartAuth intégré.
+
+## Quand l'utiliser
+
+Toutes les PWA cap-rel qui s'authentifient contre un Dolibarr + smartAuth.
+Pour un projet avec un backend qui n'expose pas `/qr-pair/*`, passer
+`enableQrPair={false}` (le bouton "Scanner QR" disparaît).
+
+## Comportement
+
+- **Email + mot de passe** : `required` HTML5 sur les deux champs. Submit
+  -> `api.login({ login, password, entity?, rememberMe })`. La case "Accès
+  partagé" inverse `rememberMe` (cochée = `rememberMe: false`).
+- **Entité** : Select chargé via `api.getEntities()`. Caché si une seule
+  entité ou si `showEntities={false}`.
+- **QR pairing** : un bouton "Scanner QR" ouvre `<BarcodeScanner>`. Une
+  fois un pairing_id capturé : `POST /qr-pair/{id}/claim` puis poll
+  `POST /qr-pair/{id}/poll` toutes les `qrPollIntervalMs` (2s) jusqu'à
+  `consumed` ou expiration `qrTimeoutMs` (2min). Tokens persistés
+  automatiquement en localStorage (QR = trusted device).
+- **Post-login device-pick** : si le backend renvoie
+  `needs_device_pick: true`, bascule sur `<DevicePicker>` (smartAuth ≥ 2.1).
+
+## i18n
+
+Pas de `useTranslation()` interne. Le consommateur passe ses chaînes via
+`labels` (merge partiel avec `DEFAULT_LABELS` exporté). Mapping d'erreur
+QR personnalisable via `getQrErrorLabel(err)` (helper
+`buildDefaultGetQrErrorLabel(labels)` également exporté).
+
+## Garde-fous
+
+- Idempotence claim côté composant : un double scan rapide est rejeté
+  (évite le 409 `pairing_not_claimable` côté Android avec autofocus
+  agressif).
+- Timeout global QR : si `consumed` n'arrive pas dans `qrTimeoutMs`, le
+  poll est annulé et `labels.pairingTimeout` est affiché.
+
+## Voir aussi
+
+- Doc complète (slots de styling, props, helpers exportés, mapping d'erreur
+  détaillé) : `docs/login-component.md` dans le repo smartcommon.
+- `<RouteGuard>` : routeur d'auth qui décide quand mounter cette page.
+- `<DeviceIdentificationComponent>` : étape suivante après le login si le
+  user n'a pas encore choisi un appareil logique.
+- `<BarcodeScanner>` : utilisé en interne par le mode QR.
+
+<PropsPage of={stories} />

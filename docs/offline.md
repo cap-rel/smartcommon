@@ -9,6 +9,7 @@ SmartCommon fournit des hooks React et utilitaires pour le mode offline, utilisa
 | `useOnlineStatus` | Detection online/offline avec health check serveur |
 | `useCachedQuery` | Cache de donnees avec strategies (network-first, cache-first, SWR) |
 | `useAuthenticatedImage` | Cache d'images avec authentification JWT |
+| `useUploadQueue` | Queue d'uploads offline-first persistee en IndexedDB |
 | `useSyncClient` | Hook de synchronisation offline-first |
 | `SyncStorage` | Couche IndexedDB pour la sync |
 | `SyncApi` | Client HTTP pour les endpoints sync |
@@ -30,6 +31,7 @@ import {
     useOnlineStatus,
     useCachedQuery,
     useAuthenticatedImage,
+    useUploadQueue,
 
     // Sync client
     useSyncClient,
@@ -255,6 +257,30 @@ const { data, isLoading, isFromCache, error, refetch } = useCachedQuery({
     ttl: 86400000
 });
 ```
+
+---
+
+## Hook useUploadQueue
+
+Queue d'uploads offline-first. Persiste chaque blob en IndexedDB avant de
+rendre la main, puis le pousse vers `/upload` en arriere-plan avec un
+backoff exponentiel. Auto-flush a la reconnexion reseau.
+
+```javascript
+const { enqueue, pending, retry, cancel, flush, onResolved } = useUploadQueue();
+
+// Offline-safe : enqueue est async et awaite l'ecriture IDB.
+const { pending_id } = await enqueue(blob, { interventionId: 42 });
+
+// Branchement pour patcher le form quand le serveur a accepte l'upload :
+useEffect(() => onResolved(({ pending_id, upload_id, meta }) => {
+    // ... swap pending_id -> upload_id dans le state du form
+}), []);
+```
+
+Voir [upload-queue.md](upload-queue.md) pour l'integration complete,
+le contrat backend smartAuth (header `Idempotency-Key`) et les transitions
+d'etat de la queue.
 
 ---
 

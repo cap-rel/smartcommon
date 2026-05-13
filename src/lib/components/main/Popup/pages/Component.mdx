@@ -6,4 +6,45 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Popup
+
+Dialogue modal **legacy** : overlay sombre, titre + bouton de fermeture,
+contenu centré. Précédé `<Modal>` qui le remplace pour les nouveaux
+écrans.
+
+> **À éviter pour nouveaux usages** : préférer `<Modal>` qui gère en
+> plus l'escape, le scroll-lock du body et expose des tailles présets.
+> `<Popup>` reste documenté pour les modules qui s'en servent déjà.
+
+## Différences clés avec `<Modal>`
+
+- `<Popup>` reste **monté** quand `isOpen=false` (transition opacity).
+  `<Modal>` `return null` -> pas de DOM résiduel.
+- Pas d'écoute Escape.
+- Pas de scroll-lock body.
+- Pas de prop `size` (override via slot `popupProps.className`).
+- API close : `close` (sans `on`) au lieu de `onClose`.
+
+## Migration `<Popup>` -> `<Modal>`
+
+```diff
+- <Popup
++ <Modal
+    isOpen={open}
+-   close={...}
++   onClose={...}
+    title="..."
++   size="md"
++   position="center"
+  >
+    ...
+- </Popup>
++ </Modal>
+```
+
+## Voir aussi
+
+Doc complète et guide de migration : `docs/popup.md` et `docs/modal.md`
+du repo smartcommon.
+
 <PropsPage of={stories} />

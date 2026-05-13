@@ -6,4 +6,42 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Map
+
+> ⚠ **Work-in-progress / non fonctionnel à date.** Le composant
+> référence `L.map`, `L.tileLayer`, `L.Control.Geocoder` (API Leaflet
+> + `leaflet-control-geocoder` + `leaflet-routing-machine`) mais
+> `leaflet` n'est ni importé dans le fichier ni dans les `dependencies`
+> de smartcommon. `const L = {}` au début du composant —
+> volontairement ou par oubli — fait crasher tout appel à `L.map(...)`
+> au runtime.
+>
+> **Ne pas utiliser ce composant tel quel.** Il faut soit :
+>
+> 1. Ajouter `leaflet`, `leaflet-control-geocoder` et
+>    `leaflet-routing-machine` comme dépendances, `import L from
+>    "leaflet"`, puis lazy-loader (le bundle Leaflet pèse ~150 KB) ;
+> 2. Ou retirer le composant en attendant une vraie implémentation.
+
+## Fonctionnalités cibles (à terminer)
+
+D'après le code commenté + non commenté :
+
+- **`type="search"`** : carte centrée France (`[46.6031, 1.8883]`,
+  zoom 5), bouton de recherche d'adresse via Nominatim (reverse
+  geocoding au clic), marker popup avec adresse complète (rue, CP,
+  ville, état, pays).
+- **`type="route"`** : 2 champs "Point de départ" / "Point d'arrivée",
+  tracé d'itinéraire via `leaflet-routing-machine`, popups
+  distance + temps.
+- Marker rouge custom dispo en commentaire (à activer si besoin
+  visuel).
+
+## Voir aussi
+
+- `<PhotoAnnotator>` : si tu veux des annotations sur image (et pas
+  géolocalisées). Cf `docs/photo-annotator.md`.
+- `formats/Coordinates` : formateur d'affichage de coordonnées
+  GPS — opérationnel.
+
 <PropsPage of={stories} />

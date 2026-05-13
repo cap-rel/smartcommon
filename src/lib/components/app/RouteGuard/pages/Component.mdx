@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# RouteGuard
+
+Wrapper de route React Router qui décide si une page peut être rendue
+ou si l'utilisateur doit être redirigé en fonction de son état d'auth
++ de son état d'identification d'appareil.
+
+Remplace les `Public/PrivatePagesLayout` et
+`Pre/PostDeviceIdentificationLayout` qu'on dupliquait dans chaque PWA
+cap-rel.
+
+## Les 4 modes
+
+| Prop | Comportement | `redirectTo` par défaut |
+|------|--------------|------------------------|
+| `requireAuth` | bloque si pas de user connecté | `/login` |
+| `requireGuest` | bloque si un user EST connecté | `/` |
+| `requireDeviceIdentification` | bloque sauf si `user.deviceOptions` set | `/` |
+| `requireDeviceIdentified` | bloque sauf si `user.deviceOptions` cleared | `/device-identification` |
+
+Les modes device **impliquent `requireAuth`** : si aucun user, la
+redirection est forcée vers `/login` quel que soit `redirectTo`.
+
+## Source de vérité
+
+- `useApi().user` : présence = authentifié.
+- `useApi().user.deviceOptions` : set = sas de choix d'appareil
+  smartAuth en cours, cleared = appareil identifié.
+
+## Exemple
+
+```jsx
+<Routes>
+    <Route element={<RouteGuard requireGuest />}>
+        <Route path="/login" element={<LoginPage />} />
+    </Route>
+    <Route element={<RouteGuard requireDeviceIdentification />}>
+        <Route path="/device-identification" element={<DeviceIdent />} />
+    </Route>
+    <Route element={<RouteGuard requireDeviceIdentified />}>
+        <Route path="/" element={<HomePage />} />
+    </Route>
+</Routes>
+```
+
+Mode "children" pour protéger un sous-arbre hors `<Routes>` :
+
+```jsx
+<RouteGuard requireDeviceIdentified>
+    <PrivateApp />
+</RouteGuard>
+```
+
+## Conflits
+
+Combiner deux flags exclusifs (`requireAuth + requireGuest`, ou
+`requireDeviceIdentification + requireDeviceIdentified`) déclenche un
+`console.warn` côté dev. Le premier flag listé l'emporte.
+
+## Voir aussi
+
+Doc complète : `docs/route-guard.md` du repo smartcommon.
+
+<PropsPage of={stories} />

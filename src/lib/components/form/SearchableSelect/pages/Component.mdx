@@ -1,0 +1,53 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# SearchableSelect
+
+`<Select>` enrichi d'un champ de recherche type-ahead : l'utilisateur
+tape pour filtrer la liste. Form-aware via `useField`.
+
+## Quand l'utiliser
+
+- 10-300 options → `<SearchableSelect>` (scroll inefficace, search
+  payante).
+- `<10 options` -> `<Select>` classique.
+- Catalogue hiérarchique riche → `<ProductCategoryBrowser>`.
+
+## Format des options
+
+```js
+{ value: "FR", label: "France" }
+```
+
+`value` est ce qui est stocké ; `label` est utilisé pour le filtre
+case-insensitive ET l'affichage.
+
+## Comportement
+
+- Focus / clic → ouvre le dropdown.
+- Saisie → filtre par substring case-insensitive sur `label`.
+- Click sur option → `onChange(value)` + close + reset search.
+- Click outside → close + reset search.
+- Bouton X → reset la sélection.
+
+## Validation
+
+Règle `required` intégrée si la prop `required` est `true`. Message en
+dur "Ce champ est requis." (pas extrait en `labels`).
+
+## Limites
+
+- Filtre client-only (pas d'adapter async natif).
+- Pas de multi-select, pas de groupes, pas de surbrillance du match.
+- Message d'erreur non i18n.
+
+## Voir aussi
+
+Doc complète : `docs/searchable-select.md` du repo smartcommon.
+
+<PropsPage of={stories} />

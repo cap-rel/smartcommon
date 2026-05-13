@@ -27,3 +27,19 @@ SmartCommon is available as a npm package, you can add it with :
 That package is auto build thanks to gitlab CI/CD https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/pipelines
 
 and then is auto published on gitlab registry https://registry.inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/packages
+
+## Documentation
+
+Component-specific guides live in [`docs/`](./docs):
+
+- [`network.md`](./docs/network.md) - HTTP requests via `useApi`
+- [`offline.md`](./docs/offline.md) - offline-first patterns
+- [`quality.md`](./docs/quality.md) - defensive programming guide
+- [`product-category-browser.md`](./docs/product-category-browser.md) -
+  `<ProductCategoryBrowser>` (catalog browser modal) +
+  `createDexieProductCategoryAdapters` helper
+- [`photo-annotator.md`](./docs/photo-annotator.md) -
+  `<PhotoAnnotator>` (markers on a photo, controlled or event-based,
+  type registry with optional headless editors)
+
+For storybook stories: `npm run storybook`.

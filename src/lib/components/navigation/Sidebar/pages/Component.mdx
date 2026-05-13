@@ -6,4 +6,42 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Sidebar
+
+Drawer overlay déclenché par un bouton hamburger. Implémentation
+interne : `<Panel position="left">` (cf [panel.md](#) du repo).
+
+```jsx
+<Sidebar
+    links={[
+        { icon: FaHome,   label: "Accueil",       onClick: () => navigate("/"), active: true },
+        { icon: FaWrench, label: "Interventions", onClick: () => navigate("/inter"), badge: 3 },
+        { icon: FaGear,   label: "Paramètres",    onClick: () => navigate("/settings") },
+    ]}
+    toggleButton
+    duration={0.18}
+/>
+```
+
+Alternative : `children` à la place de `links` pour un contenu custom.
+
+## Props
+
+- `links` : array `[{ icon, label, onClick, badge?, active? }]`.
+- `toggleButton` : bouton hamburger visible (sinon le caller pilote
+  l'ouverture).
+- `open(fn)` : façon alternative de récupérer le contrôle d'ouverture.
+- `hideButtonOnScroll` : le bouton hamburger se masque au scroll vers
+  le bas.
+- `duration` : durée d'animation du drawer (s).
+
+## Limites
+
+Le commentaire TODO dans le code mentionne que les `badge` sur les
+links sont partiellement implémentés.
+
+## Voir aussi
+
+Doc transverse : `docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

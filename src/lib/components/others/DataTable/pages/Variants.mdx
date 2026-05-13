@@ -7,4 +7,20 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Variants
+
+`<DataTable>` n'a pas de variantes visuelles préréglées (pas de
+système `useVariantMerger` ici). Les "modes" de rendu se règlent via
+les props :
+
+- `mode` : `auto` / `table` / `cards`.
+- `selectable`, `searchable`, `sortable` : flags features.
+- `pageSize=0` : pagination off.
+
+Pour le theming visuel, utiliser les slots `*Props` mergés via
+`twMerge` :
+
+- `containerProps`, `tableProps`, `headerCellProps`, `rowProps`,
+  `cellProps`, `cardProps`, `paginationProps`, `selectionBarProps`.
+
 <VariantsPage of={stories} variants={variants} />

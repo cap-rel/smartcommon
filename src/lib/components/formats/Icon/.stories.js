@@ -1,12 +1,12 @@
 import { fn } from 'storybook/test';
 
-import { Icon } from './';
+import { IconDisplay } from './';
 
 import * as variants from "./variants";
 
 export default {
   title: 'Components/Formats/Icon',
-  component: Icon,
+  component: IconDisplay,
   parameters: {
     docs: {
       codePanel: true
@@ -28,4 +28,4 @@ import { Default as Def } from "./stories";
 
 export const Default = { tags: ["!dev"], ...Def };
 
-export { Icon } from "./stories";
+export { IconDisplay } from "./stories";

@@ -6,4 +6,37 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# AddressInput
+
+Champ de saisie d'adresse avec **autocomplete** via l'API publique
+**Nominatim** (OpenStreetMap). L'utilisateur tape, suggestions
+debounced, choix dans la liste, valeur stockée en objet structuré.
+
+## Forme de la valeur
+
+Objet Nominatim restructuré (rue, code postal, ville, pays, lat, lng).
+**Schéma non figé** côté lib : à toi de normaliser dans `onChange`
+avant de persister, et de loguer la forme reçue pour ton modèle de
+données.
+
+## Comportement
+
+- Debounce sur la frappe avant requête.
+- `AbortController` : la requête en cours est annulée à chaque
+  nouvelle saisie.
+- Click sur suggestion → `onChange(item)` + ferme la liste.
+- Pas de validation native (`errors: () => ({})`).
+
+## Limites Nominatim
+
+- **Rate limit** : Nominatim public limite à 1 req/s par IP + exige
+  un User-Agent identifiable. Pour les PWA cap-rel multi-users,
+  préférer un proxy interne (smartAuth ou autre) qui cache + agrège.
+- Pas de garantie de stabilité du schéma OSM côté valeur.
+- Pas d'offline cache.
+
+## Voir aussi
+
+Doc complète : `docs/address-input.md` du repo smartcommon.
+
 <PropsPage of={stories} />

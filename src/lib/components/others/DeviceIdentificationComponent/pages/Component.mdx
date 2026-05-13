@@ -1,0 +1,46 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# DeviceIdentificationComponent
+
+Formulaire qu'affiche une PWA juste après le login, lorsque smartAuth a
+renvoyé une liste d'appareils logiques (`user.deviceOptions`) parmi
+lesquels l'utilisateur doit choisir : sélectionner un appareil existant
+("mon iPhone Eric") ou nommer un nouvel appareil.
+
+## Deux rendus selon `user.deviceOptions`
+
+- **vide / absent** : seul le champ "Nom de l'appareil" est affiché.
+  Submit = enregistrement d'un nouvel appareil.
+- **présent** (liste `[{ uuid, label }]`) : radio des appareils existants
+  + option "Nouvel appareil" qui révèle le champ label.
+
+## Appel API
+
+Submit -> `api.identifyDevice({ label, uuid })`. Si
+`uuid === noDeviceValue` (défaut `"noDevice"`), le backend crée un
+nouvel appareil avec le `label` fourni. Sinon, il lie l'appareil
+physique courant à l'appareil logique existant.
+
+À succès, le backend smartAuth clear automatiquement `deviceOptions`
+dans `gst.local`. **Ne pas dispatch** de `updateUser({ deviceOptions:
+undefined })` côté projet (no-op historique).
+
+## i18n
+
+Pas de `useTranslation()` interne. Le consommateur passe les chaînes via
+`labels` (merge partiel avec `DEFAULT_LABELS`). Erreur surfacée via
+`getErrorLabel(err)` (retourne `null` -> fallback
+`labels.identifyError`).
+
+## Voir aussi
+
+Doc complète : `docs/device-identification-component.md` du repo
+smartcommon.
+
+<PropsPage of={stories} />

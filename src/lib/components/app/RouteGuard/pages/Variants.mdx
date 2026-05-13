@@ -1,0 +1,20 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+`<RouteGuard>` n'a pas de variantes de rendu (il rend `<Outlet />` ou un
+`<Navigate />`). Les variants présentés ici sont les **modes** auth/device
+qui démontrent les 4 chemins de redirection :
+
+- **Default** : `requireAuth`, redirige vers `/login` si pas connecté.
+- **Guest** : `requireGuest`, redirige vers `/` si déjà connecté.
+- **DeviceIdentification** : nécessite user + deviceOptions set.
+- **DeviceIdentified** : nécessite user + deviceOptions cleared.
+
+<VariantsPage of={stories} variants={{}} />

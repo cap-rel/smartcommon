@@ -1,0 +1,58 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# AboutModal
+
+Modale "À propos" standard des PWA cap-rel : nom + version + champs
+additionnels configurables + bouton "Vérifier les mises à jour" branché
+sur le service worker.
+
+## Bouton "Vérifier les mises à jour"
+
+Appelle `usePWAUpdate().checkForUpdates()` en interne. Selon le résultat :
+
+- PWA non installée / pas de SW : bouton désactivé +
+  `labels.updatesNotSupported`.
+- Pas de mise à jour : `labels.upToDate`.
+- Mise à jour disponible : le bouton bascule sur "Installer la mise à
+  jour" et appelle `applyUpdate()` puis recharge la page.
+- Erreur : `labels.checkError`.
+
+## Champs additionnels
+
+`fields: [{ label, value }]`. La `value` peut être un node React
+(badge, lien, span stylé, etc.) :
+
+```jsx
+<AboutModal
+    open={open}
+    onClose={...}
+    appName="smartIntervention"
+    version="1.4.0"
+    fields={[
+        { label: "Serveur", value: "https://api.example.com" },
+        { label: "Connexion", value: <Badge color="green">En ligne</Badge> },
+    ]}
+/>
+```
+
+## Pas de logique métier
+
+Pas d'appel API, pas de redirection. Tout passe via les props. Le
+composant est sûr à mounter partout (settings, footer, menu).
+
+## i18n
+
+Pas de `useTranslation()` interne. Passer les chaînes via `labels`
+(merge partiel avec `DEFAULT_LABELS`).
+
+## Voir aussi
+
+Doc complète : `docs/about-modal.md` du repo smartcommon.
+
+<PropsPage of={stories} />

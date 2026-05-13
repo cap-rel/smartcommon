@@ -6,4 +6,26 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# UpperNavbarItem
+
+Item à mounter dans les slots `left` / `right` d'une `<Navbar>`. Wrapper
+styling minimaliste — composant squelette à date (pas de `propTypes`
+ni `defaultProps` déclarés).
+
+> **Recommandation pratique** : pour les actions classiques dans
+> `left` / `right` (hamburger, recherche, cloche, etc.), préférer
+> directement un `<Button icon={...} onClick={...} />` qui a une API
+> bien établie et un styling cohérent avec le reste de la lib.
+>
+> `<UpperNavbarItem>` reste exposé pour les cas où on veut un wrapper
+> consistant avec `<LowerNavbarItem>` / `<TabbarItem>` (par exemple si
+> on construit un menu navbar custom qui réutilise le même container
+> pattern partout).
+
+## Voir aussi
+
+- [Navbar](../../Navbar/pages/Component.mdx) : le conteneur.
+- `<Button>` : alternative idiomatique pour les actions navbar.
+- Doc transverse navigation : `docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

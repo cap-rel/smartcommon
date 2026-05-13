@@ -6,4 +6,32 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# LowerNavbarItem
+
+Item à mounter dans le slot `bottom` d'une `<Navbar>`. Variante
+horizontale de `<TabbarItem>`, layout adapté pour s'aligner dans la
+bande sous la zone titre+actions de la navbar (et non en bas d'écran).
+
+```jsx
+<Navbar
+    id="main"
+    title="..."
+    bottom={[
+        <LowerNavbarItem id="all"      icon={FaListUl}    label="Tous"      active={filter === "all"}      onClick={() => setFilter("all")} />,
+        <LowerNavbarItem id="open"     icon={FaCircleDot} label="Ouverts"   active={filter === "open"}     onClick={() => setFilter("open")} />,
+        <LowerNavbarItem id="closed"   icon={FaCheck}     label="Terminés"  active={filter === "closed"}   onClick={() => setFilter("closed")} />,
+    ]}
+/>
+```
+
+Cas d'usage typique : barre de filtres ou de sous-sections sous le
+titre d'écran.
+
+## Voir aussi
+
+- [Navbar](../../Navbar/pages/Component.mdx) : le conteneur.
+- [TabbarItem](../../TabbarItem/pages/Component.mdx) : version
+  bottom-tabbar.
+- Doc transverse navigation : `docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

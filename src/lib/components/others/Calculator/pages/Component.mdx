@@ -1,0 +1,62 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Calculator
+
+Calculatrice flottante avec FAB déclencheur, historique (5 lignes),
+mémoire (M+/M-/MR/MC), raccourcis clavier et callback `onResult` pour
+récupérer la valeur calculée.
+
+## 3 modes d'intégration
+
+1. **Standalone (uncontrolled)** : monter `<Calculator />` et laisser
+   le FAB intégré gérer ouverture/fermeture.
+2. **Controlled** : `isOpen` + `onOpenChange` gérés par le parent.
+   Typique quand on veut un bouton custom (`showFab={false}`).
+3. **Provider + hook** : monter `<CalculatorProvider>` haut dans l'app
+   et appeler `useCalculator().open(onResult)` depuis n'importe quel
+   descendant. Une seule instance partagée.
+
+## Operations
+
+`+` `-` `×` `÷` `%` `+/-` `.`. Pas de parenthèses, pas de fonctions
+trig. Division par zéro -> `0`. Très grands nombres (≥ 1e12) affichés
+en notation exponentielle (6 décimales).
+
+## Raccourcis clavier
+
+Actifs uniquement quand `isOpen=true` :
+
+`0-9` digit · `.` décimale · `+` `-` `*` `/` opérateur · `Enter`/`=`
+calcul · `Backspace` efface · `Delete` clear · `%` percent · `Escape`
+ferme.
+
+## Historique & mémoire
+
+- `showHistory` (défaut true) : panneau qui liste les 5 dernières
+  opérations. Limite `MAX_HISTORY=5` **non configurable**.
+- `showMemory` (défaut true) : `MC` `MR` `M+` `M-` + indicateur
+  `M: <valeur>` si non-zéro.
+
+## Positions
+
+`bottom-right` (défaut) · `bottom-left` · `bottom-center` · `center` ·
+`top-right` · `top-left`. Affecte à la fois la position de la
+calculatrice et celle du FAB.
+
+## Pas d'i18n
+
+Les labels internes (`Calculator`, `M:`, `History`, `Delete`) sont en
+dur. Seul `title` est paramétrable. Pour i18n complet : fork ou wrapper.
+
+## Voir aussi
+
+Doc complète (3 modes d'intégration, exemples, limites) :
+`docs/calculator.md` du repo smartcommon.
+
+<PropsPage of={stories} />

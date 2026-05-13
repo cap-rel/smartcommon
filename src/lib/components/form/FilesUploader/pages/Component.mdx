@@ -6,4 +6,47 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# FilesUploader
+
+Sélecteur de fichiers généraliste (PDF, docs, archives, n'importe
+quel MIME). Garde les fichiers en l'état et expose
+`{ url, type, title, description }` au caller. **Pas d'upload
+built-in** : c'est au caller d'envoyer le blob où il veut.
+
+## Forme de la valeur
+
+```js
+{ url: "blob:...", type: "application/pdf", title: "facture", description: "" }
+```
+
+Mode `multiple` : tableau de cette shape.
+
+## Comportement
+
+- Bouton "Choisir un fichier" → input natif → ajout dans la liste.
+- Délai `setTimeout(1000ms)` simulant un chargement (en dur).
+- Suppression : bouton X par item, révoque le blob URL local.
+- Édition titre/description : tap sur item → `<Panel>` avec deux
+  inputs.
+
+## Quand préférer un autre composant
+
+- Images spécifiquement (compression + EXIF + upload smartAuth + queue
+  offline-first) → `<PhotosUploader>` (cf [upload-queue.md](upload-queue.md)).
+- Audio → `<AudiosUploader>`. Vidéo → `<VideosUploader>`. Mêmes
+  conventions.
+- Signature graphique sur canvas → `<SignaturePad>`.
+
+## Limites
+
+- Pas d'upload built-in (caller assemble lui-même).
+- Pas de mode `queue` offline-first.
+- Pas de validation MIME / taille max (à mettre côté caller).
+- Délai 1s en dur à la sélection.
+- Réimport d'un fichier déjà choisi non supporté (commentaire TODO).
+
+## Voir aussi
+
+Doc complète : `docs/files-uploader.md` du repo smartcommon.
+
 <PropsPage of={stories} />

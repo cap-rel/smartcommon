@@ -6,4 +6,52 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Stepper
+
+Indicateur visuel d'étapes (onboarding, wizard, workflow). Affichage
+horizontal ou vertical, 4 statuts par étape (`completed`, `current`,
+`upcoming`, `error`), navigation cliquable optionnelle.
+
+## Statuts dérivés
+
+| index vs `currentStep` | status |
+|------------------------|--------|
+| `<` | `completed` (badge plein, `✓`) |
+| `===` | `current` (badge bordé, numéro) |
+| `>` | `upcoming` (badge gris, numéro) |
+
+`error` est explicite (`step.status = "error"`), affiche un badge rouge
+avec `!`.
+
+## Step shape
+
+```js
+{
+    label: "Identité",          // node
+    description: "Email + ...", // node, optionnel
+    icon: FaUser,               // ou <FaUser />, remplace le numéro
+    status: "error",            // override la dérivation auto
+}
+```
+
+## Click
+
+`onStepClick(index)` rend tous les steps cliquables. À toi de filtrer
+si tu autorises le saut en avant ou seulement le retour arrière.
+
+## Connecteurs
+
+Couleur du connecteur entre 2 steps = celle du **destination** (step
+de droite/bas) : `completed`/`current` = primary, `upcoming` = gris,
+`error` = rouge.
+
+## i18n
+
+Une seule chaîne : `labels.stepN(n) => string`, utilisée comme
+`aria-label` des badges. Défaut : `Étape ${n}`.
+
+## Voir aussi
+
+Doc complète : `docs/stepper.md` du repo smartcommon.
+
 <PropsPage of={stories} />

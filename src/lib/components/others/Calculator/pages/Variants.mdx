@@ -1,0 +1,24 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+- **Default** : config plein écran centré pour démo (FAB + overlay
+  désactivés, ouvert d'office). En vrai usage on inverserait pour avoir
+  FAB visible.
+- **Compact** : `showHistory={false}` + `showMemory={false}` pour une
+  empreinte minimale. Idéal quand la calculatrice est embarquée dans
+  un formulaire de saisie rapide.
+
+Le composant n'utilise pas `useVariantMerger` pour ses variantes
+visuelles : tout passe par les flags `showFab`, `showOverlay`,
+`showHistory`, `showMemory` + les slots `*Props`. Pour un fork visuel
+plus profond, surcharger via `calculatorProps.className`,
+`buttonsProps`, `displayProps`, etc.
+
+<VariantsPage of={stories} variants={{}} />

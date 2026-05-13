@@ -6,4 +6,50 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Editor
+
+Éditeur Markdown minimaliste à 2 modes : **édition** (textarea brut)
+et **rendu** (HTML sanitisé via DOMPurify + `marked`). Bascule via
+deux boutons "Markdown" / "Rendu" en bas du champ.
+
+Pensé pour les descriptions longues dans un formulaire (compte-rendu,
+notes, descriptions produit) où on veut un peu de mise en forme sans
+imposer un WYSIWYG.
+
+## Sécurité
+
+`DOMPurify.sanitize(marked(value))` à chaque rendu : `<script>`,
+`onclick`, `<iframe>` et autres balises/attributs dangereux sont
+strippés. Sûr pour du contenu utilisateur arbitraire.
+
+## Capture de hauteur
+
+À la bascule vers le mode "Rendu", la hauteur de la textarea est lue
+(`getBoundingClientRect()`) puis injectée dans le `<div>` HTML rendu
+via une variable CSS `--height`. Pas de saut visuel entre les deux
+modes.
+
+## Controlled / uncontrolled
+
+- **Controlled** : `value` + `onValueChange`.
+- **Uncontrolled** : `defaultValue` seul.
+
+## Limites
+
+- Pas de toolbar (gras, italique, listes…) — l'utilisateur tape du
+  Markdown brut.
+- Pas d'auto-resize de la textarea.
+- DOMPurify config non exposée via props.
+- Labels boutons "Markdown" / "Rendu" en dur (pas extraits en `labels`).
+
+## Alternative WYSIWYG
+
+`@uiw/react-md-editor` est déjà dans les deps mais non utilisé
+activement (bloc commenté en bas du fichier `index.jsx`). À ressortir
+si besoin d'un éditeur plus complet.
+
+## Voir aussi
+
+Doc complète : `docs/editor.md` du repo smartcommon.
+
 <PropsPage of={stories} />

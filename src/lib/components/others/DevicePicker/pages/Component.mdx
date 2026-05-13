@@ -1,0 +1,59 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# DevicePicker
+
+UI smartAuth ≥ 2.1 qui permet à un utilisateur de **choisir un
+appareil logique existant** (son "iPhone perso", son "Mac", sa "tablette
+boulot") ou d'**en créer un nouveau** au moment où il se connecte à
+une PWA cap-rel.
+
+## Différence avec DeviceIdentificationComponent
+
+- `<DevicePicker>` : flow login smartAuth ≥ 2.1. Consommé en interne par
+  `<LoginComponent>` quand le backend renvoie `needs_device_pick: true`.
+  Appelle `api.linkUserDevice` / `api.createUserDevice`.
+- `<DeviceIdentificationComponent>` : étape post-login smartAuth 2.0,
+  branchée sur `user.deviceOptions`. Appelle `api.identifyDevice`.
+
+La plupart des PWA n'instancient pas `<DevicePicker>` directement : on
+passe `devicePickerProps` / `devicePickerLabels` à `<LoginComponent>`.
+Mais le composant est exporté pour les apps qui veulent l'utiliser
+hors login (ex : page "Gérer mes appareils").
+
+## Deux modes auto-déduits
+
+- **`list`** (défaut si `existingDevices.length > 0`) : grille des
+  appareils + bouton "Nouvel appareil".
+- **`form`** (défaut si liste vide, ou via le bouton "Nouvel
+  appareil") : champ label + `<IconSelect>` parmi
+  phone/tablet/laptop/desktop.
+
+## Callbacks
+
+- `onPick(deviceId)` async → `api.linkUserDevice`.
+- `onCreate(label, icon)` async → `api.createUserDevice`.
+- `onCancel` optionnel (laisse `undefined` dans le flow login pour
+  forcer le choix).
+
+## Validation
+
+- Label `required` : message `validationLabelRequired`.
+- Longueur max **100 caractères** (`DEVICE_LABEL_MAX_LENGTH` exporté).
+
+## Helpers exportés
+
+`SUPPORTED_DEVICE_ICONS`, `DEFAULT_DEVICE_ICON`,
+`DEVICE_LABEL_MAX_LENGTH`, `normaliseDeviceIcon(icon)`,
+`formatSessionCount(count, labels)`.
+
+## Voir aussi
+
+Doc complète : `docs/device-picker.md` du repo smartcommon.
+
+<PropsPage of={stories} />

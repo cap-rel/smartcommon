@@ -1,0 +1,22 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+- **Default** : scan unique, formats par défaut.
+- **Continuous** : scan répété avec `debounceMs` sur la valeur lue.
+- **ManualFallback** : démonstration du fallback "caméra refusée" qui
+  bascule sur un champ texte.
+
+Le composant est plein écran par essence (overlay fixed sur le viewport)
+et ne propose pas de slots de styling fins comme les autres `*Props`.
+Personnaliser via les `labels` et le `feedbackContent` (node injecté
+par-dessus la zone de scan, typiquement utilisé par
+`<LoginComponent>` pour afficher le statut "claiming...").
+
+<VariantsPage of={stories} variants={{}} />

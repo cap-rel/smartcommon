@@ -6,4 +6,42 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Gps
+
+Champ qui capture la position GPS du device via
+`navigator.geolocation`. Bouton "Localiser" → géolocalisation native,
+valeur stockée comme `[latitude, longitude]`.
+
+## Forme de la valeur
+
+- Single (défaut) : `[lat, lng]` ou `null`.
+- `multiple={true}` : `[[lat, lng], [lat, lng], ...]`.
+
+## Comportement
+
+- Bouton "Localiser" → `navigator.geolocation.getCurrentPosition`.
+- Permission refusée → toast d'erreur "Echec de géolocatisation".
+- **HTTPS obligatoire** (limitation browser).
+- `onLocate(coords)` : callback optionnel en plus de `onChange`, pour
+  les side effects (logging, appel API associé).
+
+## Validation
+
+Règle `required` intégrée. Message en dur "Vous devez géolocaliser."
+
+## Limites
+
+- "Choisir sur une carte" prévu mais non implémenté
+  (`// IDEA Add location via map`).
+- Mode `multiple` partiellement implémenté
+  (`// TODO Find a solution for multigps`).
+- Bouton de localisation en cours de finition
+  (`// TODO Finish the location button`).
+- Pas de `accuracy` / `timestamp` dans la valeur — uniquement
+  `[lat, lng]`. Pour les métadonnées : passer par `onLocate`.
+
+## Voir aussi
+
+Doc complète : `docs/gps.md` du repo smartcommon.
+
 <PropsPage of={stories} />

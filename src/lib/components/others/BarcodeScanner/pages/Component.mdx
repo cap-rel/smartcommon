@@ -1,0 +1,57 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# BarcodeScanner
+
+Scanner plein écran reposant sur `html5-qrcode`. Lazy-loadé à la première
+ouverture (~150 KB, payés une seule fois). Fallback de saisie manuelle
+si la caméra est refusée.
+
+## Lazy-load
+
+`await import("html5-qrcode")` au premier `open: true`. Ne charge rien
+tant que personne ne scanne. Pour les tests unitaires qui mountent le
+composant, warm up :
+
+```js
+beforeAll(async () => { await import("html5-qrcode"); });
+```
+
+## Deux modes
+
+- `continuous: false` (défaut) : scan unique. `onScan(text)` puis
+  fermeture automatique (caméra libérée).
+- `continuous: true` : scan répété. `onScan` à chaque détection,
+  debouncé de `debounceMs` (1500ms par défaut). Fermeture par
+  `onClose`.
+
+## Formats acceptés
+
+`formats: ["QR_CODE", "EAN_13", ...]`. Défaut = 7 formats courants (QR +
+EAN + UPC + CODE128/39). Liste complète : constante `FORMAT_NAMES`
+exportée.
+
+## Fallback caméra refusée
+
+L'UI bascule sur un `<input>` + bouton "Valider" pour saisie manuelle.
+`onScan(text)` est appelé sur validation comme pour un vrai scan. Le
+message d'erreur est exposé via `labels.cameraPermissionDenied` /
+`labels.cameraError`.
+
+## i18n
+
+Pas de `useTranslation()` interne. Passer les chaînes via `labels`
+(merge partiel avec `DEFAULT_LABELS` exporté).
+
+## Voir aussi
+
+Doc complète : `docs/barcode-scanner.md` du repo smartcommon. Le scanner
+est utilisé en interne par `<LoginComponent enableQrPair />` (mode QR
+pair smartAuth).
+
+<PropsPage of={stories} />

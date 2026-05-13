@@ -6,4 +6,39 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Tabbar
+
+Barre d'onglets persistants. **Mobile** : fixed en bas, full width.
+**Desktop** (`responsive=true`) : bascule en sidebar latéral gauche.
+
+```jsx
+<Tabbar id="main">
+    <TabbarItem id="home"  icon={FaHome}   label="Accueil"  active={isHome} onClick={goHome} />
+    <TabbarItem id="invs"  icon={FaWrench} label="Interv."  active={isInv}  onClick={goInv} />
+    <TabbarItem id="user"  icon={FaUser}   label="Profil"   active={isProf} onClick={goProf} />
+</Tabbar>
+```
+
+## Auto-mesure
+
+Expose `--tabbar-height` et `--tabbar-width` en variables CSS globales.
+`<Page>` détecte automatiquement `[data-component='Tabbar']` et
+applique le padding-bottom (mobile) ou margin-left (desktop) nécessaire.
+
+## hideOnScroll
+
+Défaut **`false`** (à l'inverse de `<Navbar>`) : la tabbar reste
+visible. Les onglets de navigation principale ne devraient pas
+disparaître au scroll.
+
+## Limites
+
+- `centralButton` est listé en TODO dans le code (bouton "central
+  rehaussé" Material non implémenté).
+- Pas de scroll horizontal natif : avec >5 onglets, ça tasse.
+
+## Voir aussi
+
+Doc transverse : `docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

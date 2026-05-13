@@ -6,4 +6,29 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# TabbarItem
+
+Onglet de bottom-tabbar. Icône au-dessus, label en-dessous, badge
+optionnel. À enfanter dans `<Tabbar>`.
+
+```jsx
+<TabbarItem
+    id="home"
+    icon={FaHome}
+    activeIcon={FaHomeSolid}     // optionnel : icône différente quand active
+    label="Accueil"
+    badge="3"                    // pastille
+    active={pathname === "/"}
+    onClick={() => navigate("/")}
+/>
+```
+
+Responsive : sur desktop la `<Tabbar>` bascule en sidebar verticale,
+le `<TabbarItem>` adapte son layout en conséquence.
+
+## Voir aussi
+
+- [Tabbar](../../Tabbar/pages/Component.mdx) : le conteneur.
+- Doc transverse navigation : `docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

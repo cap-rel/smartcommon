@@ -6,4 +6,56 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Array
+
+**Tag input** : tape + `Enter` ajoute un tag, click sur un tag le
+supprime. Valeur = tableau de strings.
+
+> Le nom `Array` collide avec le `Array` global JavaScript. Préférer
+> renommer à l'import :
+> ```js
+> import { Array as TagInput } from "@cap-rel/smartcommon";
+> ```
+
+## Workflow utilisateur
+
+1. Tape "intervention" → `Enter` → tag "intervention" ajouté.
+2. Tape "urgent" → `Enter` → tag "urgent" ajouté.
+3. Click sur un tag → suppression.
+
+## Forme de valeur
+
+```js
+["intervention", "urgent"]
+```
+
+## Comportement
+
+- Chaîne vide / whitespace-only → ignorée à l'ajout.
+- Pas de filtrage doublons.
+- Pas de drag-reorder, pas de Backspace pour supprimer le dernier.
+- Suppression click-only.
+
+## Form-awareness
+
+`name` lie au `<Form>` :
+
+```jsx
+<TagInput name="keywords" defaultValue={["alpha"]} />
+// form.values.keywords -> ["alpha", ...]
+```
+
+## Limites
+
+- Props `min` / `max` déclarées mais sans validation interne (à valider
+  côté caller).
+- Pas de support objets — valeurs strings uniquement.
+- `hasCopyButton` déclaré mais pas implémenté (TODO).
+- Styling tag par défaut `uppercase` — override via
+  `tagProps.className` + `twMerge`.
+
+## Voir aussi
+
+Doc complète : `docs/array.md` du repo smartcommon.
+
 <PropsPage of={stories} />

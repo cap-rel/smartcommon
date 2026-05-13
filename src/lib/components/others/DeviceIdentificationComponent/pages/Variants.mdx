@@ -1,0 +1,23 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+`<DeviceIdentificationComponent>` n'utilise pas `useVariantMerger` (c'est
+un composant métier page-replacing). Les "variantes" présentées ici
+correspondent aux deux états possibles selon `user.deviceOptions` :
+
+- **NewDevice** : `deviceOptions` vide / absent -> seul le champ label.
+- **PickDevice** : `deviceOptions` peuplé -> radio + option "Nouvel
+  appareil".
+
+Pour personnaliser le styling : slots `*Props` (`containerProps`,
+`formProps`, `submitButtonProps`, etc.), spread sur l'élément cible avec
+`twMerge` pour les conflits Tailwind.
+
+<VariantsPage of={stories} variants={{}} />

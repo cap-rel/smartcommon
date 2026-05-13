@@ -6,4 +6,42 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Page
+
+Conteneur racine d'un écran d'une PWA cap-rel. À mettre comme root de
+chaque route métier.
+
+## Ce qu'il fait
+
+- **Hauteur dynamique** : `100dvh` mobile + ajustement au visual
+  viewport pour absorber le clavier virtuel iOS/Android.
+- **Transitions animées** entre écrans (framer-motion, matrice
+  pathname-aware).
+- **Adaptation desktop** : padding latéral + grille 2 colonnes optionnelle
+  via `responsive=true` (défaut).
+- **Réservation d'espace `<Tabbar>`** : détecte automatiquement
+  `[data-component='Tabbar']` dans l'arbre et réserve l'espace
+  approprié (padding-bottom mobile, margin-left desktop).
+
+## Clavier virtuel
+
+`window.visualViewport.addEventListener("resize")` est posé au mount. À
+chaque changement, la `<Page>` se redimensionne pile à `viewport.height`
++ `viewport.offsetTop`. Conséquence : quand le clavier s'ouvre, les
+champs en bas restent visibles sans scroll fantôme.
+
+## Animations
+
+Matrice `pages[from][to]` interne :
+- desktop : `fade` toujours ;
+- mobile : `fade` par défaut, certaines routes spécifiques peuvent
+  imposer `slideLeft` / `slideRight` selon direction.
+
+Override : passer `animations` (objet framer-motion `{ initial, animate,
+exit }`).
+
+## Voir aussi
+
+Doc complète : `docs/page.md` du repo smartcommon.
+
 <PropsPage of={stories} />

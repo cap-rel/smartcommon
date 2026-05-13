@@ -6,4 +6,43 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Timer
+
+Champ de saisie de **durée** multi-unités (jours / heures / minutes /
+secondes). Valeur sortie = nombre **entier de secondes**.
+
+## Forme de la valeur
+
+Entier secondes. Pas d'objet `{ d, h, m, s }` côté API. Conversion :
+
+- secondes → `{ days, hours, minutes, seconds }` :
+  `secsToDuration(value)` exporté depuis `lib/utils`.
+
+## Comportement
+
+- 4 inputs séparés, chacun avec un `max` (jours 9999, heures 23,
+  minutes 59, secondes 59).
+- **Pas de carry** entre unités : saisir 90 minutes ne devient pas
+  "1 h 30 min". Le user décompose lui-même (ou caller normalise via
+  `secsToDuration` après).
+
+## Validation
+
+`required` (valeur === 0), `min`, `max` (en secondes). Messages
+incluent `formatDuration(seconds)` pour formater proprement la borne
+dans le texte.
+
+## Limites
+
+- Pas de notation rapide "1h30" — 4 inputs séparés.
+- Pas de carry automatique entre unités.
+- Pas de mode chronomètre live.
+- Messages d'erreur en dur (pas extraits en `labels`).
+- Pas de valeurs négatives.
+- Max 9999 jours.
+
+## Voir aussi
+
+Doc complète : `docs/timer.md` du repo smartcommon.
+
 <PropsPage of={stories} />

@@ -6,4 +6,36 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Navbar
+
+Barre supérieure horizontale. Layout `left` + `title` (centre) +
+`right` + `bottom` (slot optionnel pour tabs/filtres sous la titre).
+
+```jsx
+<Navbar
+    id="main"
+    title="Mes interventions"
+    left={[<Button icon={FaBars} onClick={openSidebar} />]}
+    right={[<Button icon={FaBell} onClick={openNotifications} />]}
+    bottom={[<LowerNavbarItem ... />]}
+/>
+```
+
+## Auto-mesure
+
+Au mount, `<Navbar>` lit son `offsetHeight`/`offsetWidth` et expose
+des variables CSS globales `--navbar-height`, `--navbar-width`,
+`--upper-navbar-height`, `--upper-navbar-width` (préfixées par `id`)
+pour permettre aux contenus de réserver l'espace.
+
+## `hideOnScroll`
+
+Défaut `true` : la navbar se masque en framer-motion vers le haut au
+scroll vers le bas, réapparaît au scroll vers le haut.
+
+## Voir aussi
+
+Doc transverse (intégration avec Tabbar + Sidebar + Page) :
+`docs/navigation.md` du repo smartcommon.
+
 <PropsPage of={stories} />

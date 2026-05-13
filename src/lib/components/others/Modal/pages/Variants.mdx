@@ -1,0 +1,23 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+Les variantes de `<Modal>` se règlent via les props `size` et `position` —
+pas via le système `useVariantMerger` classique. Stories indicatives :
+
+- **Default** : `size="md"`, `position="center"`.
+- **BottomSheet** : `position="bottom"` (mobile-friendly).
+- **Full** : `size="full"` pour les écrans riches.
+- **NoHeader** : sans `title` ni close button (header complet retiré).
+
+Slots de styling fins : `overlayProps`, `contentProps`, `headerProps`,
+`titleProps`, `closeButtonProps`, `bodyProps`. Tous mergés avec
+`twMerge` pour résoudre les conflits Tailwind.
+
+<VariantsPage of={stories} variants={{}} />

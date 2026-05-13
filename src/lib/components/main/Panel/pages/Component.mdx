@@ -6,4 +6,43 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Panel
+
+Drawer latéral qui glisse depuis un bord (bas, haut, gauche, droite).
+Animation framer-motion, gesture drag-to-close, overlay sombre
+optionnel.
+
+## Positions
+
+`bottom` (défaut) · `top` · `left` · `right`.
+
+## Drag-to-close
+
+`closeOnDrag` (défaut `true`) : le user peut "tirer" le panel dans la
+direction d'apparition. Seuil de fermeture : `goBackLimit` (défaut
+`1/5` = tirer plus que 20 % de la dimension pour fermer, sinon
+snap back).
+
+## Auto-mesure
+
+Le composant lit `offsetHeight`/`offsetWidth` au mount et expose
+`--panel-height` / `--panel-width` en variables CSS (utile pour réserver
+de l'espace dans le layout englobant).
+
+## API close
+
+`close` (sans `on`) au lieu de `onClose` — nom historique gardé pour
+compat. Pour nouveaux composants, préférer la convention `onClose` de
+`<Modal>`.
+
+## Modal / Panel / Popup
+
+- `<Modal>` : modale centrée ou bottom-sheet rapide, présets de taille.
+- `<Panel>` : drawer animé avec drag-to-close, 4 directions.
+- `<Popup>` : legacy (préférer `<Modal>` pour nouveaux écrans).
+
+## Voir aussi
+
+Doc complète : `docs/panel.md` du repo smartcommon.
+
 <PropsPage of={stories} />

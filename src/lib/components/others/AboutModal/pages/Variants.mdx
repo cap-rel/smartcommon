@@ -1,0 +1,19 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { VariantsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Variants
+
+- **Default** : modale standard avec nom + version uniquement.
+- **WithFields** : démontre des champs additionnels (`fields` prop) avec
+  `value` en node React (badge, lien).
+- **UpdateAvailable** : état post-`checkForUpdates` quand une mise à
+  jour est disponible (le bouton bascule sur "Installer la mise à
+  jour"). À reproduire avec un story decorator qui force le state du
+  hook `usePWAUpdate`.
+
+<VariantsPage of={stories} variants={{}} />
