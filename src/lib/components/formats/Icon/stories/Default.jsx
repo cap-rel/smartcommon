@@ -3,8 +3,8 @@ import { setDefaultStory } from "../../../../../storybook";
 export const Default = setDefaultStory({
   args: {},
   code: `
-    import { Icon } from "@cap-rel/smartcommon";
+    import { IconDisplay } from "@cap-rel/smartcommon";
 
-    <Icon />
+    <IconDisplay />
   `
 });

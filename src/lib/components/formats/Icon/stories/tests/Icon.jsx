@@ -1,7 +1,7 @@
 import { setTestStory } from "../../../../../../storybook";
 import { propTypes } from "../../props";
 
-export const Icon = setTestStory({
+export const IconDisplay = setTestStory({
     args: {},
     props: propTypes,
     hidden: []
