@@ -14,6 +14,7 @@ export * from "./IconSelect";
 export * from "./Input";
 export * from "./NumericPad";
 export * from "./PhotosUploader";
+export * from "./PlainCalendar";
 export * from "./RadioBar";
 export * from "./Range";
 export * from "./Rater";
