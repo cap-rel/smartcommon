@@ -7,6 +7,14 @@ import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
+import noShadowedGlobalSelfCall from './eslint-rules/no-shadowed-global-self-call.js'
+
+const localPlugin = {
+  rules: {
+    'no-shadowed-global-self-call': noShadowedGlobalSelfCall,
+  },
+}
+
 export default [{ ignores: ['dist', 'storybook-static'] }, {
   files: ['**/*.{js,jsx}'],
   languageOptions: {
@@ -23,6 +31,7 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
     react,
     'react-hooks': reactHooks,
     'react-refresh': reactRefresh,
+    local: localPlugin,
   },
   rules: {
     ...js.configs.recommended.rules,
@@ -43,7 +52,16 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
     'array-callback-return': ['error', { allowImplicit: true }],
     'no-prototype-builtins': 'error',
     'eqeqeq': ['error', 'always', { null: 'ignore' }],
-    'no-implicit-coercion': 'warn',
+    // `boolean: false` keeps the `!!x` idiom legal - the alternative
+    // (`Boolean(x)`) is the exact pattern that caused the Boolean
+    // self-shadowing bug. See eslint-rules/no-shadowed-global-self-call.js.
+    'no-implicit-coercion': ['warn', { boolean: false }],
+
+    // Forbid `<Name>(...)` inside an `export const <Name> = ...` when
+    // <Name> shadows a JS global (Boolean, Number, ...). Prevents
+    // accidental recursive self-invocation. See
+    // eslint-rules/no-shadowed-global-self-call.js.
+    'local/no-shadowed-global-self-call': 'error',
   },
 }, {
   files: ['**/*.test.{js,jsx}', '**/*.spec.{js,jsx}'],

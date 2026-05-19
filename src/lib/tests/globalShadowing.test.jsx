@@ -67,6 +67,19 @@ const SHADOW_COMPONENTS = [
         ],
     },
     {
+        // formats/Array also exports a component named `Array`. Same
+        // shadowing risk, separate file.
+        name: "Array",
+        sourcePath: "src/lib/components/formats/Array/index.jsx",
+        renderCases: [
+            {},
+            { value: undefined },
+            { value: null },
+            { value: [] },
+            { value: [{ fullname: "Alice" }] },
+        ],
+    },
+    {
         name: "Number",
         sourcePath: "src/lib/components/formats/Number/index.jsx",
         renderCases: [

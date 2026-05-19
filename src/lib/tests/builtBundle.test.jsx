@@ -27,7 +27,6 @@ const distAvailable = existsSync(distPath);
 const describeIfDist = distAvailable ? describe : describe.skip;
 
 if (!distAvailable) {
-    // eslint-disable-next-line no-console
     console.warn(
         `[builtBundle.test] dist/smartcommon.es.js not found - skipping ` +
             `built-bundle smoke tests. Run \`npm run build\` first or use ` +

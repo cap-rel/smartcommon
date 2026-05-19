@@ -12,7 +12,10 @@ export default defineConfig({
     environment: 'happy-dom',
     globals: true,
     setupFiles: ['./src/lib/tests/setup.js'],
-    include: ['src/**/*.{test,spec}.{js,jsx}'],
+    include: [
+      'src/**/*.{test,spec}.{js,jsx}',
+      'eslint-rules/**/*.test.{js,jsx}',
+    ],
     // isolate:true (Vitest default) is required so vi.mock() factories don't
     // leak across files and previously-resolved modules aren't cached without
     // their mock. Setting isolate:false caused mocked provider hooks to be
