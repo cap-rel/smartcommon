@@ -19,6 +19,7 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "test:safety": "vitest run src/lib/tests/nullSafety.test.jsx",
+    "test:build": "npm run build && vitest run src/lib/tests/builtBundle.test.jsx",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"

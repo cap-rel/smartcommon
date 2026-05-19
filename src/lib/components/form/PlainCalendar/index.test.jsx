@@ -240,3 +240,31 @@ describe("PlainCalendar - items badge", () => {
         expect(wrapper.textContent.trim()).toBe("20");
     });
 });
+
+// Regression guards
+// The crash actually only happens on the minified bundle (the destructure
+// inline defaults are dropped by the minifier). On the source these
+// defaults work, so the tests below pass today. They protect against
+// regressions of the defaults themselves; the real Bug 1 reproduction
+// runs against dist/ from src/lib/tests/builtBundle.test.jsx (test:build).
+describe("PlainCalendar - default props smoke", () => {
+    it("renders without any props", () => {
+        expect(() => render(<PlainCalendar />)).not.toThrow();
+    });
+
+    it("renders with only a value (no yearsInterval)", () => {
+        expect(() => render(<PlainCalendar value="2026-05-19" />)).not.toThrow();
+    });
+
+    it("renders when yearsInterval is explicitly undefined", () => {
+        expect(() =>
+            render(<PlainCalendar value="2026-05-19" yearsInterval={undefined} />)
+        ).not.toThrow();
+    });
+
+    it("renders when items is explicitly undefined", () => {
+        expect(() =>
+            render(<PlainCalendar value="2026-05-19" items={undefined} />)
+        ).not.toThrow();
+    });
+});

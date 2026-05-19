@@ -196,6 +196,14 @@ describe('Form Components - Null Safety', () => {
       expect(() => render(<Calendar value={undefined} />)).not.toThrow();
       expect(() => render(<Calendar items={undefined} />)).not.toThrow();
     });
+
+    // PlainCalendar is intentionally NOT tested here: the global hook
+    // mocks in this file (useVariantMerger -> variantProps:{},
+    // useStates -> states:{}) drop the component's initialStates and
+    // crash on `months[month-1].days` before exercising the actual
+    // contract. See PlainCalendar/index.test.jsx for a real smoke
+    // render, and tests/builtBundle.test.jsx (test:build) for the
+    // minified-bundle reproduction.
   });
 });
 

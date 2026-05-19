@@ -13,7 +13,7 @@ export const useApiContext = () => {
 
     const { debug: libDebug, api } = libConfig;
 
-    const { prefixUrl, timeout, debug: apiDebug, onApiError } = api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist } = api ?? {};
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
@@ -58,7 +58,8 @@ export const useApiContext = () => {
         gst,
         debug,
         prefixUrl,
-        onApiError
+        onApiError,
+        onLoginPersist
     });
 
     // Update ref on each render
@@ -73,7 +74,8 @@ export const useApiContext = () => {
         gst,
         debug,
         prefixUrl,
-        onApiError
+        onApiError,
+        onLoginPersist
     };
 
     // ---------------------- refreshPromise ref ----------------------
@@ -215,9 +217,12 @@ export const useApiContext = () => {
                  ...options
             })
             .json()
-            .then((data) => {
+            .then(async (data) => {
                 const mappedData = loginMap(data);
-                const { gst: currentGst } = valuesRef.current;
+                const {
+                    gst: currentGst,
+                    onLoginPersist: currentOnLoginPersist,
+                } = valuesRef.current;
 
                 // Source of truth for `rememberMe` is the request body we
                 // just sent. The smartAuth backend does not echo it back in
@@ -248,13 +253,45 @@ export const useApiContext = () => {
                     ? data.existing_user_devices
                     : [];
 
-                currentGst[effectiveRememberMe ? "local" : "session"].set("user", {
+                const baseUser = {
                     ...mappedData,
                     rememberMe: effectiveRememberMe,
                     tokenExpiry: floor(Date.now() / 1000) + expiresIn,
                     needsDevicePick,
                     existingUserDevices,
-                });
+                };
+
+                // Optional consumer-provided enrichment hook. Lets the
+                // app merge settings/config (from IndexedDB or any
+                // async source) into the user BEFORE it is committed
+                // to gst, so RouteGuard cannot redirect to a protected
+                // route that destructures `user.settings.X` before the
+                // consumer has had the chance to populate it.
+                let enrichedUser = baseUser;
+                if (typeof currentOnLoginPersist === "function") {
+                    try {
+                        const result = await currentOnLoginPersist(baseUser);
+                        if (result && typeof result === "object") {
+                            // Spread result over baseUser so the
+                            // consumer can override fields, but auth
+                            // fields (tokenExpiry, rememberMe) are
+                            // preserved if the callback returns a
+                            // partial object.
+                            enrichedUser = { ...baseUser, ...result };
+                        }
+                    } catch (err) {
+                        log.error(
+                            "[useApi.login] onLoginPersist threw, falling " +
+                            "back to the minimal user",
+                            err
+                        );
+                    }
+                }
+
+                currentGst[effectiveRememberMe ? "local" : "session"].set(
+                    "user",
+                    enrichedUser
+                );
 
                 return {
                     ...mappedData,
