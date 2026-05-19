@@ -9,6 +9,15 @@ import { propTypes } from "./props";
 const DEFAULT_LABELS = {
     empty: "Aucun fichier",
     download: "Télécharger",
+    // display="count" labels. Each entry is a (n) => string formatter
+    // that handles singular/plural by itself. The consumer can
+    // override any single entry via labels.count[<type>].
+    count: {
+        photos: (n) => (n === 1 ? `${n} photo` : `${n} photos`),
+        videos: (n) => (n === 1 ? `${n} vidéo` : `${n} vidéos`),
+        audios: (n) => (n === 1 ? `${n} audio` : `${n} audios`),
+        files: (n) => (n === 1 ? `${n} fichier` : `${n} fichiers`),
+    },
 };
 
 const fileEntry = (file) => {
@@ -30,6 +39,13 @@ const fileEntry = (file) => {
     };
 };
 
+const COUNT_TYPES = ["photos", "videos", "audios", "files"];
+
+const mergeCountLabels = (override) => ({
+    ...DEFAULT_LABELS.count,
+    ...(override ?? {}),
+});
+
 export const Files = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Files", props);
 
@@ -37,10 +53,39 @@ export const Files = (props) => {
         value,
         labels: labelsOverride,
         onDownload,
+        display = "list",
+        type = "files",
     } = variantProps;
 
-    const labels = { ...DEFAULT_LABELS, ...(labelsOverride ?? {}) };
+    const labels = {
+        ...DEFAULT_LABELS,
+        ...(labelsOverride ?? {}),
+        count: mergeCountLabels(labelsOverride?.count),
+    };
 
+    // ---- count mode ------------------------------------------------------
+    if (display === "count") {
+        const count = isNil(value)
+            ? 0
+            : isArray(value)
+                ? value.length
+                : 1;
+        const safeType = COUNT_TYPES.includes(type) ? type : "files";
+        const formatter = labels.count[safeType] ?? labels.count.files;
+        return (
+            <span { ...mergeProps("count", props => ({
+                ...props,
+                "data-component": "Files",
+                "data-display": "count",
+                "data-type": safeType,
+                className: ``,
+            }))}>
+                {formatter(count)}
+            </span>
+        );
+    }
+
+    // ---- list mode (default, legacy behaviour) ---------------------------
     if (isNil(value) || (isArray(value) && value.length === 0)) {
         return (
             <div { ...mergeProps("empty", props => ({

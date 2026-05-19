@@ -12,9 +12,17 @@ const fileShape = PropTypes.oneOfType([
 
 export const propTypes = {
     value: PropTypes.oneOfType([fileShape, PropTypes.arrayOf(fileShape)]),
+    display: PropTypes.oneOf(["list", "count"]),
+    type: PropTypes.oneOf(["photos", "videos", "audios", "files"]),
     labels: PropTypes.shape({
         empty: PropTypes.string,
         download: PropTypes.string,
+        count: PropTypes.shape({
+            photos: PropTypes.func,
+            videos: PropTypes.func,
+            audios: PropTypes.func,
+            files: PropTypes.func,
+        }),
     }),
     onDownload: PropTypes.func,
 };

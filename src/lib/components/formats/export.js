@@ -1,4 +1,6 @@
 export * from "./Address";
+// See formats/index.js for the rationale of the ArrayFormat alias.
+export { Array as ArrayFormat } from "./Array";
 export * from "./Color";
 export * from "./Coordinates";
 export * from "./Datetime";
