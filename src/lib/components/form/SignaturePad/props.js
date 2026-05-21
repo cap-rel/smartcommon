@@ -61,4 +61,20 @@ export const propTypes = {
   Pad: PropTypes.object,
   pendingBadgeProps: PropTypes.object,
   SignerInput: PropTypes.object,
+
+  // i18n: merged shallowly over DEFAULT_LABELS.
+  labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+  requiredError: "Ce champ est requis.",
+  alreadyValidated: "La signature est déjà validée... Pour refaire la signature cliquez sur la gomme",
+  emptySignature: "La signature est vide...",
+  conversionError: "Echec de la conversion de la signature.",
+  uploadError: "Echec de l'envoi de la signature.",
+  validatedSuccess: "Signature validée...",
+  geolocationError: "Echec de géolocalisation de la capture.",
+  title: "Signature",
+  pendingBadge: "Envoi en attente...",
+  signerPlaceholder: "Nom du signataire",
 };

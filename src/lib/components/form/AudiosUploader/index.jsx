@@ -7,7 +7,7 @@ import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Textarea, Input, Label } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 // TODO GPS points
 
@@ -31,24 +31,28 @@ export const AudiosUploader = (props) => {
 
         multiple,
         accept = "audio/*",
+
+        labels: userLabels = {},
     } = variantProps;
 
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && isEmpty(currentValue),
-            message: "Vous devez enregistrer au moins 1 audio."
+            message: labels.requiredError,
         },
         min: {
             condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
-            message: `Vous devez enregistrer ${min} audios minimum.`
+            message: labels.minError(min),
         },
         max: {
             condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
-            message: `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`
+            message: labels.maxError(max),
         },
         exact: {
             condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
-            message: `Vous devez enregistrer exactement ${exact} audios.`
+            message: labels.exactError(exact),
         },
     });
 
@@ -140,7 +144,7 @@ export const AudiosUploader = (props) => {
             if (isInputInCaptureMode) {
                 locate(
                     coords => { gpsPoints = coords },
-                    error => toast.error("Echec de géolocatisation de la capture.")
+                    error => toast.error(labels.geolocationError)
                 );
             }
 
@@ -239,7 +243,7 @@ export const AudiosUploader = (props) => {
         return (
             <Popup { ...mergeProps("Popup", props => ({
                 closeButton: true,
-                title: multiple ? `Audio ${index + 1}` : "Audio enregistré",
+                title: multiple ? labels.audioPopupTitle(index) : labels.audioPopupTitleSingle,
                 zIndex: 60,
                 ...props,
                 close: () => {
@@ -265,7 +269,7 @@ export const AudiosUploader = (props) => {
                     className: `w-full rounded-app-xl`
                  }))}></audio>
                 <Input { ...mergeProps("TitleInput", props => ({
-                    label: "Titre",
+                    label: labels.titleField,
                     ...props,
                     name: name,
                     value: audio?.title,
@@ -275,7 +279,7 @@ export const AudiosUploader = (props) => {
                     }
                 }))} />
                 <Textarea { ...mergeProps("DescriptionTextarea", props => ({
-                    label: "Description",
+                    label: labels.descriptionField,
                     ...props,
                     name: name,
                     value: audio?.description,
@@ -294,7 +298,7 @@ export const AudiosUploader = (props) => {
                         applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                     }
                 }))} >
-                    Supprimer l&lsquo;audio
+                    {labels.deleteButton}
                 </Button>
             </Popup>
         );
@@ -333,7 +337,7 @@ export const AudiosUploader = (props) => {
                                 ...props,
                                 className: "italic text-medium-text text-app-base text-center truncate"
                             }))}>
-                                Aucun audio enregistré
+                                {labels.emptyState}
                             </div>
                     }
                    

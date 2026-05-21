@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 
 export const Boolean = (props) => {
@@ -23,7 +23,11 @@ export const Boolean = (props) => {
 
         checkedIcon,
         type,
+
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     // if (labelRow) {
     //     containerProps = { ...containerProps, className: twMerge(`row-between-center bg-soft-bg border border-border p-2 rounded-md`, containerProps?.className) };
@@ -31,9 +35,9 @@ export const Boolean = (props) => {
     // }
 
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && !currentValue,
-            message: "Ce champ doit être coché."
+            message: labels.requiredError,
         }
     });
 

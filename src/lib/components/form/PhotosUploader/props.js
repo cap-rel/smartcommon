@@ -83,4 +83,25 @@ export const propTypes = {
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,
     DeleteButton: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
+    // strings or functions (when interpolated values are needed).
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Vous devez prendre au moins 1 photo.",
+    minError: (min) => `Vous devez prendre ${min} photos minimum.`,
+    maxError: (max) => `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`,
+    exactError: (exact) => `Vous devez prendre exactement ${exact} photos.`,
+    geolocationError: "Echec de géolocalisation de la capture.",
+    uploadError: "Echec de l'envoi de la photo.",
+    clickToShow: "Cliquez pour afficher l'image",
+    pendingBadge: "Envoi en attente...",
+    photoPopupTitle: (index) => `Photo ${index + 1}`,
+    photoPopupTitleSingle: "Photo enregistrée",
+    titleField: "Titre",
+    descriptionField: "Description",
+    saveButton: "Enregistrez",
+    emptyState: "Aucune photo enregistrée",
 };

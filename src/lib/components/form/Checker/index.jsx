@@ -6,7 +6,7 @@ import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
 import { applyFunctionIfFunction } from "lib/utils";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 // TODO Add attributes to options like disabled, color, maybe props
@@ -34,24 +34,28 @@ export const Checker = (props) => {
 
         checkedIcon = <FaStar />,
         type,
+
+        labels: userLabels = {},
     } = variantProps;
 
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && isEmpty(currentValue),
-            message: "Une case doit être cochée."
+            message: labels.requiredError,
         },
         min: {
             condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
-            message: `${min} cases doivent être cochées au minimum.`
+            message: labels.minError(min),
         },
         max: {
             condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
-            message: `${max} cases doivent être cochées au maximum.`
+            message: labels.maxError(max),
         },
         exact: {
             condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
-            message: `Exactement ${exact} cases doivent être cochées.`
+            message: labels.exactError(exact),
         },
     });
 

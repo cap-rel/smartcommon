@@ -56,4 +56,22 @@ export const propTypes = {
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,
     DeleteButton: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
+    // strings or functions (when interpolated values are needed).
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Vous devez enregistrer au moins 1 audio.",
+    minError: (min) => `Vous devez enregistrer ${min} audios minimum.`,
+    maxError: (max) => `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`,
+    exactError: (exact) => `Vous devez enregistrer exactement ${exact} audios.`,
+    geolocationError: "Echec de géolocalisation de la capture.",
+    audioPopupTitle: (index) => `Audio ${index + 1}`,
+    audioPopupTitleSingle: "Audio enregistré",
+    titleField: "Titre",
+    descriptionField: "Description",
+    deleteButton: "Supprimer l'audio",
+    emptyState: "Aucun audio enregistré",
 };

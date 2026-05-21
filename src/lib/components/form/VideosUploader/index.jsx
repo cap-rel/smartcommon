@@ -7,7 +7,7 @@ import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Textarea, Button, Input, Label } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 // TODO GPS points
 
@@ -31,24 +31,28 @@ export const VideosUploader = (props) => {
 
         multiple,
         accept = "video/*",
+
+        labels: userLabels = {},
     } = variantProps;
 
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && isEmpty(currentValue),
-            message: "Vous devez enregistrer au moins 1 vidéo."
+            message: labels.requiredError,
         },
         min: {
             condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
-            message: `Vous devez prendre ${min} vidéos minimum.`
+            message: labels.minError(min),
         },
         max: {
             condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
-            message: `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`
+            message: labels.maxError(max),
         },
         exact: {
             condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
-            message: `Vous devez prendre exactement ${exact} vidéos.`
+            message: labels.exactError(exact),
         },
     });
 
@@ -140,7 +144,7 @@ export const VideosUploader = (props) => {
             if (isInputInCaptureMode) {
                 locate(
                     coords => { gpsPoints = coords },
-                    error => toast.error("Echec de géolocatisation de la capture.")
+                    error => toast.error(labels.geolocationError)
                 );
             }
 
@@ -240,7 +244,7 @@ export const VideosUploader = (props) => {
         return (
             <Popup { ...mergeProps("Popup", props => ({
                 closeButton: true,
-                title: multiple ? `Vidéo ${index + 1}` : "Vidéo enregistré",
+                title: multiple ? labels.videoPopupTitle(index) : labels.videoPopupTitleSingle,
                 zIndex: 60,
                 ...props,
                 close: () => {
@@ -262,7 +266,7 @@ export const VideosUploader = (props) => {
                     className: `w-full rounded-app-md border border-border`
                  }))}></video>
                 <Input { ...mergeProps("TitleInput", props => ({
-                    label: "Titre",
+                    label: labels.titleField,
                     ...props,
                     name: name,
                     value: video?.title,
@@ -272,7 +276,7 @@ export const VideosUploader = (props) => {
                     }
                 }))} />
                 <Textarea { ...mergeProps("DescriptionTextarea", props => ({
-                    label: "Description",
+                    label: labels.descriptionField,
                     ...props,
                     name: name,
                     value: video?.description,
@@ -291,7 +295,7 @@ export const VideosUploader = (props) => {
                         applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                     }
                 }))} >
-                    Supprimer la vidéo
+                    {labels.deleteButton}
                 </Button>
             </Popup>
         );
@@ -330,7 +334,7 @@ export const VideosUploader = (props) => {
                                 ...props,
                                 className: "italic text-medium-text text-app-base text-center truncate"
                             }))}>
-                                Aucune vidéo enregistrée
+                                {labels.emptyState}
                             </div>
                     }
                    

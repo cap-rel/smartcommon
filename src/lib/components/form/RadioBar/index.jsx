@@ -5,7 +5,7 @@ import { applyFunctionIfNotNil } from "lib/utils";
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 export const RadioBar = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("RadioBar", props);
@@ -23,12 +23,16 @@ export const RadioBar = (props) => {
         readOnly,
 
         options = [],
+
+        labels: userLabels = {},
     } = variantProps;
 
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && isEmpty(currentValue),
-            message: "1 élément doit être sélectionné."
+            message: labels.requiredError,
         },
     });
 

@@ -55,4 +55,22 @@ export const propTypes = {
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,
     DeleteButton: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
+    // strings or functions (when interpolated values are needed).
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Vous devez enregistrer au moins 1 vidéo.",
+    minError: (min) => `Vous devez prendre ${min} vidéos minimum.`,
+    maxError: (max) => `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`,
+    exactError: (exact) => `Vous devez prendre exactement ${exact} vidéos.`,
+    geolocationError: "Echec de géolocalisation de la capture.",
+    videoPopupTitle: (index) => `Vidéo ${index + 1}`,
+    videoPopupTitleSingle: "Vidéo enregistrée",
+    titleField: "Titre",
+    descriptionField: "Description",
+    deleteButton: "Supprimer la vidéo",
+    emptyState: "Aucune vidéo enregistrée",
 };

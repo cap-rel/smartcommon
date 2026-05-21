@@ -7,7 +7,7 @@ import { applyFunctionIfNotNil, locate } from "lib/utils";
 import { Button, Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 // IDEA Add location via map
 
@@ -63,12 +63,16 @@ export const Gps = props => {
     readOnly,
 
     multiple,
+
+    labels: userLabels = {},
   } = variantProps;
 
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
+
   const errors = (currentValue) => ({
-    required: { 
+    required: {
       condition: required && isEmpty(currentValue),
-      message: "Vous devez géolocaliser."
+      message: labels.requiredError,
     },
   });
 
@@ -107,11 +111,11 @@ export const Gps = props => {
         locate(
           coords => {
             setValue(coords);
-            toast.success("Succès de la géolocalisation");
+            toast.success(labels.locateSuccess);
             set("isLocating", false);
           },
           err => {
-            toast.error("Erreur de la géolocalisation");
+            toast.error(labels.locateError);
             set("isLocating", false);
           }
         )
@@ -212,10 +216,10 @@ export const Gps = props => {
             applyFunctionIfNotNil(props.onClick, e);
           }
         }))}>
-          Géolocaliser
+          {labels.locateButton}
         </Button>
         <div { ...mergeProps("location", props => props)}>
-          {!isNil(currentValue) ? "Enregistrée" : "Aucune Localisation enregistrée"}
+          {!isNil(currentValue) ? labels.savedState : labels.emptyState}
         </div>
         {/* <ul 
           { ...listProps}

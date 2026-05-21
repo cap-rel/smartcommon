@@ -52,4 +52,15 @@ export const propTypes = {
     checkboxIconProps: PropTypes.object,
     radioProps: PropTypes.object,
     checkedIconProps: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
+    // strings or functions (when interpolated values are needed).
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Une case doit être cochée.",
+    minError: (min) => `${min} cases doivent être cochées au minimum.`,
+    maxError: (max) => `${max} cases doivent être cochées au maximum.`,
+    exactError: (exact) => `Exactement ${exact} cases doivent être cochées.`,
 };

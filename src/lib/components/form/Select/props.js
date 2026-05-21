@@ -42,4 +42,16 @@ export const propTypes = {
     
     selectProps: PropTypes.object,
     optionProps: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
+    // strings or functions (when interpolated values are needed).
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "1 élément doit être sélectionné au minimum.",
+    minError: (min) => `${min} éléments doivent être sélectionnés au minimum.`,
+    maxError: (max) => `${max} éléments doivent être sélectionnés au maximum.`,
+    exactError: (exact) => `Exactement ${exact} éléments doivent être sélectionnés.`,
+    notAnOptionError: "La valeur sélectionnée ne fait pas partie des options",
 };

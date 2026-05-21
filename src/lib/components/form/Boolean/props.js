@@ -44,4 +44,11 @@ export const propTypes = {
     checkboxIconProps: PropTypes.object,
     radioProps: PropTypes.object,
     checkedIconProps: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS.
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Ce champ doit être coché.",
 };

@@ -2,11 +2,14 @@ import { useEffect } from "react";
 
 import { mToKm, secsToTime } from "lib/utils";
 
+import { DEFAULT_LABELS, propTypes } from "./props";
+
 /**
  * @param {*} props
  * @param {*} onChange (function) Ecoute le changement dans la map
  */
 export const Map = (props) => {
+  const labels = { ...DEFAULT_LABELS, ...(props.labels ?? {}) };
   const L = {};
   useEffect(() => {
     const map = L.map("map", {
@@ -21,11 +24,11 @@ export const Map = (props) => {
       const searchControl = L.Control.geocoder({
         geocoder: geocoder,
         collapsed: false,
-        placeholder: "Rechercher un lieu...",
-        errorMessage: "Aucun résultat trouvé.",
+        placeholder: labels.searchPlaceholder,
+        errorMessage: labels.noResults,
       });
       searchControl.addTo(map);
-  
+
       // const redIcon = new L.Icon({
       //   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
       //   iconSize: [25, 41],
@@ -74,16 +77,16 @@ export const Map = (props) => {
       const searchControl = L.Control.geocoder({
         geocoder: geocoder,
         collapsed: false,
-        placeholder: "Point de départ...",
-        errorMessage: "Aucun résultat trouvé.",
+        placeholder: labels.routeStartPlaceholder,
+        errorMessage: labels.noResults,
       });
       searchControl.addTo(map);
 
       const searchControl2 = L.Control.geocoder({
         geocoder: geocoder,
         collapsed: false,
-        placeholder: "Point d'arrivée...",
-        errorMessage: "Aucun résultat trouvé.",
+        placeholder: labels.routeEndPlaceholder,
+        errorMessage: labels.noResults,
       });
       searchControl2.addTo(map);
 
@@ -143,7 +146,7 @@ export const Map = (props) => {
             const name = route.name ? `${route.name}<br>` : "";
             const distance = route.summary.totalDistance ? mToKm(route.summary.totalDistance) : "";
             const time = route.summary.totalTime ? secsToTime(route.summary.totalTime) : "";
-            line.bindPopup(`${name}${distance} en ${time}`).openPopup();
+            line.bindPopup(`${name}${distance} ${labels.routeDurationConnector} ${time}`).openPopup();
             L.DomEvent.stopPropagation(e);
           })
           i++

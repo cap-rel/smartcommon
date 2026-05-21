@@ -8,7 +8,7 @@ import { useFile, useStates, useField, useVariantMerger, useUpload, useUploadQue
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 export const PhotosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("PhotosUploader", props);
@@ -60,24 +60,28 @@ export const PhotosUploader = (props) => {
         // When the queue resolves it, pendingId is swapped for uploadId
         // and the badge disappears.
         queue: queueMode = false,
+
+        labels: userLabels = {},
     } = variantProps;
 
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
     const errors = (currentValue) => ({
-        required: { 
+        required: {
             condition: required && isEmpty(currentValue),
-            message: "Vous devez prendre au moins 1 photo."
+            message: labels.requiredError,
         },
         min: {
             condition: !isNil(min) && multiple && (currentValue?.length ?? 0) < min,
-            message: `Vous devez prendre ${min} photos minimum.`
+            message: labels.minError(min),
         },
         max: {
             condition: !isNil(max) && multiple && (currentValue?.length ?? 0) > max,
-            message: `Vous ne pouvez pas prendre plus de ${max} photos. Veuillez en supprimer.`
+            message: labels.maxError(max),
         },
         exact: {
             condition: !isNil(exact) && multiple && (currentValue?.length ?? 0) !== exact,
-            message: `Vous devez prendre exactement ${exact} photos.`
+            message: labels.exactError(exact),
         },
     });
 
@@ -227,7 +231,7 @@ export const PhotosUploader = (props) => {
             if (isInputInCaptureMode) {
                 locate(
                     coords => { gpsPoints = coords },
-                    error => toast.error("Echec de géolocatisation de la capture.")
+                    error => toast.error(labels.geolocationError)
                 );
             }
 
@@ -263,7 +267,7 @@ export const PhotosUploader = (props) => {
                         if (onUploadError) {
                             onUploadError(err);
                         } else {
-                            toast.error("Echec de l'envoi de la photo.");
+                            toast.error(labels.uploadError);
                         }
                         return;
                     }
@@ -393,7 +397,14 @@ export const PhotosUploader = (props) => {
                             src: photo?.previewUrl || photo?.src,
                             className: "border border-border"
                         }))} />
-                        : <FaImage className="text-soft-text text-[80px]" />
+                        : (
+                            <div className="flex flex-col items-center gap-app-xxs">
+                                <FaImage className="text-soft-text text-[80px]" />
+                                <div className="text-app-xs italic text-center text-medium-text">
+                                    {labels.clickToShow}
+                                </div>
+                            </div>
+                        )
                     }
                     {/* "Envoi..." badge shown until the queue resolves the
                         pending upload into an uploadId. Only ever set when
@@ -403,7 +414,7 @@ export const PhotosUploader = (props) => {
                             ...props,
                             className: "text-app-xs italic text-center text-medium-text"
                         }))}>
-                            Envoi en attente...
+                            {labels.pendingBadge}
                         </div>
                     )}
 
@@ -422,7 +433,7 @@ export const PhotosUploader = (props) => {
         return (
             <Popup { ...mergeProps("Popup", props => ({
                 closeButton: true,
-                title: multiple ? `Photo ${index + 1}` : "Photo enregistrée",
+                title: multiple ? labels.photoPopupTitle(index) : labels.photoPopupTitleSingle,
                 zIndex: 60,
                 ...props,
                 close: () => {
@@ -463,7 +474,7 @@ export const PhotosUploader = (props) => {
                 }
                 </div>
                 <Input { ...mergeProps("TitleInput", props => ({
-                    label: "Titre",
+                    label: labels.titleField,
                     ...props,
                     name: name,
                     value: photo?.title,
@@ -473,7 +484,7 @@ export const PhotosUploader = (props) => {
                     }
                 }))} />
                 <Textarea { ...mergeProps("DescriptionTextarea", props => ({
-                    label: "Description",
+                    label: labels.descriptionField,
                     ...props,
                     name: name,
                     value: photo?.description,
@@ -484,7 +495,7 @@ export const PhotosUploader = (props) => {
                 }))} />
                 {/* <div className="flex gap-app-xs items-center"> */}
                     <Button { ...mergeProps("SaveButton", props => ({
-                        label: "Enregistrez",
+                        label: labels.saveButton,
                         icon: GiSaveArrow,
                         ...props,
                         onClick: e => {
@@ -570,7 +581,7 @@ export const PhotosUploader = (props) => {
                                 ...props,
                                 className: "italic text-medium-text text-app-base text-center truncate"
                             }))}>
-                                Aucune photo enregistrée
+                                {labels.emptyState}
                             </div>
                     }
                    

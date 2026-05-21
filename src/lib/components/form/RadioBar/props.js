@@ -38,4 +38,11 @@ export const propTypes = {
     
     optionsContainerProps: PropTypes.object,
     optionProps: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS.
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "1 élément doit être sélectionné.",
 };

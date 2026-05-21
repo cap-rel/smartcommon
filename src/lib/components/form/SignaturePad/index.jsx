@@ -8,7 +8,7 @@ import { Button, Label, Input } from "lib/components";
 import { useStates, useField, useVariantMerger, useUpload, useUploadQueue } from "lib/hooks";
 import { applyFunctionIfNotNil, locate } from "lib/utils/functions";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 export const SignaturePad = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("SignaturePad", props);
@@ -44,7 +44,11 @@ export const SignaturePad = (props) => {
     // For outputFormat="upload" only: callback when the underlying upload
     // throws (e.g. 4xx). Defaults to a toast.error notification.
     onUploadError,
+
+    labels: userLabels = {},
   } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const uploadMode = outputFormat === "upload";
 
@@ -58,7 +62,7 @@ export const SignaturePad = (props) => {
           ? isEmpty(currentValue?.uploadId) && isEmpty(currentValue?.pendingId)
           : isEmpty(currentValue?.src)
       ),
-      message: "Ce champ est requis."
+      message: labels.requiredError,
     },
   });
 
@@ -215,11 +219,11 @@ export const SignaturePad = (props) => {
 
   const validateCanvas = async () => {
     if (isSignatureValidated) {
-      return toast("La signature est déjà validée... Pour refaire la signature cliquez sur la gomme");
+      return toast(labels.alreadyValidated);
     }
 
     if (padRef.current.isEmpty()) {
-      return toast("La signature est vide...");
+      return toast(labels.emptySignature);
     }
 
     if (blocked) return;
@@ -238,7 +242,7 @@ export const SignaturePad = (props) => {
         blob = await canvasToBlob();
       } catch (err) {
         console.error("SignaturePad: canvas.toBlob failed", err);
-        toast.error("Echec de la conversion de la signature.");
+        toast.error(labels.conversionError);
         // Re-arm drawing so the user can retry.
         padRef.current.on();
         set("isSignatureValidated", false);
@@ -253,7 +257,7 @@ export const SignaturePad = (props) => {
         if (onUploadError) {
           onUploadError(err);
         } else {
-          toast.error("Echec de l'envoi de la signature.");
+          toast.error(labels.uploadError);
         }
         padRef.current.on();
         set("isSignatureValidated", false);
@@ -266,16 +270,16 @@ export const SignaturePad = (props) => {
         uploadId: uploadResult?.upload_id ?? null,
         pendingId: uploadResult?.pending_id ?? null,
       });
-      toast.success("Signature validée...");
+      toast.success(labels.validatedSuccess);
     } else {
       // dataURL mode (legacy).
       setValue({ ...currentValue, src: dataURL });
-      toast.success("Signature validée...");
+      toast.success(labels.validatedSuccess);
     }
 
     locate(
       coords => setValueRef.current({ ...currentValueRef.current, gpsPoints: coords }),
-      error => toast.error("Echec de géolocatisation de la capture.")
+      error => toast.error(labels.geolocationError)
     );
   };
 
@@ -370,7 +374,7 @@ export const SignaturePad = (props) => {
             ...props,
             className: `font-app-semibold text-strong-text`
           }))}>
-            Signature
+            {labels.title}
           </div>
 
           <Button { ...mergeProps("ValidateButton", props => ({
@@ -413,13 +417,13 @@ export const SignaturePad = (props) => {
             ...props,
             className: "text-app-xs italic text-center text-medium-text"
           }))}>
-            Envoi en attente...
+            {labels.pendingBadge}
           </div>
         )}
 
         <Input { ...mergeProps("SignerInput", props => ({
           // inputIcon: <FaUser />,
-          placeholder: "Nom du signataire",
+          placeholder: labels.signerPlaceholder,
           ...props,
           required: props.required ?? required,
           disabled: props.disabled ?? disabled,

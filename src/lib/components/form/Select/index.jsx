@@ -4,7 +4,7 @@ import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil } from "lib/utils";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 // TODO Add attributes to options like disabled, maybe props
 
@@ -29,28 +29,32 @@ export const Select = (props) => {
 
     multiple,
     options = [],
+
+    labels: userLabels = {},
   } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const errors = (currentValue) => ({
     required: {
       condition: required && isEmpty(currentValue),
-      message: "1 élément doit être sélectionné au minimum."
+      message: labels.requiredError,
     },
     min: {
       condition: !isNil(min) && multiple && currentValue?.length < min,
-      message: `${min} éléments doivent être sélectionnés au minimum.`
+      message: labels.minError(min),
     },
     max: {
       condition: !isNil(max) && multiple && currentValue?.length > max,
-      message: `${max} éléments doivent être sélectionnés au maximum.`
+      message: labels.maxError(max),
     },
     exact: {
       condition: !isNil(exact) && multiple && currentValue?.length !== exact,
-      message: `Exactement ${exact} éléments doivent être sélectionnés.`
+      message: labels.exactError(exact),
     },
     notAnOption: {
       condition: !isEmpty(currentValue) && !options.includes(currentValue),
-      message: "La valeur sélectionnée ne fait pas partie des options"
+      message: labels.notAnOptionError,
     }
   });
 

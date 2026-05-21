@@ -29,4 +29,16 @@ export const propTypes = {
     mapButtonIconProps: PropTypes.object,
     mapButtonSpinnerProps: PropTypes.object,
     mapButtonLabelProps: PropTypes.object,
+
+    // i18n: merged shallowly over DEFAULT_LABELS.
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "Vous devez géolocaliser.",
+    locateSuccess: "Succès de la géolocalisation",
+    locateError: "Erreur de la géolocalisation",
+    locateButton: "Géolocaliser",
+    savedState: "Enregistrée",
+    emptyState: "Aucune Localisation enregistrée",
 };
