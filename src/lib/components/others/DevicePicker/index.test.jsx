@@ -245,8 +245,8 @@ describe("DevicePicker - with existingDevices", () => {
         );
         expect(screen.getByText("mon iPhone")).toBeDefined();
         expect(screen.getByText("MacBook bureau")).toBeDefined();
-        expect(screen.getByText(/3 applications connectées/)).toBeDefined();
-        expect(screen.getByText(/1 application connectée/)).toBeDefined();
+        expect(screen.getByText(/3 connected applications/)).toBeDefined();
+        expect(screen.getByText(/1 connected application/)).toBeDefined();
     });
 
     it("calls onPick with the device id when a card is clicked", async () => {
@@ -267,7 +267,7 @@ describe("DevicePicker - with existingDevices", () => {
         expect(onPick).toHaveBeenCalledWith(12);
     });
 
-    it("switches to the form when the '+ Nouvel appareil' button is clicked", () => {
+    it("switches to the form when the '+ New device' button is clicked", () => {
         render(
             <DevicePicker
                 existingDevices={sampleDevices}
@@ -298,7 +298,7 @@ describe("DevicePicker - with existingDevices", () => {
         fireEvent.click(screen.getByText(DEFAULT_LABELS.newDeviceButton));
         expect(screen.getByText(DEFAULT_LABELS.newDeviceTitle)).toBeDefined();
 
-        // Inside the form, the back link reuses the "Annuler" label.
+        // Inside the form, the back link reuses the "Cancel" label.
         const backLink = screen.getByRole("button", { name: DEFAULT_LABELS.cancel });
         fireEvent.click(backLink);
 
@@ -320,7 +320,7 @@ describe("DevicePicker - with existingDevices", () => {
         expect(itemButtons.length).toBe(2);
         itemButtons.forEach((b) => expect(b.disabled).toBe(true));
 
-        // The "+ Nouvel appareil" button is disabled too.
+        // The "+ New device" button is disabled too.
         const newDeviceButton = screen.getByText(DEFAULT_LABELS.newDeviceButton);
         expect(newDeviceButton.disabled).toBe(true);
     });
@@ -331,12 +331,12 @@ describe("DevicePicker - with existingDevices", () => {
                 existingDevices={sampleDevices}
                 onPick={vi.fn()}
                 onCreate={vi.fn()}
-                error="Backend a refusé l'association"
+                error="Backend refused the association"
             />
         );
 
         expect(screen.getByRole("alert").textContent)
-            .toBe("Backend a refusé l'association");
+            .toBe("Backend refused the association");
     });
 
     it("does not lose the form pre-fill when the user toggles back from list -> form -> list -> form", () => {
@@ -365,7 +365,7 @@ describe("DevicePicker - with existingDevices", () => {
         expect(inputAgain.value).toBe("kept value");
     });
 
-    it("renders a top-level Annuler button when onCancel is provided", () => {
+    it("renders a top-level Cancel button when onCancel is provided", () => {
         const onCancel = vi.fn();
         render(
             <DevicePicker
@@ -376,7 +376,7 @@ describe("DevicePicker - with existingDevices", () => {
             />
         );
 
-        // Two buttons named "Annuler" if we open the form, but on the
+        // Two buttons named "Cancel" if we open the form, but on the
         // list view there is exactly one.
         const cancelButtons = screen.getAllByRole("button", { name: DEFAULT_LABELS.cancel });
         expect(cancelButtons.length).toBe(1);

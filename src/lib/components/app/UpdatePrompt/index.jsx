@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 
 import { usePWAUpdate } from "lib/hooks";
 
+import { DEFAULT_LABELS, propTypes } from "./props";
+
 /**
  * PWA Update Prompt component.
  * Displays a notification when a new version is available.
@@ -28,14 +30,7 @@ export const UpdatePrompt = (props) => {
         onUpdateActivated,
     } = props;
 
-    const defaultLabels = {
-        title: "Mise à jour disponible",
-        message: "Une nouvelle version est disponible.",
-        reloadButton: "Rafraîchir",
-        dismissButton: "Plus tard",
-    };
-
-    const mergedLabels = { ...defaultLabels, ...labels };
+    const mergedLabels = { ...DEFAULT_LABELS, ...labels };
 
     const {
         updateAvailable,
@@ -168,5 +163,7 @@ export const UpdatePrompt = (props) => {
     // Toast variant renders via react-hot-toast, no JSX needed here
     return null;
 };
+
+UpdatePrompt.propTypes = propTypes;
 
 export default UpdatePrompt;

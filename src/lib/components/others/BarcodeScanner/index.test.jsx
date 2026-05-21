@@ -79,7 +79,7 @@ describe("BarcodeScanner", () => {
 
         it("renders title and close button when open", () => {
             render(<BarcodeScanner open onClose={() => {}} onScan={() => {}} />);
-            expect(screen.getByText("Scanner un code")).toBeDefined();
+            expect(screen.getByText("Scan a code")).toBeDefined();
             expect(screen.getByLabelText("Close")).toBeDefined();
         });
 
@@ -320,10 +320,10 @@ describe("BarcodeScanner", () => {
         it("opens manual entry form when the button is clicked", () => {
             render(<BarcodeScanner open onClose={() => {}} onScan={() => {}} />);
 
-            fireEvent.click(screen.getByText("Saisir manuellement"));
+            fireEvent.click(screen.getByText("Enter manually"));
 
             expect(screen.getByPlaceholderText("Code...")).toBeDefined();
-            expect(screen.getByRole("button", { name: "Valider" })).toBeDefined();
+            expect(screen.getByRole("button", { name: "Validate" })).toBeDefined();
         });
 
         it("calls onScan with trimmed value and closes (non-continuous)", () => {
@@ -331,11 +331,11 @@ describe("BarcodeScanner", () => {
             const onClose = vi.fn();
             render(<BarcodeScanner open onClose={onClose} onScan={onScan} />);
 
-            fireEvent.click(screen.getByText("Saisir manuellement"));
+            fireEvent.click(screen.getByText("Enter manually"));
 
             const input = screen.getByPlaceholderText("Code...");
             fireEvent.change(input, { target: { value: "  HELLO  " } });
-            fireEvent.click(screen.getByRole("button", { name: "Valider" }));
+            fireEvent.click(screen.getByRole("button", { name: "Validate" }));
 
             expect(onScan).toHaveBeenCalledWith("HELLO");
             expect(onClose).toHaveBeenCalled();
@@ -345,8 +345,8 @@ describe("BarcodeScanner", () => {
             const onScan = vi.fn();
             render(<BarcodeScanner open onClose={() => {}} onScan={onScan} />);
 
-            fireEvent.click(screen.getByText("Saisir manuellement"));
-            fireEvent.click(screen.getByRole("button", { name: "Valider" }));
+            fireEvent.click(screen.getByText("Enter manually"));
+            fireEvent.click(screen.getByRole("button", { name: "Validate" }));
 
             expect(onScan).not.toHaveBeenCalled();
         });
@@ -355,7 +355,7 @@ describe("BarcodeScanner", () => {
             const onScan = vi.fn();
             render(<BarcodeScanner open onClose={() => {}} onScan={onScan} />);
 
-            fireEvent.click(screen.getByText("Saisir manuellement"));
+            fireEvent.click(screen.getByText("Enter manually"));
 
             const input = screen.getByPlaceholderText("Code...");
             fireEvent.change(input, { target: { value: "FROMENTER" } });
@@ -375,10 +375,10 @@ describe("BarcodeScanner", () => {
                 />
             );
 
-            fireEvent.click(screen.getByText("Saisir manuellement"));
+            fireEvent.click(screen.getByText("Enter manually"));
             const input = screen.getByPlaceholderText("Code...");
             fireEvent.change(input, { target: { value: "ABC" } });
-            fireEvent.click(screen.getByRole("button", { name: "Valider" }));
+            fireEvent.click(screen.getByRole("button", { name: "Validate" }));
 
             expect(onClose).not.toHaveBeenCalled();
             expect(screen.getByPlaceholderText("Code...").value).toBe("");

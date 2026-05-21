@@ -4,21 +4,7 @@ import { isNil, isArray } from "lodash";
 import { useVariantMerger } from "lib/hooks";
 import { formatBytes } from "lib/utils";
 
-import { propTypes } from "./props";
-
-const DEFAULT_LABELS = {
-    empty: "Aucun fichier",
-    download: "Télécharger",
-    // display="count" labels. Each entry is a (n) => string formatter
-    // that handles singular/plural by itself. The consumer can
-    // override any single entry via labels.count[<type>].
-    count: {
-        photos: (n) => (n === 1 ? `${n} photo` : `${n} photos`),
-        videos: (n) => (n === 1 ? `${n} vidéo` : `${n} vidéos`),
-        audios: (n) => (n === 1 ? `${n} audio` : `${n} audios`),
-        files: (n) => (n === 1 ? `${n} fichier` : `${n} fichiers`),
-    },
-};
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 const fileEntry = (file) => {
     if (file instanceof File) {

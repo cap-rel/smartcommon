@@ -227,7 +227,7 @@ describe("SignaturePad - pending badge", () => {
                 onChange={() => {}}
             />
         );
-        expect(getByText("Envoi en attente...")).toBeTruthy();
+        expect(getByText("Sending...")).toBeTruthy();
     });
 
     it("does NOT show the pending badge in dataURL mode even if value has pendingId", () => {
@@ -238,7 +238,7 @@ describe("SignaturePad - pending badge", () => {
                 onChange={() => {}}
             />
         );
-        expect(queryByText("Envoi en attente...")).toBeNull();
+        expect(queryByText("Sending...")).toBeNull();
     });
 });
 

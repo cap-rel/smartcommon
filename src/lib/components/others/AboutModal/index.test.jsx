@@ -82,7 +82,7 @@ describe("AboutModal", () => {
                     version="1.2.3"
                 />
             );
-            expect(screen.getByText("À propos")).toBeDefined();
+            expect(screen.getByText("About")).toBeDefined();
             expect(screen.getByText("MyApp")).toBeDefined();
             expect(screen.getByText("1.2.3")).toBeDefined();
         });
@@ -117,10 +117,10 @@ describe("AboutModal", () => {
                     open
                     onClose={() => {}}
                     appName="MyApp"
-                    labels={{ title: "About", close: "OK" }}
+                    labels={{ title: "Custom title", close: "OK" }}
                 />
             );
-            expect(screen.getByText("About")).toBeDefined();
+            expect(screen.getByText("Custom title")).toBeDefined();
             expect(screen.getByRole("button", { name: "OK" })).toBeDefined();
             // unchanged labels still come from defaults
             expect(screen.getByText("Application")).toBeDefined();
@@ -133,7 +133,7 @@ describe("AboutModal", () => {
             const onClose = vi.fn();
             render(<AboutModal open onClose={onClose} appName="MyApp" />);
 
-            fireEvent.click(screen.getByRole("button", { name: "Fermer" }));
+            fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
             expect(onClose).toHaveBeenCalledTimes(1);
         });
@@ -145,13 +145,13 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             await waitFor(() => {
                 expect(toastCalls.error.length).toBe(1);
             });
-            expect(toastCalls.error[0][0]).toMatch(/non supportées/);
+            expect(toastCalls.error[0][0]).toMatch(/Updates not supported/);
         });
 
         it("shows up-to-date when no registration is found", async () => {
@@ -159,13 +159,13 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             await waitFor(() => {
                 expect(toastCalls.info.length).toBe(1);
             });
-            expect(toastCalls.info[0][0]).toBe("Application à jour");
+            expect(toastCalls.info[0][0]).toBe("Application up to date");
         });
 
         it("shows install button when a waiting worker exists", async () => {
@@ -175,7 +175,7 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             await waitFor(() => {
@@ -183,7 +183,7 @@ describe("AboutModal", () => {
             });
             await waitFor(() => {
                 expect(
-                    screen.getByRole("button", { name: /Installer la mise à jour/ })
+                    screen.getByRole("button", { name: /Install update/ })
                 ).toBeDefined();
             });
         });
@@ -195,7 +195,7 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             await waitFor(() => {
@@ -204,7 +204,7 @@ describe("AboutModal", () => {
             await waitFor(() => {
                 expect(toastCalls.info.length).toBe(1);
             });
-            expect(toastCalls.info[0][0]).toBe("Application à jour");
+            expect(toastCalls.info[0][0]).toBe("Application up to date");
         });
 
         it("logs and toasts an error when getRegistration throws", async () => {
@@ -215,13 +215,13 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             await waitFor(() => {
                 expect(toastCalls.error.length).toBe(1);
             });
-            expect(toastCalls.error[0][0]).toMatch(/Erreur/);
+            expect(toastCalls.error[0][0]).toMatch(/Error during check/);
             expect(consoleErrorSpy).toHaveBeenCalled();
         });
     });
@@ -240,11 +240,11 @@ describe("AboutModal", () => {
             render(<AboutModal open onClose={() => {}} appName="MyApp" />);
 
             fireEvent.click(
-                screen.getByRole("button", { name: /Vérifier les mises à jour/ })
+                screen.getByRole("button", { name: /Check for updates/ })
             );
 
             const installBtn = await screen.findByRole("button", {
-                name: /Installer la mise à jour/,
+                name: /Install update/,
             });
             fireEvent.click(installBtn);
 

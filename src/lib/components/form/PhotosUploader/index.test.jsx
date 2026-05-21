@@ -126,7 +126,7 @@ describe("PhotosUploader - rendering", () => {
         const { getByText } = render(
             <PhotosUploader name="photos" value={null} onChange={() => {}} />
         );
-        expect(getByText("Aucune photo enregistrée")).toBeTruthy();
+        expect(getByText("No photo saved")).toBeTruthy();
     });
 
     it("renders existing photos in upload mode (single)", () => {
@@ -163,7 +163,7 @@ describe("PhotosUploader - rendering", () => {
             />
         );
         // One badge for the pending photo.
-        expect(getAllByText("Envoi en attente...")).toHaveLength(1);
+        expect(getAllByText("Sending...")).toHaveLength(1);
     });
 
     it("does NOT render pending badge in legacy non-queue mode (no pendingId in value shape)", () => {
@@ -175,7 +175,7 @@ describe("PhotosUploader - rendering", () => {
                 onChange={() => {}}
             />
         );
-        expect(queryByText("Envoi en attente...")).toBeNull();
+        expect(queryByText("Sending...")).toBeNull();
     });
 });
 

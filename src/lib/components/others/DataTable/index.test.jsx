@@ -270,13 +270,13 @@ describe("DataTable - pagination", () => {
 
         // Page 1 of 3 - shows Alice + Bob.
         expect(container.querySelectorAll("tbody tr").length).toBe(2);
-        expect(screen.getByText(/Page 1 sur 3/)).toBeDefined();
+        expect(screen.getByText(/Page 1 of 3/)).toBeDefined();
         expect(screen.getByText("Alice")).toBeDefined();
         expect(screen.getByText("Bob")).toBeDefined();
 
         // Next -> page 2 (Claire + Daniel).
         fireEvent.click(screen.getByRole("button", { name: DEFAULT_LABELS.next }));
-        expect(screen.getByText(/Page 2 sur 3/)).toBeDefined();
+        expect(screen.getByText(/Page 2 of 3/)).toBeDefined();
         expect(screen.getByText("Claire")).toBeDefined();
         expect(screen.getByText("Daniel")).toBeDefined();
     });
@@ -360,7 +360,7 @@ describe("DataTable - selection", () => {
                 pageSize={0}
             />
         );
-        expect(screen.getByText(/2 ligne\(s\)/)).toBeDefined();
+        expect(screen.getByText(/2 row\(s\)/)).toBeDefined();
     });
 });
 

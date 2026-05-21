@@ -32,15 +32,15 @@ export const defaultProps = {
 };
 
 export const DEFAULT_LABELS = {
-    title: "À propos",
+    title: "About",
     application: "Application",
     version: "Version",
-    close: "Fermer",
-    checkUpdates: "Vérifier les mises à jour",
-    checking: "Vérification...",
-    upToDate: "Application à jour",
-    updating: "Mise à jour...",
-    installUpdate: "Installer la mise à jour",
-    updatesNotSupported: "Mises à jour non supportées sur ce navigateur",
-    checkError: "Erreur lors de la vérification",
+    close: "Close",
+    checkUpdates: "Check for updates",
+    checking: "Checking...",
+    upToDate: "Application up to date",
+    updating: "Updating...",
+    installUpdate: "Install update",
+    updatesNotSupported: "Updates not supported on this browser",
+    checkError: "Error during check",
 };

@@ -17,17 +17,17 @@ const clickDay = (container, isoDate) => {
 const navButtons = (container) => container.querySelectorAll("button");
 
 describe("PlainCalendar - rendering", () => {
-    it("renders 7 weekday headers from default labels (french)", () => {
+    it("renders 7 weekday headers from default labels (english)", () => {
         const { container } = render(
             <PlainCalendar value="2024-03-15" onChange={() => {}} />
         );
-        expect(screen.getByText("lun.")).toBeTruthy();
-        expect(screen.getByText("mar.")).toBeTruthy();
-        expect(screen.getByText("mer.")).toBeTruthy();
-        expect(screen.getByText("jeu.")).toBeTruthy();
-        expect(screen.getByText("ven.")).toBeTruthy();
-        expect(screen.getByText("sam.")).toBeTruthy();
-        expect(screen.getByText("dim.")).toBeTruthy();
+        expect(screen.getByText("Mon")).toBeTruthy();
+        expect(screen.getByText("Tue")).toBeTruthy();
+        expect(screen.getByText("Wed")).toBeTruthy();
+        expect(screen.getByText("Thu")).toBeTruthy();
+        expect(screen.getByText("Fri")).toBeTruthy();
+        expect(screen.getByText("Sat")).toBeTruthy();
+        expect(screen.getByText("Sun")).toBeTruthy();
         // The grid is 7 columns
         expect(container.querySelector(".grid-cols-7")).toBeTruthy();
     });
@@ -37,12 +37,12 @@ describe("PlainCalendar - rendering", () => {
             <PlainCalendar
                 value="2024-03-15"
                 onChange={() => {}}
-                labels={{ weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] }}
+                labels={{ weekdays: ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."] }}
             />
         );
-        expect(screen.getByText("Mon")).toBeTruthy();
-        expect(screen.getByText("Sun")).toBeTruthy();
-        expect(screen.queryByText("lun.")).toBeNull();
+        expect(screen.getByText("lun.")).toBeTruthy();
+        expect(screen.getByText("dim.")).toBeTruthy();
+        expect(screen.queryByText("Mon")).toBeNull();
     });
 
     it("renders the year of the controlled value", () => {

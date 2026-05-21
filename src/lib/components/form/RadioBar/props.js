@@ -44,5 +44,5 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "1 élément doit être sélectionné.",
+    requiredError: "One item must be selected.",
 };

@@ -109,17 +109,17 @@ describe("PhotoAnnotator - rendering", () => {
 
     it("shows the empty list message when no annotations", () => {
         renderAnnotator();
-        expect(screen.getByText(/Aucune annotation/i)).toBeDefined();
+        expect(screen.getByText(/No annotation/i)).toBeDefined();
     });
 
     it("hides the list entirely when listPosition='off'", () => {
         renderAnnotator({ listPosition: "off" });
-        expect(screen.queryByText(/Aucune annotation/i)).toBeNull();
+        expect(screen.queryByText(/No annotation/i)).toBeNull();
     });
 
     it("does not render the add button in readOnly", () => {
         renderAnnotator({ readOnly: true });
-        expect(screen.queryByLabelText(/Ajouter une annotation/i)).toBeNull();
+        expect(screen.queryByLabelText(/Add an annotation/i)).toBeNull();
     });
 });
 
@@ -128,7 +128,7 @@ describe("PhotoAnnotator - creation via add button", () => {
 
     it("with one type: creates an annotation at center, opens editor, saves on onSave", () => {
         const { onChange } = renderAnnotator();
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
 
         // Editor opens immediately.
         expect(screen.getByTestId("note-editor")).toBeDefined();
@@ -155,9 +155,9 @@ describe("PhotoAnnotator - creation via add button", () => {
             annotationTypes: { note: noteType, product: productType },
         });
 
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
 
-        expect(screen.getByText(/Type d'annotation/i)).toBeDefined();
+        expect(screen.getByText(/Annotation type/i)).toBeDefined();
         expect(screen.getByText("Note")).toBeDefined();
         expect(screen.getByText("Produit")).toBeDefined();
     });
@@ -166,7 +166,7 @@ describe("PhotoAnnotator - creation via add button", () => {
         const { onChange } = renderAnnotator({
             annotationTypes: { note: noteType, product: productType },
         });
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
 
         fireEvent.click(screen.getByText("Produit"));
         expect(screen.getByTestId("product-editor")).toBeDefined();
@@ -181,7 +181,7 @@ describe("PhotoAnnotator - creation via add button", () => {
         const { onChange } = renderAnnotator({
             annotationTypes: { note: noteType, product: productType },
         });
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
         fireEvent.click(screen.getByText("Note"));
         // Editor open, no onChange yet (this is a 2-types flow: persist on save).
         expect(onChange).not.toHaveBeenCalled();
@@ -214,7 +214,7 @@ describe("PhotoAnnotator - list interactions", () => {
 
     it("opens the editor in edit mode when the pen button is clicked", () => {
         const { onChange } = renderAnnotator({ annotations: seeded });
-        const editButtons = screen.getAllByLabelText(/Modifier/i);
+        const editButtons = screen.getAllByLabelText(/Edit/i);
         fireEvent.click(editButtons[0]);
         expect(screen.getByTestId("note-editor")).toBeDefined();
 
@@ -229,7 +229,7 @@ describe("PhotoAnnotator - list interactions", () => {
     it("deletes an annotation when the trash button is confirmed", () => {
         // beforeEach sets window.confirm to return true.
         const { onChange } = renderAnnotator({ annotations: seeded });
-        const trashButtons = screen.getAllByLabelText(/Supprimer/i);
+        const trashButtons = screen.getAllByLabelText(/Delete/i);
         fireEvent.click(trashButtons[0]);
 
         expect(window.confirm).toHaveBeenCalled();
@@ -241,14 +241,14 @@ describe("PhotoAnnotator - list interactions", () => {
     it("does not delete when window.confirm is dismissed", () => {
         window.confirm = vi.fn().mockReturnValue(false);
         const { onChange } = renderAnnotator({ annotations: seeded });
-        fireEvent.click(screen.getAllByLabelText(/Supprimer/i)[0]);
+        fireEvent.click(screen.getAllByLabelText(/Delete/i)[0]);
         expect(onChange).not.toHaveBeenCalled();
     });
 
     it("hides edit/delete buttons in readOnly", () => {
         renderAnnotator({ annotations: seeded, readOnly: true });
-        expect(screen.queryByLabelText(/Modifier/i)).toBeNull();
-        expect(screen.queryByLabelText(/Supprimer/i)).toBeNull();
+        expect(screen.queryByLabelText(/Edit/i)).toBeNull();
+        expect(screen.queryByLabelText(/Delete/i)).toBeNull();
     });
 });
 
@@ -279,7 +279,7 @@ describe("PhotoAnnotator - background long press", () => {
             vi.advanceTimersByTime(150);
         });
 
-        expect(screen.getByText(/Type d'annotation/i)).toBeDefined();
+        expect(screen.getByText(/Annotation type/i)).toBeDefined();
     });
 });
 
@@ -308,7 +308,7 @@ describe("PhotoAnnotator - event-based mode", () => {
 
     it("calls onCreate on add button click and adopts the returned id", async () => {
         const { onCreate } = renderEventMode();
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
 
         // The optimistic marker is rendered.
         expect(onCreate).toHaveBeenCalledTimes(1);
@@ -329,7 +329,7 @@ describe("PhotoAnnotator - event-based mode", () => {
         ];
         const { onUpdate } = renderEventMode({ initialAnnotations: seeded });
 
-        fireEvent.click(screen.getAllByLabelText(/Modifier/i)[0]);
+        fireEvent.click(screen.getAllByLabelText(/Edit/i)[0]);
         fireEvent.click(screen.getByText("save-note"));
 
         await act(async () => { await Promise.resolve(); });
@@ -346,7 +346,7 @@ describe("PhotoAnnotator - event-based mode", () => {
             { id: 2, type: "note", x: 20, y: 20, payload: {} },
         ];
         const { onDelete } = renderEventMode({ initialAnnotations: seeded });
-        fireEvent.click(screen.getAllByLabelText(/Supprimer/i)[0]);
+        fireEvent.click(screen.getAllByLabelText(/Delete/i)[0]);
 
         await act(async () => { await Promise.resolve(); });
 
@@ -433,7 +433,7 @@ describe("PhotoAnnotator - headless editor", () => {
         };
         render(<Stateful />);
 
-        fireEvent.click(screen.getByLabelText(/Ajouter une annotation/i));
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
 
         expect(screen.getByTestId("headless-editor-content")).toBeDefined();
         expect(screen.queryByRole("dialog")).toBeNull();

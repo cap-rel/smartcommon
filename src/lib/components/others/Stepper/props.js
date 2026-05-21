@@ -32,7 +32,6 @@ export const defaultProps = {
     orientation: "horizontal",
 };
 
-// Default user-facing labels. French with proper accents.
 export const DEFAULT_LABELS = {
-    stepN: (n) => `Étape ${n}`,
+    stepN: (n) => `Step ${n}`,
 };

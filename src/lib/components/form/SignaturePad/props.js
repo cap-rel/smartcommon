@@ -67,14 +67,14 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-  requiredError: "Ce champ est requis.",
-  alreadyValidated: "La signature est déjà validée... Pour refaire la signature cliquez sur la gomme",
-  emptySignature: "La signature est vide...",
-  conversionError: "Echec de la conversion de la signature.",
-  uploadError: "Echec de l'envoi de la signature.",
-  validatedSuccess: "Signature validée...",
-  geolocationError: "Echec de géolocalisation de la capture.",
+  requiredError: "This field is required.",
+  alreadyValidated: "The signature is already validated... To redo the signature, click on the eraser",
+  emptySignature: "The signature is empty...",
+  conversionError: "Signature conversion failed.",
+  uploadError: "Signature upload failed.",
+  validatedSuccess: "Signature validated...",
+  geolocationError: "Failed to get capture location.",
   title: "Signature",
-  pendingBadge: "Envoi en attente...",
-  signerPlaceholder: "Nom du signataire",
+  pendingBadge: "Sending...",
+  signerPlaceholder: "Signer name",
 };

@@ -108,9 +108,9 @@ describe("formats/Signature", () => {
 describe("formats/Files", () => {
     it("renders the empty label when value is null or empty", () => {
         const { container, rerender } = render(<Files value={null} />);
-        expect(container.textContent).toContain("Aucun fichier");
+        expect(container.textContent).toContain("No file");
         rerender(<Files value={[]} />);
-        expect(container.textContent).toContain("Aucun fichier");
+        expect(container.textContent).toContain("No file");
     });
 
     it("renders one entry per file with a download link", () => {

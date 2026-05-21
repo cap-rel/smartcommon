@@ -141,9 +141,9 @@ describe("ProductCategoryBrowser - rendering", () => {
     it("shows the special tiles at root by default", async () => {
         renderBrowser();
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        expect(screen.getByText(/Sans catégorie/i)).toBeDefined();
+        expect(screen.getByText(/Uncategorized/i)).toBeDefined();
     });
 
     it("hides the special tiles when disabled", async () => {
@@ -154,8 +154,8 @@ describe("ProductCategoryBrowser - rendering", () => {
         await waitFor(() => {
             expect(screen.getByText("Plomberie")).toBeDefined();
         });
-        expect(screen.queryByText(/Tous les produits/i)).toBeNull();
-        expect(screen.queryByText(/Sans catégorie/i)).toBeNull();
+        expect(screen.queryByText(/All products/i)).toBeNull();
+        expect(screen.queryByText(/Uncategorized/i)).toBeNull();
     });
 });
 
@@ -200,13 +200,13 @@ describe("ProductCategoryBrowser - navigation", () => {
         });
     });
 
-    it("'Tous les produits' tile lists every product", async () => {
+    it("'All products' tile lists every product", async () => {
         const { productsAdapter } = renderBrowser();
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
 
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
 
         await waitFor(() => {
             expect(productsAdapter.search).toHaveBeenCalledWith(
@@ -218,13 +218,13 @@ describe("ProductCategoryBrowser - navigation", () => {
         });
     });
 
-    it("'Sans catégorie' tile passes categoryId=null to the adapter", async () => {
+    it("'Uncategorized' tile passes categoryId=null to the adapter", async () => {
         const { productsAdapter } = renderBrowser();
         await waitFor(() => {
-            expect(screen.getByText(/Sans catégorie/i)).toBeDefined();
+            expect(screen.getByText(/Uncategorized/i)).toBeDefined();
         });
 
-        fireEvent.click(screen.getByText(/Sans catégorie/i));
+        fireEvent.click(screen.getByText(/Uncategorized/i));
 
         await waitFor(() => {
             expect(productsAdapter.search).toHaveBeenCalledWith(
@@ -243,10 +243,10 @@ describe("ProductCategoryBrowser - search", () => {
     it("debounces search and queries the adapter with the typed text", async () => {
         const { productsAdapter } = renderBrowser();
         await waitFor(() => {
-            expect(screen.getByPlaceholderText(/Rechercher/)).toBeDefined();
+            expect(screen.getByPlaceholderText(/Search/)).toBeDefined();
         });
 
-        const input = screen.getByPlaceholderText(/Rechercher/);
+        const input = screen.getByPlaceholderText(/Search/);
         fireEvent.change(input, { target: { value: "robinet" } });
 
         await waitFor(
@@ -270,9 +270,9 @@ describe("ProductCategoryBrowser - mode select", () => {
         const { onSelect, onClose } = renderBrowser();
 
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
@@ -291,9 +291,9 @@ describe("ProductCategoryBrowser - mode select", () => {
         const { onSelect, onClose } = renderBrowser({ multiple: true });
 
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
@@ -302,7 +302,7 @@ describe("ProductCategoryBrowser - mode select", () => {
         fireEvent.click(screen.getByText("Robinet mitigeur"));
 
         // Validation button shows item count.
-        const validateBtn = await screen.findByRole("button", { name: /Valider \(2\)/ });
+        const validateBtn = await screen.findByRole("button", { name: /Validate \(2\)/ });
         fireEvent.click(validateBtn);
 
         expect(onSelect).toHaveBeenCalledTimes(1);
@@ -322,9 +322,9 @@ describe("ProductCategoryBrowser - mode quantity", () => {
         const { onSelect, onClose } = renderBrowser({ mode: "quantity", defaultQty: 3 });
 
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
@@ -332,14 +332,14 @@ describe("ProductCategoryBrowser - mode quantity", () => {
 
         // Confirm step rendered.
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
 
         // Default qty pre-filled at 3.
         const qtyInput = screen.getByDisplayValue("3");
         expect(qtyInput).toBeDefined();
 
-        fireEvent.click(screen.getByRole("button", { name: /Confirmer$/ }));
+        fireEvent.click(screen.getByRole("button", { name: /Confirm$/ }));
 
         expect(onSelect).toHaveBeenCalledTimes(1);
         const payload = onSelect.mock.calls[0][0];
@@ -364,19 +364,19 @@ describe("ProductCategoryBrowser - mode quantity-discount", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
         fireEvent.click(screen.getByText("Tube cuivre 14mm"));
 
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
 
-        fireEvent.click(screen.getByRole("button", { name: /Confirmer$/ }));
+        fireEvent.click(screen.getByRole("button", { name: /Confirm$/ }));
 
         await waitFor(() => {
             expect(onSelect).toHaveBeenCalled();
@@ -397,9 +397,9 @@ describe("ProductCategoryBrowser - mode quantity-discount", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getAllByText(/Tous les produits/i)[0]).toBeDefined();
+            expect(screen.getAllByText(/All products/i)[0]).toBeDefined();
         });
-        fireEvent.click(screen.getAllByText(/Tous les produits/i)[0]);
+        fireEvent.click(screen.getAllByText(/All products/i)[0]);
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
@@ -407,11 +407,11 @@ describe("ProductCategoryBrowser - mode quantity-discount", () => {
         // First product
         fireEvent.click(screen.getByText("Tube cuivre 14mm"));
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
-        fireEvent.click(screen.getByRole("button", { name: /Ajouter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Add/i }));
 
-        // After "Ajouter", we're back to browse.
+        // After "Add", we're back to browse.
         await waitFor(() => {
             expect(screen.getByText("Tube cuivre 14mm")).toBeDefined();
         });
@@ -419,11 +419,11 @@ describe("ProductCategoryBrowser - mode quantity-discount", () => {
         // Second product
         fireEvent.click(screen.getByText("Robinet mitigeur"));
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
-        fireEvent.click(screen.getByRole("button", { name: /Ajouter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Add/i }));
 
-        const validateBtn = await screen.findByRole("button", { name: /Valider \(2\)/ });
+        const validateBtn = await screen.findByRole("button", { name: /Validate \(2\)/ });
         await act(async () => { fireEvent.click(validateBtn); });
 
         const payload = onSelect.mock.calls[0][0];
@@ -447,7 +447,7 @@ describe("ProductCategoryBrowser - edit / prefillProduct", () => {
         });
 
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
 
         // Pre-filled values are visible.
@@ -455,7 +455,7 @@ describe("ProductCategoryBrowser - edit / prefillProduct", () => {
         expect(screen.getByDisplayValue("15")).toBeDefined();
         expect(screen.getByText("Edited line")).toBeDefined();
 
-        fireEvent.click(screen.getByRole("button", { name: /Confirmer$/ }));
+        fireEvent.click(screen.getByRole("button", { name: /Confirm$/ }));
 
         const payload = onSelect.mock.calls[0][0];
         expect(payload.product).toMatchObject({ id: 200 });
@@ -471,25 +471,25 @@ describe("ProductCategoryBrowser - edit / prefillProduct", () => {
         await waitFor(() => {
             expect(screen.getByText("Plomberie")).toBeDefined();
         });
-        expect(screen.queryByText(/Confirmer la sélection/i)).toBeNull();
+        expect(screen.queryByText(/Confirm selection/i)).toBeNull();
     });
 
-    it("'Changer de produit' from confirm step returns to browse", async () => {
+    it("'Change product' from confirm step returns to browse", async () => {
         const existing = { id: 200, ref: "EDIT-1", label: "Edited line" };
         renderBrowser({
             mode: "quantity",
             prefillProduct: existing,
         });
         await waitFor(() => {
-            expect(screen.getByText(/Confirmer la sélection/i)).toBeDefined();
+            expect(screen.getByText(/Confirm selection/i)).toBeDefined();
         });
 
-        fireEvent.click(screen.getByRole("button", { name: /Changer de produit/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Change product/i }));
 
         await waitFor(() => {
             expect(screen.getByText("Plomberie")).toBeDefined();
         });
-        expect(screen.queryByText(/Confirmer la sélection/i)).toBeNull();
+        expect(screen.queryByText(/Confirm selection/i)).toBeNull();
     });
 });
 

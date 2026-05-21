@@ -83,16 +83,16 @@ export const defaultProps = {
 };
 
 export const DEFAULT_LABELS = {
-    addAnnotation: "Ajouter une annotation",
-    chooseType: "Type d'annotation",
-    pickerCancel: "Annuler",
-    listEmpty: "Aucune annotation",
+    addAnnotation: "Add an annotation",
+    chooseType: "Annotation type",
+    pickerCancel: "Cancel",
+    listEmpty: "No annotation",
     listToggle: "Annotations",
-    edit: "Modifier",
-    delete: "Supprimer",
-    deleteConfirm: "Supprimer cette annotation ?",
-    confirm: "Valider",
-    cancel: "Annuler",
-    zoomReset: "Réinitialiser le zoom",
-    untitled: "(sans titre)",
+    edit: "Edit",
+    delete: "Delete",
+    deleteConfirm: "Delete this annotation?",
+    confirm: "Validate",
+    cancel: "Cancel",
+    zoomReset: "Reset zoom",
+    untitled: "(untitled)",
 };

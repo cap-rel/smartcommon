@@ -145,12 +145,12 @@ describe("Stepper", () => {
         expect(firstStep.getAttribute('aria-label')).toBe('Step 1');
     });
 
-    it("falls back to French default labels when labels prop is omitted", () => {
+    it("falls back to English default labels when labels prop is omitted", () => {
         const { container } = render(
             <Stepper steps={sampleSteps} currentStep={0} />
         );
         const firstStep = container.querySelector('[data-step-index="0"]');
-        expect(firstStep.getAttribute('aria-label')).toBe('Étape 1');
+        expect(firstStep.getAttribute('aria-label')).toBe('Step 1');
     });
 
     it("hides the connector after the last step", () => {

@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 export const DEFAULT_LABELS = {
-    weekdays: ["lun.", "mar.", "mer.", "jeu.", "ven.", "sam.", "dim."],
+    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
 };
 
 export const propTypes = {

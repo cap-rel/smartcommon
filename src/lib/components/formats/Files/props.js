@@ -26,3 +26,14 @@ export const propTypes = {
     }),
     onDownload: PropTypes.func,
 };
+
+export const DEFAULT_LABELS = {
+    empty: "No file",
+    download: "Download",
+    count: {
+        photos: (n) => (n === 1 ? `${n} photo` : `${n} photos`),
+        videos: (n) => (n === 1 ? `${n} video` : `${n} videos`),
+        audios: (n) => (n === 1 ? `${n} audio` : `${n} audios`),
+        files: (n) => (n === 1 ? `${n} file` : `${n} files`),
+    },
+};

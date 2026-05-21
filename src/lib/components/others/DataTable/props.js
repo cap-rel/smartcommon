@@ -1,18 +1,17 @@
 import PropTypes from "prop-types";
 
-// Default labels are in French; consumers can override via the `labels` prop
-// (typically wired to their i18n translator). All accented characters are
-// preserved on purpose - never strip them.
+// Default labels are in English (source of truth). Translations live in
+// `src/lib/locales/<lang>.js` and consumers override via the `labels` prop.
 export const DEFAULT_LABELS = {
-    empty: "Aucune donnée à afficher",
-    searchPlaceholder: "Rechercher...",
+    empty: "No data to display",
+    searchPlaceholder: "Search...",
     page: "Page",
-    of: "sur",
-    previous: "Précédent",
-    next: "Suivant",
-    sortAscending: "Tri ascendant",
-    sortDescending: "Tri descendant",
-    rowsSelected: (n) => `${n} ligne(s) sélectionnée(s)`,
+    of: "of",
+    previous: "Previous",
+    next: "Next",
+    sortAscending: "Sort ascending",
+    sortDescending: "Sort descending",
+    rowsSelected: (n) => `${n} row(s) selected`,
 };
 
 const columnShape = PropTypes.shape({

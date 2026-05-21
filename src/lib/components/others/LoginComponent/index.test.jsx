@@ -141,7 +141,7 @@ describe("LoginComponent - password mode", () => {
         const { container } = render(<LoginComponent onSuccess={() => {}} />);
         expect(emailInput(container)).not.toBeNull();
         expect(passwordInput(container)).not.toBeNull();
-        expect(screen.getByRole("button", { name: /Se connecter/i })).toBeDefined();
+        expect(screen.getByRole("button", { name: /Sign in/i })).toBeDefined();
     });
 
     it("calls api.login with the form values on submit", async () => {
@@ -152,7 +152,7 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "secret" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(fakeApi.login).toHaveBeenCalledTimes(1);
@@ -180,7 +180,7 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "x" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(screen.getByRole("alert")).toBeDefined();
@@ -220,7 +220,7 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "x" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(getErrorLabel).toHaveBeenCalledWith(err);
@@ -245,10 +245,10 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "x" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
-            expect(screen.getByRole("alert").textContent).toMatch(/Identifiants/);
+            expect(screen.getByRole("alert").textContent).toMatch(/Invalid credentials/);
         });
     });
 
@@ -293,7 +293,7 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "x" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(fakeApi.login).toHaveBeenCalled();
@@ -315,7 +315,7 @@ describe("LoginComponent - password mode", () => {
         // Note: the stub Input ignores className silently; we check via the
         // form structure that nothing crashes and the standard inputs render.
         expect(emailInput(container)).not.toBeNull();
-        expect(screen.getByRole("button", { name: /Se connecter/i })).toBeDefined();
+        expect(screen.getByRole("button", { name: /Sign in/i })).toBeDefined();
     });
 
     it("loads entities at mount and shows the Select when not empty", async () => {
@@ -352,7 +352,7 @@ describe("LoginComponent - password mode", () => {
 
     it("shows the shared-device checkbox by default", () => {
         render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
-        expect(screen.getByText(/non sécurisé/i)).toBeDefined();
+        expect(screen.getByText(/Shared or untrusted access/i)).toBeDefined();
     });
 
     it("hides the shared-device checkbox when showSharedDevice is false", () => {
@@ -363,7 +363,7 @@ describe("LoginComponent - password mode", () => {
                 showSharedDevice={false}
             />
         );
-        expect(screen.queryByText(/non sécurisé/i)).toBeNull();
+        expect(screen.queryByText(/Shared or untrusted access/i)).toBeNull();
     });
 
     it("sends rememberMe=true by default (shared-device unchecked)", async () => {
@@ -373,7 +373,7 @@ describe("LoginComponent - password mode", () => {
 
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "secret" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(fakeApi.login).toHaveBeenCalledTimes(1);
@@ -394,7 +394,7 @@ describe("LoginComponent - password mode", () => {
         expect(sharedCheckbox).not.toBeNull();
         fireEvent.click(sharedCheckbox);
 
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
 
         await waitFor(() => {
             expect(fakeApi.login).toHaveBeenCalledTimes(1);
@@ -427,17 +427,17 @@ describe("LoginComponent - QR pair mode", () => {
                 enableQrPair={false}
             />
         );
-        expect(screen.queryByText(/Scanner un QR code/i)).toBeNull();
+        expect(screen.queryByText(/Scan a QR code/i)).toBeNull();
     });
 
     it("shows the QR scan button by default (smartAuth assumed)", () => {
         render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
-        expect(screen.getByText(/Scanner un QR code/i)).toBeDefined();
+        expect(screen.getByText(/Scan a QR code/i)).toBeDefined();
     });
 
     it("shows the 'or' separator above the QR button when enabled", () => {
         render(<LoginComponent onSuccess={() => {}} showEntities={false} />);
-        expect(screen.getByText("ou")).toBeDefined();
+        expect(screen.getByText("or")).toBeDefined();
     });
 
     it("hides the 'or' separator when QR is disabled", () => {
@@ -448,7 +448,7 @@ describe("LoginComponent - QR pair mode", () => {
                 enableQrPair={false}
             />
         );
-        expect(screen.queryByText("ou")).toBeNull();
+        expect(screen.queryByText("or")).toBeNull();
     });
 
     it("opens the scanner when the QR button is clicked", () => {
@@ -457,7 +457,7 @@ describe("LoginComponent - QR pair mode", () => {
         );
         expect(screen.queryByTestId("scanner-stub")).toBeNull();
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         expect(screen.getByTestId("scanner-stub")).toBeDefined();
     });
@@ -466,7 +466,7 @@ describe("LoginComponent - QR pair mode", () => {
         render(
             <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />
         );
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             scannerProps.current.onScan("not-a-pairing-id");
@@ -494,7 +494,7 @@ describe("LoginComponent - QR pair mode", () => {
             />
         );
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             await scannerProps.current.onScan(id);
@@ -531,7 +531,7 @@ describe("LoginComponent - QR pair mode", () => {
             />
         );
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             await scannerProps.current.onScan(id);
@@ -578,7 +578,7 @@ describe("LoginComponent - QR pair mode", () => {
             />
         );
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             await scannerProps.current.onScan(id);
@@ -591,7 +591,7 @@ describe("LoginComponent - QR pair mode", () => {
             await Promise.resolve();
         });
 
-        expect(screen.getByRole("alert").textContent).toMatch(/expir/);
+        expect(screen.getByRole("alert").textContent).toMatch(/expired/);
     });
 
     it("times out after qrTimeoutMs and shows the timeout error", async () => {
@@ -612,7 +612,7 @@ describe("LoginComponent - QR pair mode", () => {
             />
         );
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             await scannerProps.current.onScan(id);
@@ -625,7 +625,7 @@ describe("LoginComponent - QR pair mode", () => {
             await Promise.resolve();
         });
 
-        expect(screen.getByRole("alert").textContent).toMatch(/dépass|temps|temps/i);
+        expect(screen.getByRole("alert").textContent).toMatch(/Timeout/i);
     });
 
     it("falls back to error mode when claimQrPair fails", async () => {
@@ -642,7 +642,7 @@ describe("LoginComponent - QR pair mode", () => {
             />
         );
 
-        fireEvent.click(screen.getByText(/Scanner un QR code/i));
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
 
         await act(async () => {
             await scannerProps.current.onScan(id);
@@ -661,7 +661,7 @@ describe("LoginComponent - QR pair mode", () => {
             fakeApi.claimQrPair = vi.fn(() => new Promise((r) => { resolveClaim = r; }));
 
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
 
             await act(async () => {
                 scannerProps.current.onScan(id);
@@ -671,7 +671,7 @@ describe("LoginComponent - QR pair mode", () => {
             expect(screen.queryByTestId("scanner-stub")).toBeNull();
             // Overlay visible with the claiming message
             expect(screen.getByRole("status")).toBeDefined();
-            expect(screen.getByText(/Connexion au serveur/)).toBeDefined();
+            expect(screen.getByText(/Connecting to the server/)).toBeDefined();
 
             // cleanup so the pending promise doesn't leak
             await act(async () => {
@@ -688,17 +688,17 @@ describe("LoginComponent - QR pair mode", () => {
             fakeApi.pollQrPair = vi.fn(() => new Promise(() => {}));
 
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
 
             await act(async () => {
                 await scannerProps.current.onScan(id);
             });
 
             expect(screen.queryByTestId("scanner-stub")).toBeNull();
-            expect(screen.getByText(/En attente de la confirmation/)).toBeDefined();
+            expect(screen.getByText(/Waiting for confirmation/)).toBeDefined();
         });
 
-        it("returns to password mode when the overlay 'Annuler' button is clicked", async () => {
+        it("returns to password mode when the overlay 'Cancel' button is clicked", async () => {
             fakeApi.claimQrPair = vi.fn().mockResolvedValue({
                 status: "claimed",
                 claim_token: "tok-1",
@@ -706,7 +706,7 @@ describe("LoginComponent - QR pair mode", () => {
             fakeApi.pollQrPair = vi.fn(() => new Promise(() => {}));
 
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
 
             await act(async () => {
                 await scannerProps.current.onScan(id);
@@ -715,12 +715,12 @@ describe("LoginComponent - QR pair mode", () => {
             expect(screen.getByRole("status")).toBeDefined();
 
             await act(async () => {
-                fireEvent.click(screen.getByRole("button", { name: "Annuler" }));
+                fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
             });
 
             // Overlay gone, scan button visible again (password mode)
             expect(screen.queryByRole("status")).toBeNull();
-            expect(screen.getByText(/Scanner un QR code/i)).toBeDefined();
+            expect(screen.getByText(/Scan a QR code/i)).toBeDefined();
         });
     });
 
@@ -737,7 +737,7 @@ describe("LoginComponent - QR pair mode", () => {
                 <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />
             );
 
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
 
             await act(async () => {
                 await scannerProps.current.onScan(id);
@@ -760,7 +760,7 @@ describe("LoginComponent - QR pair mode", () => {
                 <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />
             );
 
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
 
             await act(async () => {
                 await scannerProps.current.onScan(id);
@@ -785,56 +785,56 @@ describe("LoginComponent - QR pair mode", () => {
         it("shows 'already claimed' on HTTP 409", async () => {
             claimReject({ response: { status: 409 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/déjà été utilisé/);
+            expect(screen.getByRole("alert").textContent).toMatch(/already been used/);
         });
 
         it("shows 'pairing not found' on HTTP 404", async () => {
             claimReject({ response: { status: 404 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/n'est plus valide/);
+            expect(screen.getByRole("alert").textContent).toMatch(/no longer valid/);
         });
 
         it("shows 'pairing expired' on HTTP 410", async () => {
             claimReject({ response: { status: 410 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/expiré/);
+            expect(screen.getByRole("alert").textContent).toMatch(/expired/);
         });
 
         it("shows 'rate limited' on HTTP 429", async () => {
             claimReject({ response: { status: 429 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/Trop de tentatives/);
+            expect(screen.getByRole("alert").textContent).toMatch(/Too many attempts/);
         });
 
         it("prefers apiCode (set by useApi.beforeError) over status", async () => {
             // Status 500 alone would fall back to claimError, but apiCode wins
             claimReject({ apiCode: "pairing_not_claimable", response: { status: 500 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/déjà été utilisé/);
+            expect(screen.getByRole("alert").textContent).toMatch(/already been used/);
         });
 
         it("falls back to claimError on unmapped status", async () => {
             claimReject({ response: { status: 502 } });
             render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
-            expect(screen.getByRole("alert").textContent).toMatch(/revendiquer/);
+            expect(screen.getByRole("alert").textContent).toMatch(/Failed to claim/);
         });
 
         it("uses a custom getQrErrorLabel when provided", async () => {
@@ -849,7 +849,7 @@ describe("LoginComponent - QR pair mode", () => {
                     getQrErrorLabel={getQrErrorLabel}
                 />
             );
-            fireEvent.click(screen.getByText(/Scanner un QR code/i));
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
             await act(async () => { await scannerProps.current.onScan(id); });
 
             expect(getQrErrorLabel).toHaveBeenCalled();
@@ -919,7 +919,7 @@ describe("LoginComponent - device-pick post-login flow", () => {
     const fillAndSubmitLogin = (container) => {
         fireEvent.change(emailInput(container), { target: { value: "u@x.com" } });
         fireEvent.change(passwordInput(container), { target: { value: "secret" } });
-        fireEvent.click(screen.getByRole("button", { name: /Se connecter/i }));
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
     };
 
     it("renders DevicePicker after login when needsDevicePick=true with existing devices", async () => {
@@ -945,7 +945,7 @@ describe("LoginComponent - device-pick post-login flow", () => {
         fillAndSubmitLogin(container);
 
         await waitFor(() => {
-            expect(screen.getByText(/Quel appareil utilisez-vous/i)).toBeDefined();
+            expect(screen.getByText(/Which device are you using/i)).toBeDefined();
         });
         // Device card visible
         expect(screen.getByText("mon iPhone")).toBeDefined();
@@ -972,10 +972,10 @@ describe("LoginComponent - device-pick post-login flow", () => {
         fillAndSubmitLogin(container);
 
         await waitFor(() => {
-            expect(screen.getByText(/Quel appareil utilisez-vous/i)).toBeDefined();
+            expect(screen.getByText(/Which device are you using/i)).toBeDefined();
         });
         // The new-device form is rendered directly.
-        expect(screen.getByText("Nouvel appareil")).toBeDefined();
+        expect(screen.getByText("New device")).toBeDefined();
     });
 
     it("calls onSuccess with the original login payload after picking an existing device", async () => {
@@ -1035,7 +1035,7 @@ describe("LoginComponent - device-pick post-login flow", () => {
         fillAndSubmitLogin(container);
 
         await waitFor(() => {
-            expect(screen.getByText("Nouvel appareil")).toBeDefined();
+            expect(screen.getByText("New device")).toBeDefined();
         });
 
         // The DevicePicker's nested <Input> may not be using the
@@ -1125,6 +1125,6 @@ describe("LoginComponent - device-pick post-login flow", () => {
             expect(onSuccess).toHaveBeenCalled();
         });
         // No picker rendered.
-        expect(screen.queryByText(/Quel appareil utilisez-vous/i)).toBeNull();
+        expect(screen.queryByText(/Which device are you using/i)).toBeNull();
     });
 });

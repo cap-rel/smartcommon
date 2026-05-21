@@ -59,8 +59,8 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "Une case doit être cochée.",
-    minError: (min) => `${min} cases doivent être cochées au minimum.`,
-    maxError: (max) => `${max} cases doivent être cochées au maximum.`,
-    exactError: (exact) => `Exactement ${exact} cases doivent être cochées.`,
+    requiredError: "One box must be checked.",
+    minError: (min) => `At least ${min} boxes must be checked.`,
+    maxError: (max) => `At most ${max} boxes must be checked.`,
+    exactError: (exact) => `Exactly ${exact} boxes must be checked.`,
 };

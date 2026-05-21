@@ -50,5 +50,5 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "Ce champ doit être coché.",
+    requiredError: "This field must be checked.",
 };

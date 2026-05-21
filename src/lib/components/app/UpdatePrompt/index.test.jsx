@@ -82,9 +82,9 @@ describe("UpdatePrompt", () => {
             mockHookState.updateAvailable = true;
             render(<UpdatePrompt variant="banner" />);
 
-            expect(screen.getByText("Mise à jour disponible")).toBeDefined();
-            expect(screen.getByText("Une nouvelle version est disponible.")).toBeDefined();
-            expect(screen.getByRole("button", { name: /Rafraîchir/ })).toBeDefined();
+            expect(screen.getByText("Update available")).toBeDefined();
+            expect(screen.getByText("A new version is available.")).toBeDefined();
+            expect(screen.getByRole("button", { name: /Refresh/ })).toBeDefined();
         });
 
         it("merges custom labels over defaults", () => {
@@ -97,7 +97,7 @@ describe("UpdatePrompt", () => {
             );
 
             expect(screen.getByText("Update !")).toBeDefined();
-            expect(screen.getByText("Une nouvelle version est disponible.")).toBeDefined();
+            expect(screen.getByText("A new version is available.")).toBeDefined();
             expect(screen.getByRole("button", { name: /Now/ })).toBeDefined();
         });
 
@@ -120,7 +120,7 @@ describe("UpdatePrompt", () => {
             mockHookState.updateAvailable = true;
             render(<UpdatePrompt variant="banner" />);
 
-            fireEvent.click(screen.getByRole("button", { name: /Rafraîchir/ }));
+            fireEvent.click(screen.getByRole("button", { name: /Refresh/ }));
 
             expect(mockHookState.applyUpdate).toHaveBeenCalledTimes(1);
         });
@@ -130,7 +130,7 @@ describe("UpdatePrompt", () => {
             mockHookState.isApplying = true;
             render(<UpdatePrompt variant="banner" />);
 
-            const button = screen.getByRole("button", { name: /Rafraîchir/ });
+            const button = screen.getByRole("button", { name: /Refresh/ });
             expect(button.disabled).toBe(true);
         });
     });
@@ -146,15 +146,15 @@ describe("UpdatePrompt", () => {
             mockHookState.updateAvailable = true;
             render(<UpdatePrompt variant="modal" />);
 
-            expect(screen.getByText("Mise à jour disponible")).toBeDefined();
-            expect(screen.getByText("Une nouvelle version est disponible.")).toBeDefined();
+            expect(screen.getByText("Update available")).toBeDefined();
+            expect(screen.getByText("A new version is available.")).toBeDefined();
         });
 
         it("calls applyUpdate when reload button is clicked", () => {
             mockHookState.updateAvailable = true;
             render(<UpdatePrompt variant="modal" />);
 
-            fireEvent.click(screen.getByRole("button", { name: /Rafraîchir/ }));
+            fireEvent.click(screen.getByRole("button", { name: /Refresh/ }));
 
             expect(mockHookState.applyUpdate).toHaveBeenCalledTimes(1);
         });
@@ -164,7 +164,7 @@ describe("UpdatePrompt", () => {
             mockHookState.isApplying = true;
             render(<UpdatePrompt variant="modal" />);
 
-            const button = screen.getByRole("button", { name: /Rafraîchir/ });
+            const button = screen.getByRole("button", { name: /Refresh/ });
             expect(button.disabled).toBe(true);
         });
     });

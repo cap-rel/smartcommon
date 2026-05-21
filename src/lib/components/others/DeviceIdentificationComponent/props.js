@@ -49,20 +49,20 @@ export const defaultProps = {
 };
 
 export const DEFAULT_LABELS = {
-    title: "Identification de l'appareil",
+    title: "Device identification",
     devicesDescription:
-        "Sélectionnez un des appareils enregistrés sur votre compte, "
-        + "ou créez-en un nouveau pour cet appareil.",
+        "Select one of the devices registered on your account, "
+        + "or create a new one for this device.",
     noDevicesDescription:
-        "Aucun appareil n'est enregistré sur votre compte. "
-        + "Donnez un nom à cet appareil pour l'enregistrer.",
-    devicesCheckerLabel: "Choisir un appareil",
-    noDeviceLabel: "Nouvel appareil",
-    newDeviceInputLabel: "Nom de l'appareil",
+        "No device is registered on your account. "
+        + "Name this device to register it.",
+    devicesCheckerLabel: "Choose a device",
+    noDeviceLabel: "New device",
+    newDeviceInputLabel: "Device name",
     newDeviceInputHelp:
-        "Choisissez un nom qui vous permettra de reconnaître "
-        + "cet appareil parmi les autres (ex : iPhone Eric).",
-    newDeviceInputPlaceholder: "Mon appareil",
-    submitLabel: "Valider",
-    identifyError: "Impossible d'enregistrer l'appareil. Vérifiez votre connexion.",
+        "Choose a name that will let you recognise "
+        + "this device among others (e.g. Eric's iPhone).",
+    newDeviceInputPlaceholder: "My device",
+    submitLabel: "Validate",
+    identifyError: "Failed to register the device. Check your connection.",
 };

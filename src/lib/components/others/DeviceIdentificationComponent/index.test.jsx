@@ -78,10 +78,10 @@ describe("DeviceIdentificationComponent", () => {
             fakeApi.user = { id: 1 }; // no deviceOptions
             render(<DeviceIdentificationComponent onSuccess={() => {}} />);
 
-            expect(screen.getByText(/Aucun appareil n'est enregistré/)).toBeDefined();
-            expect(screen.getByLabelText(/Nom de l'appareil/i)).toBeDefined();
+            expect(screen.getByText(/No device is registered/)).toBeDefined();
+            expect(screen.getByLabelText(/Device name/i)).toBeDefined();
             // No device picker visible
-            expect(screen.queryByLabelText(/Choisir un appareil/i)).toBeNull();
+            expect(screen.queryByLabelText(/Choose a device/i)).toBeNull();
         });
 
         it("submits with empty uuid and the label entered by the user", async () => {
@@ -94,7 +94,7 @@ describe("DeviceIdentificationComponent", () => {
             const input = container.querySelector('input[name="label"]');
             fireEvent.change(input, { target: { value: "iPhone Eric" } });
 
-            fireEvent.click(screen.getByRole("button", { name: /Valider/i }));
+            fireEvent.click(screen.getByRole("button", { name: /Validate/i }));
 
             await waitFor(() => {
                 expect(fakeApi.identifyDevice).toHaveBeenCalledTimes(1);
@@ -119,10 +119,10 @@ describe("DeviceIdentificationComponent", () => {
             };
             render(<DeviceIdentificationComponent onSuccess={() => {}} />);
 
-            expect(screen.getByText(/Sélectionnez un des appareils/)).toBeDefined();
+            expect(screen.getByText(/Select one of the devices/)).toBeDefined();
             expect(screen.getByText("Tablet 1")).toBeDefined();
             expect(screen.getByText("Tablet 2")).toBeDefined();
-            expect(screen.getByText("Nouvel appareil")).toBeDefined();
+            expect(screen.getByText("New device")).toBeDefined();
         });
 
         it("hides the label input until the user picks 'new device'", () => {
@@ -137,8 +137,8 @@ describe("DeviceIdentificationComponent", () => {
             // Initially no label input (no selection yet)
             expect(container.querySelector('input[name="label"]')).toBeNull();
 
-            // Pick "Nouvel appareil"
-            const newDeviceRadio = screen.getByLabelText("Nouvel appareil");
+            // Pick "New device"
+            const newDeviceRadio = screen.getByLabelText("New device");
             fireEvent.click(newDeviceRadio);
 
             expect(container.querySelector('input[name="label"]')).not.toBeNull();
@@ -153,7 +153,7 @@ describe("DeviceIdentificationComponent", () => {
             render(<DeviceIdentificationComponent onSuccess={onSuccess} />);
 
             fireEvent.click(screen.getByLabelText("Tablet 1"));
-            fireEvent.click(screen.getByRole("button", { name: /Valider/i }));
+            fireEvent.click(screen.getByRole("button", { name: /Validate/i }));
 
             await waitFor(() => {
                 expect(fakeApi.identifyDevice).toHaveBeenCalledTimes(1);
@@ -163,7 +163,7 @@ describe("DeviceIdentificationComponent", () => {
             expect(body.label).toBe("");
         });
 
-        it("clears the label when switching back from 'new device' to an existing one", () => {
+        it("clears the label when switching back from 'New device' to an existing one", () => {
             fakeApi.user = {
                 id: 1,
                 deviceOptions: [{ uuid: "u-1", label: "Tablet 1" }],
@@ -172,8 +172,8 @@ describe("DeviceIdentificationComponent", () => {
                 <DeviceIdentificationComponent onSuccess={() => {}} />
             );
 
-            // Pick "Nouvel appareil", then type
-            fireEvent.click(screen.getByLabelText("Nouvel appareil"));
+            // Pick "New device", then type
+            fireEvent.click(screen.getByLabelText("New device"));
             const input = container.querySelector('input[name="label"]');
             fireEvent.change(input, { target: { value: "typed before swap" } });
 
@@ -181,8 +181,8 @@ describe("DeviceIdentificationComponent", () => {
             fireEvent.click(screen.getByLabelText("Tablet 1"));
             expect(container.querySelector('input[name="label"]')).toBeNull();
 
-            // Switch back to "Nouvel appareil" -> input re-appears, empty
-            fireEvent.click(screen.getByLabelText("Nouvel appareil"));
+            // Switch back to "New device" -> input re-appears, empty
+            fireEvent.click(screen.getByLabelText("New device"));
             const reappeared = container.querySelector('input[name="label"]');
             expect(reappeared.value).toBe("");
         });
@@ -201,10 +201,10 @@ describe("DeviceIdentificationComponent", () => {
             fireEvent.change(container.querySelector('input[name="label"]'), {
                 target: { value: "x" },
             });
-            fireEvent.click(screen.getByRole("button", { name: /Valider/i }));
+            fireEvent.click(screen.getByRole("button", { name: /Validate/i }));
 
             await waitFor(() => {
-                expect(screen.getByRole("alert").textContent).toMatch(/Impossible/);
+                expect(screen.getByRole("alert").textContent).toMatch(/Failed to register the device/);
             });
             expect(onError).toHaveBeenCalled();
         });
@@ -225,7 +225,7 @@ describe("DeviceIdentificationComponent", () => {
             fireEvent.change(container.querySelector('input[name="label"]'), {
                 target: { value: "x" },
             });
-            fireEvent.click(screen.getByRole("button", { name: /Valider/i }));
+            fireEvent.click(screen.getByRole("button", { name: /Validate/i }));
 
             await waitFor(() => {
                 expect(getErrorLabel).toHaveBeenCalled();
@@ -249,7 +249,7 @@ describe("DeviceIdentificationComponent", () => {
             expect(screen.getByText("Pick a device")).toBeDefined();
             expect(screen.getByRole("button", { name: "OK" })).toBeDefined();
             // Unchanged labels still come from defaults
-            expect(screen.getByText(/Nom de l'appareil/i)).toBeDefined();
+            expect(screen.getByText(/Device name/i)).toBeDefined();
         });
     });
 
@@ -293,7 +293,7 @@ describe("DeviceIdentificationComponent", () => {
             fireEvent.change(container.querySelector('input[name="label"]'), {
                 target: { value: "x" },
             });
-            fireEvent.click(screen.getByRole("button", { name: /Valider/i }));
+            fireEvent.click(screen.getByRole("button", { name: /Validate/i }));
 
             await waitFor(() => {
                 expect(fakeApi.identifyDevice).toHaveBeenCalled();

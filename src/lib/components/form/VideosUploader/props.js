@@ -62,15 +62,15 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "Vous devez enregistrer au moins 1 vidéo.",
-    minError: (min) => `Vous devez prendre ${min} vidéos minimum.`,
-    maxError: (max) => `Vous ne pouvez pas prendre plus de ${max} vidéos. Veuillez en supprimer.`,
-    exactError: (exact) => `Vous devez prendre exactement ${exact} vidéos.`,
-    geolocationError: "Echec de géolocalisation de la capture.",
-    videoPopupTitle: (index) => `Vidéo ${index + 1}`,
-    videoPopupTitleSingle: "Vidéo enregistrée",
-    titleField: "Titre",
+    requiredError: "You must record at least 1 video.",
+    minError: (min) => `You must take at least ${min} videos.`,
+    maxError: (max) => `You cannot take more than ${max} videos. Please delete some.`,
+    exactError: (exact) => `You must take exactly ${exact} videos.`,
+    geolocationError: "Failed to get capture location.",
+    videoPopupTitle: (index) => `Video ${index + 1}`,
+    videoPopupTitleSingle: "Saved video",
+    titleField: "Title",
     descriptionField: "Description",
-    deleteButton: "Supprimer la vidéo",
-    emptyState: "Aucune vidéo enregistrée",
+    deleteButton: "Delete video",
+    emptyState: "No video saved",
 };

@@ -63,15 +63,15 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "Vous devez enregistrer au moins 1 audio.",
-    minError: (min) => `Vous devez enregistrer ${min} audios minimum.`,
-    maxError: (max) => `Vous ne pouvez pas enregistrer plus de ${max} audios. Veuillez en supprimer.`,
-    exactError: (exact) => `Vous devez enregistrer exactement ${exact} audios.`,
-    geolocationError: "Echec de géolocalisation de la capture.",
+    requiredError: "You must record at least 1 audio.",
+    minError: (min) => `You must record at least ${min} audios.`,
+    maxError: (max) => `You cannot record more than ${max} audios. Please delete some.`,
+    exactError: (exact) => `You must record exactly ${exact} audios.`,
+    geolocationError: "Failed to get capture location.",
     audioPopupTitle: (index) => `Audio ${index + 1}`,
-    audioPopupTitleSingle: "Audio enregistré",
-    titleField: "Titre",
+    audioPopupTitleSingle: "Saved audio",
+    titleField: "Title",
     descriptionField: "Description",
-    deleteButton: "Supprimer l'audio",
-    emptyState: "Aucun audio enregistré",
+    deleteButton: "Delete audio",
+    emptyState: "No audio saved",
 };

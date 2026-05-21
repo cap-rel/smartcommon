@@ -35,10 +35,10 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "Vous devez géolocaliser.",
-    locateSuccess: "Succès de la géolocalisation",
-    locateError: "Erreur de la géolocalisation",
-    locateButton: "Géolocaliser",
-    savedState: "Enregistrée",
-    emptyState: "Aucune Localisation enregistrée",
+    requiredError: "You must locate yourself.",
+    locateSuccess: "Location successful",
+    locateError: "Location error",
+    locateButton: "Locate",
+    savedState: "Saved",
+    emptyState: "No location saved",
 };

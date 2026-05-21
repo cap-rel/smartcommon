@@ -52,21 +52,21 @@ describe("formats/Files - display=count variant", () => {
         const { container } = render(
             <Files display="count" type="videos" value={[]} />
         );
-        expect(container.textContent.trim()).toBe("0 vidéos");
+        expect(container.textContent.trim()).toBe("0 videos");
     });
 
     it("defaults type to `files` when omitted", () => {
         const { container } = render(
             <Files display="count" value={makeFiles(2)} />
         );
-        expect(container.textContent.trim()).toBe("2 fichiers");
+        expect(container.textContent.trim()).toBe("2 files");
     });
 
-    it("renders `1 fichier` (singular) for type=files with one item", () => {
+    it("renders `1 file` (singular) for type=files with one item", () => {
         const { container } = render(
             <Files display="count" type="files" value={makeFiles(1)} />
         );
-        expect(container.textContent.trim()).toBe("1 fichier");
+        expect(container.textContent.trim()).toBe("1 file");
     });
 
     it("handles `audios` and `videos` types", () => {
@@ -78,7 +78,7 @@ describe("formats/Files - display=count variant", () => {
         const { container: c2 } = render(
             <Files display="count" type="videos" value={makeFiles(7)} />
         );
-        expect(c2.textContent.trim()).toBe("7 vidéos");
+        expect(c2.textContent.trim()).toBe("7 videos");
     });
 
     it("respects a consumer-provided labels.count override for the matching type", () => {
@@ -105,20 +105,20 @@ describe("formats/Files - display=count variant", () => {
                 value={{ name: "x.pdf", url: "/x.pdf" }}
             />
         );
-        expect(container.textContent.trim()).toBe("1 fichier");
+        expect(container.textContent.trim()).toBe("1 file");
     });
 
     it("does not regress list mode: display default stays `list`", () => {
         const { container } = render(<Files value={makeFiles(3)} />);
-        // List mode shows file names; count mode would show "3 fichiers".
+        // List mode shows file names; count mode would show "3 files".
         expect(container.textContent).toContain("f-0.pdf");
-        expect(container.textContent).not.toBe("3 fichiers");
+        expect(container.textContent).not.toBe("3 files");
     });
 
     it("falls back to the `files` label if an unknown type is passed", () => {
         const { container } = render(
             <Files display="count" type="no-such-type" value={makeFiles(2)} />
         );
-        expect(container.textContent.trim()).toBe("2 fichiers");
+        expect(container.textContent.trim()).toBe("2 files");
     });
 });

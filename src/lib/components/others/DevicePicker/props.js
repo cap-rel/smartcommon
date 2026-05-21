@@ -93,30 +93,30 @@ export const defaultProps = {
 };
 
 export const DEFAULT_LABELS = {
-    title: "Quel appareil utilisez-vous ?",
+    title: "Which device are you using?",
     descriptionWithDevices:
-        "Choisissez un appareil existant ou ajoutez-en un nouveau pour cette application.",
+        "Pick an existing device or add a new one for this application.",
     descriptionEmpty:
-        "Donnez un nom à cet appareil pour le retrouver facilement plus tard.",
-    newDeviceButton: "+ Nouvel appareil",
-    newDeviceTitle: "Nouvel appareil",
-    labelInputLabel: "Nom de l'appareil",
-    labelInputPlaceholder: "Mon iPhone",
+        "Name this device so you can find it easily later.",
+    newDeviceButton: "+ New device",
+    newDeviceTitle: "New device",
+    labelInputLabel: "Device name",
+    labelInputPlaceholder: "My iPhone",
     labelInputHelp:
-        "Ce nom regroupera toutes les applications installées sur ce téléphone (par exemple).",
-    iconSelectLabel: "Type d'appareil",
-    iconPhone: "Téléphone",
-    iconTablet: "Tablette",
-    iconLaptop: "Ordinateur portable",
-    iconDesktop: "Ordinateur fixe",
-    sessionsSingular: "1 application connectée",
-    sessionsPlural: "{count} applications connectées",
-    lastSeenPrefix: "Dernier accès :",
-    submitNew: "Créer cet appareil",
-    submitPick: "Utiliser cet appareil",
-    cancel: "Annuler",
-    validationLabelRequired: "Donnez un nom à cet appareil.",
-    validationLabelTooLong: "Le nom est trop long (100 caractères maximum).",
+        "This name will group all applications installed on this phone (for example).",
+    iconSelectLabel: "Device type",
+    iconPhone: "Phone",
+    iconTablet: "Tablet",
+    iconLaptop: "Laptop",
+    iconDesktop: "Desktop",
+    sessionsSingular: "1 connected application",
+    sessionsPlural: "{count} connected applications",
+    lastSeenPrefix: "Last access:",
+    submitNew: "Create this device",
+    submitPick: "Use this device",
+    cancel: "Cancel",
+    validationLabelRequired: "Name this device.",
+    validationLabelTooLong: "Name is too long (100 characters maximum).",
 };
 
 // Normalises an icon string to one of the supported values. Anything

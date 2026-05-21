@@ -32,12 +32,12 @@ export const defaultProps = {
 };
 
 export const DEFAULT_LABELS = {
-    title: "Scanner un code",
-    cameraPermissionDenied: "Permission caméra refusée. Autorisez l'accès dans les paramètres du navigateur.",
-    cameraError: "Impossible d'accéder à la caméra.",
-    enterManually: "Saisir manuellement",
+    title: "Scan a code",
+    cameraPermissionDenied: "Camera permission denied. Allow access in your browser settings.",
+    cameraError: "Cannot access the camera.",
+    enterManually: "Enter manually",
     manualPlaceholder: "Code...",
-    validate: "Valider",
+    validate: "Validate",
 };
 
 // Format names accepted by `formats` prop. Resolved at runtime to

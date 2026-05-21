@@ -49,9 +49,9 @@ export const propTypes = {
 };
 
 export const DEFAULT_LABELS = {
-    requiredError: "1 élément doit être sélectionné au minimum.",
-    minError: (min) => `${min} éléments doivent être sélectionnés au minimum.`,
-    maxError: (max) => `${max} éléments doivent être sélectionnés au maximum.`,
-    exactError: (exact) => `Exactement ${exact} éléments doivent être sélectionnés.`,
-    notAnOptionError: "La valeur sélectionnée ne fait pas partie des options",
+    requiredError: "At least one item must be selected.",
+    minError: (min) => `At least ${min} items must be selected.`,
+    maxError: (max) => `At most ${max} items must be selected.`,
+    exactError: (exact) => `Exactly ${exact} items must be selected.`,
+    notAnOptionError: "The selected value is not among the options",
 };
