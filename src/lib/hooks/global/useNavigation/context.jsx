@@ -1,4 +1,4 @@
-import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { isFunction, isPlainObject, isUndefined, last } from "lodash";
 import { useEffect } from "react";
 
@@ -42,7 +42,11 @@ export const useNavigationContext = () => {
 
     const navigate = useNavigate();
 
-    const params = useParams();
+    // Route params are NOT resolved here on purpose: NavigationProvider sits
+    // ABOVE <Routes>, so useParams() at this level returns {}. The active
+    // route match is only available in the leaf component, so params are
+    // read in useNavigation() (./index.jsx). useSearchParams() is fine
+    // here because it reads the URL query string, not the route match.
     const searchParams = useSearchParams();
 
     const navBuilder = () => {
@@ -73,7 +77,6 @@ export const useNavigationContext = () => {
     // ---------------------- return ----------------------
 
     return  {
-        params,
         searchParams,
         location: filteredLocation,
         // prevLocation: history.length > 2 ? history[history.length - 2] : undefined,
