@@ -14,6 +14,8 @@ const { padInstance, uploadMock, queueMock, locateMock } = vi.hoisted(() => ({
         clear: () => {},
         isEmpty: () => false,
         toDataURL: () => "data:image/png;base64,FAKE",
+        toData: () => [],
+        fromData: () => {},
     },
     uploadMock: {
         uploadFile: () => Promise.resolve({}),
@@ -112,6 +114,50 @@ beforeAll(() => {
         cb(new Blob(["fake-png"], { type: "image/png" }));
     };
 });
+
+// Controllable ResizeObserver: tests that need to fire the callback
+// drive it through resizeObserverState. happy-dom ships a no-op RO; we
+// replace it so observe() captures the target + callback and the test
+// can trigger size changes deterministically.
+const resizeObserverState = {
+    observed: [],
+    callbacks: [],
+};
+
+beforeAll(() => {
+    globalThis.ResizeObserver = class {
+        constructor(cb) {
+            this._cb = cb;
+            resizeObserverState.callbacks.push(cb);
+        }
+        observe(el) {
+            resizeObserverState.observed.push({ el, cb: this._cb });
+        }
+        unobserve(el) {
+            resizeObserverState.observed = resizeObserverState.observed.filter(
+                (o) => o.el !== el
+            );
+        }
+        disconnect() {
+            resizeObserverState.observed = resizeObserverState.observed.filter(
+                (o) => o.cb !== this._cb
+            );
+            resizeObserverState.callbacks = resizeObserverState.callbacks.filter(
+                (c) => c !== this._cb
+            );
+        }
+    };
+});
+
+// Helper: pretend the canvas now reports a given (offsetWidth, offsetHeight),
+// then fire every observed callback so the component reacts.
+const fireResize = (width, height) => {
+    for (const { el, cb } of resizeObserverState.observed) {
+        Object.defineProperty(el, "offsetWidth", { configurable: true, value: width });
+        Object.defineProperty(el, "offsetHeight", { configurable: true, value: height });
+        cb([{ target: el, contentRect: { width, height } }]);
+    }
+};
 
 import { SignaturePad } from "./index";
 
@@ -386,5 +432,127 @@ describe("SignaturePad - onResolved subscription", () => {
             />
         );
         expect(queueMock.onResolved).not.toHaveBeenCalled();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// ResizeObserver: bug "canvas mounted while parent display:none has a 0x0
+// internal buffer, so drawing later does not show". The fix is to observe
+// the canvas via ResizeObserver and re-size the internal buffer whenever
+// the visible size changes (especially 0 -> real value).
+// ---------------------------------------------------------------------------
+
+describe("SignaturePad - resize handling (canvas mounted hidden then shown)", () => {
+    beforeEach(() => {
+        resizeObserverState.observed = [];
+        resizeObserverState.callbacks = [];
+        padInstance.toData = vi.fn(() => []);
+        padInstance.fromData = vi.fn();
+    });
+
+    it("observes the canvas via ResizeObserver at mount", () => {
+        const { container } = render(
+            <SignaturePad
+                name="sig"
+                value={{ src: "", signer: "" }}
+                onChange={() => {}}
+            />
+        );
+        const canvas = container.querySelector("canvas");
+        expect(canvas).toBeTruthy();
+        // The component must have called ResizeObserver.observe(canvas).
+        const observed = resizeObserverState.observed.find((o) => o.el === canvas);
+        expect(observed).toBeTruthy();
+    });
+
+    it("sizes the canvas internal buffer when the parent becomes visible (0 -> real size)", () => {
+        const { container } = render(
+            <SignaturePad
+                name="sig"
+                value={{ src: "", signer: "" }}
+                onChange={() => {}}
+            />
+        );
+        const canvas = container.querySelector("canvas");
+        // happy-dom has no layout: offsetWidth/Height are 0 by default,
+        // which faithfully reproduces the production bug (parent hidden).
+        expect(canvas.width).toBe(0);
+        expect(canvas.height).toBe(0);
+
+        // Parent becomes visible: offsetWidth/Height now report real values.
+        // The fix must size canvas.width/height from these via the ResizeObserver
+        // callback.
+        act(() => fireResize(400, 200));
+
+        // devicePixelRatio defaults to 1 in happy-dom.
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        expect(canvas.width).toBe(400 * ratio);
+        expect(canvas.height).toBe(200 * ratio);
+    });
+
+    it("does NOT touch the canvas buffer if offsetWidth and offsetHeight are still 0", () => {
+        const { container } = render(
+            <SignaturePad
+                name="sig"
+                value={{ src: "", signer: "" }}
+                onChange={() => {}}
+            />
+        );
+        const canvas = container.querySelector("canvas");
+
+        // Force a manual non-zero buffer to detect accidental overwrites.
+        canvas.width = 99;
+        canvas.height = 99;
+
+        // Still hidden: RO fires with (0, 0). The component must skip resizing.
+        act(() => fireResize(0, 0));
+
+        expect(canvas.width).toBe(99);
+        expect(canvas.height).toBe(99);
+    });
+
+    it("preserves the existing drawing across a resize (toData then fromData)", () => {
+        // Override BEFORE render: the fake SignaturePad copies methods
+        // from padInstance via Object.assign at construction time, so
+        // reassigning after render would not propagate to the live pad.
+        const fakeStrokes = [{ points: [{ x: 1, y: 1 }] }];
+        padInstance.toData = vi.fn(() => fakeStrokes);
+        padInstance.fromData = vi.fn();
+
+        render(
+            <SignaturePad
+                name="sig"
+                value={{ src: "X", signer: "" }}
+                onChange={() => {}}
+            />
+        );
+
+        act(() => fireResize(400, 200));
+
+        // The fix must snapshot the strokes before resizing and restore
+        // them right after, so the user does not lose the in-progress
+        // signature when the layout reflows.
+        expect(padInstance.toData).toHaveBeenCalled();
+        expect(padInstance.fromData).toHaveBeenCalledWith(fakeStrokes);
+    });
+
+    it("disconnects / unobserves on unmount (no leaked observer)", () => {
+        const { container, unmount } = render(
+            <SignaturePad
+                name="sig"
+                value={{ src: "", signer: "" }}
+                onChange={() => {}}
+            />
+        );
+        const canvas = container.querySelector("canvas");
+        expect(
+            resizeObserverState.observed.find((o) => o.el === canvas)
+        ).toBeTruthy();
+
+        unmount();
+
+        expect(
+            resizeObserverState.observed.find((o) => o.el === canvas)
+        ).toBeFalsy();
     });
 });

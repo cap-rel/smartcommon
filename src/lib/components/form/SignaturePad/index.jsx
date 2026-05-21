@@ -159,6 +159,46 @@ export const SignaturePad = (props) => {
     }
   }, [blocked]);
 
+  // Keep the canvas internal buffer in sync with the visible size.
+  //
+  // Bug fixed here: when the SignaturePad is mounted while its parent
+  // is display:none (or in a closed accordion, hidden tab, etc.),
+  // canvas.offsetWidth/offsetHeight are 0 at mount time and the initial
+  // sizing in the mount effect above ends up with a 0x0 internal
+  // buffer. Once the parent becomes visible, the canvas displays at
+  // its CSS size but signature_pad draws into the 0x0 buffer - the
+  // strokes never appear. The ResizeObserver below re-sizes the buffer
+  // every time the visible size changes (especially 0 -> real value)
+  // and restores the in-progress drawing if any. Works for any
+  // mount-while-hidden scenario (modal, accordion, tab, responsive
+  // layout reflow, device rotation, ...).
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || typeof ResizeObserver === "undefined") {
+      return undefined;
+    }
+    const ratio = Math.max(window.devicePixelRatio || 1, 1);
+    const ro = new ResizeObserver(() => {
+      const w = canvas.offsetWidth;
+      const h = canvas.offsetHeight;
+      // Still hidden (parent display:none, accordion closed, ...).
+      // Skip to avoid wiping a previously-correct buffer with zeros.
+      if (w === 0 && h === 0) {
+        return;
+      }
+      const pad = padRef.current;
+      const data = pad?.toData?.() ?? [];
+      canvas.width = w * ratio;
+      canvas.height = h * ratio;
+      canvas.getContext("2d").scale(ratio, ratio);
+      if (pad && data.length > 0) {
+        pad.fromData(data);
+      }
+    });
+    ro.observe(canvas);
+    return () => ro.disconnect();
+  }, []);
+
   // Convert the current canvas to a PNG Blob. Returns a Promise because
   // canvas.toBlob is callback-based; we adapt it once at the call site.
   const canvasToBlob = () => new Promise((resolve, reject) => {
