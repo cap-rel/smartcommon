@@ -197,7 +197,7 @@ export const samplePhotoType = {
         <div className="flex items-center gap-3 min-w-0">
             <Circle color="#10B981">{num}</Circle>
             <span className="text-sm truncate">
-                {a.payload?.targetPhotoId ? `→ ${a.payload.targetPhotoId}` : "(non lié)"}
+                {a.payload?.targetPhotoId ? `-> ${a.payload.targetPhotoId}` : "(non lié)"}
             </span>
         </div>
     ),
