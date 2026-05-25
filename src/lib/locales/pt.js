@@ -1,6 +1,11 @@
 // Portuguese locale bundle (European Portuguese / pt_PT by default,
 // vocabulary kept understandable to Brazilian users where possible).
 //
+// NEEDS NATIVE REVIEW before production use. First-pass translation
+// from English by an AI agent. Verify pt_PT vs pt_BR vocabulary
+// choices (utilizador/usuario, ficheiro/arquivo, ecra/tela,
+// guardar/salvar, etc.) match the target audience.
+//
 // MUST mirror the shape of `en.js` exactly: same keys, same function
 // signatures, same number of arguments. Translated text only. Maintain
 // proper Portuguese characters (á à â ã ç é ê í ó ô õ ú). Use only ASCII

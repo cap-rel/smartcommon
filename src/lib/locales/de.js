@@ -1,5 +1,9 @@
 // German locale bundle.
 //
+// NEEDS NATIVE REVIEW before production use. First-pass translation
+// from English by an AI agent. Verify business / Dolibarr-ERP idiom
+// fits the German audience.
+//
 // MUST mirror the shape of `en.js` exactly: same keys, same function
 // signatures, same number of arguments. Translated text only. Use proper
 // German characters (ä ö ü ß) and only ASCII punctuation (no curly quotes,

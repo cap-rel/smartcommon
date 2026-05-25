@@ -1,5 +1,9 @@
 // Polish locale bundle.
 //
+// NEEDS NATIVE REVIEW before production use. First-pass translation
+// from English by an AI agent. Polish plural agreement (3 forms) is
+// only approximated -- see plural note below.
+//
 // MUST mirror the shape of `en.js` exactly: same keys, same function
 // signatures, same number of arguments. Translated text only. Uses
 // proper Polish characters (a c e l n o s z z and uppercase). Use only

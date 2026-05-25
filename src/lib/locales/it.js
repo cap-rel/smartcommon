@@ -1,5 +1,9 @@
 // Italian locale bundle.
 //
+// NEEDS NATIVE REVIEW before production use. First-pass translation
+// from English by an AI agent. Verify business / Dolibarr-ERP idiom
+// fits the Italian audience.
+//
 // MUST mirror the shape of `en.js` exactly: same keys, same function
 // signatures, same number of arguments. Translated text only. Maintain
 // proper Italian accents (à è é ì ò ù). Use only ASCII punctuation

@@ -1,5 +1,9 @@
 // Spanish (Castilian, es_ES) locale bundle.
 //
+// NEEDS NATIVE REVIEW before production use. First-pass translation
+// from English by an AI agent. Verify business / Dolibarr-ERP idiom
+// fits the Spanish audience (Castilian vs Latin American nuances).
+//
 // MUST mirror the shape of `en.js` exactly: same keys, same function
 // signatures, same number of arguments. Translated text only. Use only
 // ASCII punctuation (no curly quotes, no ellipsis character, no em-dash,
