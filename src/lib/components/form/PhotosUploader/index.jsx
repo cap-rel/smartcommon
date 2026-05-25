@@ -534,6 +534,10 @@ export const PhotosUploader = (props) => {
                 type={`file`}
                 capture={isInputInCaptureMode}
                 onChange={e => addPhoto(e.target.files[0])}
+                // Stable E2E hook so tests can call setInputFiles on this
+                // specific input regardless of the surrounding DOM. Scoped
+                // by the consumer via a parent wrapper (e.g. formfield-X).
+                data-testid="photos-uploader-input"
                 hidden
             />
             {/* <Button { ...mergeProps("FloatingButton", props => ({

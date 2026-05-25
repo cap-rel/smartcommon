@@ -382,6 +382,11 @@ export const SignaturePad = (props) => {
             ...props,
             disabled: blocked || isSignatureValidated,
             buttonProps: {
+              // Stable hook for E2E tests so they can target the validate
+              // button without relying on icon or class names. Overridable
+              // via mergeProps("ValidateButton") if a consumer needs a more
+              // specific id.
+              "data-testid": "signaturepad-validate-button",
               ...props.buttonProps,
               // Visible only in upload mode: this is where the canvas is
               // converted to a PNG Blob and POSTed. In legacy dataURL mode
