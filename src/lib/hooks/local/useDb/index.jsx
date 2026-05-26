@@ -3,6 +3,9 @@ import { floor, forEach, keys } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 
+// For multi-version Dexie schemas with .upgrade() callbacks, use the
+// `Db` class directly (lib/utils/class/Db). This hook only exposes the
+// single-version API.
 export const useDb = ({ name, options = {}, version = 1, stores = {}, debug }) => {
     throwTypeError({ value: name, name: "Db name", type: ["string"], required: true });
     throwTypeError({ value: options, name: "Db options", type: ["plain object"] });
