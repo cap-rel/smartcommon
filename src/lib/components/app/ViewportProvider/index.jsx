@@ -4,12 +4,13 @@ import { log } from "lib/utils";
 
 import {
     DESKTOP_MEDIA_QUERY,
+    MOBILE_MAX_SHORT_SIDE_PX,
     VIEWPORT_PREFERENCE_KEY,
     ViewportContext,
 } from "./context";
 import { DEFAULT_LABELS, propTypes } from "./props";
 
-const VALID_PREFERENCES = ["auto", "desktop", "mobile"];
+const VALID_PREFERENCES = ["auto", "mobile", "tablet", "desktop"];
 
 const readStoredPreference = () => {
     if (typeof window === "undefined") return "auto";
@@ -23,16 +24,39 @@ const readStoredPreference = () => {
     return "auto";
 };
 
-const detectAuto = () => {
+// Public helper, exported so callers (DeviceIdentificationComponent,
+// settings panels...) can preselect a UI control without recomputing
+// the heuristic. Keep in sync with `resolveViewport` below.
+export const detectAutoViewport = () => {
     if (typeof window === "undefined") return "mobile";
     if (typeof window.matchMedia !== "function") return "mobile";
-    return window.matchMedia(DESKTOP_MEDIA_QUERY).matches ? "desktop" : "mobile";
+
+    // Primary discriminator: pointer type. Fine pointer (mouse / trackpad)
+    // means desktop UI semantics no matter the screen size. We
+    // intentionally rely on `(pointer: fine)` (the PRIMARY pointer) and
+    // NOT `(any-pointer: fine)`: an iPad with Magic Keyboard reports
+    // `(pointer: fine) = false` because touch remains primary, so it
+    // correctly stays in tablet mode. If Apple ever inverts this
+    // contract, iPad+keyboard would slide to desktop -- we accept that
+    // risk over the larger risk of misclassifying every iPad+keyboard
+    // user today.
+    if (window.matchMedia(DESKTOP_MEDIA_QUERY).matches) return "desktop";
+
+    // Coarse pointer path: split mobile vs tablet by physical screen
+    // short side (CSS px). `screen.width/height` is the device size, more
+    // stable than `window.innerWidth` which depends on the viewport.
+    const w = window.screen?.width ?? window.innerWidth ?? 0;
+    const h = window.screen?.height ?? window.innerHeight ?? 0;
+    const shortSide = Math.min(w, h);
+
+    return shortSide >= MOBILE_MAX_SHORT_SIDE_PX ? "tablet" : "mobile";
 };
 
 const resolveViewport = (preference) => {
     if (preference === "desktop") return "desktop";
+    if (preference === "tablet") return "tablet";
     if (preference === "mobile") return "mobile";
-    return detectAuto();
+    return detectAutoViewport();
 };
 
 export const ViewportProvider = ({ children, labels, onPreferenceChange }) => {
@@ -46,16 +70,25 @@ export const ViewportProvider = ({ children, labels, onPreferenceChange }) => {
     const confirmReloadMessage =
         labels?.confirmReloadMessage ?? DEFAULT_LABELS.confirmReloadMessage;
 
-    const setPreference = async (next) => {
+    // setPreference(next, { silent }):
+    //   silent=false (default) -> ask the user to confirm before reload
+    //   silent=true            -> skip the confirm (used right after
+    //                             DeviceIdentificationComponent where
+    //                             the user has just made the choice
+    //                             via the device picker)
+    const setPreference = async (next, options = {}) => {
         if (!VALID_PREFERENCES.includes(next)) {
             throw new Error(`Invalid viewport preference: ${next}`);
         }
         if (next === preference) return;
 
-        const ok = typeof window !== "undefined"
-            && typeof window.confirm === "function"
-            && window.confirm(confirmReloadMessage);
-        if (!ok) return;
+        const { silent = false } = options;
+        if (!silent) {
+            const ok = typeof window !== "undefined"
+                && typeof window.confirm === "function"
+                && window.confirm(confirmReloadMessage);
+            if (!ok) return;
+        }
 
         try {
             window.localStorage?.setItem(VIEWPORT_PREFERENCE_KEY, next);
@@ -80,6 +113,7 @@ export const ViewportProvider = ({ children, labels, onPreferenceChange }) => {
         () => ({
             viewport,
             isMobile: viewport === "mobile",
+            isTablet: viewport === "tablet",
             isDesktop: viewport === "desktop",
             preference,
             setPreference,

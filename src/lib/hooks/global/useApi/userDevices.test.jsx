@@ -64,13 +64,54 @@ describe("useApiContext - user-devices endpoints", () => {
         gstState.values.user = undefined;
     });
 
-    it("exposes the 5 user-device methods on the api object", () => {
+    it("exposes the 6 user-device methods on the api object", () => {
         const { result } = renderHook(() => useApiContext());
         expect(typeof result.current.listUserDevices).toBe("function");
         expect(typeof result.current.createUserDevice).toBe("function");
         expect(typeof result.current.linkUserDevice).toBe("function");
         expect(typeof result.current.renameUserDevice).toBe("function");
         expect(typeof result.current.deleteUserDevice).toBe("function");
+        expect(typeof result.current.setDeviceViewportMode).toBe("function");
+    });
+
+    it("setDeviceViewportMode POSTs account/user-devices/{id}/viewport-mode with the new mode", async () => {
+        kyState.post.mockReturnValue(
+            fakeJsonResponse({ id: 7, viewport_mode: "tablet" })
+        );
+
+        const { result } = renderHook(() => useApiContext());
+
+        let response;
+        await act(async () => {
+            response = await result.current.setDeviceViewportMode(7, "tablet");
+        });
+
+        expect(response).toEqual({ id: 7, viewport_mode: "tablet" });
+        expect(kyState.post).toHaveBeenCalledWith(
+            "account/user-devices/7/viewport-mode",
+            expect.objectContaining({
+                json: { viewport_mode: "tablet" },
+            })
+        );
+    });
+
+    it("setDeviceViewportMode forwards null to clear the stored mode", async () => {
+        kyState.post.mockReturnValue(
+            fakeJsonResponse({ id: 7, viewport_mode: null })
+        );
+
+        const { result } = renderHook(() => useApiContext());
+
+        await act(async () => {
+            await result.current.setDeviceViewportMode(7, null);
+        });
+
+        expect(kyState.post).toHaveBeenCalledWith(
+            "account/user-devices/7/viewport-mode",
+            expect.objectContaining({
+                json: { viewport_mode: null },
+            })
+        );
     });
 
     it("listUserDevices GETs account/user-devices", async () => {

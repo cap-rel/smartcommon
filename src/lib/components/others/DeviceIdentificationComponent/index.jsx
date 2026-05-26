@@ -1,9 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useContext } from "react";
 import { isEmpty } from "lodash";
 import { MdDevices } from "react-icons/md";
 
 import { useApi } from "lib/hooks";
 import { Input, Button, Checker } from "lib/components";
+import { detectAutoViewport } from "lib/components/app/ViewportProvider";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { twMerge } from "lib/utils";
 
 import { DEFAULT_LABELS, defaultProps, propTypes } from "./props";
@@ -17,6 +19,8 @@ export const DeviceIdentificationComponent = (props) => {
         icon: Icon = MdDevices,
         abortTimeoutMs = 15000,
         identifyTimeoutMs,
+        enableViewportMode = true,
+        defaultViewportMode,
         containerProps = {},
         formProps = {},
         iconWrapperProps = {},
@@ -25,6 +29,7 @@ export const DeviceIdentificationComponent = (props) => {
         descriptionProps = {},
         devicesCheckerProps = {},
         labelInputProps = {},
+        viewportModeCheckerProps = {},
         submitButtonProps = {},
         errorAlertProps = {},
         labels: userLabels = {},
@@ -34,11 +39,28 @@ export const DeviceIdentificationComponent = (props) => {
     const resolvedTimeoutMs = identifyTimeoutMs ?? abortTimeoutMs;
 
     const api = useApi();
+    // Read the viewport context directly (not via useViewport) to
+    // tolerate a missing ViewportProvider: in that case the context
+    // value is null and we silently skip the viewport sync after
+    // identification. useViewport() would throw, which is not what
+    // we want for a backward-compatible component.
+    const viewport = useContext(ViewportContext);
+
     const deviceOptions = api?.user?.deviceOptions;
+    const existingUserDevices = api?.user?.existingUserDevices;
     const hasDeviceOptions = !isEmpty(deviceOptions);
 
     const [label, setLabel] = useState("");
     const [uuid, setUuid] = useState("");
+    // viewportMode is the user's radio choice on the "new device"
+    // path. Pre-selected from `defaultViewportMode` if explicitly
+    // provided, otherwise from `detectAutoViewport()` (the same
+    // heuristic ViewportProvider uses internally). Computed once at
+    // mount via lazy initial state -- recomputing on every render
+    // would jitter the radio when the parent re-renders.
+    const [viewportMode, setViewportMode] = useState(
+        () => defaultViewportMode ?? detectAutoViewport(),
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
 
@@ -58,6 +80,27 @@ export const DeviceIdentificationComponent = (props) => {
         setUuid(value);
     }, [noDeviceValue]);
 
+    // Resolve the viewport_mode that smartcommon should apply after a
+    // successful identification:
+    //   - new device path : the value chosen via the radio
+    //   - existing device path : the viewport_mode stored on the
+    //     matching logical user_device (found by joining the picked
+    //     technical device's label to `existingUserDevices`)
+    // Returns null when no value applies (e.g. legacy device without
+    // a stored viewport_mode, or the join fails).
+    const resolveAppliedViewportMode = useCallback(() => {
+        if (isCreatingNewDevice) {
+            return viewportMode;
+        }
+        if (!Array.isArray(existingUserDevices) || existingUserDevices.length === 0) {
+            return null;
+        }
+        const pickedOption = deviceOptions?.find((o) => o.uuid === uuid);
+        if (!pickedOption) return null;
+        const matched = existingUserDevices.find((d) => d.label === pickedOption.label);
+        return matched?.viewport_mode ?? null;
+    }, [isCreatingNewDevice, viewportMode, existingUserDevices, deviceOptions, uuid]);
+
     const handleSubmit = useCallback(async (e) => {
         if (e) e.preventDefault();
         if (!api?.identifyDevice) return;
@@ -66,10 +109,32 @@ export const DeviceIdentificationComponent = (props) => {
         setIsSubmitting(true);
 
         try {
+            const body = { label, uuid };
+            if (enableViewportMode && isCreatingNewDevice) {
+                // Only forward the viewport_mode on the new device path.
+                // On the existing device path the backend already knows
+                // the stored value; sending it would overwrite the user's
+                // previous explicit choice.
+                body.viewport_mode = viewportMode;
+            }
             const data = await api.identifyDevice(
-                { label, uuid },
+                body,
                 { signal: AbortSignal.timeout(resolvedTimeoutMs) }
             );
+
+            // Apply the viewport choice locally (reload via setPreference)
+            // when it differs from the current preference. We compare
+            // against `viewport.preference` (not `viewport.viewport`) so
+            // that an explicit user choice survives an environment change
+            // (e.g. user later opens a sandboxed iframe where auto-detect
+            // would give a different answer).
+            const applied = resolveAppliedViewportMode();
+            if (viewport && applied && applied !== viewport.preference) {
+                // setPreference reloads the page; do not invoke onSuccess
+                // first because the caller would race with the reload.
+                await viewport.setPreference(applied, { silent: true });
+                return;
+            }
             onSuccessRef.current?.(data);
         } catch (err) {
             const message = getErrorLabel?.(err) ?? labels.identifyError;
@@ -78,7 +143,11 @@ export const DeviceIdentificationComponent = (props) => {
         } finally {
             setIsSubmitting(false);
         }
-    }, [api, label, uuid, resolvedTimeoutMs, getErrorLabel, labels.identifyError]);
+    }, [
+        api, label, uuid, viewportMode, enableViewportMode, isCreatingNewDevice,
+        resolvedTimeoutMs, getErrorLabel, labels.identifyError, viewport,
+        resolveAppliedViewportMode,
+    ]);
 
     const checkerOptions = hasDeviceOptions
         ? [
@@ -86,6 +155,18 @@ export const DeviceIdentificationComponent = (props) => {
             { label: labels.noDeviceLabel, value: noDeviceValue },
         ]
         : [];
+
+    const viewportModeOptions = useMemo(() => [
+        { label: labels.viewportModeOptionAuto, value: "auto" },
+        { label: labels.viewportModeOptionMobile, value: "mobile" },
+        { label: labels.viewportModeOptionTablet, value: "tablet" },
+        { label: labels.viewportModeOptionDesktop, value: "desktop" },
+    ], [
+        labels.viewportModeOptionAuto,
+        labels.viewportModeOptionMobile,
+        labels.viewportModeOptionTablet,
+        labels.viewportModeOptionDesktop,
+    ]);
 
     return (
         <div
@@ -161,6 +242,22 @@ export const DeviceIdentificationComponent = (props) => {
                         required
                         maxLength={128}
                         {...labelInputProps}
+                    />
+                )}
+
+                {enableViewportMode && isCreatingNewDevice && (
+                    <Checker
+                        id="device-identification-viewport-mode"
+                        name="viewport_mode"
+                        type="radio"
+                        label={labels.viewportModeLabel}
+                        help={labels.viewportModeHelp}
+                        options={viewportModeOptions}
+                        value={viewportMode}
+                        onChange={setViewportMode}
+                        readOnly={isSubmitting}
+                        required
+                        {...viewportModeCheckerProps}
                     />
                 )}
 

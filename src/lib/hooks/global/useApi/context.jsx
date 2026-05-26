@@ -467,14 +467,24 @@ export const useApiContext = () => {
     const device = useMemo(() => (body, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        const { label, uuid } = body;
+        const { label, uuid, viewport_mode: viewportMode } = body;
         const { deviceOptions: currentDeviceOptions, deviceId: currentDeviceId, rememberMe: currentRememberMe, user: currentUser, gst: currentGst } = valuesRef.current;
 
         const noUuid = (uuid === "noDevice" || isEmpty(currentDeviceOptions));
 
+        // viewport_mode is only sent when explicitly provided. Omitting
+        // the field on the backend signals "do not touch the stored
+        // viewport_mode" (preserves a previously-chosen value), while
+        // sending an empty string would clear it. We forward an explicit
+        // string (including "auto") and drop falsy/undefined values.
+        const jsonBody = { label: label || undefined, uuid: noUuid ? currentDeviceId : uuid };
+        if (typeof viewportMode === "string" && viewportMode !== "") {
+            jsonBody.viewport_mode = viewportMode;
+        }
+
         return privateApi
             .post(options.url ?? "device", {
-                json: { label: label || undefined, uuid: noUuid ? currentDeviceId : uuid },
+                json: jsonBody,
             })
             .json()
             .then((data) => {
@@ -569,6 +579,22 @@ export const useApiContext = () => {
             .json();
     }, [privateApi]);
 
+    // Persist a viewport_mode choice on a logical user_device. Lower-
+    // level helper: the caller is responsible for knowing which
+    // user_device id to target (typically by listing first, since the
+    // login response does not surface a "current device id"). Sending
+    // null clears the column back to NULL on the backend.
+    const setDeviceViewportMode = useMemo(() => (id, viewportMode, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return privateApi
+            .post(options.url ?? `account/user-devices/${id}/viewport-mode`, {
+                json: { viewport_mode: viewportMode ?? null },
+                ...options,
+            })
+            .json();
+    }, [privateApi]);
+
     // ---------------------- stable API methods ----------------------
 
     // Helper to handle raw vs json response based on options
@@ -641,6 +667,7 @@ export const useApiContext = () => {
         linkUserDevice,
         renameUserDevice,
         deleteUserDevice,
+        setDeviceViewportMode,
         public: publicApi,
         private: privateApi,
         get,
@@ -661,6 +688,7 @@ export const useApiContext = () => {
         linkUserDevice,
         renameUserDevice,
         deleteUserDevice,
+        setDeviceViewportMode,
         publicApi,
         privateApi,
         get,

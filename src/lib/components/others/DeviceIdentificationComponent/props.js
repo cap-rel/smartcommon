@@ -16,6 +16,17 @@ export const propTypes = {
     abortTimeoutMs: PropTypes.number,
     identifyTimeoutMs: PropTypes.number,
 
+    // Show the "device type" radio (auto / mobile / tablet / desktop)
+    // on the "new device" path. Defaults to true. Set to false to hide
+    // the picker entirely (the body sent to identifyDevice will then
+    // omit `viewport_mode`, preserving the backend default).
+    enableViewportMode: PropTypes.bool,
+
+    // Pre-selected viewport_mode for the radio. If omitted, the
+    // component computes it via `detectAutoViewport()` from
+    // smartcommon at mount. Pass one of "auto"|"mobile"|"tablet"|"desktop".
+    defaultViewportMode: PropTypes.oneOf(["auto", "mobile", "tablet", "desktop"]),
+
     // Styling slots
     containerProps: PropTypes.object,
     formProps: PropTypes.object,
@@ -25,6 +36,7 @@ export const propTypes = {
     descriptionProps: PropTypes.object,
     devicesCheckerProps: PropTypes.object,
     labelInputProps: PropTypes.object,
+    viewportModeCheckerProps: PropTypes.object,
     submitButtonProps: PropTypes.object,
     errorAlertProps: PropTypes.object,
 
@@ -37,6 +49,12 @@ export const propTypes = {
         newDeviceInputLabel: PropTypes.string,
         newDeviceInputHelp: PropTypes.string,
         newDeviceInputPlaceholder: PropTypes.string,
+        viewportModeLabel: PropTypes.string,
+        viewportModeHelp: PropTypes.string,
+        viewportModeOptionAuto: PropTypes.string,
+        viewportModeOptionMobile: PropTypes.string,
+        viewportModeOptionTablet: PropTypes.string,
+        viewportModeOptionDesktop: PropTypes.string,
         submitLabel: PropTypes.string,
         identifyError: PropTypes.string,
     }),
@@ -45,6 +63,7 @@ export const propTypes = {
 export const defaultProps = {
     noDeviceValue: "noDevice",
     abortTimeoutMs: 15000,
+    enableViewportMode: true,
     labels: {},
 };
 
@@ -63,6 +82,14 @@ export const DEFAULT_LABELS = {
         "Choose a name that will let you recognise "
         + "this device among others (e.g. Eric's iPhone).",
     newDeviceInputPlaceholder: "My device",
+    viewportModeLabel: "Device type",
+    viewportModeHelp:
+        "Choose how the app should adapt its layout for this device. "
+        + "You can change this later in settings.",
+    viewportModeOptionAuto: "Auto-detect",
+    viewportModeOptionMobile: "Smartphone",
+    viewportModeOptionTablet: "Tablet",
+    viewportModeOptionDesktop: "Desktop",
     submitLabel: "Validate",
     identifyError: "Failed to register the device. Check your connection.",
 };
