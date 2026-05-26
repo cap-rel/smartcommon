@@ -257,6 +257,10 @@ export const nl = {
         reloadButton: "Vernieuwen",
         dismissButton: "Later",
     },
+    // TODO native review for nl
+    ViewportProvider: {
+        confirmReloadMessage: "De weergave wijzigen zal de applicatie herladen. Doorgaan?",
+    },
     Print: {
         unknownJobType: (type) => `Geen renderer geregistreerd voor jobtype "${type}"`,
         noEscposRenderer: (type) => `Geen ESC/POS renderer geregistreerd voor jobtype "${type}"`,

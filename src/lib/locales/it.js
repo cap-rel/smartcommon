@@ -258,6 +258,10 @@ export const it = {
         reloadButton: "Aggiorna",
         dismissButton: "Più tardi",
     },
+    // TODO native review for it
+    ViewportProvider: {
+        confirmReloadMessage: "Cambiare la vista ricaricherà l'applicazione. Continuare?",
+    },
     Print: {
         unknownJobType: (type) => `Nessun motore di rendering registrato per il tipo di lavoro "${type}"`,
         noEscposRenderer: (type) => `Nessun motore di rendering ESC/POS registrato per il tipo di lavoro "${type}"`,

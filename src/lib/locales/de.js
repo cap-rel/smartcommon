@@ -258,6 +258,10 @@ export const de = {
         reloadButton: "Aktualisieren",
         dismissButton: "Später",
     },
+    // TODO native review for de
+    ViewportProvider: {
+        confirmReloadMessage: "Das Ändern der Ansicht lädt die Anwendung neu. Fortfahren?",
+    },
     Print: {
         unknownJobType: (type) => `Kein Renderer registriert für den Auftragstyp "${type}"`,
         noEscposRenderer: (type) => `Kein ESC/POS Renderer registriert für den Auftragstyp "${type}"`,

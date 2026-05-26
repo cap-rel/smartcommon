@@ -260,6 +260,10 @@ export const pt = {
         reloadButton: "Atualizar",
         dismissButton: "Mais tarde",
     },
+    // TODO native review for pt
+    ViewportProvider: {
+        confirmReloadMessage: "Alterar a vista irá recarregar a aplicação. Continuar?",
+    },
     Print: {
         unknownJobType: (type) => `Nenhum motor de renderização registado para o tipo de trabalho "${type}"`,
         noEscposRenderer: (type) => `Nenhum motor de renderização ESC/POS registado para o tipo de trabalho "${type}"`,

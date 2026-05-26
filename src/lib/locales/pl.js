@@ -266,6 +266,10 @@ export const pl = {
         reloadButton: "Odśwież",
         dismissButton: "Później",
     },
+    // TODO native review for pl
+    ViewportProvider: {
+        confirmReloadMessage: "Zmiana widoku przeładuje aplikację. Kontynuować?",
+    },
     Print: {
         unknownJobType: (type) => `Nie zarejestrowano silnika renderującego dla typu zadania "${type}"`,
         noEscposRenderer: (type) => `Nie zarejestrowano silnika renderującego ESC/POS dla typu zadania "${type}"`,
