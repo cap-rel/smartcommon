@@ -146,6 +146,127 @@ describe("BarcodeScanner", () => {
             expect(instances[0].options.formatsToSupport).toEqual([0, 1]);
         });
 
+        it("uses the default fps (10) and qrbox (280x150) when not overridden", async () => {
+            render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const config = instances[0].start.mock.calls[0][1];
+            expect(config.fps).toBe(10);
+            expect(config.qrbox).toEqual({ width: 280, height: 150 });
+        });
+
+        it("forwards a custom qrbox to Html5Qrcode.start", async () => {
+            render(
+                <BarcodeScanner
+                    open
+                    onClose={() => {}}
+                    onScan={() => {}}
+                    qrbox={{ width: 320, height: 200 }}
+                />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const config = instances[0].start.mock.calls[0][1];
+            expect(config.qrbox).toEqual({ width: 320, height: 200 });
+        });
+
+        it("forwards a custom fps to Html5Qrcode.start", async () => {
+            render(
+                <BarcodeScanner
+                    open
+                    onClose={() => {}}
+                    onScan={() => {}}
+                    fps={20}
+                />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const config = instances[0].start.mock.calls[0][1];
+            expect(config.fps).toBe(20);
+        });
+
+        it("enables experimentalFeatures.useBarCodeDetectorIfSupported by default", async () => {
+            render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const config = instances[0].start.mock.calls[0][1];
+            expect(config.experimentalFeatures).toEqual({
+                useBarCodeDetectorIfSupported: true,
+            });
+        });
+
+        it("forwards a custom experimentalFeatures object to Html5Qrcode.start", async () => {
+            render(
+                <BarcodeScanner
+                    open
+                    onClose={() => {}}
+                    onScan={() => {}}
+                    experimentalFeatures={{ useBarCodeDetectorIfSupported: false }}
+                />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const config = instances[0].start.mock.calls[0][1];
+            expect(config.experimentalFeatures).toEqual({
+                useBarCodeDetectorIfSupported: false,
+            });
+        });
+
+        it("defaults to { facingMode: 'environment' } when videoConstraints is omitted", async () => {
+            render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const cameraArg = instances[0].start.mock.calls[0][0];
+            expect(cameraArg).toEqual({ facingMode: "environment" });
+        });
+
+        it("forwards custom videoConstraints to Html5Qrcode.start as the camera arg", async () => {
+            const constraints = {
+                facingMode: "environment",
+                width: { ideal: 1920 },
+                height: { ideal: 1080 },
+            };
+            render(
+                <BarcodeScanner
+                    open
+                    onClose={() => {}}
+                    onScan={() => {}}
+                    videoConstraints={constraints}
+                />
+            );
+
+            await waitFor(() => {
+                expect(instances[0]?.start).toHaveBeenCalled();
+            });
+
+            const cameraArg = instances[0].start.mock.calls[0][0];
+            expect(cameraArg).toEqual(constraints);
+        });
+
         it("stops the scanner on unmount", async () => {
             const { unmount } = render(
                 <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
@@ -382,6 +503,89 @@ describe("BarcodeScanner", () => {
 
             expect(onClose).not.toHaveBeenCalled();
             expect(screen.getByPlaceholderText("Code...").value).toBe("");
+        });
+    });
+
+    describe("embedded mode", () => {
+        it("renders without the fullscreen overlay wrapper", () => {
+            const { container } = render(
+                <BarcodeScanner
+                    open
+                    embedded
+                    onClose={() => {}}
+                    onScan={() => {}}
+                />
+            );
+
+            const wrapper = container.querySelector("[data-component='BarcodeScanner']");
+            expect(wrapper).not.toBeNull();
+            expect(wrapper.getAttribute("data-embedded")).toBe("true");
+            expect(wrapper.className).not.toContain("fixed");
+            expect(wrapper.className).not.toContain("inset-0");
+            expect(wrapper.className).not.toContain("z-50");
+        });
+
+        it("does not render the title bar or the close button when embedded", () => {
+            render(
+                <BarcodeScanner
+                    open
+                    embedded
+                    onClose={() => {}}
+                    onScan={() => {}}
+                />
+            );
+
+            expect(screen.queryByText("Scan a code")).toBeNull();
+            expect(screen.queryByLabelText("Close")).toBeNull();
+        });
+
+        it("still renders the camera region and the manual entry button when embedded", () => {
+            const { container } = render(
+                <BarcodeScanner
+                    open
+                    embedded
+                    onClose={() => {}}
+                    onScan={() => {}}
+                />
+            );
+
+            expect(container.querySelector("#barcode-scanner-region")).not.toBeNull();
+            expect(screen.getByText("Enter manually")).toBeDefined();
+        });
+
+        it("still calls onScan from the camera callback when embedded", async () => {
+            const onScan = vi.fn();
+            render(
+                <BarcodeScanner
+                    open
+                    embedded
+                    onClose={() => {}}
+                    onScan={onScan}
+                    continuous
+                />
+            );
+
+            await waitFor(() => {
+                expect(capturedCb.successCallback).not.toBeNull();
+            });
+
+            capturedCb.successCallback("EMBEDDED-SCAN");
+
+            expect(onScan).toHaveBeenCalledWith("EMBEDDED-SCAN");
+        });
+
+        it("still defaults to the fullscreen overlay when embedded is false", () => {
+            const { container } = render(
+                <BarcodeScanner open onClose={() => {}} onScan={() => {}} />
+            );
+
+            const wrapper = container.querySelector("[data-component='BarcodeScanner']");
+            expect(wrapper).not.toBeNull();
+            expect(wrapper.getAttribute("data-embedded")).toBeNull();
+            expect(wrapper.className).toContain("fixed");
+            expect(wrapper.className).toContain("inset-0");
+            expect(wrapper.className).toContain("z-50");
+            expect(screen.getByLabelText("Close")).toBeDefined();
         });
     });
 });

@@ -45,6 +45,9 @@ export const BarcodeScanner = (props) => {
         formats = DEFAULT_FORMATS,
         fps = 10,
         qrbox = { width: 280, height: 150 },
+        videoConstraints,
+        experimentalFeatures = { useBarCodeDetectorIfSupported: true },
+        embedded = false,
         debounceMs = 1500,
         feedbackContent,
         labels: userLabels = {},
@@ -61,6 +64,8 @@ export const BarcodeScanner = (props) => {
     const formatsRef = useRef(formats);
     const fpsRef = useRef(fps);
     const qrboxRef = useRef(qrbox);
+    const videoConstraintsRef = useRef(videoConstraints);
+    const experimentalFeaturesRef = useRef(experimentalFeatures);
     const cameraErrorLabelRef = useRef(labels.cameraError);
     const cameraPermissionLabelRef = useRef(labels.cameraPermissionDenied);
 
@@ -75,6 +80,8 @@ export const BarcodeScanner = (props) => {
     useEffect(() => { formatsRef.current = formats; }, [formats]);
     useEffect(() => { fpsRef.current = fps; }, [fps]);
     useEffect(() => { qrboxRef.current = qrbox; }, [qrbox]);
+    useEffect(() => { videoConstraintsRef.current = videoConstraints; }, [videoConstraints]);
+    useEffect(() => { experimentalFeaturesRef.current = experimentalFeatures; }, [experimentalFeatures]);
     useEffect(() => {
         cameraErrorLabelRef.current = labels.cameraError;
         cameraPermissionLabelRef.current = labels.cameraPermissionDenied;
@@ -117,10 +124,20 @@ export const BarcodeScanner = (props) => {
             });
             html5QrCodeRef.current = html5QrCode;
 
-            const config = { fps: fpsRef.current, qrbox: qrboxRef.current };
+            const config = {
+                fps: fpsRef.current,
+                qrbox: qrboxRef.current,
+                experimentalFeatures: experimentalFeaturesRef.current,
+            };
+
+            // If videoConstraints are provided, use them verbatim (full
+            // MediaTrackConstraints control). Otherwise fall back to the
+            // historical default of selecting the rear-facing camera.
+            const cameraIdOrConfig = videoConstraintsRef.current
+                || { facingMode: "environment" };
 
             html5QrCode.start(
-                { facingMode: "environment" },
+                cameraIdOrConfig,
                 config,
                 (decodedText) => {
                     const now = Date.now();
@@ -193,6 +210,76 @@ export const BarcodeScanner = (props) => {
     }, [manualBarcode, onScan, continuous, handleClose]);
 
     if (!open) return null;
+
+    // Embedded mode: render only the camera region (and optional manual
+    // entry fallback) inline. The parent component is responsible for
+    // positioning, sizing, the close button and any surrounding chrome.
+    if (embedded) {
+        return (
+            <div
+                data-component="BarcodeScanner"
+                data-embedded="true"
+                className="relative flex flex-col"
+            >
+                <div className="flex flex-col items-center justify-center">
+                    {cameraError ? (
+                        <div className="bg-red-900/50 border border-red-500 rounded-xl p-4 max-w-sm text-center">
+                            <p className="text-red-200 mb-3">{cameraError}</p>
+                            <button
+                                type="button"
+                                onClick={() => setShowManualEntry(true)}
+                                className="px-4 py-2 bg-white text-gray-900 rounded-lg font-medium"
+                            >
+                                {labels.enterManually}
+                            </button>
+                        </div>
+                    ) : (
+                        <div
+                            id={SCANNER_ELEMENT_ID}
+                            className="w-full max-w-md rounded-xl overflow-hidden"
+                        />
+                    )}
+                </div>
+
+                {feedbackContent && (
+                    <div className="py-2">{feedbackContent}</div>
+                )}
+
+                <div className="pt-2">
+                    {showManualEntry || cameraError ? (
+                        <div className="flex gap-2">
+                            <input
+                                type="text"
+                                value={manualBarcode}
+                                onChange={(e) => setManualBarcode(e.target.value)}
+                                onKeyDown={(e) => { if (e.key === "Enter") handleManualSubmit(); }}
+                                placeholder={labels.manualPlaceholder}
+                                className="flex-1 px-4 py-3 rounded-xl bg-white/10 text-white placeholder-white/50 border border-white/20 focus:border-primary focus:outline-none"
+                                autoFocus
+                            />
+                            <button
+                                type="button"
+                                onClick={handleManualSubmit}
+                                disabled={!manualBarcode.trim()}
+                                className="px-6 py-3 bg-primary text-white rounded-xl font-semibold disabled:opacity-50"
+                            >
+                                {labels.validate}
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            onClick={() => setShowManualEntry(true)}
+                            className="w-full flex items-center justify-center gap-2 py-2 text-gray-600 hover:text-gray-900"
+                        >
+                            <FaKeyboard />
+                            <span>{labels.enterManually}</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div
