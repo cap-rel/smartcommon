@@ -60,6 +60,9 @@ export default {
     max: {
       table: { category: 'Validation' },
     },
+    showSeconds: {
+      table: { category: 'Appearance' },
+    },
     value: {
       table: { category: 'Data' },
     },

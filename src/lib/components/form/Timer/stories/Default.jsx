@@ -2,7 +2,8 @@ import { setDefaultStory } from "../../../../../storybook";
 
 export const Default = setDefaultStory({
   args: {
-    label: "Duration"
+    label: "Duration",
+    showSeconds: false
   },
   code: `
     import { Timer } from "@cap-rel/smartcommon";
@@ -10,6 +11,7 @@ export const Default = setDefaultStory({
     <Timer
       id="timer"
       label="Duration"
+      showSeconds={false}
     />
   `
 });

@@ -24,6 +24,8 @@ export const Timer = (props) => {
 
         min,
         max,
+
+        showSeconds = true,
     } = variantProps;
 
     const errors = (currentValue) => ({
@@ -60,11 +62,19 @@ export const Timer = (props) => {
 
     const handleInputOnChange = (unitKey, unitValue) => {
         if (!disabled && !readOnly && !isFormSubmitting) {
-            const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0; 
+            const numberValue = isNumber(Number(unitValue)) ? Number(unitValue) : 0;
             const unit = units[unitKey];
             if (numberValue <= unit.max) {
-                const unitLastValue = secsToDuration(safeCurrentValue)[unitKey] * unit.seconds;
-                const newValue = safeCurrentValue - unitLastValue + numberValue * unit.seconds;
+                // When the Seconds column is hidden, dropping the sub-minute
+                // residue on every Minutes (or coarser) edit matches the
+                // user's mental model: they only see/control whole minutes,
+                // so any phantom seconds inherited from a pre-existing value
+                // are intentionally lost on the next edit.
+                const baseValue = (!showSeconds && unitKey !== "seconds")
+                    ? safeCurrentValue - secsToDuration(safeCurrentValue).seconds
+                    : safeCurrentValue;
+                const unitLastValue = secsToDuration(baseValue)[unitKey] * unit.seconds;
+                const newValue = baseValue - unitLastValue + numberValue * unit.seconds;
                 setValue(newValue);
             }
         }
@@ -85,7 +95,14 @@ export const Timer = (props) => {
         labelProps: { ...props.labelProps, className: "text-soft-text italic font-app-base text-app-sm" },
         childrenContainerProps: { ...props.childrenContainerProps, className: `flex justify-between items-center ${key === "days" && "border-r border-border"}` },
         prefixProps: { ...props.prefixProps, className: "opacity-0" },
-        suffixProps: { ...props.suffixProps, className: `${(key === "seconds" || key === "days") && "opacity-0"}` },
+        suffixProps: {
+            ...props.suffixProps,
+            className: `${
+                (key === "seconds" || key === "days" || (key === "minutes" && !showSeconds))
+                    ? "opacity-0"
+                    : ""
+            }`,
+        },
     });
 
     return (
@@ -108,7 +125,9 @@ export const Timer = (props) => {
                 <Input { ...mergeProps("DaysInputs", props => inputPropsDependingOnUnit("days", units.days, props))} />
                 <Input { ...mergeProps("HoursInput", props => inputPropsDependingOnUnit("hours", units.hours, props))} />
                 <Input { ...mergeProps("MinutesInput", props => inputPropsDependingOnUnit("minutes", units.minutes, props))} />
-                <Input { ...mergeProps("SecondsInput", props => inputPropsDependingOnUnit("seconds", units.seconds, props))} />
+                {showSeconds && (
+                    <Input { ...mergeProps("SecondsInput", props => inputPropsDependingOnUnit("seconds", units.seconds, props))} />
+                )}
             </div>
         </Label>
     );

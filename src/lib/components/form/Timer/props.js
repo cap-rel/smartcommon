@@ -15,6 +15,8 @@ export const propTypes = {
     min: PropTypes.number,
     max: PropTypes.number,
 
+    showSeconds: PropTypes.bool,
+
     name: PropTypes.string,
     value: PropTypes.bool,
     onChange: PropTypes.func,
