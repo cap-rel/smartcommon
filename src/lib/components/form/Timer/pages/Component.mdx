@@ -13,18 +13,23 @@ secondes). Valeur sortie = nombre **entier de secondes**.
 
 ## Forme de la valeur
 
-Entier secondes. Pas d'objet `{ d, h, m, s }` côté API. Conversion :
+Entier secondes. Pas d'objet `{ d, h, m, s }` cote API. Conversion :
 
-- secondes → `{ days, hours, minutes, seconds }` :
+- secondes -> `{ days, hours, minutes, seconds }` :
   `secsToDuration(value)` exporté depuis `lib/utils`.
 
 ## Comportement
 
-- 4 inputs séparés, chacun avec un `max` (jours 9999, heures 23,
-  minutes 59, secondes 59).
-- **Pas de carry** entre unités : saisir 90 minutes ne devient pas
-  "1 h 30 min". Le user décompose lui-même (ou caller normalise via
-  `secsToDuration` après).
+- **Cellules tappables + molette** : une cellule par unité visible ;
+  taper une cellule ouvre un panneau ancré sous le champ avec une
+  colonne défilante par unité (wheel picker tactile). Pas de clavier
+  système. Fermeture au clic-extérieur ou via le bouton "OK".
+- **Plages** : heures 0-23, minutes/secondes 0-59. Colonne Jours bornée
+  à `maxDays` (sinon dérivé de `max`, sinon 0-99).
+- **Pas de carry** entre unités : choisir une valeur n'entraine aucun
+  débordement vers l'unité supérieure.
+- **`showSeconds={false}`** masque la colonne Secondes et annule le
+  résidu de secondes pré-existant lors d'une édition >= minute.
 
 ## Validation
 
@@ -34,12 +39,12 @@ dans le texte.
 
 ## Limites
 
-- Pas de notation rapide "1h30" — 4 inputs séparés.
+- Pas de notation rapide "1h30" : sélection unité par unité.
 - Pas de carry automatique entre unités.
 - Pas de mode chronomètre live.
 - Messages d'erreur en dur (pas extraits en `labels`).
 - Pas de valeurs négatives.
-- Max 9999 jours.
+- Colonne Jours bornée (`maxDays` / dérivé de `max` / 99).
 
 ## Voir aussi
 
