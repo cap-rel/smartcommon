@@ -13,7 +13,7 @@ export const useApiContext = () => {
 
     const { debug: libDebug, api } = libConfig;
 
-    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist } = api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist, onSessionExpired } = api ?? {};
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
@@ -75,12 +75,20 @@ export const useApiContext = () => {
         debug,
         prefixUrl,
         onApiError,
-        onLoginPersist
+        onLoginPersist,
+        onSessionExpired
     };
 
     // ---------------------- refreshPromise ref ----------------------
 
     const refreshPromiseRef = useRef(null);
+
+    // ---------------------- dead-session latch ----------------------
+
+    // Guards the eject-to-login so it fires exactly ONCE per dead session,
+    // before the flood of parallel in-flight requests each surface their own
+    // error toast. Reset on the next successful response and on a fresh login.
+    const sessionDeadRef = useRef(false);
 
     // ---------------------- baseApi ----------------------
 
@@ -210,6 +218,12 @@ export const useApiContext = () => {
 
     const login = useMemo(() => (body, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        // A fresh login attempt must never be blocked by a circuit opened
+        // during the previous session's eject (the 30s circuit is otherwise
+        // only released by time). Also clear the dead-session latch.
+        circuitRef.current.openUntil = 0;
+        sessionDeadRef.current = false;
 
         return publicApi
             .post(options.url ?? "login", {
@@ -610,10 +624,14 @@ export const useApiContext = () => {
     // Pass { silent: true } in options to suppress the automatic error notification
     const createApiMethod = (method) => async (url, options) => {
         const { silent, ...kyOptions } = options ?? {};
-        const { debug: currentDebug, onApiError: errorCallback } = valuesRef.current;
+        const { debug: currentDebug, onApiError: errorCallback, onSessionExpired: sessionExpiredCallback, gst: currentGst } = valuesRef.current;
         try {
             const response = await privateApi[method](url, kyOptions);
             const data = await handleResponse(response, kyOptions);
+
+            // A successful response means the session is alive again: release
+            // the latch so a future expiry can re-trigger the single eject.
+            sessionDeadRef.current = false;
 
             // Defensive: check for application-level errors in response body (HTTP 200 with error field)
             if (!silent && !kyOptions?.raw && data && typeof data === "object" && data.error && errorCallback) {
@@ -630,9 +648,58 @@ export const useApiContext = () => {
             error.url = url;
             error.method = method.toUpperCase();
 
-            // Call error callback for API errors unless silenced
-            // apiMessage is set by the beforeError hook in privateApi
-            if (!silent && error.apiMessage && errorCallback) {
+            // Detect a dead session and eject to login on the FIRST failure,
+            // before the flood of parallel in-flight requests each surface
+            // their own toast. A session is only PROVEN dead by a server that
+            // actually answered with:
+            //   - an auth status (401/403), or
+            //   - a body that is not the JSON we expected: backends serve a
+            //     plain-text/HTML access page on an expired session, so
+            //     response.json() throws a SyntaxError ("... is not valid
+            //     JSON") / "Unauthorized".
+            //
+            // Crucially, a CONNECTIVITY failure must never be read as a dead
+            // session: when offline, beforeRequest rejects with "No internet
+            // connection" and opens the circuit, so follow-up requests reject
+            // with "Circuit breaker open". Ejecting to /login on those would
+            // defeat offline-capable PWAs that read their data from IndexedDB.
+            // So we gate the positive signals on navigator.onLine, and we treat
+            // "Circuit breaker open" only as downstream NOISE of an ALREADY
+            // known-dead session (to keep its toast silent), never as a trigger.
+            const status = error.response?.status;
+            const message = error.message ?? "";
+            const isOffline = navigatorInfo.isOnLine === false;
+            const isConfirmedDeadSession =
+                !isOffline && (
+                    status === 401 ||
+                    status === 403 ||
+                    error instanceof SyntaxError ||
+                    /is not valid JSON|Unexpected token|Unauthorized/i.test(message)
+                );
+            const isDeadSessionDownstream =
+                sessionDeadRef.current && /Circuit breaker open/i.test(message);
+
+            if (isConfirmedDeadSession || isDeadSessionDownstream) {
+                // Tag EVERY dead-session error so consumers can skip their own
+                // per-request toast (the flood) and let the single
+                // onSessionExpired notification speak instead.
+                error.sessionExpired = true;
+            }
+
+            if (isConfirmedDeadSession && !sessionDeadRef.current) {
+                sessionDeadRef.current = true;
+                openCircuit(30000);
+                currentGst.unset("user"); // RouteGuard redirects to /login
+                if (sessionExpiredCallback) {
+                    sessionExpiredCallback();
+                }
+            }
+
+            // Call error callback for API errors unless silenced. A dead
+            // session is reported once via onSessionExpired above, never via
+            // per-request onApiError -- that is the toast flood we are killing.
+            // apiMessage is set by the beforeError hook in privateApi.
+            if (!silent && !error.sessionExpired && error.apiMessage && errorCallback) {
                 errorCallback(error.apiMessage);
             }
 
