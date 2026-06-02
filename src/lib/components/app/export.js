@@ -27,6 +27,8 @@ export * from "./Router";
 
 export * from "./RoutingAnimationLayout";
 
+export * from "./ThemeApplier";
+
 export * from "./Toaster";
 
 export * from "./UpdatePrompt";

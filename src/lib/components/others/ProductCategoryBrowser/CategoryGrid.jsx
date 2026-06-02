@@ -86,11 +86,11 @@ const CategoryTile = ({ category, tileSize, onClick }) => {
             onClick={onClick}
             style={bgColor ? { ...sizeStyle, backgroundColor: bgColor, borderColor } : sizeStyle}
             className={`rounded-xl flex flex-col items-center justify-center cursor-pointer active:scale-95 transition-transform border ${
-                bgColor ? "" : "bg-gray-100 dark:bg-gray-700 border-gray-200 dark:border-gray-600"
+                bgColor ? "" : "bg-strong-bg border-border"
             }`}
         >
-            <FaFolder className="text-xl text-gray-400 dark:text-gray-500 mb-1" />
-            <span className="text-sm font-medium text-gray-800 dark:text-gray-200 px-2 text-center leading-tight line-clamp-2">
+            <FaFolder className="text-xl text-soft-text mb-1" />
+            <span className="text-sm font-medium text-strong-text px-2 text-center leading-tight line-clamp-2">
                 {category.label}
             </span>
         </button>
@@ -100,9 +100,9 @@ const CategoryTile = ({ category, tileSize, onClick }) => {
 const SpecialTile = ({ icon: Icon, label, onClick, tileSize, variant }) => {
     const sizeStyle = { height: `${tileSize}px` };
     const styles = variant === "all"
-        ? "border-2 border-solid border-primary/50 bg-primary/10 dark:bg-primary/20 hover:border-primary"
-        : "border-2 border-dashed border-gray-300 dark:border-gray-500 bg-gray-50 dark:bg-gray-800 hover:border-gray-400";
-    const colorClass = variant === "all" ? "text-primary" : "text-gray-500 dark:text-gray-400";
+        ? "border-2 border-solid border-primary/50 bg-primary/10 hover:border-primary"
+        : "border-2 border-dashed border-border bg-medium-bg hover:border-soft-text";
+    const colorClass = variant === "all" ? "text-primary" : "text-medium-text";
     return (
         <button
             type="button"
@@ -151,10 +151,10 @@ export const CategoryGrid = ({
         return (
             <div
                 {...rest}
-                className={twMerge("flex-1 flex flex-col items-center justify-center text-gray-400 px-4", rest.className)}
+                className={twMerge("flex-1 flex flex-col items-center justify-center text-soft-text px-4", rest.className)}
             >
                 <FaFolderOpen className="text-5xl mb-4" />
-                <p className="text-base font-medium text-gray-500">{labels.noCategories}</p>
+                <p className="text-base font-medium text-medium-text">{labels.noCategories}</p>
             </div>
         );
     }
@@ -173,7 +173,7 @@ export const CategoryGrid = ({
             {loading ? (
                 <div className="grid gap-3 justify-center" style={gridStyle}>
                     {[...Array(6)].map((_, i) => (
-                        <div key={i} style={tileStyle} className="rounded-xl bg-gray-100 dark:bg-gray-700 animate-pulse" />
+                        <div key={i} style={tileStyle} className="rounded-xl bg-strong-bg animate-pulse" />
                     ))}
                 </div>
             ) : (

@@ -46,7 +46,7 @@ export const Cart = ({
         <div
             {...rest}
             className={twMerge(
-                "flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800",
+                "flex-shrink-0 border-t border-border bg-medium-bg",
                 rest.className
             )}
         >
@@ -63,23 +63,23 @@ export const Cart = ({
                             <button
                                 type="button"
                                 onClick={() => onEdit?.(it, idx)}
-                                className="flex-1 flex items-center gap-2 min-w-0 text-left hover:bg-gray-50 dark:hover:bg-gray-700 rounded px-1 py-0.5"
+                                className="flex-1 flex items-center gap-2 min-w-0 text-left hover:bg-strong-bg rounded px-1 py-0.5"
                             >
-                                <span className="font-medium text-gray-900 dark:text-white truncate">
+                                <span className="font-medium text-strong-text truncate">
                                     {it.product?.label || it.product?.ref || ""}
                                 </span>
                                 {qtyLabel && (
-                                    <span className="text-gray-500 dark:text-gray-400 flex-shrink-0">{qtyLabel}</span>
+                                    <span className="text-medium-text flex-shrink-0">{qtyLabel}</span>
                                 )}
                                 {lineTotal && (
-                                    <span className="ml-auto text-gray-700 dark:text-gray-300 font-semibold flex-shrink-0">{lineTotal}</span>
+                                    <span className="ml-auto text-strong-text font-semibold flex-shrink-0">{lineTotal}</span>
                                 )}
                             </button>
                             <button
                                 type="button"
                                 onClick={() => onRemove(idx)}
                                 aria-label={labels.removeLabel}
-                                className="p-1 text-gray-400 hover:text-red-500"
+                                className="p-1 text-soft-text hover:text-error"
                             >
                                 <FaXmark />
                             </button>
@@ -87,7 +87,7 @@ export const Cart = ({
                     );
                 })}
             </div>
-            <div className="p-3 border-t border-gray-100 dark:border-gray-700">
+            <div className="p-3 border-t border-border">
                 <Button
                     label={validateText}
                     onClick={onValidate}

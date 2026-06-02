@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+/* Dark mode is driven by a `.dark` class on a root ancestor (toggled by
+   <ThemeApplier> / the <Provider>), NOT by the OS prefers-color-scheme media.
+   This keeps the `dark:` utilities and the .dark CSS-variable swap below in
+   sync on the same trigger. */
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* --color-primary      : #6d4aff;
   --color-secondary    : #26daaf;
@@ -41,22 +47,24 @@
 
   --color-border            : var(--color-gray-300);
 
-  --color-dark-primary      : #6d4aff;
-  --color-dark-secondary    : var(--color-pink-500);
+  /* Dark palette. Accents keep the brand identity (red primary, yellow
+     secondary) ; surfaces and text are inverted to real dark values. */
+  --color-dark-primary      : #f72d40;
+  --color-dark-secondary    : #fccb4f;
   --color-dark-success      : var(--color-green-500);
   --color-dark-error        : var(--color-red-500);
   --color-dark-warning      : var(--color-yellow-500);
   --color-dark-neutral      : var(--color-gray-500);
 
   --color-dark-soft-text    : var(--color-gray-400);
-  --color-dark-medium-text  : var(--color-gray-500);
-  --color-dark-strong-text  : var(--color-gray-900);
+  --color-dark-medium-text  : var(--color-gray-300);
+  --color-dark-strong-text  : var(--color-gray-100);
 
-  --color-dark-soft-bg      : white;
-  --color-dark-medium-bg    : var(--color-gray-100);
-  --color-dark-strong-bg    : var(--color-gray-200);
+  --color-dark-soft-bg      : var(--color-gray-900);
+  --color-dark-medium-bg    : var(--color-gray-800);
+  --color-dark-strong-bg    : var(--color-gray-700);
 
-  --color-dark-border       : var(--color-gray-300);
+  --color-dark-border       : var(--color-gray-700);
 
   /* filter-brightness */
   --brightness-soft         : 90%;
@@ -156,9 +164,9 @@
 
   --color-border            : var(--color-dark-border);
 
-  --brightness-soft         : var(--color-dark-soft);
-  --brightness-medium       : var(--color-dark-medium);
-  --brightness-strong       : var(--color-dark-strong);
+  --brightness-soft         : var(--brightness-dark-soft);
+  --brightness-medium       : var(--brightness-dark-medium);
+  --brightness-strong       : var(--brightness-dark-strong);
 }
 
   

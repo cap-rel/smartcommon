@@ -74,20 +74,20 @@ export const ConfirmStep = ({
             {...rest}
             className={twMerge("flex-1 flex flex-col min-h-0 overflow-y-auto", rest.className)}
         >
-            <div className="p-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 flex items-center gap-4">
-                <div className="size-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+            <div className="p-4 border-b border-border bg-medium-bg flex items-center gap-4">
+                <div className="size-24 flex-shrink-0 rounded-lg overflow-hidden bg-strong-bg flex items-center justify-center">
                     {imageUrl ? (
                         <img src={imageUrl} alt={product?.label || ""} className="w-full h-full object-cover" />
                     ) : (
-                        <FaBox className="text-3xl text-gray-300" />
+                        <FaBox className="text-3xl text-soft-text" />
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <div className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+                    <div className="text-sm font-semibold text-strong-text truncate">
                         {product?.label || ""}
                     </div>
                     {product?.ref && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 font-mono mt-0.5">
+                        <div className="text-xs text-medium-text font-mono mt-0.5">
                             {product.ref}
                         </div>
                     )}
@@ -99,14 +99,14 @@ export const ConfirmStep = ({
 
             <div className="p-6 flex flex-col gap-6">
                 <div>
-                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                    <label className="text-sm font-medium text-strong-text mb-2 block">
                         {labels.quantity}
                     </label>
                     <div className="flex items-center gap-3">
                         <button
                             type="button"
                             onClick={() => setQty(Math.max(0.01, parsedQty - 1))}
-                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-200 dark:bg-gray-600 active:scale-95 transition-all"
+                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-strong-bg active:scale-95 transition-all"
                         >
                             <FaMinus />
                         </button>
@@ -116,12 +116,12 @@ export const ConfirmStep = ({
                             onChange={(e) => setQty(e.target.value)}
                             min="0.01"
                             step="0.01"
-                            className="w-24 text-center text-lg font-semibold bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5"
+                            className="w-24 text-center text-lg font-semibold bg-soft-bg border border-border rounded-xl px-3 py-2.5"
                         />
                         <button
                             type="button"
                             onClick={() => setQty(parsedQty + 1)}
-                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-gray-200 dark:bg-gray-600 active:scale-95 transition-all"
+                            className="w-12 h-12 flex items-center justify-center rounded-xl bg-strong-bg active:scale-95 transition-all"
                         >
                             <FaPlus />
                         </button>
@@ -130,7 +130,7 @@ export const ConfirmStep = ({
 
                 {showDiscount && (
                     <div>
-                        <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        <label className="text-sm font-medium text-strong-text mb-2 block">
                             {labels.discount} (%)
                         </label>
                         <input
@@ -140,28 +140,28 @@ export const ConfirmStep = ({
                             min="0"
                             max="100"
                             step="0.01"
-                            className="w-24 text-center text-lg font-semibold bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl px-3 py-2.5"
+                            className="w-24 text-center text-lg font-semibold bg-soft-bg border border-border rounded-xl px-3 py-2.5"
                         />
                     </div>
                 )}
 
                 {totalLabel && (
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700 flex items-center justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{labels.totalHT}</span>
-                        <span className="text-lg font-bold text-gray-900 dark:text-white">{totalLabel}</span>
+                    <div className="bg-medium-bg rounded-xl p-4 border border-border flex items-center justify-between">
+                        <span className="text-sm text-medium-text">{labels.totalHT}</span>
+                        <span className="text-lg font-bold text-strong-text">{totalLabel}</span>
                     </div>
                 )}
             </div>
 
             <div className="flex-1" />
 
-            <div className="flex items-center gap-3 p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <div className="flex items-center gap-3 p-4 border-t border-border flex-shrink-0">
                 <button
                     type="button"
                     onClick={onBack}
                     {...cancelButtonProps}
                     className={twMerge(
-                        "flex-1 px-4 py-3 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors",
+                        "flex-1 px-4 py-3 rounded-xl text-sm font-medium text-strong-text bg-strong-bg hover:brightness-soft transition-colors",
                         cancelButtonProps.className
                     )}
                 >

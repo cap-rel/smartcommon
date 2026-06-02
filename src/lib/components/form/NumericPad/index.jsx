@@ -67,8 +67,8 @@ export const NumericPad = (props) => {
             aria-label={ariaLabel}
             onClick={() => handleKey(key)}
             className={`flex items-center justify-center h-14 rounded-xl text-xl font-semibold
-                bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100
-                active:bg-gray-200 dark:active:bg-gray-600 transition-colors`}
+                bg-strong-bg text-strong-text
+                active:brightness-soft transition-colors`}
         >
             {content ?? key}
         </button>
@@ -85,7 +85,7 @@ export const NumericPad = (props) => {
             }))}
         >
             {label && (
-                <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                <div className="text-sm font-medium text-medium-text mb-2">
                     {label}
                 </div>
             )}
@@ -93,7 +93,7 @@ export const NumericPad = (props) => {
             {/* Display */}
             <div
                 aria-live="polite"
-                className="text-3xl font-bold text-center py-4 px-3 bg-gray-50 dark:bg-gray-800 rounded-xl mb-3 text-gray-900 dark:text-white min-h-[3.5rem] flex items-center justify-center"
+                className="text-3xl font-bold text-center py-4 px-3 bg-medium-bg rounded-xl mb-3 text-strong-text min-h-[3.5rem] flex items-center justify-center"
             >
                 {value || "0"}
             </div>

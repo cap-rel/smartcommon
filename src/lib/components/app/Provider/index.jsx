@@ -1,13 +1,16 @@
 import { AnimatePresence } from "framer-motion";
 
-import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt, DebugConsole, DebugWarnings } from "lib/components";
+import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt, DebugConsole, DebugWarnings, ThemeApplier } from "lib/components";
 
 export const Provider = (props) => {
   const { children, config, onError, errorFallback, ErrorFallbackComponent, pwaUpdate, debug } = props;
+  // theme: "light" (default) | "dark" | "auto" (follows the OS).
+  const themeMode = config?.theme;
   // TODO voir à quoi sert réellement AnimatePresence car ça fonctionne sans
   return (
   <ErrorBoundary onError={onError} fallback={errorFallback} FallbackComponent={ErrorFallbackComponent}>
     <LibConfigProvider value={config}>
+      <ThemeApplier mode={themeMode} />
       <ReduxProvider>
         <GlobalStatesProvider>
           <ApiProvider>

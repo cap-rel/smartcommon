@@ -42,7 +42,7 @@ export const EditorWrapper = ({
             <div
                 role="dialog"
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-white dark:bg-gray-800 w-full sm:max-w-lg sm:rounded-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
+                className="relative bg-medium-bg w-full sm:max-w-lg sm:rounded-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
             >
                 {typeDef.renderEditor(annotation, {
                     onSave,

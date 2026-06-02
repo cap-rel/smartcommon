@@ -266,7 +266,7 @@ export const Timer = (props) => {
                                                             className: twMerge(
                                                                 "w-full h-10 flex items-center justify-center snap-center text-app-base cursor-pointer",
                                                                 isSelected
-                                                                    ? "bg-primary text-strong-bg font-semibold rounded-app-base"
+                                                                    ? "bg-primary text-white font-semibold rounded-app-base"
                                                                     : "text-app-base hover:bg-soft-bg",
                                                                 p.className
                                                             ),

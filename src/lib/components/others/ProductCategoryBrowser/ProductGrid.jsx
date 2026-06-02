@@ -66,8 +66,8 @@ const DefaultProductTile = ({ product, tileHeight, selected, cartQty, priceLabel
             style={{ height: `${tileHeight}px` }}
             className={`rounded-lg overflow-hidden text-left active:scale-95 transition-transform duration-100 relative flex flex-col ${
                 selected
-                    ? "border-2 border-primary bg-primary/5"
-                    : "border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                    ? "border-2 border-primary bg-primary/10"
+                    : "border border-border bg-medium-bg"
             }`}
         >
             {cartQty > 0 && (
@@ -76,7 +76,7 @@ const DefaultProductTile = ({ product, tileHeight, selected, cartQty, priceLabel
                 </span>
             )}
             <div
-                className="bg-gray-100 dark:bg-gray-700 relative overflow-hidden flex-shrink-0 flex items-center justify-center"
+                className="bg-strong-bg relative overflow-hidden flex-shrink-0 flex items-center justify-center"
                 style={{ height: `${imageHeight}px` }}
             >
                 {imageUrl ? (
@@ -87,7 +87,7 @@ const DefaultProductTile = ({ product, tileHeight, selected, cartQty, priceLabel
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <FaBox className="text-2xl text-gray-300 dark:text-gray-500" />
+                    <FaBox className="text-2xl text-soft-text" />
                 )}
                 {flash && (
                     <div className="absolute inset-0 bg-green-500/40 flex items-center justify-center">
@@ -97,9 +97,9 @@ const DefaultProductTile = ({ product, tileHeight, selected, cartQty, priceLabel
             </div>
             <div className="px-1.5 py-1 flex-1 flex flex-col justify-center min-h-0">
                 {product.ref && (
-                    <div className="text-[10px] text-gray-400 font-mono truncate">{product.ref}</div>
+                    <div className="text-[10px] text-soft-text font-mono truncate">{product.ref}</div>
                 )}
-                <div className="text-xs font-medium text-gray-900 dark:text-gray-100 line-clamp-1 leading-tight mt-0.5">
+                <div className="text-xs font-medium text-strong-text line-clamp-1 leading-tight mt-0.5">
                     {product.label || ""}
                 </div>
                 {priceLabel && (
@@ -221,24 +221,24 @@ export const ProductGrid = ({
                             <div
                                 key={i}
                                 style={{ height: `${layout.tileHeight}px` }}
-                                className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden bg-white dark:bg-gray-800 animate-pulse"
+                                className="rounded-lg border border-border overflow-hidden bg-medium-bg animate-pulse"
                             >
-                                <div className="h-3/5 bg-gray-200 dark:bg-gray-700" />
+                                <div className="h-3/5 bg-strong-bg" />
                                 <div className="p-2 flex flex-col gap-1.5">
-                                    <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
-                                    <div className="h-4 w-full bg-gray-200 dark:bg-gray-700 rounded" />
+                                    <div className="h-3 w-16 bg-strong-bg rounded" />
+                                    <div className="h-4 w-full bg-strong-bg rounded" />
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : error ? (
-                    <div className="flex flex-col items-center justify-center py-12 px-4 text-red-500 text-center">
+                    <div className="flex flex-col items-center justify-center py-12 px-4 text-error text-center">
                         {error}
                     </div>
                 ) : products.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-12 px-4">
-                        <FaBox className="text-4xl text-gray-300 mb-4" />
-                        <p className="text-gray-500 text-center">
+                        <FaBox className="text-4xl text-soft-text mb-4" />
+                        <p className="text-medium-text text-center">
                             {search ? labels.noSearchResults : labels.noProducts}
                         </p>
                     </div>
@@ -255,25 +255,25 @@ export const ProductGrid = ({
             </div>
 
             {!loading && products.length > perPage && (
-                <div className="flex items-center justify-center gap-4 py-3 px-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
+                <div className="flex items-center justify-center gap-4 py-3 px-4 border-t border-border bg-medium-bg flex-shrink-0">
                     <button
                         type="button"
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page <= 1}
-                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30"
+                        className="p-2 rounded-full hover:bg-strong-bg disabled:opacity-30"
                     >
-                        <FaChevronLeft className="text-gray-600 dark:text-gray-300" />
+                        <FaChevronLeft className="text-medium-text" />
                     </button>
-                    <span className="text-sm text-gray-600 dark:text-gray-300 font-medium min-w-20 text-center">
+                    <span className="text-sm text-medium-text font-medium min-w-20 text-center">
                         {labels.pageLabel.replace("{current}", page).replace("{total}", totalPages)}
                     </span>
                     <button
                         type="button"
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page >= totalPages}
-                        className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30"
+                        className="p-2 rounded-full hover:bg-strong-bg disabled:opacity-30"
                     >
-                        <FaChevronRight className="text-gray-600 dark:text-gray-300" />
+                        <FaChevronRight className="text-medium-text" />
                     </button>
                 </div>
             )}

@@ -266,12 +266,12 @@ export const DataTable = (props) => {
     const renderHeaderSortIndicator = (col) => {
         if (!col.sortable) return null;
         const active = effectiveSortBy && effectiveSortBy.key === col.key;
-        if (!active) return <span aria-hidden className="ml-1 text-gray-400">^v</span>;
+        if (!active) return <span aria-hidden className="ml-1 text-soft-text">^v</span>;
         return (
             <span
                 aria-label={effectiveSortBy.direction === "asc"
                     ? labels.sortAscending : labels.sortDescending}
-                className="ml-1 text-gray-700"
+                className="ml-1 text-strong-text"
             >
                 {effectiveSortBy.direction === "asc" ? "^" : "v"}
             </span>
@@ -290,9 +290,9 @@ export const DataTable = (props) => {
                 {...rowProps}
                 onClick={(e) => handleRowClick(row, index, e)}
                 className={twMerge(
-                    "border-b border-gray-100 dark:border-gray-700",
-                    onRowClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800" : "",
-                    isSelected ? "bg-primary/5" : "",
+                    "border-b border-border",
+                    onRowClick ? "cursor-pointer hover:bg-medium-bg" : "",
+                    isSelected ? "bg-primary/10" : "",
                     rowProps.className
                 )}
             >
@@ -319,7 +319,7 @@ export const DataTable = (props) => {
                             key={col.key}
                             {...cellProps}
                             className={twMerge(
-                                "px-3 py-2 text-sm text-gray-700 dark:text-gray-200",
+                                "px-3 py-2 text-sm text-strong-text",
                                 alignClass(col.align),
                                 col.cellClassName,
                                 cellProps.className
@@ -346,9 +346,9 @@ export const DataTable = (props) => {
                 {...cardProps}
                 onClick={(e) => handleRowClick(row, index, e)}
                 className={twMerge(
-                    "rounded-lg border border-gray-200 dark:border-gray-700 p-3 bg-white dark:bg-gray-800",
+                    "rounded-lg border border-border p-3 bg-medium-bg",
                     "flex flex-col gap-1",
-                    onRowClick ? "cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700" : "",
+                    onRowClick ? "cursor-pointer hover:brightness-soft" : "",
                     isSelected ? "ring-1 ring-primary" : "",
                     rowProps.className,
                     cardProps.className
@@ -357,7 +357,7 @@ export const DataTable = (props) => {
                 {selectable && (
                     <label
                         data-row-action
-                        className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200"
+                        className="flex items-center gap-2 text-sm text-strong-text"
                     >
                         <input
                             type="checkbox"
@@ -385,12 +385,12 @@ export const DataTable = (props) => {
                                 cellProps.className
                             )}
                         >
-                            <span className="text-gray-500 dark:text-gray-400">
+                            <span className="text-medium-text">
                                 {col.label}
                             </span>
                             <span
                                 className={twMerge(
-                                    "font-medium text-gray-800 dark:text-gray-100",
+                                    "font-medium text-strong-text",
                                     alignClass(col.align)
                                 )}
                             >
@@ -454,7 +454,7 @@ export const DataTable = (props) => {
                         <thead
                             {...headerProps}
                             className={twMerge(
-                                "bg-gray-50 dark:bg-gray-900",
+                                "bg-medium-bg",
                                 headerProps.className
                             )}
                         >
@@ -487,7 +487,7 @@ export const DataTable = (props) => {
                                                 ? () => handleHeaderClick(col)
                                                 : undefined}
                                             className={twMerge(
-                                                "px-3 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200",
+                                                "px-3 py-2 text-sm font-semibold text-strong-text",
                                                 alignClass(col.align),
                                                 clickable ? "cursor-pointer select-none" : "",
                                                 col.headerClassName,
@@ -518,7 +518,7 @@ export const DataTable = (props) => {
                                 <tr>
                                     <td
                                         colSpan={columns.length + (selectable ? 1 : 0)}
-                                        className="py-8 text-center text-sm text-gray-500"
+                                        className="py-8 text-center text-sm text-medium-text"
                                     >
                                         {emptyContent}
                                     </td>
@@ -544,7 +544,7 @@ export const DataTable = (props) => {
                         </div>
                     )}
                     {!loading && isEmpty && (
-                        <div className="py-8 text-center text-sm text-gray-500">
+                        <div className="py-8 text-center text-sm text-medium-text">
                             {emptyContent}
                         </div>
                     )}
@@ -566,7 +566,7 @@ export const DataTable = (props) => {
                         disabled={currentPage <= 0}
                         onClick={() => goToPage(currentPage - 1)}
                     />
-                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                    <span className="text-sm text-medium-text">
                         {labels.page} {currentPage + 1} {labels.of} {totalPages}
                     </span>
                     <Button

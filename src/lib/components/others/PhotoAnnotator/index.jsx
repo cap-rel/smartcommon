@@ -299,7 +299,7 @@ export const PhotoAnnotator = (props) => {
             data-component="PhotoAnnotator"
             {...containerProps}
             className={twMerge(
-                "relative flex flex-col size-full bg-gray-50 dark:bg-gray-900",
+                "relative flex flex-col size-full bg-soft-bg",
                 listPosition === "right" && "sm:flex-row",
                 containerProps.className
             )}
@@ -308,7 +308,7 @@ export const PhotoAnnotator = (props) => {
                 <div
                     {...headerProps}
                     className={twMerge(
-                        "flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700",
+                        "flex-shrink-0 flex items-center gap-2 px-4 py-2 bg-medium-bg border-b border-border",
                         headerProps.className
                     )}
                 >
@@ -322,7 +322,7 @@ export const PhotoAnnotator = (props) => {
                                 type="button"
                                 onClick={resetZoom}
                                 aria-label={labels.zoomReset}
-                                className="p-2 rounded-full text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                                className="p-2 rounded-full text-medium-text hover:bg-strong-bg"
                             >
                                 <FaMagnifyingGlassMinus />
                             </button>

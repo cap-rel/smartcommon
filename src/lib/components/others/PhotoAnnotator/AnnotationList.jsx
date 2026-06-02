@@ -18,10 +18,10 @@ const DefaultListItem = ({ annotation, num, typeDef, labels }) => {
                 {num}
             </div>
             <div className="flex-1 min-w-0">
-                <div className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                <div className="text-sm font-medium text-strong-text truncate">
                     {typeDef.label}
                 </div>
-                <div className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                <div className="text-xs text-medium-text truncate">
                     {summary || labels.untitled}
                 </div>
             </div>
@@ -52,7 +52,7 @@ export const AnnotationList = ({
             <div
                 {...listProps}
                 className={twMerge(
-                    "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex items-center justify-center text-sm text-gray-400",
+                    "border-border bg-medium-bg flex items-center justify-center text-sm text-soft-text",
                     isVertical
                         ? "w-72 border-l p-4 flex-shrink-0"
                         : "border-t p-3",
@@ -68,7 +68,7 @@ export const AnnotationList = ({
         <div
             {...listProps}
             className={twMerge(
-                "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-y-auto",
+                "border-border bg-medium-bg overflow-y-auto",
                 isVertical
                     ? "w-72 border-l flex-shrink-0"
                     : "border-t max-h-48",
@@ -91,8 +91,8 @@ export const AnnotationList = ({
                             key={annotation.id}
                             {...listItemProps}
                             className={twMerge(
-                                "flex items-center gap-2 px-3 py-2 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700",
-                                selected && "bg-primary/5 dark:bg-primary/10",
+                                "flex items-center gap-2 px-3 py-2 border-b border-border last:border-b-0 hover:bg-strong-bg",
+                                selected && "bg-primary/10",
                                 listItemProps.className
                             )}
                         >
@@ -110,7 +110,7 @@ export const AnnotationList = ({
                                         type="button"
                                         onClick={() => onEdit(annotation)}
                                         aria-label={labels.edit}
-                                        className="p-2 rounded-full text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                        className="p-2 rounded-full text-medium-text hover:text-strong-text hover:bg-strong-bg"
                                     >
                                         <FaPen className="text-sm" />
                                     </button>
@@ -118,7 +118,7 @@ export const AnnotationList = ({
                                         type="button"
                                         onClick={() => onDelete(annotation)}
                                         aria-label={labels.delete}
-                                        className="p-2 rounded-full text-gray-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                        className="p-2 rounded-full text-medium-text hover:text-error hover:bg-error/10"
                                     >
                                         <FaTrash className="text-sm" />
                                     </button>
