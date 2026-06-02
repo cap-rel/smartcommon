@@ -6,5 +6,5 @@ export const Timer = setTestStory({
         label: "Duration",
     },
     props: propTypes,
-    hidden: ["id", "icon", "prefix", "suffix", "onChange", "onError", "formSubmitted", "containerProps", "labelContainerProps", "iconProps", "labelProps", "starProps", "childrenContainerProps", "prefixProps", "suffixProps", "footerProps", "helpIconProps", "helpAndErrorsContainerProps", "helpProps", "errorProps", "durationContainerProps", "DaysInput", "HoursInput", "MinutesInput", "SecondsInput"]
+    hidden: ["id", "icon", "prefix", "suffix", "onChange", "onError", "formSubmitted", "containerProps", "labelContainerProps", "iconProps", "labelProps", "starProps", "childrenContainerProps", "prefixProps", "suffixProps", "footerProps", "helpIconProps", "helpAndErrorsContainerProps", "helpProps", "errorProps", "durationContainerProps", "separatorProps", "cellProps", "dropdownProps", "columnsContainerProps", "columnProps", "columnHeaderProps", "columnListProps", "optionProps", "okButtonProps"]
 });

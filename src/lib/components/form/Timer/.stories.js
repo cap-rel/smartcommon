@@ -63,6 +63,9 @@ export default {
     showSeconds: {
       table: { category: 'Appearance' },
     },
+    maxDays: {
+      table: { category: 'Validation' },
+    },
     value: {
       table: { category: 'Data' },
     },
@@ -120,16 +123,31 @@ export default {
     durationContainerProps: {
       table: { category: 'Elements' },
     },
-    DaysInput: {
+    separatorProps: {
       table: { category: 'Elements' },
     },
-    HoursInput: {
+    cellProps: {
       table: { category: 'Elements' },
     },
-    MinutesInput: {
+    dropdownProps: {
       table: { category: 'Elements' },
     },
-    SecondsInput: {
+    columnsContainerProps: {
+      table: { category: 'Elements' },
+    },
+    columnProps: {
+      table: { category: 'Elements' },
+    },
+    columnHeaderProps: {
+      table: { category: 'Elements' },
+    },
+    columnListProps: {
+      table: { category: 'Elements' },
+    },
+    optionProps: {
+      table: { category: 'Elements' },
+    },
+    okButtonProps: {
       table: { category: 'Elements' },
     },
   },

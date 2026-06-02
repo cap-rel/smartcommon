@@ -8,7 +8,7 @@ export const propTypes = {
     icon: PropTypes.node,
     prefix: PropTypes.node,
     suffix: PropTypes.node,
-    
+
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,
@@ -16,15 +16,17 @@ export const propTypes = {
     max: PropTypes.number,
 
     showSeconds: PropTypes.bool,
+    maxDays: PropTypes.number,
 
     name: PropTypes.string,
-    value: PropTypes.bool,
+    value: PropTypes.number,
     onChange: PropTypes.func,
-    defaultValue: PropTypes.bool,
+    defaultValue: PropTypes.number,
 
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,
 
+    // Label slots
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
     iconProps: PropTypes.object,
@@ -33,15 +35,21 @@ export const propTypes = {
     childrenContainerProps: PropTypes.object,
     prefixProps: PropTypes.object,
     suffixProps: PropTypes.object,
-    footerProps: PropTypes.object,
     helpIconProps: PropTypes.object,
     helpAndErrorsContainerProps: PropTypes.object,
     helpProps: PropTypes.object,
     errorProps: PropTypes.object,
-    
+
+    // Timer slots
     durationContainerProps: PropTypes.object,
-    DaysInput: PropTypes.object,
-    HoursInput: PropTypes.object,
-    MinutesInput: PropTypes.object,
-    SecondsInput: PropTypes.object,
+    separatorProps: PropTypes.object,
+    cellProps: PropTypes.object,
+    dropdownProps: PropTypes.object,
+    columnsContainerProps: PropTypes.object,
+    columnProps: PropTypes.object,
+    columnHeaderProps: PropTypes.object,
+    columnListProps: PropTypes.object,
+    optionProps: PropTypes.object,
+    footerProps: PropTypes.object,
+    okButtonProps: PropTypes.object,
 };
