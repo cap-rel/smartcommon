@@ -47,7 +47,7 @@ export const Popup = (props) => {
                     ...props,
                     "data-component": "Popup",
                     className: `
-                        w-full max-h-full duration-(--really-quick) overflow-y-auto rounded-app-md p-app-md pb-app-lg gap-app-base text-app-sm flex flex-col bg-soft-bg
+                        w-full max-h-full duration-(--really-quick) overflow-y-auto rounded-app-md p-app-md pb-app-lg gap-app-base text-app-sm flex flex-col bg-soft-bg text-strong-text
                         ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
                         ${responsive && "lg:w-200 lg:h-160 lg:max-w-3/5 lg:max-h-3/5"}
                     `
