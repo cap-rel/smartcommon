@@ -255,6 +255,12 @@ export const pl = {
         updatesNotSupported: "Aktualizacje nie są obsługiwane w tej przeglądarce",
         checkError: "Błąd podczas sprawdzania",
     },
+    NotificationToggle: {
+        toggleLabel: "Otrzymuj powiadomienia push",
+        unsupported: "Powiadomienia nie są obsługiwane przez tę przeglądarkę",
+        denied: "Powiadomienia są zablokowane",
+        deniedHint: "Zmień ustawienia przeglądarki, aby je włączyć",
+    },
     Files: {
         empty: "Brak plików",
         download: "Pobierz",

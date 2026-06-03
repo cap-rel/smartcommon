@@ -248,6 +248,12 @@ export const es = {
         updatesNotSupported: "Actualizaciones no compatibles con este navegador",
         checkError: "Error durante la comprobación",
     },
+    NotificationToggle: {
+        toggleLabel: "Recibir notificaciones push",
+        unsupported: "Notificaciones no compatibles con este navegador",
+        denied: "Notificaciones bloqueadas",
+        deniedHint: "Cambia la configuración del navegador para activarlas",
+    },
     Files: {
         empty: "Ningún archivo",
         download: "Descargar",

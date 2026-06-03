@@ -247,6 +247,12 @@ export const nl = {
         updatesNotSupported: "Updates worden niet ondersteund door deze browser",
         checkError: "Fout tijdens het controleren",
     },
+    NotificationToggle: {
+        toggleLabel: "Pushmeldingen ontvangen",
+        unsupported: "Meldingen worden niet ondersteund door deze browser",
+        denied: "Meldingen zijn geblokkeerd",
+        deniedHint: "Wijzig de browserinstellingen om ze in te schakelen",
+    },
     Files: {
         empty: "Geen bestand",
         download: "Downloaden",

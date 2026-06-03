@@ -13,6 +13,7 @@ export * from "./LazyLink";
 export * from "./LoginComponent";
 export * from "./Map";
 export * from "./Modal";
+export * from "./NotificationToggle";
 export * from "./Overlay";
 export * from "./PhotoAnnotator";
 export * from "./ProductCategoryBrowser";

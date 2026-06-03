@@ -244,6 +244,12 @@ export const fr = {
         updatesNotSupported: "Mises à jour non supportées sur ce navigateur",
         checkError: "Erreur lors de la vérification",
     },
+    NotificationToggle: {
+        toggleLabel: "Recevoir les notifications push",
+        unsupported: "Notifications non supportées par ce navigateur",
+        denied: "Notifications bloquées",
+        deniedHint: "Modifiez les paramètres du navigateur pour les activer",
+    },
     Files: {
         empty: "Aucun fichier",
         download: "Télécharger",

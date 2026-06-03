@@ -248,6 +248,12 @@ export const it = {
         updatesNotSupported: "Aggiornamenti non supportati su questo browser",
         checkError: "Errore durante la verifica",
     },
+    NotificationToggle: {
+        toggleLabel: "Ricevere le notifiche push",
+        unsupported: "Notifiche non supportate da questo browser",
+        denied: "Notifiche bloccate",
+        deniedHint: "Modifica le impostazioni del browser per attivarle",
+    },
     Files: {
         empty: "Nessun file",
         download: "Scarica",

@@ -31,6 +31,7 @@ import { DEFAULT_LABELS as DeviceIdentificationComponent } from "lib/components/
 import { DEFAULT_LABELS as DataTable } from "lib/components/others/DataTable/props";
 import { DEFAULT_LABELS as BarcodeScanner } from "lib/components/others/BarcodeScanner/props";
 import { DEFAULT_LABELS as AboutModal } from "lib/components/others/AboutModal/props";
+import { DEFAULT_LABELS as NotificationToggle } from "lib/components/others/NotificationToggle/props";
 import { DEFAULT_LABELS as Files } from "lib/components/formats/Files/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
@@ -58,6 +59,7 @@ export const en = {
     DataTable,
     BarcodeScanner,
     AboutModal,
+    NotificationToggle,
     Files,
     UpdatePrompt,
     ViewportProvider,

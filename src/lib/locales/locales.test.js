@@ -40,7 +40,7 @@ describe("locale bundles - structural integrity", () => {
         });
     }
 
-    it("every bundle exposes all 24 component namespaces", () => {
+    it("every bundle exposes all 25 component namespaces", () => {
         const expectedKeys = Object.keys(en).sort();
         for (const [name, bundle] of Object.entries(bundles)) {
             expect(Object.keys(bundle).sort(), `${name} top-level keys`).toEqual(expectedKeys);
