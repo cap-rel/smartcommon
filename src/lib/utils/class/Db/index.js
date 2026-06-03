@@ -149,6 +149,15 @@ export class Db {
         const { db, debug } = this;
 
         forEach(keys(stores), (store) => {
+            // A store declared as null in this (latest) version was dropped:
+            // Dexie deletes the table on upgrade, so db[store] is undefined and
+            // there is no table to attach creating/updating/deleting hooks to.
+            // Skipping it lets consumers retire a store via `{ store: null }`
+            // (the canonical Dexie idiom) without crashing at construction.
+            if (stores[store] === null || !db[store]) {
+                return;
+            }
+
             db[store].hook("creating", (key, item) => {
                 if (debug) {
                     log.db(`CREATE in ${store} - key =`, key, ", item =", item);
