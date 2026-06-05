@@ -16,6 +16,35 @@ class SyncStorage {
     async init() {
         this.db = new Dexie(this.dbName);
 
+        // --- Instrumentation (debug only) -----------------------------------
+        // One implicit IndexedDB transaction is opened per Dexie op when it is
+        // not wrapped in an explicit db.transaction(). This DBCore middleware
+        // counts low-level ops (reads/writes/queries) so we can measure the
+        // transaction volume during a sync. Counting is cheap and always on;
+        // it is read/reset by SyncEngine and only logged when
+        // window.SMARTCOMMON_SYNC_DEBUG is truthy.
+        this.opStats = { reads: 0, writes: 0, queries: 0, counts: 0, cursors: 0 };
+        const opStats = this.opStats;
+        this.db.use({
+            stack: 'dbcore',
+            name: 'syncOpCounter',
+            create: (core) => ({
+                ...core,
+                table: (name) => {
+                    const t = core.table(name);
+                    return {
+                        ...t,
+                        mutate: (req) => { opStats.writes++; return t.mutate(req); },
+                        get: (req) => { opStats.reads++; return t.get(req); },
+                        getMany: (req) => { opStats.reads++; return t.getMany(req); },
+                        query: (req) => { opStats.queries++; return t.query(req); },
+                        count: (req) => { opStats.counts++; return t.count(req); },
+                        openCursor: (req) => { opStats.cursors++; return t.openCursor(req); },
+                    };
+                },
+            }),
+        });
+
         this.db.version(1).stores({
             // Cached business entities
             // Compound key: [table, id]
@@ -363,6 +392,29 @@ class SyncStorage {
         }
 
         return counts;
+    }
+
+    /**
+     * Reset the low-level op counters (debug instrumentation).
+     */
+    resetOpStats() {
+        this.opStats.reads = 0;
+        this.opStats.writes = 0;
+        this.opStats.queries = 0;
+        this.opStats.counts = 0;
+        this.opStats.cursors = 0;
+    }
+
+    /**
+     * Snapshot of the low-level op counters (debug instrumentation).
+     * total approximates the number of implicit IndexedDB transactions.
+     */
+    getOpStats() {
+        const s = this.opStats;
+        return {
+            ...s,
+            total: s.reads + s.writes + s.queries + s.counts + s.cursors,
+        };
     }
 
     /**

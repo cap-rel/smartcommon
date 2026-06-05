@@ -5,7 +5,7 @@ import { useStates } from "lib/hooks";
 
 export const useForm = (form) => {
     const setInitialFormValues = (components) => {
-        return components.reduce((acc, component) => {
+        return (components ?? []).reduce((acc, component) => {
             if (component.type !== "flex" && component.type !== "tabs") {
                 acc[component.id] = component.default || "";
                 // { 
@@ -24,7 +24,7 @@ export const useForm = (form) => {
     }
 
     const setInitialSelectedTabs = (components) => {
-        return components.reduce((acc, component) => {
+        return (components ?? []).reduce((acc, component) => {
             if (component.type === "tabs") {
                 acc[component.id] = component.children?.[0]?.id
             }
@@ -38,7 +38,7 @@ export const useForm = (form) => {
     }
 
     const setInitialOpacityTransitionsTabs = (components) => {
-        return components.reduce((acc, component) => {
+        return (components ?? []).reduce((acc, component) => {
             if (component.type === "tabs") {
                 acc[component.id] = false;
             }

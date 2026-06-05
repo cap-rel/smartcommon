@@ -1,4 +1,23 @@
 /**
+ * Debug instrumentation, silent in production. Enable from the browser console
+ * with `window.SMARTCOMMON_SYNC_DEBUG = true` before reproducing a sync.
+ */
+function syncDebugEnabled() {
+    return typeof window !== 'undefined' && window.SMARTCOMMON_SYNC_DEBUG;
+}
+function syncLog(...args) {
+    if (syncDebugEnabled()) {
+        // eslint-disable-next-line no-console
+        console.log('[sync]', ...args);
+    }
+}
+function perfNow() {
+    return (typeof performance !== 'undefined' && performance.now)
+        ? performance.now()
+        : Date.now();
+}
+
+/**
  * SyncEngine - Orchestrates synchronization between client and server
  * Handles push, pull, conflict detection, and temp_id mapping
  */
@@ -76,6 +95,10 @@ class SyncEngine {
             errors: []
         };
 
+        const _t0 = perfNow();
+        if (this.storage.resetOpStats) this.storage.resetOpStats();
+        syncLog('sync start, scope=', this.scope);
+
         // Ensure client UUID is set on API
         const clientUuid = await this.storage.getClientUuid();
         if (clientUuid) {
@@ -95,6 +118,16 @@ class SyncEngine {
         // Step 3: Clear tombstones after successful sync
         await this.storage.clearTombstones();
 
+        if (syncDebugEnabled()) {
+            const ops = this.storage.getOpStats ? this.storage.getOpStats() : null;
+            syncLog(
+                `sync done in ${Math.round(perfNow() - _t0)}ms`,
+                '| pushed=', result.pushed,
+                '| pulled=', result.pulled,
+                '| idb ops (~= transactions)=', ops
+            );
+        }
+
         return result;
     }
 
@@ -112,6 +145,9 @@ class SyncEngine {
             errors: [],
             id_mappings: {}
         };
+
+        const _t0 = perfNow();
+        const _opsBefore = this.storage.getOpStats ? this.storage.getOpStats().total : null;
 
         const pendingChanges = await this.storage.getPendingChanges();
         if (pendingChanges.length === 0) {
@@ -133,6 +169,18 @@ class SyncEngine {
         // Apply ID mappings to remaining pending changes and entities
         if (Object.keys(result.id_mappings).length > 0) {
             await this._applyIdMappings(result.id_mappings);
+        }
+
+        if (syncDebugEnabled()) {
+            const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
+            const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
+            syncLog(
+                `push done in ${Math.round(perfNow() - _t0)}ms`,
+                `| pending=${pendingChanges.length} chunks=${chunks.length}`,
+                `| success=${result.success} conflicts=${result.conflicts.length} errors=${result.errors.length}`,
+                `| id_mappings=${Object.keys(result.id_mappings).length}`,
+                `| idb ops (~= transactions)=${idbOps}`
+            );
         }
 
         return result;
@@ -334,12 +382,18 @@ class SyncEngine {
     async pull() {
         const result = { updated: 0, deleted: 0 };
 
+        const _t0 = perfNow();
+        const _opsBefore = this.storage.getOpStats ? this.storage.getOpStats().total : null;
+        const _perTable = {};
+        let _pages = 0;
+
         const lastSyncTime = await this.storage.getLastSyncTime();
         let hasMore = true;
         let offset = 0;
 
         while (hasMore) {
             const response = await this.api.pull(this.scope, lastSyncTime, 500, offset);
+            _pages++;
             hasMore = false;
 
             for (const [table, changes] of Object.entries(response.changes)) {
@@ -362,6 +416,7 @@ class SyncEngine {
                             null
                         );
                         result.updated++;
+                        (_perTable[table] = _perTable[table] || { updated: 0, deleted: 0 }).updated++;
                     }
                 }
 
@@ -378,6 +433,7 @@ class SyncEngine {
 
                         await this.storage.deleteEntity(table, tombstone.id);
                         result.deleted++;
+                        (_perTable[table] = _perTable[table] || { updated: 0, deleted: 0 }).deleted++;
                     }
                 }
 
@@ -395,6 +451,18 @@ class SyncEngine {
             if (response.server_time) {
                 await this.storage.setLastSyncTime(response.server_time);
             }
+        }
+
+        if (syncDebugEnabled()) {
+            const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
+            const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
+            syncLog(
+                `pull done in ${Math.round(perfNow() - _t0)}ms`,
+                `| pages=${_pages}`,
+                `| updated=${result.updated} deleted=${result.deleted}`,
+                '| per-table=', _perTable,
+                `| idb ops (~= transactions)=${idbOps}`
+            );
         }
 
         return result;

@@ -65,7 +65,7 @@ export const useFilter = (attributes) => {
     });
   };
 
-  const smartFiltersStates = Object.fromEntries(Object.entries(attributes).map(([key, attribute]) => [key, { inclusive: null, exclusive: null }]));
+  const smartFiltersStates = Object.fromEntries(Object.entries(attributes ?? {}).map(([key, attribute]) => [key, { inclusive: null, exclusive: null }]));
 
   const matchesInclusiveFilter = (attribute, filter) => {
     if (filter.interval) {

@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render } from '@testing-library/react';
+import { render, renderHook } from '@testing-library/react';
 
 // Mock dependencies that components might need
 vi.mock('lib/hooks', () => ({
@@ -58,6 +58,9 @@ vi.mock('lib/utils', () => ({
   locate: vi.fn(),
   splitFileExtension: () => ['filename', 'ext'],
   ISOFormat: () => '2024-01-01',
+  // Minimal stand-in for the real accent/case-insensitive normalizer, enough
+  // to exercise useFilter's filtering branches in the hooks tests below.
+  cleanForComparison: (v) => String(v ?? '').toLowerCase(),
 }));
 
 vi.mock('react-hot-toast', () => ({
@@ -227,12 +230,33 @@ describe('Navigation Components - Null Safety', () => {
 // HOOKS TESTS
 // =============================================================================
 
-// Note: Hooks need to be tested inside React components.
-// These tests are skipped - use Storybook or integration tests for hooks.
+// Hooks must be exercised inside a React render: renderHook provides that.
+// The lib/hooks mock above stubs useStates so useForm runs without a store.
 
-describe.skip('Hooks - Null Safety', () => {
-  it('useFormBuilder: should handle undefined/null form', () => {
-    // Hooks must be called inside a React component
+describe('Hooks - Null Safety', () => {
+  it('useForm (useFormBuilder): should handle undefined/null/empty form', async () => {
+    const { useForm } = await import('lib/hooks/local/useFormBuilder/index.jsx');
+
+    // No crash on the degenerate inputs, and buildForm always returns an array.
+    for (const form of [undefined, null, []]) {
+      let api;
+      expect(() => {
+        api = renderHook(() => useForm(form)).result.current;
+      }, `useForm(${JSON.stringify(form)}) threw`).not.toThrow();
+      expect(Array.isArray(api.buildForm())).toBe(true);
+      expect(api.buildForm()).toHaveLength(0);
+    }
+  });
+
+  it('useForm (useFormBuilder): builds one node per top-level component', async () => {
+    const { useForm } = await import('lib/hooks/local/useFormBuilder/index.jsx');
+
+    const form = [
+      { id: 'a', type: 'varchar' },
+      { id: 'b', type: 'text' },
+    ];
+    const { result } = renderHook(() => useForm(form));
+    expect(result.current.buildForm()).toHaveLength(2);
   });
 });
 
@@ -240,11 +264,48 @@ describe.skip('Hooks - Null Safety', () => {
 // UTILITY FUNCTIONS TESTS
 // =============================================================================
 
-// Note: useFilter depends on imports that need proper mocking.
-// These tests are skipped - test utility functions separately.
+describe('Utility Functions - Null Safety', () => {
+  it('useFilter: should handle undefined/null/empty attributes without crashing', async () => {
+    const { useFilter } = await import('lib/utils/functions/filters/smart.js');
 
-describe.skip('Utility Functions - Null Safety', () => {
-  it('useFilter: should handle undefined attributes', () => {
-    // Need proper module mocking for cleanForComparison
+    for (const attributes of [undefined, null, {}]) {
+      let filter;
+      expect(() => {
+        filter = useFilter(attributes);
+      }, `useFilter(${JSON.stringify(attributes)}) threw`).not.toThrow();
+
+      expect(typeof filter.searchBarFilter).toBe('function');
+      expect(typeof filter.smartFilters).toBe('function');
+      expect(filter.smartFiltersStates).toEqual({});
+
+      // The returned filter functions must also be safe on an empty list.
+      expect(filter.smartFilters([], {})).toEqual([]);
+      expect(filter.searchBarFilter([], 'foo', true)).toEqual([]);
+    }
+  });
+
+  it('useFilter: smartFilters applies an inclusive interval filter', async () => {
+    const { useFilter } = await import('lib/utils/functions/filters/smart.js');
+
+    const { smartFilters } = useFilter({ age: { type: 'int' } });
+    const list = [{ age: 10 }, { age: 25 }, { age: 40 }];
+
+    const result = smartFilters(list, {
+      age: { inclusive: { interval: { min: 20, max: 30 } }, exclusive: null },
+    });
+
+    expect(result).toEqual([{ age: 25 }]);
+  });
+
+  it('useFilter: searchBarFilter narrows the list by a searchable attribute', async () => {
+    const { useFilter } = await import('lib/utils/functions/filters/smart.js');
+
+    const { searchBarFilter } = useFilter({ name: { type: 'varchar', searchall: true } });
+    const list = [{ name: 'Alice' }, { name: 'Bob' }];
+
+    // filteredValue truthy -> filtering active; case-insensitive via the mock.
+    expect(searchBarFilter(list, 'ali', true)).toEqual([{ name: 'Alice' }]);
+    // filteredValue falsy -> list returned untouched.
+    expect(searchBarFilter(list, 'ali', false)).toEqual(list);
   });
 });
