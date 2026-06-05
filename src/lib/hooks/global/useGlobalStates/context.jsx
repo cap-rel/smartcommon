@@ -10,7 +10,16 @@ import { session, local, log, throwTypeError } from "lib/utils";
 // broadcast). Logs a running total every 100 writes.
 const _storageWriteStats = { local: 0, session: 0 };
 function _ggsDebugEnabled() {
-  return typeof window !== "undefined" && window.SMARTCOMMON_SYNC_DEBUG;
+  if (typeof window === "undefined") return false;
+  if (window.SMARTCOMMON_SYNC_DEBUG) return true;
+  try {
+    return (
+      window.localStorage &&
+      window.localStorage.getItem("SMARTCOMMON_SYNC_DEBUG") === "1"
+    );
+  } catch (e) {
+    return false;
+  }
 }
 function _countStorageWrite(kind) {
   _storageWriteStats[kind] += 1;

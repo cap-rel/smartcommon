@@ -3,7 +3,12 @@ import { isEmpty } from "lodash";
 
 import { useStates } from "lib/hooks";
 
-export const useForm = (form) => {
+// NOTE: this hook is named after its folder (useFormBuilder) to avoid colliding
+// with the unrelated useForm state-manager hook in ../useForm. It is exported
+// from the dev barrel (index.js) for Storybook but intentionally kept OUT of the
+// build barrel (export.js) - it is an incomplete schema-driven form builder
+// (the default render case is still a stub) and is not part of the public package.
+export const useFormBuilder = (form) => {
     const setInitialFormValues = (components) => {
         return (components ?? []).reduce((acc, component) => {
             if (component.type !== "flex" && component.type !== "tabs") {

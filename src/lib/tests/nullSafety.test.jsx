@@ -231,31 +231,31 @@ describe('Navigation Components - Null Safety', () => {
 // =============================================================================
 
 // Hooks must be exercised inside a React render: renderHook provides that.
-// The lib/hooks mock above stubs useStates so useForm runs without a store.
+// The lib/hooks mock above stubs useStates so useFormBuilder runs without a store.
 
 describe('Hooks - Null Safety', () => {
-  it('useForm (useFormBuilder): should handle undefined/null/empty form', async () => {
-    const { useForm } = await import('lib/hooks/local/useFormBuilder/index.jsx');
+  it('useFormBuilder: should handle undefined/null/empty form', async () => {
+    const { useFormBuilder } = await import('lib/hooks/local/useFormBuilder/index.jsx');
 
     // No crash on the degenerate inputs, and buildForm always returns an array.
     for (const form of [undefined, null, []]) {
       let api;
       expect(() => {
-        api = renderHook(() => useForm(form)).result.current;
-      }, `useForm(${JSON.stringify(form)}) threw`).not.toThrow();
+        api = renderHook(() => useFormBuilder(form)).result.current;
+      }, `useFormBuilder(${JSON.stringify(form)}) threw`).not.toThrow();
       expect(Array.isArray(api.buildForm())).toBe(true);
       expect(api.buildForm()).toHaveLength(0);
     }
   });
 
-  it('useForm (useFormBuilder): builds one node per top-level component', async () => {
-    const { useForm } = await import('lib/hooks/local/useFormBuilder/index.jsx');
+  it('useFormBuilder: builds one node per top-level component', async () => {
+    const { useFormBuilder } = await import('lib/hooks/local/useFormBuilder/index.jsx');
 
     const form = [
       { id: 'a', type: 'varchar' },
       { id: 'b', type: 'text' },
     ];
-    const { result } = renderHook(() => useForm(form));
+    const { result } = renderHook(() => useFormBuilder(form));
     expect(result.current.buildForm()).toHaveLength(2);
   });
 });

@@ -1,14 +1,56 @@
 /**
- * Debug instrumentation, silent in production. Enable from the browser console
- * with `window.SMARTCOMMON_SYNC_DEBUG = true` before reproducing a sync.
+ * Debug instrumentation, silent in production unless explicitly enabled.
+ * Enable verbose logs by either:
+ *   - window.SMARTCOMMON_SYNC_DEBUG = true            (this tab only), or
+ *   - localStorage.SMARTCOMMON_SYNC_DEBUG = "1"       (persists across reloads).
+ * The threshold alarm below ALWAYS fires (even when verbose is off) so an
+ * abnormal sync is caught passively, without knowing which action triggered it.
  */
 function syncDebugEnabled() {
-    return typeof window !== 'undefined' && window.SMARTCOMMON_SYNC_DEBUG;
+    if (typeof window === 'undefined') return false;
+    if (window.SMARTCOMMON_SYNC_DEBUG) return true;
+    try {
+        return window.localStorage
+            && window.localStorage.getItem('SMARTCOMMON_SYNC_DEBUG') === '1';
+    } catch (e) {
+        return false;
+    }
+}
+// Above this many IndexedDB ops in a single phase, log a warning with the call
+// stack even when verbose logging is off. Override with
+// window.SMARTCOMMON_SYNC_ALARM_OPS = <n>.
+function syncAlarmThreshold() {
+    if (typeof window !== 'undefined' && Number.isFinite(window.SMARTCOMMON_SYNC_ALARM_OPS)) {
+        return window.SMARTCOMMON_SYNC_ALARM_OPS;
+    }
+    return 1000;
 }
 function syncLog(...args) {
     if (syncDebugEnabled()) {
         // eslint-disable-next-line no-console
         console.log('[sync]', ...args);
+    }
+}
+// Captures the caller chain so we can see WHAT triggered a sync/pull/push
+// (auto-sync online, periodic interval, first full pull, manual call...).
+function syncCallStack() {
+    try {
+        return (new Error().stack || '').split('\n').slice(2, 8).join('\n');
+    } catch (e) {
+        return '(stack unavailable)';
+    }
+}
+// Fires a console.warn when a phase did an abnormal number of IDB ops, even
+// when verbose logging is off. Returns nothing.
+function syncAlarm(phase, idbOps, stack, extra) {
+    if (idbOps !== null && idbOps >= syncAlarmThreshold()) {
+        // eslint-disable-next-line no-console
+        console.warn(
+            `[sync][ALARM] ${phase} did ${idbOps} IndexedDB ops (~= transactions) ` +
+            `>= threshold ${syncAlarmThreshold()}.`,
+            extra || '',
+            '\nTriggered from:\n' + stack
+        );
     }
 }
 function perfNow() {
@@ -96,8 +138,9 @@ class SyncEngine {
         };
 
         const _t0 = perfNow();
+        const _stack = syncCallStack();
         if (this.storage.resetOpStats) this.storage.resetOpStats();
-        syncLog('sync start, scope=', this.scope);
+        syncLog('sync start, scope=', this.scope, '\nTriggered from:\n' + _stack);
 
         // Ensure client UUID is set on API
         const clientUuid = await this.storage.getClientUuid();
@@ -118,15 +161,16 @@ class SyncEngine {
         // Step 3: Clear tombstones after successful sync
         await this.storage.clearTombstones();
 
-        if (syncDebugEnabled()) {
-            const ops = this.storage.getOpStats ? this.storage.getOpStats() : null;
-            syncLog(
-                `sync done in ${Math.round(perfNow() - _t0)}ms`,
-                '| pushed=', result.pushed,
-                '| pulled=', result.pulled,
-                '| idb ops (~= transactions)=', ops
-            );
-        }
+        const _ops = this.storage.getOpStats ? this.storage.getOpStats() : null;
+        const _total = _ops ? _ops.total : null;
+        syncLog(
+            `sync done in ${Math.round(perfNow() - _t0)}ms`,
+            '| pushed=', result.pushed,
+            '| pulled=', result.pulled,
+            '| idb ops (~= transactions)=', _ops
+        );
+        syncAlarm('sync', _total, _stack,
+            `(pulled ${result.pulled.updated}/${result.pulled.deleted}, pushed ${result.pushed.success})`);
 
         return result;
     }
@@ -147,6 +191,7 @@ class SyncEngine {
         };
 
         const _t0 = perfNow();
+        const _stack = syncCallStack();
         const _opsBefore = this.storage.getOpStats ? this.storage.getOpStats().total : null;
 
         const pendingChanges = await this.storage.getPendingChanges();
@@ -171,17 +216,17 @@ class SyncEngine {
             await this._applyIdMappings(result.id_mappings);
         }
 
-        if (syncDebugEnabled()) {
-            const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
-            const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
-            syncLog(
-                `push done in ${Math.round(perfNow() - _t0)}ms`,
-                `| pending=${pendingChanges.length} chunks=${chunks.length}`,
-                `| success=${result.success} conflicts=${result.conflicts.length} errors=${result.errors.length}`,
-                `| id_mappings=${Object.keys(result.id_mappings).length}`,
-                `| idb ops (~= transactions)=${idbOps}`
-            );
-        }
+        const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
+        const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
+        syncLog(
+            `push done in ${Math.round(perfNow() - _t0)}ms`,
+            `| pending=${pendingChanges.length} chunks=${chunks.length}`,
+            `| success=${result.success} conflicts=${result.conflicts.length} errors=${result.errors.length}`,
+            `| id_mappings=${Object.keys(result.id_mappings).length}`,
+            `| idb ops (~= transactions)=${idbOps}`
+        );
+        syncAlarm('push', idbOps, _stack,
+            `(pending=${pendingChanges.length}, chunks=${chunks.length}, success=${result.success})`);
 
         return result;
     }
@@ -383,6 +428,7 @@ class SyncEngine {
         const result = { updated: 0, deleted: 0 };
 
         const _t0 = perfNow();
+        const _stack = syncCallStack();
         const _opsBefore = this.storage.getOpStats ? this.storage.getOpStats().total : null;
         const _perTable = {};
         let _pages = 0;
@@ -453,17 +499,17 @@ class SyncEngine {
             }
         }
 
-        if (syncDebugEnabled()) {
-            const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
-            const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
-            syncLog(
-                `pull done in ${Math.round(perfNow() - _t0)}ms`,
-                `| pages=${_pages}`,
-                `| updated=${result.updated} deleted=${result.deleted}`,
-                '| per-table=', _perTable,
-                `| idb ops (~= transactions)=${idbOps}`
-            );
-        }
+        const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;
+        const idbOps = (opsAfter !== null && _opsBefore !== null) ? opsAfter - _opsBefore : null;
+        syncLog(
+            `pull done in ${Math.round(perfNow() - _t0)}ms`,
+            `| pages=${_pages}`,
+            `| updated=${result.updated} deleted=${result.deleted}`,
+            '| per-table=', _perTable,
+            `| idb ops (~= transactions)=${idbOps}`
+        );
+        syncAlarm('pull', idbOps, _stack,
+            `(pages=${_pages}, updated=${result.updated}, deleted=${result.deleted}, per-table=${JSON.stringify(_perTable)})`);
 
         return result;
     }
