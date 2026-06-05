@@ -4,6 +4,25 @@ import { useCallback, useMemo, useRef } from "react";
 import { useLibConfig, useStates } from "lib/hooks";
 import { session, local, log, throwTypeError } from "lib/utils";
 
+// Debug instrumentation, silent unless window.SMARTCOMMON_SYNC_DEBUG is truthy.
+// Counts storage writes done by setByStorage so we can quantify the
+// sessionStorage churn (every session write fires a MozSessionStorageChanged
+// broadcast). Logs a running total every 100 writes.
+const _storageWriteStats = { local: 0, session: 0 };
+function _ggsDebugEnabled() {
+  return typeof window !== "undefined" && window.SMARTCOMMON_SYNC_DEBUG;
+}
+function _countStorageWrite(kind) {
+  _storageWriteStats[kind] += 1;
+  if (
+    _ggsDebugEnabled() &&
+    (_storageWriteStats.local + _storageWriteStats.session) % 100 === 0
+  ) {
+    // eslint-disable-next-line no-console
+    console.log("[globalStates] storage writes so far:", { ..._storageWriteStats });
+  }
+}
+
 // TODO (prevValue) => ne fonctionne pas
 
 export const useGlobalStatesContext = (props = {}) => {
@@ -137,13 +156,16 @@ export const useGlobalStatesContext = (props = {}) => {
     delete newSessionStorage[path];
 
     local.set("global", newLocalStorage);
+    _countStorageWrite("local");
     session.set("global", newSessionStorage);
+    _countStorageWrite("session");
 
     if (storage === "local") {
       if (debugRef.current) {
         log.globalState(`SET LOCAL ${path} =>`, value);
       }
 
+      _countStorageWrite("local");
       return local.set("global", { ...localStorage, [path]: value });
     }
 
@@ -152,6 +174,7 @@ export const useGlobalStatesContext = (props = {}) => {
         log.globalState(`SET SESSION ${path} =>`, value);
       }
 
+      _countStorageWrite("session");
       return session.set("global", { ...sessionStorage, [path]: value });
     }
 
