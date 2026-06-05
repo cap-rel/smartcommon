@@ -45,6 +45,13 @@ export const useApiContext = () => {
         circuitRef.current.openUntil = Date.now() + ms;
     };
 
+    // Stable (useMemo []) so it keeps the same identity across renders and can
+    // be exposed on the api object without busting its memo. Immediately closes
+    // the breaker: used on reconnection and as the consumer-facing escape hatch.
+    const resetCircuit = useMemo(() => () => {
+        circuitRef.current.openUntil = 0;
+    }, []);
+
     // ---------------------- refs for current values ----------------------
 
     const valuesRef = useRef({
@@ -90,6 +97,43 @@ export const useApiContext = () => {
     // error toast. Reset on the next successful response and on a fresh login.
     const sessionDeadRef = useRef(false);
 
+    // ---------------------- reconnection: reset circuit ----------------------
+
+    // When a request is fired offline, beforeRequest opens the breaker for 5s
+    // and rejects. The breaker then stays open until that cooldown elapses -
+    // including right after the browser comes back online. Any drain that the
+    // consumer triggers on the 'online' event (or via mustSync) would hit
+    // "Circuit breaker open - requests blocked", burn its attempts, and nothing
+    // would relaunch the drain once the breaker finally closes -> the offline
+    // submission queue never flushes on reconnection (verified by
+    // smartInterventions E2E 84-offline-intervention-submit-queue).
+    //
+    // Fix: on 'online', immediately clear the breaker so queued requests fire at
+    // once instead of waiting the cooldown. We do NOT clear it for a known-dead
+    // session: that 30s circuit is intentional throttling and the session stays
+    // invalid until re-login (see the dead-session handling in createApiMethod).
+    useEffect(() => {
+        if (typeof window === "undefined") {
+            return undefined;
+        }
+
+        const handleOnline = () => {
+            if (sessionDeadRef.current) {
+                if (valuesRef.current.debug) {
+                    log.apiError("ONLINE - circuit kept (dead session)", "");
+                }
+                return;
+            }
+            resetCircuit();
+            if (valuesRef.current.debug) {
+                log.apiSuccess("ONLINE - circuit reset", "");
+            }
+        };
+
+        window.addEventListener("online", handleOnline);
+        return () => window.removeEventListener("online", handleOnline);
+    }, [resetCircuit]);
+
     // ---------------------- baseApi ----------------------
 
     const baseApi = useMemo(() => ky.create({
@@ -110,7 +154,7 @@ export const useApiContext = () => {
                             log.apiError(`${method} - BLOCKED`, url);
                         }
 
-                        return Promise.reject(new Error("Circuit breaker open – requests blocked"));
+                        return Promise.reject(new Error("Circuit breaker open - requests blocked"));
                     }
 
                     if (!navigatorInfo.isOnLine) {
@@ -742,6 +786,7 @@ export const useApiContext = () => {
         put,
         patch,
         del,
+        resetCircuit,
     }), [
         user,
         entities,
@@ -763,5 +808,6 @@ export const useApiContext = () => {
         put,
         patch,
         del,
+        resetCircuit,
     ]);
 };

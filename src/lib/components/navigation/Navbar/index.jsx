@@ -74,7 +74,12 @@ export const Navbar = (props) => {
     const isBottomEmpty = isEmpty(bottom);
 
     const [isOpen, setIsOpen] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+    // Kept in a ref, not state: scroll fires continuously and we only read the
+    // previous position to compute a delta. Using state here re-ran the scroll
+    // effect on every single scroll tick, detaching and re-attaching all three
+    // listeners each frame. The ref keeps the value across renders without
+    // re-triggering the effect.
+    const lastScrollYRef = useRef(0);
 
     const duration = 0.1;
     const openGoBackValue = 1/5;
@@ -99,13 +104,13 @@ export const Navbar = (props) => {
         const handleScroll = () => {
             const currentY = scrollElement.scrollTop;
 
-            const delta = currentY - lastScrollY;
+            const delta = currentY - lastScrollYRef.current;
 
             const currentPosition = Math.max(closedPosition, Math.min(openPosition, y.get() - delta));
 
             y.set(currentPosition);
 
-            setLastScrollY(currentY);
+            lastScrollYRef.current = currentY;
         };
 
         const handleScrollEnd = () => {
@@ -137,7 +142,10 @@ export const Navbar = (props) => {
             };
         }
 
-    }, [lastScrollY]);
+        // Re-attach only when the values captured by the handlers actually
+        // change (open/close state, measured height, enable flags) - never on
+        // every scroll tick. The previous-scroll position now lives in a ref.
+    }, [hideOnScroll, isDesktop, isOpen, navbarHeight]);
 
     // Animate navbar position when open state changes
     useEffect(() => {

@@ -16,6 +16,28 @@ import { defaultProps, propTypes } from "./props";
 // TODO All steppers
 // TODO Stepper
 
+// Static type buckets: hoisted to module scope so they are not re-created on
+// every render. They classify the *resolved* HTML input type (filteredType).
+const STRING_TYPES = ["text", "email", "password", "url", "tel", "search"];
+const DATETIME_TYPES = ["date", "datetime-local"];
+const NUMBER_TYPES = ["number"];
+const TIME_TYPES = ["time"];
+
+// Native HTML input types accepted as-is when no meta-type matches. This lets a
+// consumer pass a real HTML type ("datetime-local", "date", "number", ...) and
+// still get the native widget instead of silently falling back to "text".
+const NATIVE_HTML_TYPES = [
+  ...STRING_TYPES,
+  ...DATETIME_TYPES,
+  ...NUMBER_TYPES,
+  ...TIME_TYPES,
+  "color",
+  "month",
+  "week",
+  "range",
+  "hidden",
+];
+
 export const Input = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Input", props);
 
@@ -75,12 +97,10 @@ export const Input = (props) => {
     time: { type: "time" },
   };
 
-  const filteredType = typeMap[type]?.type ?? "text";
-
-  const stringTypes = ["text", "email", "password", "url", "tel", "search"];
-  const datetimeTypes = ["date", "datetime-local"];
-  const numberTypes = ["number"];
-  const timeTypes = ["time"];
+  // Resolution order: meta-type map first, then native HTML pass-through, then
+  // "text" as a last resort. The pass-through is what makes type="datetime-local"
+  // (and friends) activate the native widget.
+  const filteredType = typeMap[type]?.type ?? (includes(NATIVE_HTML_TYPES, type) ? type : "text");
 
   const errors = (currentValue) => ({
     // email: { 
@@ -97,7 +117,7 @@ export const Input = (props) => {
     // },
 
     number: { 
-      condition: includes(numberTypes, filteredType) && isNumber(currentValue),
+      condition: includes(NUMBER_TYPES, filteredType) && isNumber(currentValue),
       message: "Veuillez rentrer un nombre valide." 
     },
     required: { 
@@ -155,7 +175,7 @@ export const Input = (props) => {
   const getDisplayValue = () => {
     if (isNil(currentValue) || currentValue === "") return "";
 
-    if (datetimeTypes.includes(filteredType) && isNumber(currentValue)) {
+    if (DATETIME_TYPES.includes(filteredType) && isNumber(currentValue)) {
       // Convert timestamp to date string (yyyy-MM-dd or yyyy-MM-ddTHH:mm)
       const date = new Date(currentValue);
       if (isNaN(date.getTime())) return "";
@@ -168,7 +188,7 @@ export const Input = (props) => {
       }
     }
 
-    if (timeTypes.includes(filteredType) && isNumber(currentValue)) {
+    if (TIME_TYPES.includes(filteredType) && isNumber(currentValue)) {
       // Convert minutes to time string (HH:mm)
       return minutesToTime(currentValue);
     }
@@ -186,11 +206,11 @@ export const Input = (props) => {
 
     let value = e.target.value;
 
-    if (numberTypes.includes(type)) {
+    if (NUMBER_TYPES.includes(filteredType)) {
       value = Number(value);
-    } else if (datetimeTypes.includes(type)) {
+    } else if (DATETIME_TYPES.includes(filteredType)) {
       value = (new Date(value)).getTime();
-    } else if (timeTypes.includes(type)) {
+    } else if (TIME_TYPES.includes(filteredType)) {
       value = timeToMinutes(value);
     }
 

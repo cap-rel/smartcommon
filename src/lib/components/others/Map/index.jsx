@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 
-import { mToKm, secsToTime } from "lib/utils";
+import { mToKm, secsToTime, log } from "lib/utils";
 
-import { DEFAULT_LABELS, propTypes } from "./props";
+import {
+  DEFAULT_LABELS,
+  DEFAULT_TILE_URL,
+  DEFAULT_TILE_ATTRIBUTION,
+  DEFAULT_REVERSE_GEOCODE_URL,
+  propTypes,
+} from "./props";
 
 /**
  * @param {*} props
@@ -10,13 +16,20 @@ import { DEFAULT_LABELS, propTypes } from "./props";
  */
 export const Map = (props) => {
   const labels = { ...DEFAULT_LABELS, ...(props.labels ?? {}) };
+  const {
+    center = [46.6031, 1.8883],
+    zoom = 5,
+    tileUrl = DEFAULT_TILE_URL,
+    tileAttribution = DEFAULT_TILE_ATTRIBUTION,
+    reverseGeocodeUrl = DEFAULT_REVERSE_GEOCODE_URL,
+  } = props;
   const L = {};
   useEffect(() => {
     const map = L.map("map", {
-      center: props.center || [46.6031, 1.8883],
-      zoom: 5,
+      center,
+      zoom,
     });
-    const layer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+    const layer = L.tileLayer(tileUrl, { attribution: tileAttribution });
     map.addLayer(layer);
 
     if (props.type === "search") {
@@ -45,12 +58,11 @@ export const Map = (props) => {
         }
         marker = L.marker([lat, lng]).addTo(map);
 
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`);
+        const response = await fetch(`${reverseGeocodeUrl}?lat=${lat}&lon=${lng}&format=json`);
         const data = await response.json();
-        
+
         if (data) {
           const address = data.address;
-          console.log();
           const road = address.road ? `<b>${address.road}</b><br>` : "";
           let postcode = address.postcode ? `<b>${address.postcode}</b>` : "";
           let cityVil = address.city ? `<b>${address.city}</b>` : address.village ? `<b>${address.village}</b>` : "";
@@ -62,7 +74,7 @@ export const Map = (props) => {
 
           marker.bindPopup(`${road}${postcode} ${cityVil}${address.state || ""} ${address.country || ""}`).openPopup();        
         } else {
-          console.log("erreur");
+          log.error("Map: reverse geocoding returned no data", { lat, lng });
         }
       });
     } else if (props.type === "route") {
@@ -139,7 +151,6 @@ export const Map = (props) => {
 
       let i = 0;
       routing.on("routesfound", (e) => {
-        console.log(e.routes);
         e.routes.forEach(route => {
           const line = L.Routing.line(route, { styles: [{ color: colors[i] }] }).addTo(map);
           line.on("click", () => {

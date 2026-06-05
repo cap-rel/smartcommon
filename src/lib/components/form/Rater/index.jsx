@@ -72,9 +72,9 @@ export const Rater = (props) => {
                 ...props,
                 className: `gap-app-xs flex items-center overflow-x-auto`
             }))}>
-                {Array(ratingMax).fill("").map((icon, II) =>
+                {Array.from({ length: ratingMax }, (_, II) => II).map((II) =>
                     <Icon
-                        key={`icon${II}`}
+                        key={`rating-${II + 1}`}
                         mergeProps={mergeProps}
                         icon={ratingIcon}
                         checked={II < currentValue}

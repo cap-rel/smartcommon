@@ -20,11 +20,6 @@ export const List = props => {
         children
     } = variantProps;
 
-    const customerData = [
-        { id: 0, name: "Bill", age: 35, email: "bill@company.com" },
-        { id: 1, name: "Donna", age: 32, email: "donna@home.org" },
-    ];
-
     return (
         <div { ...mergeProps("container", props => ({
             ...props,

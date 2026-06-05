@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from "react";
-import { isNil, isUndefined, isArray } from "lodash";
+import { isNil, isUndefined, isArray, isEqual } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
 import { useLibConfig } from "lib/hooks";
@@ -71,7 +71,8 @@ export const useStates = (props = {}) => {
     if (isUndefined(path)) {
       throwTypeError({ value: value, name: "When the path is nil, set value", type: ["object"] });
 
-      setStates(value);
+      // Short-circuit a redundant whole-state write so React bails the re-render.
+      setStates((prevState) => (isEqual(prevState, value) ? prevState : value));
       return value;
     }
 
@@ -129,7 +130,14 @@ export const useStates = (props = {}) => {
         log.state(`SET ${path} =>`, value);
       }
 
-      return newState;
+      // Short-circuit redundant writes: if the resulting state is deep-equal
+      // to the previous one, return the SAME reference so React bails out of
+      // the re-render. Without this, set("user", sameValue) mints a fresh state
+      // reference on every call, which cascades into useApi recreating the
+      // whole `api` object (user is in its memo deps) and any consumer running
+      // useEffect([api]) that fetches + setState looping forever. Real changes
+      // still produce a new reference and propagate normally.
+      return isEqual(prevState, newState) ? prevState : newState;
     });
   }, [parsePath]);
 

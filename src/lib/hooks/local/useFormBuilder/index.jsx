@@ -128,9 +128,9 @@ export const useForm = (form) => {
                         <div className={`row-v-center gap-4 px-4 py-2`}>
                             {title && <span className={`text-smt font-semibold`}>{title}</span>}
                             <div className={`row-v-center gap-2`}>
-                                {(tabs ?? []).map((tab, TI) => 
+                                {(tabs ?? []).map((tab, TI) =>
                                     <button
-                                        key={`tab${TI}`}
+                                        key={children?.[TI]?.id ?? `tab${TI}`}
                                         onClick={() => {
                                             if (states.selectedTabs[id] !== children[TI].id) {
                                                 set(`opacityTransitions.tabs.${id}`, false);
@@ -155,9 +155,9 @@ export const useForm = (form) => {
                         </div>
 
                         <div className={`p-4 ${states.opacityTransitions.tabs[id] ? "opacity-100 duration-300" : "opacity-0"}`}>
-                            {(children ?? []).map((child, CI) => 
-                                <div 
-                                    key={`child${CI}`}
+                            {(children ?? []).map((child, CI) =>
+                                <div
+                                    key={child?.id ?? `child${CI}`}
                                     className={`${states.selectedTabs[id] !== child.id && "hidden"}`}
                                 >
                                     {renderComponent(child, component)}
