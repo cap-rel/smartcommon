@@ -13,10 +13,16 @@ import { ViewportContext } from "./context";
 //   - viewport "mobile": mobile ?? null
 //   - viewport "desktop": desktop ?? null
 //
-// Rationale for the tablet fallback: a tablet has more screen real
-// estate than a phone, so a desktop layout typically fits better than
-// a phone layout. If desktop isn't provided either, fall back to
-// mobile rather than null so the app doesn't render blank.
+// The tablet fallback is a SAFETY NET against a blank screen, NOT a
+// design endorsement. Tablet ergonomics differ from BOTH desktop
+// (touch vs mouse, no hover, larger hit targets) AND phone: a tablet
+// is held landscape (two hands / laid flat), a phone portrait (one
+// hand). The tablet is the natural home for horizontal layouts
+// (multi-column, master-detail) that the phone can't carry and the
+// desktop designs for a mouse. A desktop layout rendered as-is on a
+// tablet is a temporary stopgap: pass a real `tablet` prop as soon as
+// the page warrants it. When neither tablet nor desktop is provided,
+// fall back to mobile rather than null so the app doesn't render blank.
 //
 // We intentionally read the context directly (not via useViewport) so
 // the missing-provider error message stays "DualShell must be used
