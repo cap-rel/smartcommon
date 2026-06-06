@@ -3,11 +3,13 @@
 Système de détection et d'override du mode UI courant. Une PWA cap-rel
 peut s'adapter à 3 contextes :
 
-- **mobile** : smartphones (cibles tactiles, layout vertical compact)
-- **tablet** : tablettes et 2-en-1 en mode tactile (plus d'espace,
-  reste touch-first)
+- **mobile** : smartphones, spontanément tenus en **portrait** (cibles
+  tactiles, layout vertical compact, une seule main, scroll vertical)
+- **tablet** : tablettes et 2-en-1 en mode tactile, spontanément
+  utilisés en **paysage** (plus d'espace horizontal, reste touch-first,
+  deux mains ou posée, propice aux layouts multi-colonnes / maître-détail)
 - **desktop** : laptops et ordinateurs fixes (souris/trackpad, hover,
-  drag)
+  drag, paysage)
 
 Le système est composé de :
 
@@ -117,10 +119,23 @@ Fallback quand la prop matchante manque :
 | `"tablet"` | `tablet ?? desktop ?? mobile ?? null` |
 | `"desktop"` | `desktop ?? null` |
 
-Le fallback `tablet -> desktop -> mobile` est volontaire : une tablette
-a plus de place qu'un smartphone, le layout desktop y tient mieux que
-le layout phone. Une app qui ne pense pas à tablet rend quelque chose
-de sensé sans modification.
+Le fallback `tablet -> desktop -> mobile` est un **filet de sécurité
+anti-écran-blanc**, PAS une recommandation ergonomique. Tant qu'aucun
+rendu `tablet` n'est fourni, l'app affiche le desktop plutôt que rien.
+
+ATTENTION : ne jamais considérer "tablette = desktop" comme une cible
+acceptable. L'ergonomie d'une tablette n'a rien à voir avec celle d'un
+desktop (tactile vs souris, pas de hover, pas de clic droit, cibles
+tactiles plus grandes). Et elle n'a rien à voir non plus avec celle du
+smartphone : une tablette est spontanément tenue en **paysage** (deux
+mains ou posée à plat), là où le smartphone est tenu en **portrait**
+d'une seule main. La tablette est donc le palier privilégié pour les
+layouts horizontaux (multi-colonnes, maître-détail, listes larges),
+que le mobile ne peut pas porter et que le desktop conçoit pour la
+souris. Un layout desktop affiché tel quel sur tablette est un
+pis-aller temporaire à remplacer par un vrai `tablet={...}` dès que la
+page le mérite. Le fallback existe pour ne pas bloquer la livraison,
+pas pour dispenser de concevoir la tablette.
 
 `<DualShell>` est un sucre. Quand les deux variantes partagent de la
 data, ne PAS utiliser `<DualShell>` (chaque branche fetcherait son
@@ -309,10 +324,71 @@ const Toolbar = () => {
 
 Aujourd'hui les apps cap-rel n'ont souvent que `mobile` + `desktop`.
 Avec `1.0.335`, les tablettes sont identifiées comme `tablet` (et plus
-comme `desktop`). Pour les pages où le rendu mobile suffit, RIEN à
-faire : `<DualShell mobile={M} desktop={D} />` rend `desktop` sur
-tablet par fallback (`tablet ?? desktop`). Pour proposer un layout
-intermédiaire, ajouter `tablet={T}`.
+comme `desktop`). En l'absence de rendu `tablet`, le fallback affiche
+le desktop : c'est un pis-aller temporaire (cf "DualShell"), pas une
+cible. Une tablette mérite son propre traitement ergonomique tactile.
+
+Pour livrer vite sans laisser un desktop mal adapté traîner sur
+tablette, l'ordre de priorité recommandé est :
+
+1. fournir `mobile` + `desktop` (le tablet retombe sur desktop -- on
+   ne bloque pas la livraison) ;
+2. revenir sur chaque page à fort enjeu tactile (saisie terrain,
+   listes longues, formulaires) et ajouter un `tablet={...}` dédié ;
+3. ne laisser le fallback desktop en place QUE sur les pages où
+   tablette et desktop sont réellement identiques (rare).
+
+### Convention de nommage des fichiers
+
+Pour une page dont la data est partagée entre les modes (cas courant,
+on n'utilise PAS `<DualShell>` mais le routage manuel via
+`useViewport()`), le découpage de fichiers est :
+
+```
+MaPage/
+  index.jsx           # routeur viewport (choisit la variante)
+  useMaPageData.js    # TOUTE la data + state derive (partage)
+  MaPage.mobile.jsx   # rendu smartphone, presentation pure
+  MaPage.tablet.jsx   # rendu tablette, presentation pure (optionnel)
+  MaPage.desktop.jsx  # rendu desktop, presentation pure
+```
+
+Regles :
+
+- Suffixes figes : `.mobile.jsx`, `.tablet.jsx`, `.desktop.jsx`. Pas
+  de variante locale (`.ipad.jsx`, `.large.jsx`, etc.).
+- `.tablet.jsx` est **optionnel** : on ne le cree que lorsque la
+  tablette diverge reellement du desktop. Tant qu'il manque, le
+  routeur doit retomber sur desktop (cf routeur ci-dessous).
+- Les trois fichiers de presentation sont **purs rendu** : aucun
+  `useApi`, `useDb*`, ni `useEffect` de fetch. Toute la data vient de
+  `useMaPageData()`, appele une seule fois dans `index.jsx`.
+
+Routeur `index.jsx` a 3 branches (tablet -> desktop en fallback tant
+que `MaPage.tablet.jsx` n'existe pas) :
+
+```jsx
+import { useViewport } from "@cap-rel/smartcommon";
+
+import { useMaPageData } from "./useMaPageData";
+import { MaPageMobile } from "./MaPage.mobile";
+import { MaPageDesktop } from "./MaPage.desktop";
+// import { MaPageTablet } from "./MaPage.tablet"; // quand il existe
+
+export const MaPage = () => {
+    const data = useMaPageData();
+    const { isMobile, isTablet } = useViewport();
+
+    if (isMobile) return <MaPageMobile {...data} />;
+    // Tant qu'aucun MaPage.tablet.jsx n'existe, la tablette retombe
+    // volontairement sur le desktop (filet anti-ecran-blanc).
+    if (isTablet) return <MaPageDesktop {...data} />;
+    return <MaPageDesktop {...data} />;
+};
+```
+
+Le jour ou l'on ajoute `MaPage.tablet.jsx`, la branche `isTablet`
+rend `<MaPageTablet {...data} />` -- aucune autre modification.
 
 ## Tests
 
