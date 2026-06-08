@@ -35,6 +35,22 @@
       -webkit-appearance: none;
       margin: 0;
     }
+
+    /* iOS Safari auto-zooms the whole page when a focused form control has a
+       computed font-size below 16px. With a viewport that has no
+       `maximum-scale`, it never zooms back out, so the page stays enlarged
+       even after the keyboard closes. Force a 16px floor on coarse-pointer
+       devices (touch) only, leaving desktop density (text-sm/text-xs inherited
+       by controls) untouched. `max(16px, 1em)` keeps any intentionally larger
+       inherited size while guaranteeing the 16px floor. */
+    @media (pointer: coarse) {
+      input,
+      textarea,
+      select {
+        font-size: max(16px, 1em);
+      }
+    }
+
     /* input[type=range]::-webkit-slider-runnable-track {
       @apply h-2 rounded-full bg-strong-bg;
     }

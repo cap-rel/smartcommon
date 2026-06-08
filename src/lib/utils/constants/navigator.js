@@ -40,6 +40,19 @@ export const navigatorInfo = {
       type: getDeviceType()
     },
     language: getLanguage(),
-    isOnLine: !isNavigatorAvailable && navigator.onLine 
+    // Live connectivity flag read by useApi's circuit breaker. It MUST track
+    // online/offline at runtime: a frozen snapshot (here it can even load as
+    // false when the module first evaluates without a ready `navigator`) left the
+    // breaker convinced it was permanently offline, so it re-opened on every
+    // drain attempt and queued offline work never flushed on reconnect
+    // (smartInterventions E2E 84-offline-intervention-submit-queue).
+    isOnLine: isNavigatorAvailable ? true : navigator.onLine
     // coords: locate()
 };
+
+// Keep the flag live. Without these listeners isOnLine is stuck at its load-time
+// value forever, breaking every offline->online recovery path that reads it.
+if (typeof window !== "undefined" && typeof window.addEventListener === "function") {
+    window.addEventListener("online", () => { navigatorInfo.isOnLine = true; });
+    window.addEventListener("offline", () => { navigatorInfo.isOnLine = false; });
+}

@@ -41,7 +41,7 @@ export const ListItem = (props) => {
                             <div className="text-primary font-app-semibold line-clamp-1">
                                 {title}
                             </div>
-                            <FaPencil className={`text-primary shrink-0`} />
+                            <FaPencil className={`text-primary shrink-0`} aria-hidden="true" />
                         </div>
                         {status}
                     </div>

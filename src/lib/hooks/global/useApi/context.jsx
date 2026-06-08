@@ -37,12 +37,32 @@ export const useApiContext = () => {
 
     // ---------------------- circuit ----------------------
 
-    const circuitRef = useRef({ openUntil: 0 });
+    const circuitRef = useRef({ openUntil: 0, offline: false });
 
-    const isCircuitOpen = () => Date.now() < circuitRef.current.openUntil;
+    const isCircuitOpen = () => {
+        if (Date.now() >= circuitRef.current.openUntil) {
+            return false;
+        }
+        // A breaker that was tripped only because we were offline must not keep
+        // blocking once connectivity is back: the queued drains that fire on
+        // 'online' would otherwise all reject with "Circuit breaker open" and
+        // strand the offline work. Server/auth-driven trips (offline=false)
+        // still block for their full cooldown.
+        if (circuitRef.current.offline && navigatorInfo.isOnLine === true) {
+            return false;
+        }
+        return true;
+    };
 
-    const openCircuit = (ms = 10000) => {
+    // `offline` tags a breaker opened only because connectivity was lost. Such a
+    // breaker MUST stop blocking the moment we are back online (see isCircuitOpen),
+    // otherwise queued work (offline submit queue, inventory cascade) never flushes
+    // on reconnect -- the breaker keeps re-opening on every drain attempt because
+    // navigatorInfo lags. Server/auth-driven openings (5xx, dead session) leave
+    // `offline` false so their throttle is honoured even while online.
+    const openCircuit = (ms = 10000, offline = false) => {
         circuitRef.current.openUntil = Date.now() + ms;
+        circuitRef.current.offline = !!offline;
     };
 
     // Stable (useMemo []) so it keeps the same identity across renders and can
@@ -162,7 +182,7 @@ export const useApiContext = () => {
                             log.apiError(`${method} - NO CONNECTION`, url);
                         }
 
-                        openCircuit(5000);
+                        openCircuit(5000, true);
 
                         return Promise.reject(new Error("No internet connection"));
                     }

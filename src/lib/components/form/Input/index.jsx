@@ -1,5 +1,5 @@
 import { Button, Spinner } from "lib/components";
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
 import { isNumber, isNil, isEmpty, includes } from "lodash";
 
@@ -41,8 +41,9 @@ const NATIVE_HTML_TYPES = [
 export const Input = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Input", props);
 
-  const { 
+  const {
     id,
+    label,
     responsive = true,
     name,
     defaultValue,
@@ -70,6 +71,11 @@ export const Input = (props) => {
     step,
     inputMode,
   } = variantProps;
+
+  // Stable id to wire the <label htmlFor> to the <input id>. Falls back to a
+  // generated id so the association works even when the consumer passes none.
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
 
   const initialStates = {
     isPasswordVisible: false,
@@ -236,8 +242,9 @@ export const Input = (props) => {
 
   return (
 
-    <Label 
+    <Label
       { ...variantProps}
+      id={inputId}
       showErrors={isFormSubmitted}
       errors={filteredErrors}
       mergeProps={mergeProps}
@@ -257,6 +264,7 @@ export const Input = (props) => {
 
         {(inputIcon && !loading) &&
           <div { ...mergeProps("inputIcon", props => ({
+            "aria-hidden": "true",
             ...props,
             className: `shrink-0 text-soft-text`
           }))}>
@@ -266,8 +274,13 @@ export const Input = (props) => {
 
         <input { ...mergeProps("input", props => ({
           placeholder,
+          // Without a visible label the field has no accessible name, so fall
+          // back to the placeholder. A consumer-provided aria-label (via
+          // inputProps) still wins thanks to the `...props` spread below.
+          "aria-label": label ? undefined : placeholder,
           ...props,
           ...mergeQuickProps(["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
+          id: inputId,
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {
             // handleInputOnChange returns the *parsed* value (number/date/
@@ -294,6 +307,7 @@ export const Input = (props) => {
                 applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
+                "aria-label": "Diminuer",
                 ...props.buttonProps,
                 className: `p-0 bg-transparent text-soft-text`
               }
@@ -308,6 +322,7 @@ export const Input = (props) => {
                 applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
+                "aria-label": "Augmenter",
                 ...props.buttonProps,
                 className: `p-0 bg-transparent text-soft-text`
               }
@@ -326,6 +341,7 @@ export const Input = (props) => {
               applyFunctionIfNotNil(props.onClick, e);
             },
             buttonProps: {
+              "aria-label": isPasswordVisible ? "Masquer le mot de passe" : "Afficher le mot de passe",
               ...props.buttonProps,
               className: `p-0 bg-transparent text-soft-text`
             }

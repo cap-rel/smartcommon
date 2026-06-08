@@ -4,9 +4,9 @@ import { isNil, isEmpty,filter, map, some } from "lodash";
 // IDEA Mini-popup for help
 
 export const Label = (props) => {
-    const { 
+    const {
         mergeProps,
-        // id,
+        id,
         label,
         icon,
         help,
@@ -43,7 +43,10 @@ export const Label = (props) => {
                     <label { ...mergeProps("label", props => ({
                         ...props,
                         className: `font-app-semibold`,
-                        // htmlFor: id
+                        // htmlFor is omitted (undefined) when no id is provided,
+                        // so React renders no attribute and nothing breaks for
+                        // consumers that don't pass an id.
+                        htmlFor: id,
                     }))}>
                         {label}
                     </label>
