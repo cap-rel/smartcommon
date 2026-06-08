@@ -77,7 +77,7 @@ export const Textarea = (props) => {
         placeholder,
         disabled,
         readOnly,
-        rows: 5,
+        rows: rows ?? 5,
         cols,
         wrap,
         name,
