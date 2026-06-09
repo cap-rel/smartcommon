@@ -11,6 +11,9 @@ export const buildOperations = ({
     flipV = false,
     perspective = null,
     crop = null,
+    autoEnhance = false,
+    adjust = null,
+    colorMode = "none",
 } = {}) => {
     const ops = [];
 
@@ -28,6 +31,26 @@ export const buildOperations = ({
     }
     if (crop && !isFullRect(crop)) {
         ops.push({ type: "crop", rect: crop });
+    }
+    if (autoEnhance) {
+        ops.push({ type: "autoEnhance" });
+    }
+    const a = adjust ?? {};
+    if (a.brightness || a.contrast || a.saturation || a.temperature) {
+        ops.push({
+            type: "adjust",
+            brightness: a.brightness ?? 0,
+            contrast: a.contrast ?? 0,
+            saturation: a.saturation ?? 0,
+            temperature: a.temperature ?? 0,
+        });
+    }
+    // Grayscale and the document "scan" preset reuse the same engine op; the
+    // only difference is whether the Otsu binarization is applied.
+    if (colorMode === "grayscale") {
+        ops.push({ type: "scan", binarize: false });
+    } else if (colorMode === "scan") {
+        ops.push({ type: "scan", binarize: true });
     }
 
     return ops;

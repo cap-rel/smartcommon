@@ -6,11 +6,21 @@ export const DEFAULT_LABELS = {
     title: "Edit photo",
     crop: "Crop",
     perspective: "Perspective",
+    detectEdges: "Detect edges",
+    noDocumentFound: "No document detected",
     rotateLeft: "Rotate left",
     rotateRight: "Rotate right",
     flipHorizontal: "Flip horizontal",
     flipVertical: "Flip vertical",
     straighten: "Straighten",
+    adjust: "Adjust",
+    brightness: "Brightness",
+    contrast: "Contrast",
+    saturation: "Saturation",
+    temperature: "Temperature",
+    autoEnhance: "Auto",
+    grayscale: "B&W",
+    scan: "Scan",
     ratioFree: "Free",
     ratioOriginal: "Original",
     reset: "Reset",
@@ -44,7 +54,7 @@ export const propTypes = {
 
     // Which tools to show, in order. v1 geometry set by default.
     tools: PropTypes.arrayOf(
-        PropTypes.oneOf(["crop", "perspective", "rotate", "flip", "straighten"])
+        PropTypes.oneOf(["crop", "perspective", "rotate", "flip", "straighten", "adjust"])
     ),
     aspectRatios: PropTypes.array,
 
@@ -75,7 +85,7 @@ export const propTypes = {
 
 export const defaultProps = {
     open: true,
-    tools: ["crop", "perspective", "rotate", "flip", "straighten"],
+    tools: ["crop", "perspective", "rotate", "flip", "straighten", "adjust"],
     aspectRatios: DEFAULT_ASPECT_RATIOS,
     maxStraightenAngle: 45,
     output: { type: "image/jpeg", quality: 0.9 },

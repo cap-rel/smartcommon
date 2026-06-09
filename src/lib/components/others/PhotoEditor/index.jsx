@@ -7,6 +7,7 @@ import {
     FaCrop,
     FaVectorSquare,
     FaRulerHorizontal,
+    FaSliders,
     FaXmark,
     FaCheck,
 } from "react-icons/fa6";
@@ -18,6 +19,7 @@ import {
     fitCanvas,
     applyPipeline,
     applyImageEdits,
+    detectDocumentQuad,
 } from "lib/imageEditor";
 
 import { propTypes, defaultProps, DEFAULT_LABELS } from "./props";
@@ -36,7 +38,12 @@ const initialState = {
     flipV: false,
     perspective: null,
     crop: null,
+    autoEnhance: false,
+    adjust: { brightness: 0, contrast: 0, saturation: 0, temperature: 0 },
+    colorMode: "none", // "none" | "grayscale" | "scan"
 };
+
+const ADJUST_SLIDERS = ["brightness", "contrast", "saturation", "temperature"];
 
 export const PhotoEditor = (props) => {
     const {
@@ -66,6 +73,7 @@ export const PhotoEditor = (props) => {
     const [displayedSize, setDisplayedSize] = useState(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState(null);
+    const [notice, setNotice] = useState(null);
 
     const workingRef = useRef(null);
     const displayCanvasRef = useRef(null);
@@ -136,7 +144,16 @@ export const PhotoEditor = (props) => {
     // as an overlay, so they never need to trigger a repaint here.
     useEffect(() => {
         renderPreview(state, activeTool);
-    }, [state.rotateSteps, state.straightenAngle, state.flipH, state.flipV, activeTool]);
+    }, [
+        state.rotateSteps,
+        state.straightenAngle,
+        state.flipH,
+        state.flipV,
+        state.autoEnhance,
+        state.adjust,
+        state.colorMode,
+        activeTool,
+    ]);
 
     // ----- tool actions ------------------------------------------------------
     const rotate = (dir) =>
@@ -156,6 +173,7 @@ export const PhotoEditor = (props) => {
     };
 
     const toggleTool = (tool) => {
+        setNotice(null);
         setActiveTool((prev) => (prev === tool ? null : tool));
         if (tool === "crop" && !state.crop) setField({ crop: { ...FULL_RECT } });
         if (tool === "perspective" && !state.perspective) {
@@ -166,6 +184,7 @@ export const PhotoEditor = (props) => {
     const reset = () => {
         setState(initialState);
         setActiveTool(null);
+        setNotice(null);
     };
 
     const handleSave = async () => {
@@ -211,6 +230,43 @@ export const PhotoEditor = (props) => {
         crop: <FaCrop />,
         perspective: <FaVectorSquare />,
         straighten: <FaRulerHorizontal />,
+        adjust: <FaSliders />,
+    };
+
+    const setAdjust = (key, value) =>
+        setField({ adjust: { ...state.adjust, [key]: value } });
+
+    // Color presets (grayscale / scan) are mutually exclusive; clicking the
+    // active one clears it.
+    const toggleColorMode = (mode) =>
+        setField({ colorMode: state.colorMode === mode ? "none" : mode });
+
+    // Auto-detect the document quad and prefill the perspective corners. Runs on
+    // the geometry-baked image (without perspective/crop), i.e. the same space
+    // the quad overlay lives in.
+    const detectEdges = () => {
+        setNotice(null);
+        const working = workingRef.current;
+        if (!working) return;
+
+        const baseOps = buildOperations(state).filter(
+            (op) => op.type !== "perspective" && op.type !== "crop"
+        );
+        const canvas = applyPipeline(working, baseOps);
+        const ctx = canvas.getContext?.("2d");
+        if (!ctx) {
+            log.warning("detectEdges: no 2D context, skipped");
+            return;
+        }
+
+        const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const corners = detectDocumentQuad(image);
+        if (corners) {
+            setField({ perspective: { corners } });
+        } else {
+            log.warning("detectEdges: no document detected");
+            setNotice(labels.noDocumentFound);
+        }
     };
 
     return (
@@ -261,6 +317,12 @@ export const PhotoEditor = (props) => {
                 </div>
             )}
 
+            {notice && (
+                <div className="px-app-base py-app-xs bg-white/15 text-white text-app-sm" role="status">
+                    {notice}
+                </div>
+            )}
+
             {/* canvas area */}
             <div
                 {...canvasAreaProps}
@@ -289,6 +351,20 @@ export const PhotoEditor = (props) => {
                     )}
                 </div>
             </div>
+
+            {/* perspective panel: auto-detect the document quad */}
+            {activeTool === "perspective" && (
+                <div className="px-app-base py-app-sm bg-black/80 flex gap-app-xs">
+                    <button
+                        type="button"
+                        aria-label={labels.detectEdges}
+                        onClick={detectEdges}
+                        className="px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer active:brightness-soft"
+                    >
+                        {labels.detectEdges}
+                    </button>
+                </div>
+            )}
 
             {/* straighten panel */}
             {activeTool === "straighten" && (
@@ -323,6 +399,65 @@ export const PhotoEditor = (props) => {
                                 (ratio.value === "original" ? labels.ratioOriginal : labels.ratioFree)}
                         </button>
                     ))}
+                </div>
+            )}
+
+            {/* adjust panel: light/color sliders + presets */}
+            {activeTool === "adjust" && (
+                <div className="px-app-base py-app-sm bg-black/80 flex flex-col gap-app-xs">
+                    {ADJUST_SLIDERS.map((key) => (
+                        <div key={key} className="flex items-center gap-app-sm">
+                            <span className="text-app-xs w-20 shrink-0">{labels[key]}</span>
+                            <input
+                                type="range"
+                                aria-label={labels[key]}
+                                min={-100}
+                                max={100}
+                                step={1}
+                                value={Math.round((state.adjust[key] ?? 0) * 100)}
+                                onChange={(e) => setAdjust(key, Number(e.target.value) / 100)}
+                                className="flex-1 accent-primary"
+                            />
+                        </div>
+                    ))}
+                    <div className="flex gap-app-xs pt-app-xxs">
+                        <button
+                            type="button"
+                            aria-label={labels.autoEnhance}
+                            aria-pressed={state.autoEnhance ? "true" : undefined}
+                            onClick={() => setField({ autoEnhance: !state.autoEnhance })}
+                            className={twMerge(
+                                "px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer",
+                                state.autoEnhance && "bg-primary/20 border-primary text-primary"
+                            )}
+                        >
+                            {labels.autoEnhance}
+                        </button>
+                        <button
+                            type="button"
+                            aria-label={labels.grayscale}
+                            aria-pressed={state.colorMode === "grayscale" ? "true" : undefined}
+                            onClick={() => toggleColorMode("grayscale")}
+                            className={twMerge(
+                                "px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer",
+                                state.colorMode === "grayscale" && "bg-primary/20 border-primary text-primary"
+                            )}
+                        >
+                            {labels.grayscale}
+                        </button>
+                        <button
+                            type="button"
+                            aria-label={labels.scan}
+                            aria-pressed={state.colorMode === "scan" ? "true" : undefined}
+                            onClick={() => toggleColorMode("scan")}
+                            className={twMerge(
+                                "px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer",
+                                state.colorMode === "scan" && "bg-primary/20 border-primary text-primary"
+                            )}
+                        >
+                            {labels.scan}
+                        </button>
+                    </div>
                 </div>
             )}
 
@@ -371,6 +506,14 @@ export const PhotoEditor = (props) => {
                         labels.straighten,
                         () => toggleTool("straighten"),
                         activeTool === "straighten"
+                    )}
+                {tools.includes("adjust") &&
+                    toolButton(
+                        "adjust",
+                        Icon.adjust,
+                        labels.adjust,
+                        () => toggleTool("adjust"),
+                        activeTool === "adjust"
                     )}
             </div>
 

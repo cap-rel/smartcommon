@@ -57,6 +57,28 @@ describe("buildOperations", () => {
         expect(buildOperations({ crop })).toEqual([{ type: "crop", rect: crop }]);
     });
 
+    it("emits an adjust op only when a slider is non-zero", () => {
+        expect(buildOperations({ adjust: { brightness: 0, contrast: 0 } })).toEqual([]);
+        expect(buildOperations({ adjust: { brightness: 0.2 } })).toEqual([
+            { type: "adjust", brightness: 0.2, contrast: 0, saturation: 0, temperature: 0 },
+        ]);
+    });
+
+    it("emits an autoEnhance op when enabled", () => {
+        expect(buildOperations({ autoEnhance: true })).toEqual([{ type: "autoEnhance" }]);
+        expect(buildOperations({ autoEnhance: false })).toEqual([]);
+    });
+
+    it("maps the color mode to a scan op (binarize off for grayscale)", () => {
+        expect(buildOperations({ colorMode: "grayscale" })).toEqual([
+            { type: "scan", binarize: false },
+        ]);
+        expect(buildOperations({ colorMode: "scan" })).toEqual([
+            { type: "scan", binarize: true },
+        ]);
+        expect(buildOperations({ colorMode: "none" })).toEqual([]);
+    });
+
     it("combines several tools in canonical order", () => {
         const ops = buildOperations({
             rotateSteps: 1,
@@ -71,6 +93,9 @@ describe("buildOperations", () => {
                 ],
             },
             crop: { x: 0.1, y: 0.1, w: 0.5, h: 0.5 },
+            autoEnhance: true,
+            adjust: { contrast: 0.3 },
+            colorMode: "scan",
         });
         expect(ops.map((o) => o.type)).toEqual([
             "rotate90",
@@ -78,6 +103,9 @@ describe("buildOperations", () => {
             "flip",
             "perspective",
             "crop",
+            "autoEnhance",
+            "adjust",
+            "scan",
         ]);
     });
 });

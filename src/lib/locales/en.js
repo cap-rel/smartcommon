@@ -25,6 +25,7 @@ import { DEFAULT_LABELS as MapLabels } from "lib/components/others/Map/props";
 import { DEFAULT_LABELS as Stepper } from "lib/components/others/Stepper/props";
 import { DEFAULT_LABELS as ProductCategoryBrowser } from "lib/components/others/ProductCategoryBrowser/props";
 import { DEFAULT_LABELS as PhotoAnnotator } from "lib/components/others/PhotoAnnotator/props";
+import { DEFAULT_LABELS as PhotoEditor } from "lib/components/others/PhotoEditor/props";
 import { DEFAULT_LABELS as LoginComponent } from "lib/components/others/LoginComponent/props";
 import { DEFAULT_LABELS as DevicePicker } from "lib/components/others/DevicePicker/props";
 import { DEFAULT_LABELS as DeviceIdentificationComponent } from "lib/components/others/DeviceIdentificationComponent/props";
@@ -53,6 +54,7 @@ export const en = {
     Stepper,
     ProductCategoryBrowser,
     PhotoAnnotator,
+    PhotoEditor,
     LoginComponent,
     DevicePicker,
     DeviceIdentificationComponent,

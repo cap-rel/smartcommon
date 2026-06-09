@@ -55,6 +55,40 @@ export const otsuThreshold = (gray) => {
     return threshold;
 };
 
+// Auto-contrast bounds: the low/high luma values to stretch to [0,255]. A small
+// `clip` fraction is trimmed from each tail so a few outlier pixels do not flatten
+// the stretch. Returns { lo: 0, hi: 255 } (a no-op) for empty or flat input.
+export const computeStretchBounds = (gray, clip = 0.005) => {
+    if (!gray || gray.length === 0) return { lo: 0, hi: 255 };
+
+    const hist = new Array(256).fill(0);
+    for (let i = 0; i < gray.length; i++) hist[gray[i]]++;
+
+    const clipCount = clip * gray.length;
+    let lo = 0;
+    let hi = 255;
+
+    let acc = 0;
+    for (let t = 0; t < 256; t++) {
+        acc += hist[t];
+        if (acc > clipCount) {
+            lo = t;
+            break;
+        }
+    }
+    acc = 0;
+    for (let t = 255; t >= 0; t--) {
+        acc += hist[t];
+        if (acc > clipCount) {
+            hi = t;
+            break;
+        }
+    }
+
+    if (hi <= lo) return { lo: 0, hi: 255 };
+    return { lo, hi };
+};
+
 // Build a CSS canvas `filter` string from normalized adjustment params, each in
 // roughly -1..1 (0 = no change). Pure string builder so it can be asserted in
 // tests without a canvas.

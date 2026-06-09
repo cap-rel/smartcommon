@@ -2,14 +2,16 @@
  * Circuit breaker reset on reconnection (todo item 21).
  *
  * When a request is fired offline, the baseApi `beforeRequest` hook opens the
- * breaker for 5s and rejects. The breaker then stays open until that cooldown
- * elapses - including right after the browser comes back online - so a drain
- * triggered on the 'online' event fails with "Circuit breaker open" and the
- * offline submission queue never flushes.
+ * breaker for 5s (tagged `offline`) and rejects. Two complementary mechanisms
+ * make sure the offline submission queue flushes on reconnection:
  *
- * Fix under test:
- *   - on the window 'online' event, the breaker is cleared immediately, EXCEPT
- *     for a known-dead session (401) whose 30s circuit is intentional;
+ *   - `isCircuitOpen()` treats an `offline`-tagged breaker as closed the moment
+ *     `navigator.onLine` is true again, so queued drains stop being blocked
+ *     immediately - even within the 5s cooldown and without relying on the
+ *     'online' event (navigatorInfo can lag). Server/auth-driven trips (5xx,
+ *     dead session) leave `offline` false and keep blocking while online.
+ *   - the window 'online' event additionally calls `resetCircuit()`, EXCEPT for
+ *     a known-dead session (401) whose 30s circuit is intentional.
  *   - api.resetCircuit() is exposed so consumers can force a clean retry.
  *
  * Unlike the other useApi tests, this file uses a faithful ky mock that
@@ -97,23 +99,24 @@ beforeEach(() => {
 });
 
 describe("circuit breaker - reconnection reset", () => {
-    it("clears the offline breaker on the 'online' event so requests flow again", async () => {
+    it("clears the offline breaker as soon as connectivity is back so requests flow again", async () => {
         const { result } = renderHook(() => useApiContext());
 
-        // Offline: request rejects and opens the breaker.
+        // Offline: request rejects and opens the offline-tagged breaker.
         navigatorInfo.isOnLine = false;
         await expect(result.current.get("x")).rejects.toThrow(/No internet connection/);
 
-        // Back online but within the 5s cooldown: the breaker is still open,
-        // so a drain would fail. This is the bug being fixed.
+        // Back online: an offline-tripped breaker stops blocking immediately,
+        // even within the 5s cooldown and without waiting for the 'online'
+        // event, so the queued drains flush.
         navigatorInfo.isOnLine = true;
-        await expect(result.current.get("x")).rejects.toThrow(/Circuit breaker open/);
+        await expect(result.current.get("x")).resolves.toEqual({ ok: true });
 
-        // The 'online' event resets the breaker immediately.
+        // The 'online' event handler is also wired (it calls resetCircuit) and
+        // simply keeps requests flowing.
         await act(async () => {
             window.dispatchEvent(new Event("online"));
         });
-
         await expect(result.current.get("x")).resolves.toEqual({ ok: true });
     });
 
@@ -135,15 +138,19 @@ describe("circuit breaker - reconnection reset", () => {
         await expect(result.current.get("x")).rejects.toThrow(/Circuit breaker open/);
     });
 
-    it("exposes resetCircuit() to force-clear the breaker manually", async () => {
+    it("exposes resetCircuit() to force-clear a breaker that stays open while online", async () => {
         const { result } = renderHook(() => useApiContext());
 
         expect(typeof result.current.resetCircuit).toBe("function");
 
-        navigatorInfo.isOnLine = false;
-        await expect(result.current.get("x")).rejects.toThrow(/No internet connection/);
+        // A dead-session (401) trip opens a NON-offline 30s breaker which, unlike
+        // an offline one, keeps blocking even while online - the right vehicle to
+        // prove resetCircuit() forces it closed.
+        kyCtrl.responder = unauthorized;
+        await expect(result.current.get("x")).rejects.toThrow();
+        expect(gstState.unset).toHaveBeenCalledWith("user");
 
-        navigatorInfo.isOnLine = true;
+        kyCtrl.responder = success;
         await expect(result.current.get("x")).rejects.toThrow(/Circuit breaker open/);
 
         act(() => {

@@ -4,4 +4,5 @@
 export { applyImageEdits, applyPipeline, sortOperations, bitmapToCanvas } from "./pipeline";
 export { registerOperation, getOperation, listOperations } from "./operations";
 export { loadBitmap } from "./loadImage";
+export { detectDocumentQuad } from "./autoDetect";
 export { createCanvas, fitCanvas, canvasToBlob } from "./canvas";

@@ -3,16 +3,30 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 // The engine touches canvas/createImageBitmap which happy-dom does not provide.
 // Mock it so we can exercise the component's wiring (tool state -> operations).
+const DETECTED_CORNERS = [
+    { x: 0.1, y: 0.05 },
+    { x: 0.9, y: 0.04 },
+    { x: 0.95, y: 0.96 },
+    { x: 0.05, y: 0.94 },
+];
+
 vi.mock("lib/imageEditor", () => ({
     loadBitmap: vi.fn(async () => ({ width: 800, height: 600 })),
     bitmapToCanvas: vi.fn(() => ({ width: 800, height: 600 })),
     fitCanvas: vi.fn((canvas) => canvas),
-    applyPipeline: vi.fn(() => ({ width: 800, height: 600 })),
+    applyPipeline: vi.fn(() => ({
+        width: 800,
+        height: 600,
+        getContext: () => ({
+            getImageData: () => ({ data: new Uint8ClampedArray(4), width: 1, height: 1 }),
+        }),
+    })),
     applyImageEdits: vi.fn(async () => new Blob(["x"], { type: "image/jpeg" })),
+    detectDocumentQuad: vi.fn(() => DETECTED_CORNERS),
 }));
 
 import { PhotoEditor } from "./";
-import { loadBitmap, applyImageEdits } from "lib/imageEditor";
+import { loadBitmap, applyImageEdits, detectDocumentQuad } from "lib/imageEditor";
 
 const ready = () => waitFor(() => expect(loadBitmap).toHaveBeenCalled());
 
@@ -116,5 +130,86 @@ describe("PhotoEditor", () => {
         fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
         await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
         expect(applyImageEdits.mock.calls[0][1]).toEqual([]);
+    });
+
+    it("shows the light/color sliders when the adjust tool is active", async () => {
+        render(<PhotoEditor open src="blob:x" />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Adjust"));
+        expect(screen.getByLabelText("Brightness")).toBeTruthy();
+        expect(screen.getByLabelText("Contrast")).toBeTruthy();
+        expect(screen.getByLabelText("Saturation")).toBeTruthy();
+        expect(screen.getByLabelText("Temperature")).toBeTruthy();
+    });
+
+    it("exports an adjust op after moving a slider", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Adjust"));
+        fireEvent.change(screen.getByLabelText("Brightness"), { target: { value: "30" } });
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        const ops = applyImageEdits.mock.calls[0][1];
+        expect(ops).toContainEqual({
+            type: "adjust",
+            brightness: 0.3,
+            contrast: 0,
+            saturation: 0,
+            temperature: 0,
+        });
+    });
+
+    it("exports a binarized scan op when the scan preset is selected", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Adjust"));
+        fireEvent.click(screen.getByLabelText("Scan"));
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        expect(applyImageEdits.mock.calls[0][1]).toContainEqual({ type: "scan", binarize: true });
+    });
+
+    it("auto-detect prefills the perspective quad and exports a perspective op", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Perspective"));
+        fireEvent.click(screen.getByLabelText("Detect edges"));
+        expect(detectDocumentQuad).toHaveBeenCalled();
+
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        expect(applyImageEdits.mock.calls[0][1]).toContainEqual({
+            type: "perspective",
+            corners: DETECTED_CORNERS,
+        });
+    });
+
+    it("shows a notice when no document is detected", async () => {
+        detectDocumentQuad.mockReturnValueOnce(null);
+        render(<PhotoEditor open src="blob:x" />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Perspective"));
+        fireEvent.click(screen.getByLabelText("Detect edges"));
+        expect(screen.getByText("No document detected")).toBeTruthy();
+        expect(screen.getByRole("status")).toBeTruthy();
+    });
+
+    it("color presets are mutually exclusive (B&W then Scan keeps only Scan)", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Adjust"));
+        fireEvent.click(screen.getByLabelText("B&W"));
+        fireEvent.click(screen.getByLabelText("Scan"));
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        const scanOps = applyImageEdits.mock.calls[0][1].filter((o) => o.type === "scan");
+        expect(scanOps).toEqual([{ type: "scan", binarize: true }]);
     });
 });

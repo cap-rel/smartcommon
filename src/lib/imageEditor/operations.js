@@ -12,7 +12,12 @@ import {
     applyMatrix,
     distance,
 } from "./geometry";
-import { grayscaleArray, otsuThreshold, buildFilterString } from "./pixels";
+import {
+    grayscaleArray,
+    otsuThreshold,
+    buildFilterString,
+    computeStretchBounds,
+} from "./pixels";
 
 const log = createLogger("imageEditor");
 
@@ -178,6 +183,32 @@ registerOperation("flip", {
         ctx.translate(fh ? canvas.width : 0, fv ? canvas.height : 0);
         ctx.scale(fh ? -1 : 1, fv ? -1 : 1);
         ctx.drawImage(canvas, 0, 0);
+        return out;
+    },
+});
+
+// One-tap auto-enhance: stretch the tonal range (auto-contrast) using luma
+// bounds, applied to each RGB channel so colors are preserved.
+registerOperation("autoEnhance", {
+    stage: 45,
+    apply: (canvas, { clip = 0.005 } = {}) => {
+        const W = canvas.width;
+        const H = canvas.height;
+        const ctx = canvas.getContext("2d");
+        const img = ctx.getImageData(0, 0, W, H);
+        const { lo, hi } = computeStretchBounds(grayscaleArray(img), clip);
+        if (hi <= lo) return canvas;
+
+        const scale = 255 / (hi - lo);
+        const data = img.data;
+        for (let i = 0; i < data.length; i += 4) {
+            data[i] = (data[i] - lo) * scale;
+            data[i + 1] = (data[i + 1] - lo) * scale;
+            data[i + 2] = (data[i + 2] - lo) * scale;
+        }
+
+        const out = createCanvas(W, H);
+        out.getContext("2d").putImageData(img, 0, 0);
         return out;
     },
 });

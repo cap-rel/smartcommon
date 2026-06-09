@@ -1,6 +1,12 @@
 import { describe, it, expect } from "vitest";
 
-import { toGrayValue, grayscaleArray, otsuThreshold, buildFilterString } from "./pixels";
+import {
+    toGrayValue,
+    grayscaleArray,
+    otsuThreshold,
+    buildFilterString,
+    computeStretchBounds,
+} from "./pixels";
 
 describe("toGrayValue", () => {
     it("maps pure white and black", () => {
@@ -36,6 +42,38 @@ describe("otsuThreshold", () => {
         const t = otsuThreshold(gray);
         expect(t).toBeGreaterThanOrEqual(30);
         expect(t).toBeLessThan(220);
+    });
+});
+
+describe("computeStretchBounds", () => {
+    it("returns a no-op range for empty input", () => {
+        expect(computeStretchBounds(new Uint8ClampedArray(0))).toEqual({ lo: 0, hi: 255 });
+    });
+
+    it("returns a no-op range for a flat image", () => {
+        const flat = new Uint8ClampedArray(100).fill(120);
+        expect(computeStretchBounds(flat, 0)).toEqual({ lo: 0, hi: 255 });
+    });
+
+    it("finds the actual min/max of a compressed tonal range (no clip)", () => {
+        const gray = new Uint8ClampedArray(151);
+        for (let v = 50; v <= 200; v++) gray[v - 50] = v;
+        expect(computeStretchBounds(gray, 0)).toEqual({ lo: 50, hi: 200 });
+    });
+
+    it("trims outliers when clipping", () => {
+        // 990 mid-tone pixels spread over 60..200, plus a few hard outliers.
+        const gray = new Uint8ClampedArray(1000);
+        for (let i = 0; i < 990; i++) gray[i] = 60 + (i % 141);
+        for (let i = 990; i < 995; i++) gray[i] = 0;
+        for (let i = 995; i < 1000; i++) gray[i] = 255;
+
+        const noClip = computeStretchBounds(gray, 0);
+        expect(noClip).toEqual({ lo: 0, hi: 255 });
+
+        const clipped = computeStretchBounds(gray, 0.02);
+        expect(clipped.lo).toBeGreaterThan(0);
+        expect(clipped.hi).toBeLessThan(255);
     });
 });
 
