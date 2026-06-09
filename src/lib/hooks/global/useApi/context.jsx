@@ -1,5 +1,5 @@
 import ky from "ky";
-import { floor, isEmpty, isUndefined, replace } from "lodash";
+import { floor, isEmpty, isUndefined } from "lodash";
 import { v4 } from "uuid";
 import { useMemo, useRef, useEffect } from "react";
 
@@ -499,7 +499,24 @@ export const useApiContext = () => {
                             try {
                                 await refresh();
 
-                                return api(replace(request.url, currentPrefixUrl, ""), {
+                                // Rebuild the relative route from the request
+                                // PATH, not by string-replacing the prefix on the
+                                // absolute request.url. request.url is absolute
+                                // (origin + path); currentPrefixUrl may be relative
+                                // ("/api.php/") or absolute. A naive replace() on a
+                                // relative prefix strips the segment from the MIDDLE
+                                // of the absolute URL, gluing the origin to the route
+                                // (".../api.php/https:/host..route") -- which the
+                                // backend then rejects as injection. Stripping the
+                                // prefix off the pathname keeps it correct in both
+                                // cases; ky re-adds prefixUrl on the retry.
+                                const reqUrl = new URL(request.url);
+                                const prefixPath = new URL(currentPrefixUrl, reqUrl.origin).pathname;
+                                const relative = (reqUrl.pathname.startsWith(prefixPath)
+                                    ? reqUrl.pathname.slice(prefixPath.length)
+                                    : reqUrl.pathname.replace(/^\/+/, "")) + reqUrl.search;
+
+                                return api(relative, {
                                     ...options,
                                     context: state
                                 });
