@@ -144,10 +144,14 @@ export const Page = (props) => {
         if (!viewport) return;
 
         const handleResize = () => {
-            if (pageRef.current) {
-                pageRef.current.style.height = `${viewport.height}px`;
-                pageRef.current.style.top = `${viewport.offsetTop}px`;
-            }
+            if (!pageRef.current) return;
+            pageRef.current.style.height = `${viewport.height}px`;
+            // Only follow the visual-viewport offset while it is meaningfully
+            // shifted (iOS keyboard pan). Otherwise clear it so the CSS `top-0`
+            // governs: writing `top: <offsetTop>px` on the fixed scroller on
+            // every visualViewport "scroll" event dragged the layer during
+            // normal scroll / rubber-band and made iOS scrolling feel inverted.
+            pageRef.current.style.top = viewport.offsetTop > 1 ? `${viewport.offsetTop}px` : "";
         };
 
         viewport.addEventListener("resize", handleResize);
@@ -157,6 +161,12 @@ export const Page = (props) => {
         return () => {
             viewport.removeEventListener("resize", handleResize);
             viewport.removeEventListener("scroll", handleResize);
+            // Drop the inline overrides so a stale keyboard height/offset never
+            // survives a navigation (it otherwise left the next page offset).
+            if (pageRef.current) {
+                pageRef.current.style.height = "";
+                pageRef.current.style.top = "";
+            }
         };
     }, [isDesktop]);
 
