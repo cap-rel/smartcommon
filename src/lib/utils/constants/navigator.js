@@ -18,7 +18,7 @@ const getLanguage = () => {
         return "en";
     }
 
-    navigator.language || navigator.userLanguage
+    return navigator.language || navigator.userLanguage;
 };
 
 const locate = (success = () => {}, error = () => {}) => {
