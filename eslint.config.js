@@ -6,6 +6,7 @@ import globals from 'globals'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import oxlint from 'eslint-plugin-oxlint'
 
 import noShadowedGlobalSelfCall from './eslint-rules/no-shadowed-global-self-call.js'
 
@@ -71,4 +72,9 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
       ...globals.node,
     },
   },
-}, ...storybook.configs["flat/recommended"]];
+}, ...storybook.configs["flat/recommended"],
+  // Two-pass lint strategy: oxlint runs first (fast, native), eslint second
+  // for the residual it cannot do (the custom local/ rule + storybook). This
+  // last block reads .oxlintrc.json and turns OFF in eslint every rule oxlint
+  // already owns, so no rule runs (or reports) twice. See ~/docs/LINTING.md.
+  ...oxlint.buildFromOxlintConfigFile('.oxlintrc.json')];
