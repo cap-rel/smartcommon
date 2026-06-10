@@ -447,6 +447,9 @@ export const PhotosUploader = (props) => {
                 isOpen: multiple ? selectedPhotoIndex === index : isPhotoSelected,
             }))}>
                 <div className="relative w-full">
+                    {/* Delete is hidden in read-only mode: consulting a photo
+                        must never offer a destructive action. */}
+                    {!readOnly && (
                     <Button { ...mergeProps("DeleteButton", props => ({
                         icon: FaTrashCan,
                         ...props,
@@ -464,6 +467,7 @@ export const PhotosUploader = (props) => {
                             className: "text-app-lg "
                         }
                     }))} />
+                    )}
                     {(photo?.previewUrl || photo?.src)
                     ? <img { ...mergeProps("popupImg", props => ({
                         ...props,
@@ -494,6 +498,10 @@ export const PhotosUploader = (props) => {
                     }
                 }))} />
                 {/* <div className="flex gap-app-xs items-center"> */}
+                    {/* Save makes no sense in read-only mode: the title/desc
+                        inputs are no-ops (updatePhotoInfo guards on readOnly).
+                        The popup is dismissed via its built-in close button. */}
+                    {!readOnly && (
                     <Button { ...mergeProps("SaveButton", props => ({
                         label: labels.saveButton,
                         icon: GiSaveArrow,
@@ -516,6 +524,7 @@ export const PhotosUploader = (props) => {
                             className: "text-app-xl"
                         }
                     }))} />
+                    )}
                 {/* </div> */}
             </Popup>
         );
@@ -590,6 +599,10 @@ export const PhotosUploader = (props) => {
                     }
                    
                 </div>
+                {/* Capture/import controls are hidden in read-only mode: a
+                    consult view only shows the photo (clickable to enlarge),
+                    never the camera/import buttons. */}
+                {!readOnly && (
                 <div  { ...mergeProps("buttonsContainer", props => ({
                     ...props,
                     className: "flex items-center gap-app-base",
@@ -626,6 +639,7 @@ export const PhotosUploader = (props) => {
                         }
                     }))} />
                 </div>
+                )}
             </div>
             {/* </Panel> */}
 
