@@ -107,6 +107,80 @@ describe("registerPushHandlers", () => {
         expect(showNotification).not.toHaveBeenCalled();
     });
 
+    it("on a sync push with no focused client, posts trigger-sync AND shows the notification", async () => {
+        const postMessage = vi.fn();
+        matchAll.mockResolvedValue([{ postMessage }]); // open but not focused/visible
+
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        fireEvent("push", {
+            waitUntil,
+            data: {
+                json: () => ({
+                    title: "Maj",
+                    body: "Intervention modifiee",
+                    data: { action: "sync", url: "/interventions" },
+                }),
+            },
+        });
+        await waitUntil.mock.calls[0][0];
+
+        expect(postMessage).toHaveBeenCalledWith({
+            type: "trigger-sync",
+            data: { action: "sync", url: "/interventions" },
+        });
+        expect(showNotification).toHaveBeenCalledWith(
+            "Maj",
+            expect.objectContaining({ body: "Intervention modifiee" })
+        );
+    });
+
+    it("on a sync push with a focused client, posts trigger-sync but suppresses the notification", async () => {
+        const postMessage = vi.fn();
+        matchAll.mockResolvedValue([{ postMessage, focused: true }]);
+
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        fireEvent("push", {
+            waitUntil,
+            data: {
+                json: () => ({
+                    title: "Maj",
+                    body: "Intervention modifiee",
+                    data: { action: "sync" },
+                }),
+            },
+        });
+        await waitUntil.mock.calls[0][0];
+
+        expect(postMessage).toHaveBeenCalledWith({
+            type: "trigger-sync",
+            data: { action: "sync" },
+        });
+        expect(showNotification).not.toHaveBeenCalled();
+    });
+
+    it("a non-sync push never posts a trigger-sync message (backward compatible)", async () => {
+        const postMessage = vi.fn();
+        matchAll.mockResolvedValue([{ postMessage, focused: true }]);
+
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        fireEvent("push", {
+            waitUntil,
+            data: {
+                json: () => ({ title: "Hello", body: "World", data: { url: "/x" } }),
+            },
+        });
+        await waitUntil.mock.calls[0][0];
+
+        expect(postMessage).not.toHaveBeenCalled();
+        expect(showNotification).toHaveBeenCalledWith(
+            "Hello",
+            expect.objectContaining({ body: "World" })
+        );
+    });
+
     it("opens a window to data.url on notificationclick when no client is open", async () => {
         registerPushHandlers();
         const waitUntil = vi.fn((p) => p);

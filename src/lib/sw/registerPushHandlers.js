@@ -19,6 +19,15 @@
 // and the smartcommon usePushNotifications hook contract: on a forced
 // subscription renewal the SW posts a 'push-resubscribe' message and the hook
 // replays the authenticated POST /push/subscribe (the SW has no auth token).
+//
+// Silent-sync pushes: when a push payload carries `data.action === "sync"`, the
+// SW posts a 'trigger-sync' message to every open client (so the app can refresh
+// its local state without the user acting) AND, if a client is already focused /
+// visible, suppresses the system notification (the list refreshes live, so a
+// banner would be redundant). When no client is focused the notification is
+// still shown so the user does not miss the update. Pushes without
+// `data.action === "sync"` keep the previous behaviour unchanged (always shown,
+// no message posted).
 
 /**
  * @typedef {Object} RegisterPushHandlersOptions
@@ -72,19 +81,53 @@ export function registerPushHandlers(options = {}) {
             payload = { title: defaultTitle, body: event.data.text() };
         }
 
+        const data = payload.data || {};
+
         const notificationOptions = {
             body: payload.body || "",
             icon: payload.icon || defaultIcon,
             badge: payload.badge || defaultBadge,
             tag: payload.tag || undefined,
-            data: payload.data || {},
+            data,
             vibrate,
             requireInteraction: payload.requireInteraction || false,
             actions: payload.actions || [],
         };
 
+        // A push carrying data.action === "sync" asks the app to refresh its
+        // local state. Bridge it to open clients via a "trigger-sync" message
+        // and, when a client is already focused/visible, suppress the system
+        // notification (the focused app refreshes live, a banner would be
+        // redundant). With no focused client the notification is still shown.
+        const isSyncPush = data.action === "sync";
+
         event.waitUntil(
-            self.registration.showNotification(payload.title || defaultTitle, notificationOptions)
+            (async () => {
+                if (isSyncPush) {
+                    const clientsList = await self.clients.matchAll({
+                        type: "window",
+                        includeUncontrolled: true,
+                    });
+
+                    for (const client of clientsList) {
+                        client.postMessage({ type: "trigger-sync", data });
+                    }
+
+                    const hasFocusedClient = clientsList.some(
+                        (client) =>
+                            client.focused === true || client.visibilityState === "visible"
+                    );
+                    if (hasFocusedClient) {
+                        // Silent: the focused app already refreshes via the message.
+                        return undefined;
+                    }
+                }
+
+                return self.registration.showNotification(
+                    payload.title || defaultTitle,
+                    notificationOptions
+                );
+            })()
         );
     });
 
