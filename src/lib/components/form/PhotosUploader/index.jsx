@@ -605,6 +605,11 @@ export const PhotosUploader = (props) => {
                 {!readOnly && (
                 <div  { ...mergeProps("buttonsContainer", props => ({
                     ...props,
+                    // Stable E2E hook: this capture/import controls container is
+                    // rendered ONLY in editable mode (gated by !readOnly), so its
+                    // absence is the load-bearing signal that a photo field is in
+                    // read-only / consult mode (no "take a new photo" / "import").
+                    "data-testid": "photos-capture-controls",
                     className: "flex items-center gap-app-base",
                     // border-t pt-4 border-border
                 }))}>

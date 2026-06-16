@@ -133,7 +133,11 @@ export const PlainCalendar = (props) => {
 
   const handleNumberOnClick = (date) => {
     if (!interval) {
-      setValue(date);
+      // Re-tapping the already-selected day clears it (mirrors interval mode,
+      // which toggles a re-clicked bound back to null). Without this, useField
+      // dedupes the unchanged value and never emits onChange, so a consumer
+      // cannot detect the re-tap to deselect.
+      setValue(currentValue === date ? null : date);
       set("lastSelected", date);
       return;
     }

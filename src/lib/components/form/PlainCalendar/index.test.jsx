@@ -79,6 +79,19 @@ describe("PlainCalendar - day click (single mode)", () => {
         expect(onChange.mock.calls[0][0]).toBe("2024-03-20");
     });
 
+    it("clears the selection when the already-selected day is re-clicked", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <PlainCalendar value="2024-03-15" interval={false} onChange={onChange} />
+        );
+        // Re-tapping the selected day must emit onChange(null) so a consumer can
+        // deselect. Without the toggle, useField dedupes the unchanged value and
+        // onChange would never fire.
+        clickDay(container, "2024-03-15");
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0]).toBe(null);
+    });
+
     it("ignores clicks on days outside the current month", () => {
         const onChange = vi.fn();
         const { container } = render(
