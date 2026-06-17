@@ -6,6 +6,11 @@ export const Provider = (props) => {
   const { children, config, onError, errorFallback, ErrorFallbackComponent, pwaUpdate, debug } = props;
   // theme: "light" (default) | "dark" | "auto" (follows the OS).
   const themeMode = config?.theme;
+  // router: "browser" (default) | "hash". basename for the browser router.
+  // Lets a PWA served under a subpath / using hash deep links keep the single
+  // <Provider> instead of hand-rolling its own router stack.
+  const routerType = config?.router ?? "browser";
+  const routerBasename = config?.basename;
   // TODO voir à quoi sert réellement AnimatePresence car ça fonctionne sans
   return (
   <ErrorBoundary onError={onError} fallback={errorFallback} FallbackComponent={ErrorFallbackComponent}>
@@ -14,7 +19,7 @@ export const Provider = (props) => {
       <ReduxProvider>
         <GlobalStatesProvider>
           <ApiProvider>
-            <Router>
+            <Router type={routerType} basename={routerBasename}>
               <NavigationProvider>
                 <AnimatePresence mode="wait">
                   {children}
