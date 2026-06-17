@@ -733,11 +733,17 @@ export const useApiContext = () => {
             // before the flood of parallel in-flight requests each surface
             // their own toast. A session is only PROVEN dead by a server that
             // actually answered with:
-            //   - an auth status (401/403), or
+            //   - a 401 Unauthorized (no/expired/invalid token), or
             //   - a body that is not the JSON we expected: backends serve a
             //     plain-text/HTML access page on an expired session, so
             //     response.json() throws a SyntaxError ("... is not valid
             //     JSON") / "Unauthorized".
+            //
+            // A 403 Forbidden is NOT a dead session: the caller is correctly
+            // authenticated but lacks the right on THIS resource. Ejecting on
+            // 403 logged the whole app out on a single permission denial. We
+            // let the 403 surface as a normal error so consumers can toast
+            // "access denied" without losing the session.
             //
             // Crucially, a CONNECTIVITY failure must never be read as a dead
             // session: when offline, beforeRequest rejects with "No internet
@@ -753,7 +759,6 @@ export const useApiContext = () => {
             const isConfirmedDeadSession =
                 !isOffline && (
                     status === 401 ||
-                    status === 403 ||
                     error instanceof SyntaxError ||
                     /is not valid JSON|Unexpected token|Unauthorized/i.test(message)
                 );
