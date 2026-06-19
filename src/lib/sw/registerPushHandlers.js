@@ -20,14 +20,18 @@
 // subscription renewal the SW posts a 'push-resubscribe' message and the hook
 // replays the authenticated POST /push/subscribe (the SW has no auth token).
 //
-// Silent-sync pushes: when a push payload carries `data.action === "sync"`, the
-// SW posts a 'trigger-sync' message to every open client (so the app can refresh
-// its local state without the user acting) AND, if a client is already focused /
-// visible, suppresses the system notification (the list refreshes live, so a
-// banner would be redundant). When no client is focused the notification is
-// still shown so the user does not miss the update. Pushes without
-// `data.action === "sync"` keep the previous behaviour unchanged (always shown,
-// no message posted).
+// Sync pushes: when a push payload carries `data.action === "sync"`, the SW
+// posts a 'trigger-sync' message to every open client (so the app can refresh
+// its local state without the user acting). This is decoupled from whether the
+// banner is shown.
+//
+// Silencing is driven by a SEPARATE, explicit `data.silent === true` flag (NOT
+// by `action === "sync"`): only a push marked silent suppresses the system
+// notification when a client is already focused/visible (the live app makes the
+// banner redundant). A sync push WITHOUT `data.silent` stays visible -- the
+// lists refresh AND the user still sees the banner, even with the app open. With
+// no focused client the notification is shown regardless. Pushes without either
+// flag keep the previous behaviour (always shown, no message posted).
 
 /**
  * @typedef {Object} RegisterPushHandlersOptions
@@ -95,30 +99,37 @@ export function registerPushHandlers(options = {}) {
         };
 
         // A push carrying data.action === "sync" asks the app to refresh its
-        // local state. Bridge it to open clients via a "trigger-sync" message
-        // and, when a client is already focused/visible, suppress the system
-        // notification (the focused app refreshes live, a banner would be
-        // redundant). With no focused client the notification is still shown.
+        // local state: bridge it to open clients via a "trigger-sync" message.
+        // A push carrying data.silent === true asks the SW to suppress the system
+        // notification when a client is already focused/visible (the live app
+        // makes the banner redundant). The two flags are INDEPENDENT: an
+        // assignment push is sync (refresh) without silent (stays visible).
         const isSyncPush = data.action === "sync";
+        const isSilent = data.silent === true;
 
         event.waitUntil(
             (async () => {
-                if (isSyncPush) {
-                    const clientsList = await self.clients.matchAll({
-                        type: "window",
-                        includeUncontrolled: true,
-                    });
+                const clientsList = (isSyncPush || isSilent)
+                    ? await self.clients.matchAll({
+                          type: "window",
+                          includeUncontrolled: true,
+                      })
+                    : [];
 
+                if (isSyncPush) {
                     for (const client of clientsList) {
                         client.postMessage({ type: "trigger-sync", data });
                     }
+                }
 
+                if (isSilent) {
                     const hasFocusedClient = clientsList.some(
                         (client) =>
                             client.focused === true || client.visibilityState === "visible"
                     );
                     if (hasFocusedClient) {
-                        // Silent: the focused app already refreshes via the message.
+                        // Explicitly silent: the focused app refreshes via the
+                        // message, no banner needed.
                         return undefined;
                     }
                 }

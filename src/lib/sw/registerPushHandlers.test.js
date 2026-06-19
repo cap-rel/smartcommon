@@ -135,7 +135,36 @@ describe("registerPushHandlers", () => {
         );
     });
 
-    it("on a sync push with a focused client, posts trigger-sync but suppresses the notification", async () => {
+    it("on a sync push WITHOUT data.silent and a focused client, posts trigger-sync AND still shows the notification", async () => {
+        const postMessage = vi.fn();
+        matchAll.mockResolvedValue([{ postMessage, focused: true }]);
+
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        fireEvent("push", {
+            waitUntil,
+            data: {
+                json: () => ({
+                    title: "Assignee",
+                    body: "Nouvelle intervention",
+                    data: { action: "sync" },
+                }),
+            },
+        });
+        await waitUntil.mock.calls[0][0];
+
+        expect(postMessage).toHaveBeenCalledWith({
+            type: "trigger-sync",
+            data: { action: "sync" },
+        });
+        // No data.silent: the banner stays visible even with the app focused.
+        expect(showNotification).toHaveBeenCalledWith(
+            "Assignee",
+            expect.objectContaining({ body: "Nouvelle intervention" })
+        );
+    });
+
+    it("on a silent sync push with a focused client, posts trigger-sync but suppresses the notification", async () => {
         const postMessage = vi.fn();
         matchAll.mockResolvedValue([{ postMessage, focused: true }]);
 
@@ -147,7 +176,7 @@ describe("registerPushHandlers", () => {
                 json: () => ({
                     title: "Maj",
                     body: "Intervention modifiee",
-                    data: { action: "sync" },
+                    data: { action: "sync", silent: true },
                 }),
             },
         });
@@ -155,9 +184,37 @@ describe("registerPushHandlers", () => {
 
         expect(postMessage).toHaveBeenCalledWith({
             type: "trigger-sync",
-            data: { action: "sync" },
+            data: { action: "sync", silent: true },
         });
         expect(showNotification).not.toHaveBeenCalled();
+    });
+
+    it("on a silent sync push with no focused client, posts trigger-sync AND shows the notification", async () => {
+        const postMessage = vi.fn();
+        matchAll.mockResolvedValue([{ postMessage }]); // open but not focused/visible
+
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        fireEvent("push", {
+            waitUntil,
+            data: {
+                json: () => ({
+                    title: "Maj",
+                    body: "Intervention modifiee",
+                    data: { action: "sync", silent: true },
+                }),
+            },
+        });
+        await waitUntil.mock.calls[0][0];
+
+        expect(postMessage).toHaveBeenCalledWith({
+            type: "trigger-sync",
+            data: { action: "sync", silent: true },
+        });
+        expect(showNotification).toHaveBeenCalledWith(
+            "Maj",
+            expect.objectContaining({ body: "Intervention modifiee" })
+        );
     });
 
     it("a non-sync push never posts a trigger-sync message (backward compatible)", async () => {
