@@ -136,31 +136,48 @@ export const Page = (props) => {
         set("tabbarWidth", tabbar?.offsetWidth);
     }, []);
 
-    // Adjust height to visual viewport on mobile when virtual keyboard opens
+    // Pin the fixed scroller to the visual viewport on mobile, but ONLY while
+    // the virtual keyboard is open. On iOS the visualViewport "scroll" event
+    // fires continuously during normal scroll / rubber-band and `viewport.height`
+    // fluctuates with the URL-bar collapse; writing height (and top) on every
+    // such event resized the scroller mid-gesture, which made scrolling feel
+    // inverted / random, and the height/top desync left a grey body band under
+    // the scroller. So we detect the keyboard (visual viewport shrunk past a
+    // threshold WITHOUT the layout viewport shrinking) and only then pin both
+    // height and top together, in a single handler. Otherwise we clear both
+    // inline overrides and let the CSS `h-dvh` / `top-0` govern: zero writes
+    // during normal scroll, so no jank and no grey band.
     useEffect(() => {
         if (isDesktop) return;
 
         const viewport = window.visualViewport;
         if (!viewport) return;
 
-        const handleResize = () => {
+        // 150px clears the URL-bar collapse (~60-110px); a virtual keyboard is
+        // 250px+. With `resizes-content` the layout viewport shrinks too, the
+        // diff stays ~0 and we leave the scroller to the CSS (browser already
+        // resized it).
+        const KEYBOARD_THRESHOLD = 150;
+
+        const handleViewport = () => {
             if (!pageRef.current) return;
-            pageRef.current.style.height = `${viewport.height}px`;
-            // Only follow the visual-viewport offset while it is meaningfully
-            // shifted (iOS keyboard pan). Otherwise clear it so the CSS `top-0`
-            // governs: writing `top: <offsetTop>px` on the fixed scroller on
-            // every visualViewport "scroll" event dragged the layer during
-            // normal scroll / rubber-band and made iOS scrolling feel inverted.
-            pageRef.current.style.top = viewport.offsetTop > 1 ? `${viewport.offsetTop}px` : "";
+            const keyboardOpen = window.innerHeight - viewport.height > KEYBOARD_THRESHOLD;
+            if (keyboardOpen) {
+                pageRef.current.style.height = `${viewport.height}px`;
+                pageRef.current.style.top = `${viewport.offsetTop}px`;
+            } else {
+                pageRef.current.style.height = "";
+                pageRef.current.style.top = "";
+            }
         };
 
-        viewport.addEventListener("resize", handleResize);
-        viewport.addEventListener("scroll", handleResize);
-        handleResize();
+        viewport.addEventListener("resize", handleViewport);
+        viewport.addEventListener("scroll", handleViewport);
+        handleViewport();
 
         return () => {
-            viewport.removeEventListener("resize", handleResize);
-            viewport.removeEventListener("scroll", handleResize);
+            viewport.removeEventListener("resize", handleViewport);
+            viewport.removeEventListener("scroll", handleViewport);
             // Drop the inline overrides so a stale keyboard height/offset never
             // survives a navigation (it otherwise left the next page offset).
             if (pageRef.current) {
