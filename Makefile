@@ -1,7 +1,7 @@
 # smartcommon - convenience wrappers around npm scripts.
 # All real logic lives in package.json. This file is just a shortcut.
 
-.PHONY: help install dev build test test-build test-coverage lint lint-fix storybook storybook-build clean check
+.PHONY: help install dev build test test-build test-coverage test-stories lint lint-fix storybook storybook-build storybook-build-debug clean check
 
 help: ## Show this help.
 	@echo "smartcommon - available targets:"
@@ -27,6 +27,9 @@ test-build: ## Rebuild dist/ then smoke-test the bundle (covers the minified out
 test-coverage: ## Run the suite with coverage reports.
 	npm run test:coverage
 
+test-stories: ## Build Storybook then smoke-test every story + docs page (headless).
+	npm run test:stories
+
 lint: ## Run ESLint.
 	npm run lint
 
@@ -38,6 +41,9 @@ storybook: ## Start Storybook on port 6006.
 
 storybook-build: ## Build Storybook static site.
 	npm run build-storybook
+
+storybook-build-debug: ## Build Storybook static site unminified (readable error stacks).
+	npm run build-storybook:debug
 
 clean: ## Remove build artefacts.
 	rm -rf dist storybook-static
