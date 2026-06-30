@@ -1,3 +1,5 @@
+import process from "node:process";
+
 /** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
   stories: [
@@ -29,6 +31,13 @@ const config = {
       ...(config.optimizeDeps.include || []),
       "html5-qrcode",
     ];
+    // Debug builds: `SB_NOMIN=1 storybook build` (or `make storybook-build-debug`)
+    // disables minification and emits sourcemaps so runtime error overlays show
+    // real component / function names instead of single-letter minified ones.
+    // Makes bug reports from the hosted Storybook actionable.
+    if (process.env.SB_NOMIN) {
+      config.build = { ...(config.build || {}), minify: false, sourcemap: true };
+    }
     return config;
   },
 };
