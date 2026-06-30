@@ -2,6 +2,10 @@ import { isFunction } from "lodash";
 
 import { useLibConfig } from "lib/hooks";
 
+/**
+ * @deprecated Legacy fetch helper. Use `useApi` (top-level barrel) instead.
+ * Kept for backward-compat only; do not adopt in new code.
+ */
 export const useApiTest = (props) => {
   let { url } = props;
   const {  token = "", errors = {} } = props;

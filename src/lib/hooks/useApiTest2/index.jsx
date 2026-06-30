@@ -9,6 +9,13 @@ import { useFetchApi } from "./useFetchApi";
 import { useIdentifyDevice } from "./useIdentifyDevice";
 import { useGetEntities } from "./useGetEntities";
 
+/**
+ * @deprecated Legacy Redux+fetch auth layer. Use `useApi` (top-level barrel)
+ * instead: it has the circuit breaker, single-refresh dedup, dead-session eject
+ * and enriched errors. This module survives only because its sub-maps
+ * (loginMap, refreshAccessTokenMap) are still consumed by useApi -- do not adopt
+ * the hook itself in new code.
+ */
 export const useApiTest2 = () => {
     let deviceId = getLocal("HTTP_X_DEVICEID");
 

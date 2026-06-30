@@ -1,6 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-import { mToKm, secsToTime, log } from "lib/utils";
+import { twMerge, log } from "lib/utils";
 
 import {
   DEFAULT_LABELS,
@@ -10,164 +10,166 @@ import {
   propTypes,
 } from "./props";
 
+// Pinned to the installed leaflet version so the CDN stylesheet matches the
+// runtime. Bump both together when upgrading leaflet.
+const LEAFLET_VERSION = "1.9.4";
+const LEAFLET_CSS_ID = "leaflet-css";
+
+// Leaflet is kept external + lazy-loaded, so its stylesheet is not bundled
+// into smartcommon's CSS. Inject it once from the CDN at runtime. The map
+// already requires network access for the OSM tiles, so an online-only
+// stylesheet is consistent with the component's nature.
+const ensureLeafletCss = () => {
+  if (typeof document === "undefined") return;
+  if (document.getElementById(LEAFLET_CSS_ID)) return;
+  const link = document.createElement("link");
+  link.id = LEAFLET_CSS_ID;
+  link.rel = "stylesheet";
+  link.href = `https://unpkg.com/leaflet@${LEAFLET_VERSION}/dist/leaflet.css`;
+  document.head.appendChild(link);
+};
+
+// Dependency-free marker icon (inline SVG) so the component never relies on
+// Leaflet's PNG assets, which break under bundlers / external resolution.
+const buildMarkerIcon = (L) =>
+  L.divIcon({
+    className: "",
+    html:
+      '<svg width="26" height="38" viewBox="0 0 26 38" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="M13 0C5.8 0 0 5.8 0 13c0 9.7 13 25 13 25s13-15.3 13-25C26 5.8 20.2 0 13 0z" fill="#f72d40"/>' +
+      '<circle cx="13" cy="13" r="5" fill="#ffffff"/></svg>',
+    iconSize: [26, 38],
+    iconAnchor: [13, 38],
+    popupAnchor: [0, -34],
+  });
+
+const formatAddress = (address, fallback) => {
+  const line = [
+    address.road,
+    address.postcode,
+    address.city || address.village,
+    address.state,
+    address.country,
+  ]
+    .filter(Boolean)
+    .join(", ");
+  return line || fallback;
+};
+
 /**
- * @param {*} props
- * @param {*} onChange (function) Ecoute le changement dans la map
+ * Leaflet map (core-only build).
+ *
+ * Renders a base tile map for every `type`. When `type === "search"`, a click
+ * drops a marker and reverse-geocodes the point. The `type === "route"` mode
+ * needs the leaflet-routing-machine plugin, which is intentionally not bundled;
+ * it degrades to the base map and logs a warning.
+ *
+ * Leaflet is loaded lazily (dynamic import) and kept external to the library
+ * bundle, so it only reaches a consumer's build - as a lazy chunk - when <Map>
+ * is actually used.
+ *
+ * @param {object} props
+ * @param {"search"|"route"} [props.type]
+ * @param {[number, number]} [props.center]
+ * @param {number} [props.zoom]
+ * @param {function} [props.onChange] - Called with { lat, lng, address } after
+ *   a successful reverse-geocode in "search" mode.
  */
 export const Map = (props) => {
-  const labels = { ...DEFAULT_LABELS, ...(props.labels ?? {}) };
   const {
+    type,
     center = [46.6031, 1.8883],
     zoom = 5,
     tileUrl = DEFAULT_TILE_URL,
     tileAttribution = DEFAULT_TILE_ATTRIBUTION,
     reverseGeocodeUrl = DEFAULT_REVERSE_GEOCODE_URL,
+    onChange,
+    className,
   } = props;
-  const L = {};
+  const labels = { ...DEFAULT_LABELS, ...(props.labels ?? {}) };
+
+  const containerRef = useRef(null);
+  // Keep the latest callbacks/labels reachable from the effect without
+  // re-initialising the map on every render.
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const labelsRef = useRef(labels);
+  labelsRef.current = labels;
+
   useEffect(() => {
-    const map = L.map("map", {
-      center,
-      zoom,
-    });
-    const layer = L.tileLayer(tileUrl, { attribution: tileAttribution });
-    map.addLayer(layer);
+    let map;
+    let cancelled = false;
 
-    if (props.type === "search") {
-      const geocoder = L.Control.Geocoder.nominatim();
-      const searchControl = L.Control.geocoder({
-        geocoder: geocoder,
-        collapsed: false,
-        placeholder: labels.searchPlaceholder,
-        errorMessage: labels.noResults,
-      });
-      searchControl.addTo(map);
+    ensureLeafletCss();
 
-      // const redIcon = new L.Icon({
-      //   iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-      //   iconSize: [25, 41],
-      //   iconAnchor: [12, 41],
-      //   popupAnchor: [1, -34],
-      //   shadowSize: [41, 41],
-      // });
-  
-      let marker;
-      map.on("click", async (e) => {
-        const { lat, lng } = e.latlng;
-        if (marker) {
-          map.removeLayer(marker);
+    import("leaflet")
+      .then(({ default: L }) => {
+        if (cancelled || !containerRef.current) return;
+
+        map = L.map(containerRef.current).setView(center, zoom);
+        L.tileLayer(tileUrl, { attribution: tileAttribution }).addTo(map);
+
+        if (type === "search") {
+          let marker;
+          map.on("click", async (e) => {
+            const { lat, lng } = e.latlng;
+            if (marker) map.removeLayer(marker);
+            marker = L.marker([lat, lng], { icon: buildMarkerIcon(L) }).addTo(map);
+            try {
+              const res = await fetch(
+                `${reverseGeocodeUrl}?lat=${lat}&lon=${lng}&format=json`,
+                { signal: AbortSignal.timeout(8000) }
+              );
+              if (!res.ok) {
+                throw new Error(`Map: reverse geocode HTTP ${res.status}`);
+              }
+              const data = await res.json();
+              const address = data?.address;
+              if (!address) {
+                log.warning("Map: reverse geocoding returned no address", { lat, lng });
+                marker.bindPopup(labelsRef.current.noResults).openPopup();
+                return;
+              }
+              marker
+                .bindPopup(formatAddress(address, labelsRef.current.noResults))
+                .openPopup();
+              onChangeRef.current?.({ lat, lng, address });
+            } catch (err) {
+              log.error("Map: reverse geocoding failed", err);
+            }
+          });
+        } else if (type === "route") {
+          // leaflet-routing-machine is not bundled in this core-only build.
+          // Keep the base map and tell the developer how to enable routing.
+          log.warning(
+            "Map: type='route' requires the leaflet-routing-machine plugin, " +
+            "which is not bundled in smartcommon (core-only Leaflet)."
+          );
         }
-        marker = L.marker([lat, lng]).addTo(map);
 
-        const response = await fetch(`${reverseGeocodeUrl}?lat=${lat}&lon=${lng}&format=json`);
-        const data = await response.json();
-
-        if (data) {
-          const address = data.address;
-          const road = address.road ? `<b>${address.road}</b><br>` : "";
-          let postcode = address.postcode ? `<b>${address.postcode}</b>` : "";
-          let cityVil = address.city ? `<b>${address.city}</b>` : address.village ? `<b>${address.village}</b>` : "";
-          if (!cityVil) {
-            postcode = postcode + "<br>";
-          } else if(!postcode || (postcode && cityVil)) {
-            cityVil = cityVil + "<br>";
-          }
-
-          marker.bindPopup(`${road}${postcode} ${cityVil}${address.state || ""} ${address.country || ""}`).openPopup();        
-        } else {
-          log.error("Map: reverse geocoding returned no data", { lat, lng });
-        }
+        // Leaflet measures the container at init; if the layout settled after
+        // init (hidden parent, late sizing), force a resize next frame.
+        requestAnimationFrame(() => { if (!cancelled) map?.invalidateSize(); });
+      })
+      .catch((err) => {
+        log.error("Map: failed to load Leaflet", err);
       });
-    } else if (props.type === "route") {
-      // const latlng = [48.553981, 2.693149];
-      // const latlng2 = [48.871577, 2.57102];
 
-      // const marker = L.marker(latlng).addTo(map);
-      // const marker2 = L.marker(latlng2).addTo(map);
-
-      const geocoder = L.Control.Geocoder.nominatim();
-
-      const searchControl = L.Control.geocoder({
-        geocoder: geocoder,
-        collapsed: false,
-        placeholder: labels.routeStartPlaceholder,
-        errorMessage: labels.noResults,
-      });
-      searchControl.addTo(map);
-
-      const searchControl2 = L.Control.geocoder({
-        geocoder: geocoder,
-        collapsed: false,
-        placeholder: labels.routeEndPlaceholder,
-        errorMessage: labels.noResults,
-      });
-      searchControl2.addTo(map);
-
-      let latlng = null;
-      let latlng2 = null;
-
-      searchControl.on('markgeocode', (e) => {
-        latlng = e.geocode.center;
-        updateRouting(latlng, latlng2);
-      });
-      
-      searchControl2.on('markgeocode', (e) => {
-        latlng2 = e.geocode.center;
-        updateRouting(latlng, latlng2);
-      });
-      
-      const routing = L.Routing.control({
-        routeWhileDragging: true,
-        draggableWaypoints: false,
-        show: false,
-        language: 'fr'
-      }).addTo(map);
-
-      // Store reference to routing container to avoid repeated DOM queries
-      // and add null check to prevent errors if element doesn't exist yet
-      const routingContainer = document.querySelector('.leaflet-routing-container');
-      if (routingContainer) routingContainer.style.display = 'none';
-
-      const colors = ['#33FFC7', '#336CFF', '#FF33E9'];
-
-      const updateRouting = (latlng, latlng2) => {
-        routing.setWaypoints([
-          L.latLng(latlng),
-          L.latLng(latlng2)
-        ]);
-
-        if (latlng && latlng2) {
-          const markersGroup = L.featureGroup([
-            L.marker(latlng),
-            L.marker(latlng2)
-          ]);
-
-          map.fitBounds(markersGroup.getBounds());
-
-          if (routingContainer) routingContainer.style.display = 'block';
-        } else {
-          if (routingContainer) routingContainer.style.display = 'none';
-        }
-      }
-
-      let i = 0;
-      routing.on("routesfound", (e) => {
-        e.routes.forEach(route => {
-          const line = L.Routing.line(route, { styles: [{ color: colors[i] }] }).addTo(map);
-          line.on("click", () => {
-            const name = route.name ? `${route.name}<br>` : "";
-            const distance = route.summary.totalDistance ? mToKm(route.summary.totalDistance) : "";
-            const time = route.summary.totalTime ? secsToTime(route.summary.totalTime) : "";
-            line.bindPopup(`${name}${distance} ${labels.routeDurationConnector} ${time}`).openPopup();
-            L.DomEvent.stopPropagation(e);
-          })
-          i++
-        });
-      });
-    }
-    
-  }, [props.type]);
+    return () => {
+      cancelled = true;
+      if (map) map.remove();
+    };
+    // center/zoom are init-only on purpose: a new array literal each render
+    // would otherwise tear down and rebuild the map continuously.
+  }, [type, tileUrl, tileAttribution, reverseGeocodeUrl]);
 
   return (
-    <div id="map" className="h-screen w-full text-black z-10"></div>
+    <div
+      ref={containerRef}
+      data-component="Map"
+      className={twMerge("w-full h-full min-h-[400px] text-black z-10", className)}
+    />
   );
 };
+
+Map.propTypes = propTypes;

@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { isNil, isEmpty } from "lodash";
 
-import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Textarea, Input, Label } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
@@ -86,6 +86,15 @@ export const AudiosUploader = (props) => {
         };
     }, []);
 
+    // Track the latest value so the unmount cleanup can revoke every
+    // object URL (a []-dep effect would only see the first render's value).
+    const audioValueRef = useRef(currentValue);
+    useEffect(() => { audioValueRef.current = currentValue; }, [currentValue]);
+    useEffect(() => () => {
+        const items = multiple ? (audioValueRef.current ?? []) : [audioValueRef.current];
+        items.forEach(a => { if (a?.previewUrl) { URL.revokeObjectURL(a.previewUrl); } });
+    }, [multiple]);
+
     const captureAudio = () => {
         set("isInputInCaptureMode", true);
         // Clear any pending timeout to avoid race conditions on rapid clicks
@@ -107,13 +116,21 @@ export const AudiosUploader = (props) => {
     const deleteAudio = index => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
+            let audioToDelete;
 
             if (multiple) {
+                audioToDelete = (currentValue ?? [])[index];
                 newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedAudioIndex", null);
             } else {
+                audioToDelete = currentValue;
                 newValue = null;
                 set("isAudioSelected", false);
+            }
+
+            // Free the object URL so the blob can be GC'd.
+            if (audioToDelete?.previewUrl) {
+                URL.revokeObjectURL(audioToDelete.previewUrl);
             }
 
             setValue(newValue);
@@ -130,15 +147,10 @@ export const AudiosUploader = (props) => {
         }
     };
 
-    const { resizeImage } = useFile();
-
     const addAudio = async file => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             set("isAudioLoading", true);
 
-            // const base64 = await resizeImage(file);
-            const base64 = null;
-        
             let gpsPoints = [null, null];
 
             if (isInputInCaptureMode) {
@@ -148,7 +160,20 @@ export const AudiosUploader = (props) => {
                 );
             }
 
-            const newAudio = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
+            // Keep the binary as a Blob and render the player from an object
+            // URL. base64 for audio would bloat the form state; consumers that
+            // need to upload read newAudio.blob. previewUrl is revoked on
+            // delete and on unmount.
+            const previewUrl = URL.createObjectURL(file);
+            const newAudio = {
+                blob: file,
+                src: previewUrl,
+                previewUrl,
+                gpsPoints,
+                title: splitFileExtension(file.name)[0],
+                description: "",
+                capture: isInputInCaptureMode,
+            };
             const newValue = multiple ? [...(currentValue ?? []), newAudio] : newAudio;
             setValue(newValue);
             set("isAudioLoading", false);
@@ -258,7 +283,7 @@ export const AudiosUploader = (props) => {
                 }))} />
                  <audio { ...mergeProps("audioPlayer", props => ({
                     ...props,
-                    ref: el => multiple ? (audioRefs.current[index] = el) : (audioRefs.current = el),
+                    ref: el => { if (multiple) { audioRefs.current[index] = el; } else { audioRefs.current = el; } },
                     src: audio?.src,
                     controls: true,
                     // onLoadedMetadata={(e) => {

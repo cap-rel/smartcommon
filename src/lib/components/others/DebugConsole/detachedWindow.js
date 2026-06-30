@@ -148,8 +148,8 @@ body { background: #111827; color: #e5e7eb; font-family: ui-monospace, "Cascadia
             if (e.level === "warn") rowClass += " level-warn-row";
             var line = '<div class="' + rowClass + '">';
             line += '<span class="timestamp">' + formatTime(e.timestamp) + '</span>';
-            if (e.namespace) line += '<span class="badge" style="background-color:' + (e.namespaceColor || "#607d8b") + '">' + e.namespace + '</span>';
-            if (e.label) line += '<span class="badge" style="background-color:' + (e.labelColor || "grey") + '">' + e.label + '</span>';
+            if (e.namespace) line += '<span class="badge" style="background-color:' + safeColor(e.namespaceColor, "#607d8b") + '">' + escapeHtml(e.namespace) + '</span>';
+            if (e.label) line += '<span class="badge" style="background-color:' + safeColor(e.labelColor, "grey") + '">' + escapeHtml(e.label) + '</span>';
             var text = e.messages.map(inlineMsg).join(" ");
             line += '<span class="message">' + escapeHtml(text) + '</span>';
             line += '</div>';
@@ -161,7 +161,20 @@ body { background: #111827; color: #e5e7eb; font-family: ui-monospace, "Cascadia
     }
 
     function escapeHtml(s) {
-        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+
+    // Reject any color string that could break out of the style="" attribute or
+    // inject extra CSS (quotes, angle brackets, semicolons, url()/expression()).
+    // A normal color token (hex, name, rgb()) contains none of these. Kept as a
+    // denylist of literal characters on purpose: a regex with backslash classes
+    // would be mangled by this template literal's own escaping.
+    function safeColor(c, fallback) {
+        if (typeof c !== "string") return fallback;
+        if (/["'<>;]/.test(c) || c.indexOf("url(") !== -1 || c.indexOf("expression") !== -1) {
+            return fallback;
+        }
+        return c;
     }
 
     function updateNsDropdown() {

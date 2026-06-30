@@ -17,6 +17,18 @@ export const useApiContext = () => {
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
+    // SECURITY -- token storage posture (accepted risk).
+    // The authenticated user (incl. access + refresh JWT) is persisted via gst
+    // into localStorage (rememberMe) or sessionStorage. Both are readable by any
+    // JS on the origin, so a future XSS could exfiltrate the tokens. This is a
+    // deliberate, accepted trade-off for an offline-first PWA that authenticates
+    // a REST API with a Bearer header (immune to CSRF, survives reload/offline).
+    // The real hardening is NOT a sessionStorage swap (that breaks rememberMe
+    // and offline for no gain against an active XSS): it is (1) moving the
+    // refresh token to an httpOnly;Secure;SameSite cookie on the smartAuth
+    // backend, (2) a short access-token TTL, and (3) a strict CSP in the
+    // consumer apps. Tracked as a separate cross-repo hardening task.
+
     // ---------------------- globalStates ----------------------
 
     const gst = useGlobalStates();
@@ -116,6 +128,24 @@ export const useApiContext = () => {
     // before the flood of parallel in-flight requests each surface their own
     // error toast. Reset on the next successful response and on a fresh login.
     const sessionDeadRef = useRef(false);
+
+    // Single-shot eject to /login for a PROVEN-dead session. Latched by
+    // sessionDeadRef so the flood of parallel in-flight 401s ejects exactly
+    // once: one circuit open, one user unset, one onSessionExpired
+    // notification. Both the afterResponse 401 path and createApiMethod's
+    // catch funnel through here so the eject can never double-fire.
+    const ejectDeadSession = () => {
+        if (sessionDeadRef.current) {
+            return;
+        }
+        sessionDeadRef.current = true;
+        const { gst: currentGst, onSessionExpired: sessionExpiredCallback } = valuesRef.current;
+        openCircuit(30000);
+        currentGst.unset("user"); // RouteGuard redirects to /login
+        if (sessionExpiredCallback) {
+            sessionExpiredCallback();
+        }
+    };
 
     // ---------------------- reconnection: reset circuit ----------------------
 
@@ -223,7 +253,10 @@ export const useApiContext = () => {
                         try {
                             const body = await error.response.clone().json();
                             error.apiMessage = body?.error || body?.message;
-                            error.apiCode = body?.error;
+                            // Prefer an explicit machine code field when the backend
+                            // sends one; fall back to body.error (smartAuth sometimes
+                            // puts a code string there, e.g. "pairing_not_claimable").
+                            error.apiCode = body?.code ?? body?.error;
                         } catch {
                             // Response may not be JSON, leave the fields undefined.
                         }
@@ -270,12 +303,38 @@ export const useApiContext = () => {
 
     const publicApi = useMemo(() => baseApi.extend({}), [baseApi]);
 
+    // Public counterpart of createApiMethod: wraps a public endpoint call in
+    // the same try/catch + error enrichment so a non-JSON 2xx body (e.g. a
+    // Dolibarr HTML access page) surfaces as a readable error instead of a raw
+    // "Unexpected token < in JSON" SyntaxError. No dead-session eject: public
+    // endpoints have no session to kill. Keeps the exact .METHOD(url).json()
+    // chain so existing call sites and their mocks are unaffected.
+    const callPublic = async (method, url, options = {}) => {
+        const { debug: currentDebug } = valuesRef.current;
+        try {
+            return await publicApi[method](url, options).json();
+        } catch (error) {
+            if (currentDebug) {
+                log.apiError(`${method.toUpperCase()} (public) failed`, url, error.message);
+            }
+            error.url = url;
+            error.method = method.toUpperCase();
+            // A non-JSON body throws a SyntaxError with no error.response (so
+            // the beforeError hook never set apiMessage). Give consumers a
+            // readable message instead of the raw parser error.
+            if (error instanceof SyntaxError && !error.apiMessage) {
+                error.apiMessage = "Unexpected non-JSON response from server";
+            }
+            throw error;
+        }
+    };
+
     // ---------------------- entities ----------------------
 
     const entities = useMemo(() => (options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return publicApi.get(options.url ?? "login", options).json();
+        return callPublic("get", options.url ?? "login", options);
     }, [publicApi]);
 
     // ---------------------- login ----------------------
@@ -289,12 +348,10 @@ export const useApiContext = () => {
         circuitRef.current.openUntil = 0;
         sessionDeadRef.current = false;
 
-        return publicApi
-            .post(options.url ?? "login", {
+        return callPublic("post", options.url ?? "login", {
                 json: body,
-                 ...options
+                ...options
             })
-            .json()
             .then(async (data) => {
                 const mappedData = loginMap(data);
                 const {
@@ -399,23 +456,19 @@ export const useApiContext = () => {
         throwTypeError({ value: body, name: "body (param)", type: ["plain object"] });
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return publicApi
-            .post(`qr-pair/${pairingId}/claim`, {
+        return callPublic("post", `qr-pair/${pairingId}/claim`, {
                 json: body,
                 ...options,
-            })
-            .json();
+            });
     }, [publicApi]);
 
     const pollQrPair = useMemo(() => (pairingId, claimToken, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return publicApi
-            .post(`qr-pair/${pairingId}/poll`, {
+        return callPublic("post", `qr-pair/${pairingId}/poll`, {
                 json: { claim_token: claimToken },
                 ...options,
             })
-            .json()
             .then((data) => {
                 if (data?.status === "consumed" && data?.access_token) {
                     const { gst: currentGst } = valuesRef.current;
@@ -462,17 +515,19 @@ export const useApiContext = () => {
         const api = baseApi.extend({
             hooks: {
                 beforeRequest: [
-                    async (request, options, state) => {
+                    async (request, options) => {
                         const { accessToken: currentAccessToken, tokenExpiry: currentTokenExpiry, deviceId: currentDeviceId } = valuesRef.current;
 
-                        state.hasRefreshed = state.hasRefreshed ?? false;
-
-                        if (floor(Date.now() / 1000) > currentTokenExpiry) {
-                            if (state.hasRefreshed) {
-                                throw new Error("Token refresh already attempted");
-                            }
-
-                            state.hasRefreshed = true;
+                        // Proactively refresh an expired access token before the
+                        // request leaves. refresh() dedupes concurrent callers via
+                        // refreshPromiseRef (N parallel requests share ONE /refresh),
+                        // and options.context guards a ky retry from re-triggering it.
+                        // ky 1.x passes no mutable per-request "state" 3rd arg to
+                        // beforeRequest; options.context is the supported channel,
+                        // same as the 401 path in afterResponse below.
+                        const ctx = options.context ?? {};
+                        if (floor(Date.now() / 1000) > currentTokenExpiry && !ctx.refreshedOnExpiry) {
+                            ctx.refreshedOnExpiry = true;
                             await refresh();
                         }
 
@@ -483,15 +538,14 @@ export const useApiContext = () => {
                 afterResponse: [
                     async (request, options, response) => {
                         const { status } = response;
-                        const { gst: currentGst, prefixUrl: currentPrefixUrl } = valuesRef.current;
+                        const { prefixUrl: currentPrefixUrl } = valuesRef.current;
 
                         if (status === 401) {
                             const state = options.context ?? {};
                             state.hasRetried = state.hasRetried ?? false;
 
                             if (state.hasRetried) {
-                                openCircuit(30000);
-                                currentGst.unset("user");
+                                ejectDeadSession();
                                 throw new Error("Unauthorized after refresh");
                             }
 
@@ -545,15 +599,25 @@ export const useApiContext = () => {
     const logout = useMemo(() => (options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
+        // The client-side logout must ALWAYS succeed: clearing the local user
+        // is what actually logs the user out of the PWA. A server that is
+        // unreachable (offline) or that errors must not leave the user
+        // authenticated locally. We therefore unset in finally and swallow the
+        // network/parse error (logged), so the caller can always navigate to
+        // /login.
         return privateApi
             .post(options.url ?? "logout", options)
             .json()
-            .then(() => {
+            .catch((error) => {
+                log.apiError(
+                    "POST logout - network/parse error (logging out locally anyway)",
+                    options.url ?? "logout",
+                    error?.message
+                );
+            })
+            .finally(() => {
                 const { gst: currentGst } = valuesRef.current;
                 currentGst.unset("user");
-            })
-            .catch((error) => {
-                throw error;
             });
     }, [privateApi]);
 
@@ -698,6 +762,15 @@ export const useApiContext = () => {
         if (options?.raw) {
             return response;
         }
+        // 204 No Content / 205 Reset Content carry no body: calling
+        // response.json() on them throws "Unexpected end of JSON input".
+        // Same for any 2xx the backend explicitly sends empty.
+        if (response.status === 204 || response.status === 205) {
+            return null;
+        }
+        if (response.headers?.get?.("content-length") === "0") {
+            return null;
+        }
         return response.json();
     };
 
@@ -705,7 +778,7 @@ export const useApiContext = () => {
     // Pass { silent: true } in options to suppress the automatic error notification
     const createApiMethod = (method) => async (url, options) => {
         const { silent, ...kyOptions } = options ?? {};
-        const { debug: currentDebug, onApiError: errorCallback, onSessionExpired: sessionExpiredCallback, gst: currentGst } = valuesRef.current;
+        const { debug: currentDebug, onApiError: errorCallback } = valuesRef.current;
         try {
             const response = await privateApi[method](url, kyOptions);
             const data = await handleResponse(response, kyOptions);
@@ -772,13 +845,8 @@ export const useApiContext = () => {
                 error.sessionExpired = true;
             }
 
-            if (isConfirmedDeadSession && !sessionDeadRef.current) {
-                sessionDeadRef.current = true;
-                openCircuit(30000);
-                currentGst.unset("user"); // RouteGuard redirects to /login
-                if (sessionExpiredCallback) {
-                    sessionExpiredCallback();
-                }
+            if (isConfirmedDeadSession) {
+                ejectDeadSession(); // latched: fires once for the whole 401 flood
             }
 
             // Call error callback for API errors unless silenced. A dead

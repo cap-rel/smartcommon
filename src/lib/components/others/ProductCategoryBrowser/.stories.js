@@ -59,5 +59,3 @@ export const Default = { tags: ["!dev"], ...Def };
 export const WithQuantity = { tags: ["!dev"], ...Wq };
 export const WithDiscount = { tags: ["!dev"], ...Wd };
 export const Multiple = { tags: ["!dev"], ...Mu };
-
-export { ProductCategoryBrowser } from "./";

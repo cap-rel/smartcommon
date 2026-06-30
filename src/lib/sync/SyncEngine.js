@@ -83,7 +83,12 @@ class SyncEngine {
      */
     generateTempId() {
         const timestamp = Date.now();
-        const random = Math.random().toString(36).slice(2, 10);
+        // Prefer the CSPRNG: Math.random() can collide under rapid offline
+        // creates. Keep the `local_<ts>_<hex>` shape (consumers rely on the
+        // `local_` prefix and the isTempId check).
+        const random = (typeof crypto !== 'undefined' && crypto.randomUUID)
+            ? crypto.randomUUID().replace(/-/g, '')
+            : Math.random().toString(36).slice(2, 10);
         return `local_${timestamp}_${random}`;
     }
 
@@ -199,11 +204,25 @@ class SyncEngine {
             return result;
         }
 
+        // Order actions create -> update -> delete BEFORE chunking so a create
+        // is always pushed before an update/delete that depends on it, even when
+        // they land in different chunks. Array.sort is stable, so same-action
+        // changes keep their original queue order.
+        const ACTION_ORDER = { create: 0, update: 1, delete: 2 };
+        const orderedChanges = [...pendingChanges].sort(
+            (a, b) => (ACTION_ORDER[a.action] ?? 99) - (ACTION_ORDER[b.action] ?? 99)
+        );
+
         // Process in chunks
-        const chunks = this._chunkArray(pendingChanges, this.pushChunkSize);
+        const chunks = this._chunkArray(orderedChanges, this.pushChunkSize);
 
         for (const chunk of chunks) {
-            const chunkResult = await this._pushChunk(chunk);
+            // Resolve any temp_id minted by an earlier chunk before sending this
+            // one, so a cross-chunk FK reference (or an update/delete targeting
+            // an entity created earlier in this same push) reaches the server
+            // with the real server id instead of a stale temp_id.
+            const resolvedChunk = chunk.map(c => this._remapChange(c, result.id_mappings));
+            const chunkResult = await this._pushChunk(resolvedChunk);
 
             result.success += chunkResult.success;
             result.conflicts.push(...chunkResult.conflicts);
@@ -361,6 +380,40 @@ class SyncEngine {
     }
 
     /**
+     * Return a copy of a pending change with temp_id references resolved to
+     * their server id via the accumulated id_mappings: both FK values inside
+     * `data` and the change's own target `id` (an update/delete of an entity
+     * created earlier in the same push under a temp_id). Returns the change
+     * untouched when there is nothing to remap.
+     */
+    _remapChange(change, idMappings) {
+        if (!idMappings || Object.keys(idMappings).length === 0) {
+            return change;
+        }
+        let remapped = change;
+
+        if (change.data && typeof change.data === 'object') {
+            let dataChanged = false;
+            const newData = { ...change.data };
+            for (const [field, value] of Object.entries(newData)) {
+                if (this.isTempId(value) && idMappings[value]) {
+                    newData[field] = idMappings[value];
+                    dataChanged = true;
+                }
+            }
+            if (dataChanged) {
+                remapped = { ...remapped, data: newData };
+            }
+        }
+
+        if (this.isTempId(remapped.id) && idMappings[remapped.id]) {
+            remapped = { ...remapped, id: idMappings[remapped.id] };
+        }
+
+        return remapped;
+    }
+
+    /**
      * Apply ID mappings to entities that reference temp_ids
      */
     async _applyIdMappings(idMappings) {
@@ -436,6 +489,7 @@ class SyncEngine {
         const lastSyncTime = await this.storage.getLastSyncTime();
         let hasMore = true;
         let offset = 0;
+        let serverTime = null;
 
         while (hasMore) {
             const response = await this.api.pull(this.scope, lastSyncTime, 500, offset);
@@ -493,10 +547,19 @@ class SyncEngine {
                 offset += 500;
             }
 
-            // Update last sync time from server response
+            // Remember the server snapshot time but DON'T commit it yet: writing
+            // it per page would, on a crash between pages, advance last_sync_at
+            // past data we never received and silently drop it on the next sync.
             if (response.server_time) {
-                await this.storage.setLastSyncTime(response.server_time);
+                serverTime = response.server_time;
             }
+        }
+
+        // All pages applied successfully: now it is safe to advance the
+        // watermark. A crash anywhere in the loop leaves last_sync_at untouched,
+        // so the next sync re-pulls from the previous watermark.
+        if (serverTime) {
+            await this.storage.setLastSyncTime(serverTime);
         }
 
         const opsAfter = this.storage.getOpStats ? this.storage.getOpStats().total : null;

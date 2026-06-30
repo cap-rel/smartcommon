@@ -255,7 +255,16 @@ const hydrate = () => {
                 .notEqual("resolved")
                 .toArray();
             for (const rec of records) {
-                state.rows.set(rec.pending_id, { ...rec });
+                const row = { ...rec };
+                // A row persisted as "uploading" means the process died
+                // mid-upload: no request is actually in flight anymore. Reset it
+                // to "idle" so flush() retries it (flush only picks idle rows).
+                if (row.status === "uploading") {
+                    row.status = "idle";
+                    row.updatedAt = nowSec();
+                    await persistRow(row);
+                }
+                state.rows.set(rec.pending_id, row);
             }
             // ...and drop any orphan resolved rows (consumer crashed before
             // we could purge them; their listeners are gone, no use replaying).
@@ -456,11 +465,22 @@ export const __resetUploadQueueForTests = async () => {
 export const useUploadQueue = (options = {}) => {
     const api = useApi();
 
-    state.currentApi = api;
-    if (options.endpoint) state.currentEndpoint = options.endpoint;
-    if (options.maxRetries != null) state.config.maxRetries = options.maxRetries;
-    if (options.backoffBaseMs != null) state.config.backoffBaseMs = options.backoffBaseMs;
-    if (options.backoffCapMs != null) state.config.backoffCapMs = options.backoffCapMs;
+    // Capture the api + options into the singleton in effects, NOT during the
+    // render body: mutating module state while rendering is impure and would
+    // clobber other consumers mid-render. Last-mounter-wins is intentional (the
+    // queue is a process-wide singleton); effect ordering preserves it. We do
+    // NOT clear currentApi on unmount -- another consumer may still be mounted,
+    // and a stale-but-valid api beats a null one for the background retry loop.
+    useEffect(() => {
+        state.currentApi = api;
+    }, [api]);
+
+    useEffect(() => {
+        if (options.endpoint) state.currentEndpoint = options.endpoint;
+        if (options.maxRetries != null) state.config.maxRetries = options.maxRetries;
+        if (options.backoffBaseMs != null) state.config.backoffBaseMs = options.backoffBaseMs;
+        if (options.backoffCapMs != null) state.config.backoffCapMs = options.backoffCapMs;
+    }, [options.endpoint, options.maxRetries, options.backoffBaseMs, options.backoffCapMs]);
 
     useEffect(() => {
         installOnlineHandler();

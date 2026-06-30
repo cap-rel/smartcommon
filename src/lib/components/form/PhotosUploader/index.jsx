@@ -229,10 +229,15 @@ export const PhotosUploader = (props) => {
             let gpsPoints = [null, null];
 
             if (isInputInCaptureMode) {
-                locate(
-                    coords => { gpsPoints = coords },
-                    error => toast.error(labels.geolocationError)
-                );
+                // Await the geolocation: locate() is callback-based and async, so
+                // the previous fire-and-forget left gpsPoints almost always at
+                // [null, null] (the photo was built before the coords arrived).
+                gpsPoints = await new Promise((resolve) => {
+                    locate(
+                        (coords) => resolve(coords),
+                        () => { toast.error(labels.geolocationError); resolve([null, null]); }
+                    );
+                });
             }
 
             const title = splitFileExtension(file.name)[0];

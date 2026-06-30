@@ -109,13 +109,16 @@ class SyncStorage {
     }
 
     /**
-     * Get entities that have been modified locally (local_updated_at != null)
+     * Get entities that have been modified locally (local_updated_at != null).
+     *
+     * IndexedDB does not reliably index null/undefined keys, so a
+     * `.where('local_updated_at').notEqual(null)` query silently skips rows
+     * (the index never contained them). We scan the table and filter in memory
+     * instead -- correct regardless of how the key was stored.
      */
     async getModifiedEntities() {
-        return await this.db.entities
-            .where('local_updated_at')
-            .notEqual(null)
-            .toArray();
+        const all = await this.db.entities.toArray();
+        return all.filter((e) => e.local_updated_at != null);
     }
 
     /**

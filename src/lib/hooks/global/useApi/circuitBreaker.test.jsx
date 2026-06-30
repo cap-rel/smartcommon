@@ -44,17 +44,29 @@ const { kyCtrl, gstState, libConfigState } = vi.hoisted(() => ({
 // the controllable responder.
 vi.mock("ky", () => {
     const buildInstance = (beforeHooks) => {
-        const run = async (method, url, options = {}) => {
-            const request = {
-                method: method.toUpperCase(),
-                url: (libConfigState.api.prefixUrl ?? "") + url,
-                headers: { set: () => {} },
+        const run = (method, url, options = {}) => {
+            const responsePromise = (async () => {
+                const request = {
+                    method: method.toUpperCase(),
+                    url: (libConfigState.api.prefixUrl ?? "") + url,
+                    headers: { set: () => {} },
+                };
+                const state = {};
+                for (const hook of beforeHooks) {
+                    await hook(request, { ...options }, state);
+                }
+                return kyCtrl.responder(method, url, options);
+            })();
+            // Mirror ky's ResponsePromise: the returned value is awaitable to
+            // the Response (used by createApiMethod, which awaits then calls
+            // response.json()) AND exposes a .json() shortcut that resolves the
+            // parsed body directly (used by refresh/logout, which chain
+            // .METHOD(url).json() without awaiting first).
+            responsePromise.json = async () => {
+                const response = await responsePromise;
+                return response.json();
             };
-            const state = {};
-            for (const hook of beforeHooks) {
-                await hook(request, { ...options }, state);
-            }
-            return kyCtrl.responder(method, url, options);
+            return responsePromise;
         };
         const inst = (url, options) => run("get", url, options);
         for (const m of ["get", "post", "put", "patch", "delete"]) {
@@ -158,5 +170,80 @@ describe("circuit breaker - reconnection reset", () => {
         });
 
         await expect(result.current.get("x")).resolves.toEqual({ ok: true });
+    });
+});
+
+describe("session + response hardening (review P1-7/8/9/10)", () => {
+    it("ejects only once when a flood of concurrent requests all hit 401 (P1-10)", async () => {
+        const onSessionExpired = vi.fn();
+        libConfigState.api = { ...libConfigState.api, onSessionExpired };
+        kyCtrl.responder = unauthorized;
+
+        const { result } = renderHook(() => useApiContext());
+
+        const settled = await Promise.allSettled([
+            result.current.get("a"),
+            result.current.get("b"),
+            result.current.get("c"),
+            result.current.get("d"),
+            result.current.get("e"),
+        ]);
+
+        expect(settled.every((r) => r.status === "rejected")).toBe(true);
+        // A single eject for the whole flood: user unset + notification once.
+        expect(gstState.unset).toHaveBeenCalledTimes(1);
+        expect(gstState.unset).toHaveBeenCalledWith("user");
+        expect(onSessionExpired).toHaveBeenCalledTimes(1);
+    });
+
+    it("logout clears the local user even when the network call fails (P1-7)", async () => {
+        kyCtrl.responder = () => {
+            throw new Error("network down");
+        };
+        const { result } = renderHook(() => useApiContext());
+
+        // Client logout always succeeds ...
+        await expect(result.current.logout()).resolves.toBeUndefined();
+        // ... and the user is gone locally.
+        expect(gstState.unset).toHaveBeenCalledWith("user");
+    });
+
+    it("returns null on a 204 No Content instead of throwing on empty body (P1-8)", async () => {
+        kyCtrl.responder = () => ({
+            ok: true,
+            status: 204,
+            headers: { get: () => null },
+            json: async () => {
+                throw new SyntaxError("Unexpected end of JSON input");
+            },
+        });
+        const { result } = renderHook(() => useApiContext());
+
+        await expect(result.current.del("x")).resolves.toBeNull();
+    });
+
+    it("refreshes once on an expired token then proceeds with the request (P1-9)", async () => {
+        gstState.values.user = {
+            accessToken: "old",
+            refreshToken: "rt",
+            tokenExpiry: 1, // far in the past -> beforeRequest must refresh
+            rememberMe: true,
+        };
+        let refreshCount = 0;
+        kyCtrl.responder = (method, url) => {
+            if (url === "refresh") {
+                refreshCount += 1;
+                return {
+                    ok: true,
+                    status: 200,
+                    json: async () => ({ accessToken: "new", expiresIn: 3600 }),
+                };
+            }
+            return success();
+        };
+        const { result } = renderHook(() => useApiContext());
+
+        await expect(result.current.get("a")).resolves.toEqual({ ok: true });
+        expect(refreshCount).toBe(1);
     });
 });

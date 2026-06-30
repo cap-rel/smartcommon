@@ -249,6 +249,29 @@ describe("registerPushHandlers", () => {
         expect(openWindow).toHaveBeenCalledWith("/interventions");
     });
 
+    it("ignores a cross-origin data.url and falls back to '/' (open-redirect guard)", async () => {
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        await fireEvent("notificationclick", {
+            notification: { close: vi.fn(), data: { url: "https://evil.example/phish" } },
+            waitUntil,
+        });
+        await waitUntil.mock.calls[0][0];
+        expect(openWindow).toHaveBeenCalledWith("/");
+        expect(openWindow).not.toHaveBeenCalledWith("https://evil.example/phish");
+    });
+
+    it("ignores a javascript: notification URL and falls back to '/'", async () => {
+        registerPushHandlers();
+        const waitUntil = vi.fn((p) => p);
+        await fireEvent("notificationclick", {
+            notification: { close: vi.fn(), data: { url: "javascript:alert(1)" } },
+            waitUntil,
+        });
+        await waitUntil.mock.calls[0][0];
+        expect(openWindow).toHaveBeenCalledWith("/");
+    });
+
     it("does not navigate on the dismiss action", async () => {
         registerPushHandlers();
         await fireEvent("notificationclick", {

@@ -69,6 +69,29 @@ export function registerPushHandlers(options = {}) {
         vibrate = [200, 100, 200],
     } = options;
 
+    // Resolve a notification target URL against our OWN origin and refuse
+    // anything that would navigate off-origin or use a dangerous scheme
+    // (javascript:, data:, blob:). A push payload is attacker-influenced data:
+    // an unchecked data.url is an open-redirect / phishing vector. Returns a
+    // safe same-origin absolute URL, or the fallback ("/") when rejected.
+    // Note: `new URL("javascript:...", origin)` and data: URLs resolve to an
+    // opaque "null" origin, so the origin equality check rejects them too.
+    const toSafeInAppUrl = (candidate, fallback = "/") => {
+        try {
+            const resolved = new URL(candidate, self.location.origin);
+            if (resolved.origin !== self.location.origin) {
+                console.warn("Ignoring cross-origin/unsafe notification URL", candidate);
+                return fallback;
+            }
+            // Same-origin and safe scheme: keep the caller's original form so a
+            // relative path stays relative (navigate()/openWindow() handle it).
+            return candidate;
+        } catch {
+            console.warn("Ignoring malformed notification URL", candidate);
+            return fallback;
+        }
+    };
+
     // Handle an incoming push message.
     self.addEventListener("push", (event) => {
         if (!event.data) {
@@ -165,6 +188,10 @@ export function registerPushHandlers(options = {}) {
             }
         }
 
+        // Sanitize BEFORE any navigate/openWindow: data.url (and the per-action
+        // URLs) come straight from the push payload.
+        const safeUrl = toSafeInAppUrl(targetUrl);
+
         event.waitUntil(
             self.clients
                 .matchAll({ type: "window", includeUncontrolled: true })
@@ -173,13 +200,13 @@ export function registerPushHandlers(options = {}) {
                         if (client.url.includes(self.location.origin) && "focus" in client) {
                             client.focus();
                             if ("navigate" in client) {
-                                client.navigate(targetUrl);
+                                client.navigate(safeUrl);
                             }
                             return undefined;
                         }
                     }
                     if (self.clients.openWindow) {
-                        return self.clients.openWindow(targetUrl);
+                        return self.clients.openWindow(safeUrl);
                     }
                     return undefined;
                 })

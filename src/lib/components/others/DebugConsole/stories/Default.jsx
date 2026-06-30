@@ -30,7 +30,7 @@ const DebugConsoleStory = (args) => {
         const myLog = createLogger("StoryDemo");
         log.info("Global log entry");
         myLog.info("Hello from a namespaced logger");
-        myLog.warn("This is a warning");
+        myLog.warning("This is a warning");
         myLog.error("This is an error", new Error("oops"));
     }, []);
 

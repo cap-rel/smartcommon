@@ -8,6 +8,7 @@ import { useVariantMerger } from "lib/hooks";
 
 import { defaultProps, propTypes } from "./props";
 import { CalculatorContext } from "./useCalculator";
+import { calculate, computePercent } from "./logic";
 
 // Calculator logic hook
 const useCalculatorLogic = () => {
@@ -20,16 +21,6 @@ const useCalculatorLogic = () => {
     const [previousValue, setPreviousValue] = useState(null);
 
     const MAX_HISTORY = 5;
-
-    const calculate = (left, right, op) => {
-        switch (op) {
-            case "+": return left + right;
-            case "-": return left - right;
-            case "×": return left * right;
-            case "÷": return right !== 0 ? left / right : 0;
-            default: return right;
-        }
-    };
 
     const inputDigit = (digit) => {
         if (waitingForOperand) {
@@ -67,7 +58,13 @@ const useCalculatorLogic = () => {
     };
 
     const inputPercent = () => {
-        setDisplay(prev => String(parseFloat(prev) / 100));
+        setDisplay(prev => {
+            const current = parseFloat(prev);
+            if (isNaN(current)) return prev;
+            // "%" is relative to the pending accumulator (50 + 10% -> 5), not a
+            // blind /100. See computePercent.
+            return String(computePercent(current, previousValue, operator));
+        });
     };
 
     const handleOperator = (nextOperator) => {
@@ -249,9 +246,12 @@ export const Calculator = (props) => {
     }, [isOpen, calc, close]);
 
     useEffect(() => {
+        // Only listen while open: no point intercepting keydown on the whole
+        // window when the calculator is closed (handleKeyDown already no-ops).
+        if (!isOpen) return undefined;
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
-    }, [handleKeyDown]);
+    }, [isOpen, handleKeyDown]);
 
     const positionClasses = {
         "bottom-right": "items-end justify-end pb-20",

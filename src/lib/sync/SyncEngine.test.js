@@ -538,4 +538,59 @@ describe('SyncEngine', () => {
             expect(engine._chunkArray([1, 2], 5)).toEqual([[1, 2]]);
         });
     });
+
+    describe('review hardening (P1-1 / P1-2)', () => {
+        it('commits last_sync_at once, after all pages (P1-1)', async () => {
+            mockApi.pull
+                .mockResolvedValueOnce({
+                    server_time: 'T1',
+                    changes: { thirdparty: { updated: [{ id: 1, tms: 't' }], has_more: true } }
+                })
+                .mockResolvedValueOnce({
+                    server_time: 'T2',
+                    changes: { thirdparty: { updated: [{ id: 2, tms: 't' }], has_more: false } }
+                });
+
+            await engine.pull();
+
+            expect(mockStorage.setLastSyncTime).toHaveBeenCalledTimes(1);
+            expect(mockStorage.setLastSyncTime).toHaveBeenCalledWith('T2');
+        });
+
+        it('does NOT advance last_sync_at when a later page fails (P1-1)', async () => {
+            mockApi.pull
+                .mockResolvedValueOnce({
+                    server_time: 'T1',
+                    changes: { thirdparty: { updated: [{ id: 1, tms: 't' }], has_more: true } }
+                })
+                .mockRejectedValueOnce(new Error('network mid-pagination'));
+
+            await expect(engine.pull()).rejects.toThrow('network mid-pagination');
+            expect(mockStorage.setLastSyncTime).not.toHaveBeenCalled();
+        });
+
+        it('pushes creates before updates and remaps cross-chunk temp_id refs (P1-2)', async () => {
+            // One change per chunk so create and update land in separate chunks.
+            engine.pushChunkSize = 1;
+            mockStorage.getPendingChanges.mockResolvedValue([
+                // Intentionally queued update-before-create to prove sorting reorders.
+                { queue_id: 2, table: 'contact', action: 'update', id: 'local_p', base_tms: null, data: { name: 'Bob', parent: 'local_p' } },
+                { queue_id: 1, table: 'thirdparty', action: 'create', temp_id: 'local_p', data: { name: 'ACME' } },
+            ]);
+            mockApi.push
+                .mockResolvedValueOnce({ results: { success: [{ temp_id: 'local_p', server_id: 500, tms: 't' }], conflicts: [], errors: [] } })
+                .mockResolvedValueOnce({ results: { success: [], conflicts: [], errors: [] } });
+
+            await engine.push();
+
+            const firstPayload = mockApi.push.mock.calls[0][0];
+            const secondPayload = mockApi.push.mock.calls[1][0];
+            // create pushed first, update second.
+            expect(firstPayload[0].action).toBe('create');
+            expect(secondPayload[0].action).toBe('update');
+            // The update's temp_id references were resolved to the server id.
+            expect(secondPayload[0].id).toBe(500);
+            expect(secondPayload[0].data.parent).toBe(500);
+        });
+    });
 });

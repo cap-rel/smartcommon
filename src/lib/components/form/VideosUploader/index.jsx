@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
 import { isNil, isEmpty } from "lodash";
 
-import { useFile, useStates, useField, useVariantMerger } from "lib/hooks";
+import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Textarea, Button, Input, Label } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
 
@@ -86,6 +86,15 @@ export const VideosUploader = (props) => {
         };
     }, []);
 
+    // Track the latest value so the unmount cleanup can revoke every
+    // object URL (a []-dep effect would only see the first render's value).
+    const videoValueRef = useRef(currentValue);
+    useEffect(() => { videoValueRef.current = currentValue; }, [currentValue]);
+    useEffect(() => () => {
+        const items = multiple ? (videoValueRef.current ?? []) : [videoValueRef.current];
+        items.forEach(v => { if (v?.previewUrl) { URL.revokeObjectURL(v.previewUrl); } });
+    }, [multiple]);
+
     const captureVideo = () => {
         set("isInputInCaptureMode", true);
         // Clear any pending timeout to avoid race conditions on rapid clicks
@@ -107,13 +116,21 @@ export const VideosUploader = (props) => {
     const deleteVideo = index => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             let newValue;
+            let videoToDelete;
 
             if (multiple) {
+                videoToDelete = (currentValue ?? [])[index];
                 newValue = [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)];
                 set("selectedVideoIndex", null);
             } else {
+                videoToDelete = currentValue;
                 newValue = null;
                 set("isVideoSelected", false);
+            }
+
+            // Free the object URL so the blob can be GC'd.
+            if (videoToDelete?.previewUrl) {
+                URL.revokeObjectURL(videoToDelete.previewUrl);
             }
 
             setValue(newValue);
@@ -130,15 +147,10 @@ export const VideosUploader = (props) => {
         }
     };
 
-    const { resizeImage } = useFile();
-
     const addVideo = async file => {
         if (!disabled && !readOnly && !isFormSubmitting) {
             set("isVideoLoading", true);
 
-            // const base64 = await resizeImage(file);
-            const base64 = null;
-        
             let gpsPoints = [null, null];
 
             if (isInputInCaptureMode) {
@@ -148,7 +160,20 @@ export const VideosUploader = (props) => {
                 );
             }
 
-            const newVideo = { src: base64, gpsPoints, title: splitFileExtension(file.name)[0], description: "", capture: isInputInCaptureMode };
+            // Keep the binary as a Blob and render the player from an object
+            // URL. base64 for video would bloat the form state; consumers that
+            // need to upload read newVideo.blob. previewUrl is revoked on
+            // delete and on unmount.
+            const previewUrl = URL.createObjectURL(file);
+            const newVideo = {
+                blob: file,
+                src: previewUrl,
+                previewUrl,
+                gpsPoints,
+                title: splitFileExtension(file.name)[0],
+                description: "",
+                capture: isInputInCaptureMode,
+            };
             const newValue = multiple ? [...(currentValue ?? []), newVideo] : newVideo;
             setValue(newValue);
             set("isVideoLoading", false);
@@ -255,7 +280,7 @@ export const VideosUploader = (props) => {
             }))}>
                 <video { ...mergeProps("videoPlayer", props => ({
                     ...props,
-                    ref: el => multiple ? (videosRef.current[index] = el) : (videosRef.current = el),
+                    ref: el => { if (multiple) { videosRef.current[index] = el; } else { videosRef.current = el; } },
                     src: video?.src,
                     controls: true,
                     // onLoadedMetadata={(e) => {

@@ -20,9 +20,7 @@ export function useOnlineStatus(options = {}) {
     const [lastOnline, setLastOnline] = useState(() =>
         navigator.onLine ? Date.now() : null
     );
-    const [isServerReachable, setIsServerReachable] = useState(
-        healthCheckUrl ? null : null
-    );
+    const [isServerReachable, setIsServerReachable] = useState(null);
     const [lastCheck, setLastCheck] = useState(null);
 
     const stabilityTimeoutRef = useRef(null);

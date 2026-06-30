@@ -6,6 +6,11 @@ import { useLibConfig } from "lib/hooks";
 import { useRefreshAccessToken } from "../useRefreshAccessToken";
 import { log } from "lib/utils";
 
+/**
+ * @deprecated Part of the legacy useApiTest2 auth layer. Its 401 handler retries
+ * recursively with no upper bound (see fetchApi below), so it can loop if the
+ * backend keeps rejecting. Use `useApi` instead. Kept for backward-compat only.
+ */
 export const useFetchApi = (deviceId) => {
     const { api } = useLibConfig();
     

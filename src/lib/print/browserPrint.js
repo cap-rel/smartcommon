@@ -19,6 +19,14 @@ export function browserPrint(htmlContent) {
         iframe.style.width = "80mm";
         iframe.style.height = "0";
         iframe.style.border = "none";
+        // Defense-in-depth against a malicious printable field: the printed HTML
+        // comes from a consumer renderer that may interpolate attacker-influenced
+        // data. Sandbox the iframe WITHOUT "allow-scripts" so no <script>, inline
+        // event handler or javascript: URL in the document can execute in our
+        // origin. "allow-same-origin" is kept so the parent can still reach
+        // contentDocument/contentWindow to write the markup and trigger print();
+        // "allow-modals" lets the print dialog open.
+        iframe.setAttribute("sandbox", "allow-same-origin allow-modals");
 
         iframe.onload = () => {
             try {

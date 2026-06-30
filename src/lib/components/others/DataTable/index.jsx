@@ -49,8 +49,6 @@ const alignClass = (align) => {
 
 export const DataTable = (props) => {
     const {
-        columns,
-        data,
         keyField = "id",
 
         sortable = false,
@@ -87,6 +85,12 @@ export const DataTable = (props) => {
         cardProps = {},
         selectionBarProps = {},
     } = props;
+
+    // Coerce to arrays: React 19 ignores function-component defaultProps, and a
+    // consumer / story / Storybook control (mid-edit) may pass a non-array or
+    // omit these entirely. Never let `columns.map` / `data.length` throw.
+    const columns = Array.isArray(props.columns) ? props.columns : [];
+    const data = Array.isArray(props.data) ? props.data : [];
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 

@@ -1,11 +1,12 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
 import { isNil, isEmpty,filter, map, some } from "lodash";
 
+import { twMerge } from "lib/utils";
+
 // IDEA Mini-popup for help
 
 export const Label = (props) => {
     const {
-        mergeProps,
         id,
         label,
         icon,
@@ -14,10 +15,22 @@ export const Label = (props) => {
         suffix,
         required,
         showErrors,
-        
+
         errors = {},
         children,
     } = props;
+
+    // Label is a "dumb" slot component: it normally receives the `mergeProps`
+    // produced by a parent's useVariantMerger (Input, Checker, Rater, ...).
+    // When a consumer renders <Label> without it (a non-variant parent such as
+    // FilesUploader), fall back to a passthrough that still applies each
+    // element's default classes plus the consumer's matching `${slot}Props`,
+    // instead of crashing on `mergeProps is not a function`.
+    const mergeProps = props.mergeProps ?? ((slotKey, build) => {
+        const slotProps = props[`${slotKey}Props`] ?? {};
+        const built = build({ ...slotProps });
+        return { ...built, className: twMerge(slotProps.className, built.className) };
+    });
 
     return (
         <div { ...mergeProps("container", props => ({

@@ -85,6 +85,11 @@ export const useCachedQuery = ({
     const { isOnline } = useOnlineStatus();
     const mountedRef = useRef(true);
     const executingRef = useRef(false);
+    // Monotonic request token: every execute() run claims a new id; only the run
+    // whose id is still current may write state. This makes a refetch()/
+    // invalidate() that races an in-flight execute discard the loser's (stale)
+    // result instead of letting it overwrite the winner.
+    const requestIdRef = useRef(0);
     const isOnlineRef = useRef(isOnline);
     const fetchFnRef = useRef(fetchFn);
     isOnlineRef.current = isOnline;
@@ -156,6 +161,10 @@ export const useCachedQuery = ({
         if (!enabled || executingRef.current) return;
         executingRef.current = true;
 
+        // Claim a request id; only this run may commit while it stays current.
+        const myId = ++requestIdRef.current;
+        const isCurrent = () => mountedRef.current && requestIdRef.current === myId;
+
         if (!mountedRef.current) {
             executingRef.current = false;
             return;
@@ -169,7 +178,7 @@ export const useCachedQuery = ({
             switch (strategy) {
                 case CACHE_STRATEGIES.CACHE_FIRST: {
                     if (cached && !cached.isStale) {
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data: cached.data,
                             isLoading: false,
@@ -183,7 +192,7 @@ export const useCachedQuery = ({
 
                     if (isOnlineRef.current) {
                         const data = await fetchFromNetwork();
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data,
                             isLoading: false,
@@ -193,7 +202,7 @@ export const useCachedQuery = ({
                             lastFetch: Date.now()
                         });
                     } else if (cached) {
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data: cached.data,
                             isLoading: false,
@@ -210,7 +219,7 @@ export const useCachedQuery = ({
 
                 case CACHE_STRATEGIES.STALE_WHILE_REVALIDATE: {
                     if (cached) {
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data: cached.data,
                             isLoading: false,
@@ -223,7 +232,7 @@ export const useCachedQuery = ({
                         if (cached.isStale && isOnlineRef.current) {
                             fetchFromNetwork()
                                 .then(data => {
-                                    if (!mountedRef.current) return;
+                                    if (!isCurrent()) return;
                                     setState(s => ({
                                         ...s,
                                         data,
@@ -241,7 +250,7 @@ export const useCachedQuery = ({
 
                     if (isOnlineRef.current) {
                         const data = await fetchFromNetwork();
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data,
                             isLoading: false,
@@ -261,7 +270,7 @@ export const useCachedQuery = ({
                     if (isOnlineRef.current) {
                         try {
                             const data = await fetchFromNetwork();
-                            if (!mountedRef.current) break;
+                            if (!isCurrent()) break;
                             setState({
                                 data,
                                 isLoading: false,
@@ -273,7 +282,7 @@ export const useCachedQuery = ({
                             break;
                         } catch (networkError) {
                             if (cached) {
-                                if (!mountedRef.current) break;
+                                if (!isCurrent()) break;
                                 setState({
                                     data: cached.data,
                                     isLoading: false,
@@ -287,7 +296,7 @@ export const useCachedQuery = ({
                             throw networkError;
                         }
                     } else if (cached) {
-                        if (!mountedRef.current) break;
+                        if (!isCurrent()) break;
                         setState({
                             data: cached.data,
                             isLoading: false,
@@ -303,7 +312,7 @@ export const useCachedQuery = ({
                 }
             }
         } catch (error) {
-            if (!mountedRef.current) {
+            if (!isCurrent()) {
                 executingRef.current = false;
                 return;
             }

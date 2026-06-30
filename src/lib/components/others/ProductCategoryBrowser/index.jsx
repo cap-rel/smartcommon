@@ -121,6 +121,11 @@ export const ProductCategoryBrowser = (props) => {
     const inSearchMode = Boolean(searchDebounced);
     const isSpecialTile = parentId === ALL_PRODUCTS_ID || parentId === UNCATEGORIZED_ID;
 
+    // NOTE: `categoriesAdapter` and `productsAdapter` MUST be referentially
+    // stable (memoized by the consumer with useMemo). They are dependencies of
+    // this effect and of the search/product effects; an adapter rebuilt on every
+    // parent render would re-trigger these fetches on each render/keystroke
+    // (refetch storm). Pass the SAME object reference across renders.
     useEffect(() => {
         if (!open || inSearchMode || isSpecialTile) {
             setSubCategories([]);

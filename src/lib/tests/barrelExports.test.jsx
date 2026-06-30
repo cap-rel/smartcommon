@@ -20,6 +20,8 @@ import { describe, it, expect } from "vitest";
 
 import * as devBarrel from "lib/components";
 import * as buildBarrel from "lib/components/export";
+import * as devGlobalState from "lib/global-state";
+import * as buildGlobalState from "lib/global-state/export";
 
 const collectExports = (mod) => Object.keys(mod).filter((k) => k !== "default").sort();
 
@@ -103,4 +105,44 @@ describe("public barrel: lib/components", () => {
             missingFromBuild: [],
         });
     });
+});
+
+// Other dual-barreled directories: dev `index.js` (Storybook) must expose the
+// same named exports as build `export.js` (npm package).
+//
+// Scope note:
+//  - themes/print/imageEditor/sync have a SINGLE barrel (index.js used for both
+//    dev and build), so there is no pair that can drift.
+//  - utils is dual-barreled but its build surface is INTENTIONALLY curated and
+//    smaller than dev: `constants/vite` (API_URL/APP_VERSION are smartcommon's
+//    OWN build-time env, meaningless to ship) and the internal `maps`
+//    component-registry (formComponent/listComponent/dolibarrAttributes) stay
+//    dev-only on purpose. So utils is NOT expected to match and is excluded;
+//    only the clearly-public `utils/storage` quota helpers were added to the
+//    build barrel (they were an accidental omission).
+describe("public barrel pairs stay in sync", () => {
+    const pairs = {
+        "global-state": [devGlobalState, buildGlobalState],
+    };
+
+    for (const [name, [dev, build]] of Object.entries(pairs)) {
+        it(`${name}: dev and build expose the same named exports`, () => {
+            const d = collectExports(dev);
+            const b = collectExports(build);
+            const onlyInDev = d.filter((k) => !b.includes(k));
+            const onlyInBuild = b.filter((k) => !d.includes(k));
+
+            expect(
+                { onlyInDev, onlyInBuild },
+                `${name}: dev index.js and build export.js are out of sync.`
+            ).toEqual({ onlyInDev: [], onlyInBuild: [] });
+        });
+
+        it(`${name}: no named export is undefined / null`, () => {
+            const offenders = collectExports(dev).filter(
+                (n) => dev[n] === undefined || dev[n] === null
+            );
+            expect(offenders).toEqual([]);
+        });
+    }
 });
