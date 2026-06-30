@@ -38,6 +38,12 @@ export default defineConfig({
         'react-dom',
         'react-hot-toast',
         'react-i18next',
+        // i18next is a stateful singleton shared with react-i18next: it MUST
+        // stay external or a consumer ends up with two i18n instances. Same for
+        // its http backend. Preventive: not imported by smartcommon today, but
+        // this guards against a future `from "i18next"` being inlined.
+        'i18next',
+        'i18next-http-backend',
         'react-redux',
         '@reduxjs/toolkit',
         'dexie',
@@ -46,6 +52,12 @@ export default defineConfig({
         // packages share the same RouteContext, so both must stay external.
         // The regex also catches subpaths like "react-router/dom".
         /^react-router(-dom)?($|\/)/,
+        // leaflet is a regular dependency (auto-installed for consumers), but
+        // it must stay external: the <Map> component lazy-imports it, so
+        // keeping it external means it is never inlined into the library bundle
+        // and only ends up in a consumer's build (as a lazy chunk) when <Map>
+        // is actually used.
+        'leaflet',
       ],
       output: {
         globals: {
@@ -53,6 +65,7 @@ export default defineConfig({
           'react-dom': 'ReactDOM',
           'react-hot-toast': 'reactHotToast',
           'react-i18next': 'reactI18next',
+          'i18next': 'i18next',
           'react-redux': 'reactRedux',
           '@reduxjs/toolkit': 'reduxToolkit',
           'dexie': 'Dexie',
