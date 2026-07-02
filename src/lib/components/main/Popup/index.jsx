@@ -25,8 +25,19 @@ export const Popup = (props) => {
         title,
         close = () => {},
         isOpen,
+        keepMounted = true,
     } = variantProps;
-    
+
+    // When keepMounted is false, a closed popup is fully unmounted (its content
+    // -- including any submit buttons -- leaves the DOM) instead of being kept
+    // hidden via opacity. Trade-off: the closing fade animation is lost. Default
+    // true preserves the historical behaviour; opt out to keep the DOM clean
+    // (e.g. many always-mounted popups whose hidden submit buttons complicate
+    // E2E targeting).
+    if (!isOpen && !keepMounted) {
+        return null;
+    }
+
     return (
         <>
             {overlay &&

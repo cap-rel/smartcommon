@@ -10,6 +10,7 @@ export const propTypes = {
     closeButton: PropTypes.bool,
     isOpen: PropTypes.bool,
     close: PropTypes.func,
+    keepMounted: PropTypes.bool,
 
     Overlay: PropTypes.object,
     popupBackdrop: PropTypes.object,
@@ -24,4 +25,5 @@ export const defaultProps = {
     closeButton: true,
     overlay: true,
     closeOnClickOverlay: true,
+    keepMounted: true,
 };
