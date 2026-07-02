@@ -53,8 +53,9 @@ export { SyncStorage } from './SyncStorage';
 export { SyncApi } from './SyncApi';
 export { SyncEngine } from './SyncEngine';
 
-// React hook
+// React hooks
 export { useSyncClient } from './useSyncClient';
+export { useReferenceSync, ForbiddenSyncError } from './useReferenceSync';
 
 // UI components
 export { ConflictResolver } from './ConflictResolver';
