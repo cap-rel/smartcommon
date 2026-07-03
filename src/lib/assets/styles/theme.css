@@ -1,10 +1,9 @@
 @import "tailwindcss";
 
-/* Dark mode is driven by a `.dark` class on a root ancestor (toggled by
-   <ThemeApplier> / the <Provider>), NOT by the OS prefers-color-scheme media.
-   This keeps the `dark:` utilities and the .dark CSS-variable swap below in
-   sync on the same trigger. */
-@custom-variant dark (&:where(.dark, .dark *));
+/* The `dark` custom variant lives in style.css (the entry that imports this
+   file via `layer(theme)`). It MUST stay at the top level: `@custom-variant`
+   cannot be nested inside an `@layer`, and a layered `@import` nests it,
+   which breaks the Tailwind v4 build. */
 
 @theme {
   /* --color-primary      : #6d4aff;

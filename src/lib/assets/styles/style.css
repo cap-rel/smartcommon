@@ -4,3 +4,9 @@
 
 @import "./theme.css" layer(theme);
 @import "./base.css" layer(base);
+
+/* Dark mode is driven by a `.dark` class on a root ancestor (toggled by
+   <ThemeApplier> / the <Provider>), NOT by the OS prefers-color-scheme media.
+   Declared here at the top level: `@custom-variant` cannot be nested inside an
+   `@layer`, so it must not live inside the layered theme.css import. */
+@custom-variant dark (&:where(.dark, .dark *));
