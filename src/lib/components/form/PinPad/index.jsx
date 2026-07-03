@@ -126,12 +126,15 @@ export const PinPad = (props) => {
             {...mergeProps("container", (p) => ({
                 ...p,
                 "data-component": "PinPad",
+                // Real, centered width so the pad renders identically whatever
+                // the parent layout: full width in a card, or on a full-screen
+                // lock overlay (flex items-center) which would otherwise shrink
+                // the aspect-square keys into narrow pills.
+                className: `w-full max-w-[15rem] mx-auto${keyMode === "local" ? " outline-none" : ""}`,
                 // "local" mode: make the pad focusable and handle keys only
                 // while it holds focus, so it never grabs keystrokes meant for
                 // sibling fields on the same page.
-                ...(keyMode === "local"
-                    ? { tabIndex: 0, onKeyDown: handleKey, className: `outline-none ${p.className || ""}` }
-                    : {}),
+                ...(keyMode === "local" ? { tabIndex: 0, onKeyDown: handleKey } : {}),
             }))}
         >
             <div className="flex items-center justify-center gap-2.5 h-5 mb-5">
