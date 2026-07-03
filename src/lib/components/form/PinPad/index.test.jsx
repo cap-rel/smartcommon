@@ -83,6 +83,94 @@ describe("PinPad - disabled", () => {
     });
 });
 
+describe("PinPad - keyboard (global)", () => {
+    it("appends a digit typed on the physical keyboard", () => {
+        const onChange = vi.fn();
+        render(<PinPad value="12" onChange={onChange} />);
+
+        fireEvent.keyDown(document, { key: "5" });
+        expect(onChange).toHaveBeenCalledWith("125");
+    });
+
+    it("removes the last digit on Backspace", () => {
+        const onChange = vi.fn();
+        render(<PinPad value="123" onChange={onChange} />);
+
+        fireEvent.keyDown(document, { key: "Backspace" });
+        expect(onChange).toHaveBeenCalledWith("12");
+    });
+
+    it("submits on Enter once minLength is reached", () => {
+        const onSubmit = vi.fn();
+        render(
+            <PinPad value="1234" onChange={() => {}} onSubmit={onSubmit} minLength={4} />
+        );
+
+        fireEvent.keyDown(document, { key: "Enter" });
+        expect(onSubmit).toHaveBeenCalled();
+    });
+
+    it("ignores Enter below minLength", () => {
+        const onSubmit = vi.fn();
+        render(
+            <PinPad value="12" onChange={() => {}} onSubmit={onSubmit} minLength={4} />
+        );
+
+        fireEvent.keyDown(document, { key: "Enter" });
+        expect(onSubmit).not.toHaveBeenCalled();
+    });
+
+    it("does not steal keystrokes typed inside an input", () => {
+        const onChange = vi.fn();
+        render(
+            <div>
+                <input data-testid="field" />
+                <PinPad value="12" onChange={onChange} />
+            </div>
+        );
+
+        fireEvent.keyDown(screen.getByTestId("field"), { key: "5" });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("ignores the keyboard when disabled", () => {
+        const onChange = vi.fn();
+        render(<PinPad value="12" onChange={onChange} disabled />);
+
+        fireEvent.keyDown(document, { key: "5" });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("ignores the keyboard when keyboard={false}", () => {
+        const onChange = vi.fn();
+        render(<PinPad value="12" onChange={onChange} keyboard={false} />);
+
+        fireEvent.keyDown(document, { key: "5" });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+});
+
+describe("PinPad - keyboard (local)", () => {
+    it("reacts to keys on the focused container", () => {
+        const onChange = vi.fn();
+        const { container } = render(
+            <PinPad value="12" onChange={onChange} keyboard="local" />
+        );
+
+        const pad = container.querySelector('[data-component="PinPad"]');
+        fireEvent.keyDown(pad, { key: "5" });
+        expect(onChange).toHaveBeenCalledWith("125");
+    });
+
+    it("does not listen on document in local mode", () => {
+        const onChange = vi.fn();
+        render(<PinPad value="12" onChange={onChange} keyboard="local" />);
+
+        fireEvent.keyDown(document, { key: "5" });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+});
+
 describe("PinPad - labels override", () => {
     it("applies custom aria labels to the icon keys", () => {
         render(

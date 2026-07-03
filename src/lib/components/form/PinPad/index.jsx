@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { FaDeleteLeft, FaCheck } from "react-icons/fa6";
 
 import { useVariantMerger } from "lib/hooks";
@@ -16,6 +16,12 @@ const DIGITS = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
  * Distinct from NumericPad, which shows the typed value and is meant for
  * quantity/price entry: PinPad masks the value and adds length/error/lockout
  * semantics.
+ *
+ * Physical keyboard entry is supported through the `keyboard` prop: "global"
+ * (default) listens on `document` for a full-screen lock screen, "local" only
+ * reacts while the pad is focused (settings pinpad next to other fields), and
+ * false keeps it touch-only. Digit keys append, Backspace deletes, Enter
+ * submits.
  */
 export const PinPad = (props) => {
     const { mergeProps } = useVariantMerger("PinPad", props);
@@ -26,6 +32,9 @@ export const PinPad = (props) => {
         minLength,
         maxLength,
         tone,
+        // React 19 no longer applies function-component defaultProps at runtime,
+        // so the default lives here (not only in props.js) to stay effective.
+        keyboard = "global",
         error,
         disabled,
         labels: labelsProp,
@@ -33,6 +42,8 @@ export const PinPad = (props) => {
 
     const labels = { ...DEFAULT_LABELS, ...(labelsProp || {}) };
     const isDark = tone === "dark";
+    // Normalize the keyboard mode: `true` is an alias of "global", `false` of "off".
+    const keyMode = keyboard === true ? "global" : keyboard === false ? "off" : keyboard;
 
     const append = useCallback(
         (digit) => {
@@ -51,6 +62,40 @@ export const PinPad = (props) => {
         if (disabled || value.length < minLength) return;
         if (onSubmit) onSubmit();
     }, [disabled, value, minLength, onSubmit]);
+
+    // Shared physical-keyboard handler for both the "global" (document) and
+    // "local" (container onKeyDown) modes. Reuses the same append/backspace/
+    // submit callbacks as the touch keys, so all length/error/disabled rules
+    // stay in one place.
+    const handleKey = useCallback(
+        (e) => {
+            if (disabled) return;
+            const { key } = e;
+            if (/^[0-9]$/.test(key)) {
+                append(key);
+            } else if (key === "Backspace") {
+                e.preventDefault(); // avoid browser back-navigation
+                backspace();
+            } else if (key === "Enter") {
+                e.preventDefault(); // avoid submitting an enclosing form
+                submit();
+            }
+        },
+        [disabled, append, backspace, submit]
+    );
+
+    // "global" mode: listen on document (lock screen). Skip when the user is
+    // typing in a real editable field so we never steal their keystrokes.
+    useEffect(() => {
+        if (keyMode !== "global") return undefined;
+        const onKeyDown = (e) => {
+            const tag = e.target?.tagName;
+            if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+            handleKey(e);
+        };
+        document.addEventListener("keydown", onKeyDown);
+        return () => document.removeEventListener("keydown", onKeyDown);
+    }, [keyMode, handleKey]);
 
     // Shared geometry + press feedback for every key. Square keys line up in a
     // clean 3-column grid; active:scale gives a tactile tap response.
@@ -81,6 +126,12 @@ export const PinPad = (props) => {
             {...mergeProps("container", (p) => ({
                 ...p,
                 "data-component": "PinPad",
+                // "local" mode: make the pad focusable and handle keys only
+                // while it holds focus, so it never grabs keystrokes meant for
+                // sibling fields on the same page.
+                ...(keyMode === "local"
+                    ? { tabIndex: 0, onKeyDown: handleKey, className: `outline-none ${p.className || ""}` }
+                    : {}),
             }))}
         >
             <div className="flex items-center justify-center gap-2.5 h-5 mb-5">
