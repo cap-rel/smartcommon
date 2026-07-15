@@ -1,0 +1,9 @@
+npm run build
+npm pack
+
+
+dans autre projet
+
+npm install ~/dev/smartcommon/cap-rel-smartcommon-1.0.249.tgz
+
+#	Problème	Fichier	Description

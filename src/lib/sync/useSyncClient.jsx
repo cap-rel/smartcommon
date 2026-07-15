@@ -33,7 +33,7 @@ export const useSyncClient = ({
 } = {}) => {
     // Online status from SmartCommon
     const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
-        healthCheckUrl: apiUrl ? `${apiUrl}/sync/status` : null,
+        healthCheckUrl: apiUrl ? `${apiUrl.replace(/\/$/, '')}/sync/status` : null,
         healthCheckInterval: 60000
     });
 

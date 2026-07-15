@@ -7,7 +7,6 @@ export * from "./DebugConsole";
 export * from "./DebugWarnings";
 export * from "./DeviceIdentificationComponent";
 export * from "./DevicePicker";
-export * from "./Fab";
 export * from "./KeyboardStickyAction";
 export * from "./LazyLink";
 export * from "./LoginComponent";
