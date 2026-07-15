@@ -122,6 +122,16 @@ export const useApiContext = () => {
 
     const refreshPromiseRef = useRef(null);
 
+    // Synchronous mirror of the most recently issued refresh token. `valuesRef`
+    // is refreshed on RENDER, so it lags one render behind the gst.set() that a
+    // refresh() / login() performs. Without this ref, a refresh triggered in that
+    // gap (e.g. a second in-flight 401 after the first refresh already resolved and
+    // cleared refreshPromiseRef) would read the STALE, already-consumed refresh
+    // token from valuesRef and replay it -- which smartauth treats as an attack and
+    // revokes the ENTIRE token family, killing the session. Kept in sync in
+    // login()/refresh() success and cleared on logout/session death.
+    const latestRefreshTokenRef = useRef(null);
+
     // ---------------------- dead-session latch ----------------------
 
     // Guards the eject-to-login so it fires exactly ONCE per dead session,
@@ -139,6 +149,7 @@ export const useApiContext = () => {
             return;
         }
         sessionDeadRef.current = true;
+        latestRefreshTokenRef.current = null;
         const { gst: currentGst, onSessionExpired: sessionExpiredCallback } = valuesRef.current;
         openCircuit(30000);
         currentGst.unset("user"); // RouteGuard redirects to /login
@@ -271,7 +282,11 @@ export const useApiContext = () => {
 
     const refresh = useMemo(() => () => {
         if (!refreshPromiseRef.current) {
-            const { refreshToken: currentRefreshToken, rememberMe: currentRememberMe, user: currentUser, gst: currentGst } = valuesRef.current;
+            const { rememberMe: currentRememberMe, user: currentUser, gst: currentGst } = valuesRef.current;
+            // Prefer the synchronously-tracked latest refresh token over valuesRef
+            // (which lags one render): using the stale one here replays an already
+            // consumed token and gets the whole family revoked. See latestRefreshTokenRef.
+            const currentRefreshToken = latestRefreshTokenRef.current ?? valuesRef.current.refreshToken;
 
             refreshPromiseRef.current = baseApi
                 .get("refresh", {
@@ -282,6 +297,12 @@ export const useApiContext = () => {
                 .json()
                 .then((data) => {
                     const mappedData = refreshAccessTokenMap(data);
+                    // Record the rotated refresh token synchronously so a follow-up
+                    // refresh (before the gst.set below propagates to valuesRef) uses
+                    // the new token, not the just-consumed one.
+                    if (mappedData.refreshToken) {
+                        latestRefreshTokenRef.current = mappedData.refreshToken;
+                    }
 
                     currentGst[currentRememberMe ? "local" : "session"].set("user", {
                         ...currentUser,
@@ -290,6 +311,7 @@ export const useApiContext = () => {
                     });
                 })
                 .catch((error) => {
+                    latestRefreshTokenRef.current = null;
                     currentGst.unset("user");
                     throw error;
                 })
@@ -423,6 +445,11 @@ export const useApiContext = () => {
                     }
                 }
 
+                // Seed the synchronous refresh-token mirror with this fresh
+                // session's token (and drop any leftover from a previous session)
+                // so the first post-login refresh does not read a stale valuesRef.
+                latestRefreshTokenRef.current = mappedData.refreshToken ?? null;
+
                 currentGst[effectiveRememberMe ? "local" : "session"].set(
                     "user",
                     enrichedUser
@@ -483,6 +510,13 @@ export const useApiContext = () => {
                     // storage instead of silently demoting to session
                     // storage. QR pairing = trusted device by design
                     // (see comment block at the top of this section).
+
+                    // Seed the synchronous refresh-token mirror (same rationale
+                    // as login/refresh/device): QR pairing issues a fresh token
+                    // pair directly here, so a follow-up refresh in the render
+                    // gap must present this token, not a stale valuesRef one.
+                    latestRefreshTokenRef.current = data.refresh_token ?? null;
+
                     currentGst.local.set("user", {
                         accessToken: data.access_token,
                         refreshToken: data.refresh_token,
@@ -617,6 +651,7 @@ export const useApiContext = () => {
             })
             .finally(() => {
                 const { gst: currentGst } = valuesRef.current;
+                latestRefreshTokenRef.current = null;
                 currentGst.unset("user");
             });
     }, [privateApi]);
@@ -648,6 +683,14 @@ export const useApiContext = () => {
             .json()
             .then((data) => {
                 const mappedData = refreshAccessTokenMap(data);
+
+                // Device identification can rotate the token family (the
+                // "picked another device" branch issues a fresh pair): keep the
+                // synchronous refresh-token mirror in sync so a follow-up refresh
+                // does not replay the old token.
+                if (mappedData.refreshToken) {
+                    latestRefreshTokenRef.current = mappedData.refreshToken;
+                }
 
                 // Remove deviceOptions after successful device identification
                 const { deviceOptions: _, ...userWithoutDeviceOptions } = currentUser;

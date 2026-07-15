@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__captests__list_cases",
+      "mcp__captests__get_case",
+      "mcp__captests__list_comments"
+    ],
+    "additionalDirectories": [
+      "/home/cc/dev/smartboot"
+    ]
+  }
+}

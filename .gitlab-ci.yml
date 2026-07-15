@@ -42,7 +42,11 @@ publish-npm:
     - if: $CI_COMMIT_TAG =~ /^v.*/
   script:
     - npm install
-    - npm run build
+    # Build + smoke-test the bundle (builtBundle) AND verify every peer stays
+    # external (bundleExternals needs a fresh dist/) BEFORE publishing, so a
+    # broken or dual-instance bundle never ships to the registry.
+    - npm run test:build
+    - npx vitest run src/lib/tests/bundleExternals.test.js
     - |
       cat > .npmrc <<EOF
       registry=https://${CI_SERVER_HOST}/api/v4/projects/${CI_PROJECT_ID}/packages/npm/
