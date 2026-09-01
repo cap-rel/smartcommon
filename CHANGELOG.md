@@ -10,6 +10,19 @@ understand what may have changed at the API surface.
 
 ## [Unreleased]
 
+## [1.0.370] - 2026-09-01
+
+### Changed
+- `PlainCalendar`: tapping a day of the neighbouring month (the leading /
+  trailing cells padding the first and last week of the grid) now moves
+  the grid onto that month and selects the day. It used to be silently
+  ignored, which read as a broken calendar: those cells look like any
+  other day and can carry an `items` badge, so a user tapping "the 31st,
+  2 entries" got no feedback at all. `onChange` / `onMonthChange` /
+  `onYearChange` fire exactly as for any other selection. Consumers that
+  relied on those cells being inert must now filter on
+  `data-outside-month="true"` themselves.
+
 ## [1.0.337] - 2026-05-27
 
 ### Added
