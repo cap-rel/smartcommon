@@ -370,10 +370,18 @@ export const PlainCalendar = (props) => {
               <div { ...mergeProps("number", p => ({
                 ...p,
                 onClick: e => {
-                  if (!isOutsideMonth) {
-                    handleNumberOnClick(date);
-                    applyFunctionIfNotNil(p.onClick, e);
+                  // Leading / trailing cells belong to the neighbouring month.
+                  // They look like any other day and can carry an item badge,
+                  // so swallowing the tap (the historical behaviour) left the
+                  // user with a dead cell: the only feedback was none at all.
+                  // Move the grid onto that month, then select the day.
+                  if (isOutsideMonth) {
+                    const target = new Date(year, displayMonth, number);
+                    set("year", target.getFullYear());
+                    set("month", target.getMonth() + 1);
                   }
+                  handleNumberOnClick(date);
+                  applyFunctionIfNotNil(p.onClick, e);
                 },
                 className: `relative h-10 w-10 flex justify-center items-center text-soft-text duration-(--really-quick) rounded-app-md
                   ${isOutsideMonth ? "text-soft-text" : (isLimit(date) ? `bg-primary text-white font-app-semibold` : isSelected(date) ? "bg-primary/50 text-white font-app-semibold" : "bg-soft-bg text-strong-text active:brightness-soft")} ${p.className || ""}`,

@@ -92,14 +92,59 @@ describe("PlainCalendar - day click (single mode)", () => {
         expect(onChange.mock.calls[0][0]).toBe(null);
     });
 
-    it("ignores clicks on days outside the current month", () => {
+    it("selects a day of the previous month and moves the grid onto it", () => {
         const onChange = vi.fn();
+        const onMonthChange = vi.fn();
         const { container } = render(
-            <PlainCalendar value="2024-03-15" interval={false} onChange={onChange} />
+            <PlainCalendar
+                value="2024-03-15"
+                interval={false}
+                onChange={onChange}
+                onMonthChange={onMonthChange}
+            />
         );
-        // 2024-02-29 is a leading prev-month cell
+        // 2024-02-29 is a leading prev-month cell. It carries the same look as
+        // any other day (and possibly an item badge), so a tap must select it
+        // instead of doing nothing; the grid follows onto February.
         clickDay(container, "2024-02-29");
-        expect(onChange).not.toHaveBeenCalled();
+        expect(onChange.mock.calls[0][0]).toBe("2024-02-29");
+        expect(onMonthChange).toHaveBeenLastCalledWith(2);
+        expect(container.querySelector('[data-date="2024-02-29"]').getAttribute("data-outside-month")).toBe("false");
+    });
+
+    it("selects a day of the next month and moves the grid onto it", () => {
+        const onChange = vi.fn();
+        const onMonthChange = vi.fn();
+        const { container } = render(
+            <PlainCalendar
+                value="2024-04-15"
+                interval={false}
+                onChange={onChange}
+                onMonthChange={onMonthChange}
+            />
+        );
+        // April 2024 starts on a Monday and has 30 days -> the grid trails with
+        // 2024-05-01..05.
+        clickDay(container, "2024-05-01");
+        expect(onChange.mock.calls[0][0]).toBe("2024-05-01");
+        expect(onMonthChange).toHaveBeenLastCalledWith(5);
+    });
+
+    it("rolls the year over when tapping a december cell shown in january", () => {
+        const onChange = vi.fn();
+        const onYearChange = vi.fn();
+        const { container } = render(
+            <PlainCalendar
+                value="2025-01-15"
+                interval={false}
+                onChange={onChange}
+                onYearChange={onYearChange}
+            />
+        );
+        // January 2025 starts on a Wednesday -> 2024-12-30 and 31 lead the grid.
+        clickDay(container, "2024-12-31");
+        expect(onChange.mock.calls[0][0]).toBe("2024-12-31");
+        expect(onYearChange).toHaveBeenLastCalledWith(2024);
     });
 });
 
