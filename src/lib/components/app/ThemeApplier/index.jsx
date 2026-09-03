@@ -1,4 +1,31 @@
-import { useEffect, useState } from "react";
+import { useEffect, useSyncExternalStore } from "react";
+
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+
+const matchMediaSupported = () =>
+    typeof window !== "undefined" && typeof window.matchMedia === "function";
+
+/**
+ * prefers-color-scheme as an external store. Reading it through
+ * useSyncExternalStore keeps the subscription and the value in one place:
+ * the previous version mirrored the media query into state and had to re-sync
+ * it from the effect on every (re)subscription, which cost an extra render
+ * pass and could show one frame of the wrong theme.
+ */
+const subscribeToOsDark = (onStoreChange) => {
+    if (!matchMediaSupported()) {
+        return () => {};
+    }
+
+    const mq = window.matchMedia(DARK_QUERY);
+    mq.addEventListener("change", onStoreChange);
+    return () => mq.removeEventListener("change", onStoreChange);
+};
+
+const getOsDark = () => (matchMediaSupported() ? window.matchMedia(DARK_QUERY).matches : false);
+
+// No media queries server-side: render light and let the client correct it.
+const getOsDarkServer = () => false;
 
 /**
  * Resolve the effective dark state from a theme mode.
@@ -9,24 +36,7 @@ import { useEffect, useState } from "react";
  *  - "auto"  -> follows the OS prefers-color-scheme, reacting to changes
  */
 const useResolvedDark = (mode) => {
-    const readOsDark = () =>
-        typeof window !== "undefined" && typeof window.matchMedia === "function"
-            ? window.matchMedia("(prefers-color-scheme: dark)").matches
-            : false;
-
-    const [osDark, setOsDark] = useState(readOsDark);
-
-    useEffect(() => {
-        if (mode !== "auto" || typeof window === "undefined" || typeof window.matchMedia !== "function") {
-            return;
-        }
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        const handler = (e) => setOsDark(e.matches);
-        // Re-sync on (re)subscription in case the OS changed while not in auto.
-        setOsDark(mq.matches);
-        mq.addEventListener("change", handler);
-        return () => mq.removeEventListener("change", handler);
-    }, [mode]);
+    const osDark = useSyncExternalStore(subscribeToOsDark, getOsDark, getOsDarkServer);
 
     if (mode === "dark") return true;
     if (mode === "auto") return osDark;

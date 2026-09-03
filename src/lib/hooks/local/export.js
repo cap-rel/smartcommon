@@ -7,4 +7,5 @@ export * from "./useForm";
 export * from "./useOnlineStatus";
 export * from "./useCachedQuery";
 export * from "./useAuthenticatedImage";
+export * from "./useImageUrl";
 export * from "./useBarcodeScanner";

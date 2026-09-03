@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { PrintService } from "./printService";
 
@@ -21,30 +21,29 @@ import { PrintService } from "./printService";
  * }}
  */
 export const usePrintService = ({ templates, labels } = {}) => {
-    const serviceRef = useRef(null);
-
-    if (!serviceRef.current) {
-        const service = new PrintService({ labels });
+    // The instance lives in state, not in a ref: a lazy state initializer runs
+    // exactly once per mount and yields a plain value, so the service can be
+    // read and returned during render. `templates` and `labels` are read on
+    // first render only, as before.
+    const [service] = useState(() => {
+        const instance = new PrintService({ labels });
         if (templates) {
             for (const [type, renderers] of Object.entries(templates)) {
-                service.registerJobType(type, renderers);
+                instance.registerJobType(type, renderers);
             }
         }
-        serviceRef.current = service;
-    }
+        return instance;
+    });
 
     const [pendingCount, setPendingCount] = useState(0);
 
     useEffect(() => {
         return () => {
-            if (serviceRef.current) {
-                serviceRef.current.cleanup();
-            }
+            service.cleanup();
         };
-    }, []);
+    }, [service]);
 
     const enqueue = useCallback(async (type, data, printer) => {
-        const service = serviceRef.current;
         const promise = service.enqueue(type, data, printer);
         // The service mutates its queue synchronously inside enqueue(), so the
         // count is already accurate when we read it here.
@@ -57,11 +56,11 @@ export const usePrintService = ({ templates, labels } = {}) => {
             setPendingCount(service.pendingCount);
             throw err;
         }
-    }, []);
+    }, [service]);
 
     return {
         enqueue,
         pendingCount,
-        service: serviceRef.current,
+        service,
     };
 };

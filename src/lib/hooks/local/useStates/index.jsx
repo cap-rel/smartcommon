@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useLayoutEffect, useRef } from "react";
 import { isNil, isUndefined, isArray, isEqual } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
@@ -13,13 +13,22 @@ export const useStates = (props = {}) => {
 
   const debug = isUndefined(props.debug) ? libConfig.debug : props.debug;
   const debugRef = useRef(debug);
-  debugRef.current = debug;
 
   throwTypeError({ value: initialStates, name: "initialStates", type: ["plain object"] })
 
   const [states, setStates] = useState(initialStates);
   const statesRef = useRef(states);
-  statesRef.current = states;
+
+  // Mirrors kept for the stable get/set/unset callbacks. Written in a LAYOUT
+  // effect, not during render: a render that React throws away (concurrent
+  // rendering, StrictMode double-invoke) must not leak its values into a ref
+  // that outlives it. Layout timing means the mirror is refreshed as part of
+  // the commit, so every passive effect and event handler still reads the
+  // value of the render they were scheduled from.
+  useLayoutEffect(() => {
+    debugRef.current = debug;
+    statesRef.current = states;
+  });
 
   // ---------------------- parsePath (Parser) ----------------------
 

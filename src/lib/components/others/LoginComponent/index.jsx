@@ -69,7 +69,6 @@ export const LoginComponent = (props) => {
     const [sharedDevice, setSharedDevice] = useState(false);
 
     const [entities, setEntities] = useState([]);
-    const [isGettingEntities, setIsGettingEntities] = useState(false);
 
     const [isLoggingIn, setIsLoggingIn] = useState(false);
     const [submitError, setSubmitError] = useState(null);
@@ -111,8 +110,9 @@ export const LoginComponent = (props) => {
         if (!showEntities || !api?.getEntities) return undefined;
 
         let cancelled = false;
-        setIsGettingEntities(true);
 
+        // No loading flag: nothing renders one. The entity Select simply stays
+        // empty until the list arrives.
         api.getEntities({ signal: AbortSignal.timeout(resolvedEntitiesTimeoutMs) })
             .then((data) => {
                 if (cancelled) return;
@@ -122,9 +122,6 @@ export const LoginComponent = (props) => {
                 // Silent: entities are optional. Some installations don't expose them.
                 if (cancelled) return;
                 setEntities([]);
-            })
-            .finally(() => {
-                if (!cancelled) setIsGettingEntities(false);
             });
 
         return () => { cancelled = true; };

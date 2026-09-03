@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, startsWith } from "lodash";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 
 import { useStates } from "lib/hooks";
 import { setGlobalStates } from "lib/global-state";
@@ -23,9 +23,12 @@ export const useGlobalStates = (props = {}) => {
   // Stable references to st methods (already memoized in useStates)
   const { set: stSet, get: stGet, unset: stUnset, values: stValues } = st;
 
-  // Keep latest debug value accessible inside memoized callbacks without bloating deps
+  // Keep latest debug value accessible inside memoized callbacks without bloating
+  // deps. Written at commit time so a discarded render cannot leak into it.
   const debugRef = useRef(debug);
-  debugRef.current = debug;
+  useLayoutEffect(() => {
+    debugRef.current = debug;
+  });
 
   // ---------------------- get ----------------------
 

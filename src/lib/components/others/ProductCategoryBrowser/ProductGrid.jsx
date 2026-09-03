@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { FaBox, FaCheck, FaChevronLeft, FaChevronRight } from "react-icons/fa6";
 import { twMerge } from "lib/utils";
+import { useImageUrl } from "lib/hooks";
 
 import { buildDefaultPriceLabel } from "./props";
 
@@ -18,6 +19,10 @@ const INF_PADDING = 12;
 const INF_TARGET_W = 160;
 const INF_MIN_W = 130;
 const INF_MAX_W = 230;
+// Stable empty list: returned while a search is in flight, so consumers of
+// `products` do not see a new array identity on every render.
+const EMPTY_PRODUCTS = [];
+
 const INF_INITIAL = 30; // tiles rendered before any scroll
 const INF_BATCH = 24; // tiles appended each time the sentinel is reached
 
@@ -58,22 +63,11 @@ const computeLayout = (width, height, count) => {
     return best;
 };
 
-const useObjectUrl = (blob) => {
-    const [url, setUrl] = useState(null);
-    useEffect(() => {
-        if (!blob) { setUrl(null); return undefined; }
-        const u = URL.createObjectURL(blob);
-        setUrl(u);
-        return () => URL.revokeObjectURL(u);
-    }, [blob]);
-    return url;
-};
-
 const DefaultProductTile = ({ product, tileHeight, selected, cartQty, priceLabel, onClick }) => {
     const [flash, setFlash] = useState(false);
     const flashRef = useRef(null);
     useEffect(() => () => { if (flashRef.current) clearTimeout(flashRef.current); }, []);
-    const blobUrl = useObjectUrl(product.image?.blob);
+    const blobUrl = useImageUrl(product.image?.blob);
     const imageUrl = blobUrl || product.image?.url || null;
     const imageHeight = Math.floor(tileHeight * 0.6);
 
@@ -153,10 +147,20 @@ export const ProductGrid = ({
     infinite = false,
     ...rest
 }) => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
+    // Identifies the search the current render needs an answer for.
+    const searchKey = `${categoryId}|${search}|${productType}`;
+
+    // The answer is stored with its question, so "loading" is simply "what we
+    // hold does not answer what we are rendering". No setLoading(true) at the
+    // top of the effect, and no window where the previous category's products
+    // are shown as if they were the new one's.
+    const [result, setResult] = useState({ key: null, items: [], error: null });
+    const answered = result.key === searchKey;
+    const products = answered ? result.items : EMPTY_PRODUCTS;
+    const loading = !answered;
+    const error = answered ? result.error : null;
+
+    const [pageState, setPageState] = useState({ key: searchKey, page: 1 });
     const [visibleCount, setVisibleCount] = useState(INF_INITIAL);
     const [layout, setLayout] = useState({ columns: 4, tileWidth: 140, tileHeight: 196, rows: 3 });
     const containerRef = useRef(null);
@@ -164,8 +168,6 @@ export const ProductGrid = ({
 
     useEffect(() => {
         let cancelled = false;
-        setLoading(true);
-        setError(null);
         Promise.resolve(productsAdapter.search({ categoryId, query: search, type: productType }))
             .then((items) => {
                 if (cancelled) return;
@@ -175,21 +177,17 @@ export const ProductGrid = ({
                     const rb = (b.ref || b.label || "").toLowerCase();
                     return ra.localeCompare(rb);
                 });
-                setProducts(list);
+                setResult({ key: searchKey, items: list, error: null });
                 setVisibleCount(INF_INITIAL);
             })
             .catch((err) => {
                 console.error("ProductGrid: failed to load products", err);
-                if (!cancelled) {
-                    setError(labels.loadError);
-                    setProducts([]);
-                }
-            })
-            .finally(() => { if (!cancelled) setLoading(false); });
+                // Tagged with the key as well: an untagged failure would leave
+                // the derived `loading` stuck on forever.
+                if (!cancelled) setResult({ key: searchKey, items: [], error: labels.loadError });
+            });
         return () => { cancelled = true; };
-    }, [categoryId, search, productType, productsAdapter, labels.loadError]);
-
-    useEffect(() => { setPage(1); }, [categoryId, search]);
+    }, [searchKey, categoryId, search, productType, productsAdapter, labels.loadError]);
 
     useEffect(() => {
         const el = containerRef.current;
@@ -228,14 +226,25 @@ export const ProductGrid = ({
 
     const perPage = layout.columns * layout.rows;
     const totalPages = Math.max(1, Math.ceil(products.length / perPage));
+
+    // Page 1 for a search we have not paged yet (that is the "reset the page
+    // when the filter changes" rule), clamped into the pages that actually
+    // exist (the list may have shrunk under us). Both used to be effects that
+    // wrote the page back into state one render too late.
+    const page = Math.min(
+        pageState.key === searchKey ? pageState.page : 1,
+        totalPages
+    );
+
+    const setPage = (next) => {
+        const value = typeof next === "function" ? next(page) : next;
+        setPageState({ key: searchKey, page: value });
+    };
+
     const visible = useMemo(() => {
         const start = (page - 1) * perPage;
         return products.slice(start, start + perPage);
     }, [products, page, perPage]);
-
-    useEffect(() => {
-        if (page > totalPages) setPage(totalPages);
-    }, [page, totalPages]);
 
     const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
 

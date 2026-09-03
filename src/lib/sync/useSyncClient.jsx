@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { useOnlineStatus } from '../hooks/local/useOnlineStatus';
 import { SyncStorage } from './SyncStorage';
 import { SyncApi } from './SyncApi';
@@ -45,12 +45,18 @@ export const useSyncClient = ({
     const onSyncCompleteRef = useRef(onSyncComplete);
     const onSyncErrorRef = useRef(onSyncError);
 
-    getAccessTokenRef.current = getAccessToken;
-    scopeRef.current = scope;
-    onConflictRef.current = onConflict;
-    onSyncStartRef.current = onSyncStart;
-    onSyncCompleteRef.current = onSyncComplete;
-    onSyncErrorRef.current = onSyncError;
+    // Refreshed during the commit (layout phase), never during render: a render
+    // React throws away must not publish its callbacks to the sync engine.
+    // Layout effects run before any passive effect, so the init effect below
+    // and the timers it arms still read the values of the committed render.
+    useLayoutEffect(() => {
+        getAccessTokenRef.current = getAccessToken;
+        scopeRef.current = scope;
+        onConflictRef.current = onConflict;
+        onSyncStartRef.current = onSyncStart;
+        onSyncCompleteRef.current = onSyncComplete;
+        onSyncErrorRef.current = onSyncError;
+    });
 
     // State
     const [isRegistered, setIsRegistered] = useState(false);
@@ -338,13 +344,14 @@ export const useSyncClient = ({
         setSyncError(null);
     }, []);
 
-    // Store sync in ref to avoid useEffect dependency
+    // Store sync + pendingCount in refs to avoid useEffect dependencies. Both
+    // are only read from timers, so the commit-time write is soon enough.
     const syncRef = useRef(sync);
-    syncRef.current = sync;
-
-    // Store pendingCount in ref for auto-sync check
     const pendingCountRef = useRef(pendingCount);
-    pendingCountRef.current = pendingCount;
+    useLayoutEffect(() => {
+        syncRef.current = sync;
+        pendingCountRef.current = pendingCount;
+    });
 
     // Auto-sync on return online
     useEffect(() => {
@@ -384,9 +391,11 @@ export const useSyncClient = ({
     const isOnlineRef = useRef(isOnline);
     const isServerReachableRef = useRef(isServerReachable);
     const isSyncingRef = useRef(isSyncing);
-    isOnlineRef.current = isOnline;
-    isServerReachableRef.current = isServerReachable;
-    isSyncingRef.current = isSyncing;
+    useLayoutEffect(() => {
+        isOnlineRef.current = isOnline;
+        isServerReachableRef.current = isServerReachable;
+        isSyncingRef.current = isSyncing;
+    });
 
     // Periodic sync interval
     useEffect(() => {

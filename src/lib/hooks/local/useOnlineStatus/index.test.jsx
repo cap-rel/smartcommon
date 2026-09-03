@@ -211,6 +211,24 @@ describe('useOnlineStatus', () => {
     });
 
     describe('periodic health check', () => {
+        it('should probe once on mount', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+            // Consumers gate work on isServerReachable (useSyncClient blocks
+            // its periodic sync on it), so it must not stay null for a whole
+            // interval after mount.
+            const { result } = renderHook(() => useOnlineStatus({
+                healthCheckUrl: '/api/health',
+                healthCheckInterval: 5000
+            }));
+
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+
+            await act(async () => {});
+
+            expect(result.current.isServerReachable).toBe(true);
+        });
+
         it('should run health check at specified interval', async () => {
             global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
@@ -219,12 +237,7 @@ describe('useOnlineStatus', () => {
                 healthCheckInterval: 5000
             }));
 
-            expect(global.fetch).not.toHaveBeenCalled();
-
-            await act(async () => {
-                vi.advanceTimersByTime(5000);
-            });
-
+            // 1 = the mount probe.
             expect(global.fetch).toHaveBeenCalledTimes(1);
 
             await act(async () => {
@@ -232,6 +245,12 @@ describe('useOnlineStatus', () => {
             });
 
             expect(global.fetch).toHaveBeenCalledTimes(2);
+
+            await act(async () => {
+                vi.advanceTimersByTime(5000);
+            });
+
+            expect(global.fetch).toHaveBeenCalledTimes(3);
         });
 
         it('should clear interval on unmount', async () => {
@@ -246,7 +265,8 @@ describe('useOnlineStatus', () => {
                 vi.advanceTimersByTime(5000);
             });
 
-            expect(global.fetch).toHaveBeenCalledTimes(1);
+            // mount probe + one tick.
+            expect(global.fetch).toHaveBeenCalledTimes(2);
 
             unmount();
 
@@ -254,7 +274,7 @@ describe('useOnlineStatus', () => {
                 vi.advanceTimersByTime(10000);
             });
 
-            expect(global.fetch).toHaveBeenCalledTimes(1);
+            expect(global.fetch).toHaveBeenCalledTimes(2);
         });
 
         it('should not run health check when offline', async () => {
@@ -275,7 +295,7 @@ describe('useOnlineStatus', () => {
     });
 
     describe('checkNow', () => {
-        it('should return current status', async () => {
+        it('should resolve to server reachability when a healthCheckUrl is set', async () => {
             global.fetch = vi.fn().mockResolvedValue({ ok: true });
 
             const { result } = renderHook(() => useOnlineStatus({
@@ -287,10 +307,29 @@ describe('useOnlineStatus', () => {
                 checkResult = await result.current.checkNow();
             });
 
-            expect(checkResult).toEqual({
-                isOnline: true,
-                isServerReachable: true
+            // A boolean, not an object: `if (await checkNow())` must stay
+            // meaningful for consumers.
+            expect(checkResult).toBe(true);
+
+            global.fetch = vi.fn().mockResolvedValue({ ok: false });
+
+            await act(async () => {
+                checkResult = await result.current.checkNow();
             });
+
+            expect(checkResult).toBe(false);
+        });
+
+        it('should resolve to navigator.onLine when no healthCheckUrl is set', async () => {
+            const { result } = renderHook(() => useOnlineStatus());
+
+            let checkResult;
+            await act(async () => {
+                checkResult = await result.current.checkNow();
+            });
+
+            expect(checkResult).toBe(true);
+            expect(global.fetch).not.toHaveBeenCalled();
         });
 
         it('should update lastOnline when online', async () => {
@@ -365,7 +404,7 @@ describe('useOnlineStatus', () => {
     describe('ONLINE_STATUS_DEFAULTS', () => {
         it('should export default values', () => {
             expect(ONLINE_STATUS_DEFAULTS.HEALTH_CHECK_INTERVAL).toBe(30000);
-            expect(ONLINE_STATUS_DEFAULTS.STABILITY_DELAY).toBe(2000);
+            expect(ONLINE_STATUS_DEFAULTS.STABILITY_DELAY).toBe(1000);
             expect(ONLINE_STATUS_DEFAULTS.TIMEOUT).toBe(5000);
         });
     });

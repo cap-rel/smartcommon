@@ -192,14 +192,10 @@ export const DataTable = (props) => {
         onPageChange?.(clamped);
     }, [onPageChange, pageIsControlled, totalPages]);
 
-    // Reset internal page when the filter shrinks the dataset below the
-    // current page. Only do this in uncontrolled mode.
-    useEffect(() => {
-        if (pageIsControlled) return;
-        if (internalPage > totalPages - 1) {
-            setInternalPage(Math.max(0, totalPages - 1));
-        }
-    }, [totalPages, internalPage, pageIsControlled]);
+    // A filter that shrinks the dataset below the current page needs no state
+    // write-back: `currentPage` above already clamps into [0, totalPages-1] on
+    // every render, and goToPage() clamps what it stores. Normalising
+    // `internalPage` from an effect only added a second render pass.
 
     const visibleRows = useMemo(() => {
         if (!paginationEnabled) return sortedData;

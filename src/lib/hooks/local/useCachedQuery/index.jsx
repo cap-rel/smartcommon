@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { useOnlineStatus } from '../useOnlineStatus';
 
 /**
@@ -92,8 +92,14 @@ export const useCachedQuery = ({
     const requestIdRef = useRef(0);
     const isOnlineRef = useRef(isOnline);
     const fetchFnRef = useRef(fetchFn);
-    isOnlineRef.current = isOnline;
-    fetchFnRef.current = fetchFn;
+
+    // Mirrors refreshed at commit time (layout phase) rather than during render,
+    // so a render React discards never leaks into them. Layout effects run
+    // before every passive effect, so execute() still sees the current values.
+    useLayoutEffect(() => {
+        isOnlineRef.current = isOnline;
+        fetchFnRef.current = fetchFn;
+    });
 
     const [state, setState] = useState({
         data: null,
@@ -326,9 +332,12 @@ export const useCachedQuery = ({
         }
     }, [enabled, strategy, getCached, fetchFromNetwork]);
 
-    // Store execute in ref to avoid useEffect dependency
+    // Store execute in ref to avoid useEffect dependency. Same layout-phase
+    // write as above: the mount/refetch effect below runs after it.
     const executeRef = useRef(execute);
-    executeRef.current = execute;
+    useLayoutEffect(() => {
+        executeRef.current = execute;
+    });
 
     // Only trigger on mount and when key/enabled change
     useEffect(() => {

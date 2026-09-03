@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { FaFolder, FaFolderOpen, FaBoxesStacked, FaBorderNone } from "react-icons/fa6";
 import { twMerge } from "lib/utils";
+import { useImageUrl } from "lib/hooks";
 
 import { ALL_PRODUCTS_ID, UNCATEGORIZED_ID } from "./props";
 
@@ -43,19 +44,8 @@ const computeLayout = (width, height, count) => {
     return best;
 };
 
-const useObjectUrl = (blob) => {
-    const [url, setUrl] = useState(null);
-    useEffect(() => {
-        if (!blob) { setUrl(null); return undefined; }
-        const u = URL.createObjectURL(blob);
-        setUrl(u);
-        return () => URL.revokeObjectURL(u);
-    }, [blob]);
-    return url;
-};
-
 const CategoryTile = ({ category, tileSize, onClick }) => {
-    const blobUrl = useObjectUrl(category.image?.blob);
+    const blobUrl = useImageUrl(category.image?.blob);
     const imageUrl = blobUrl || category.image?.url || null;
     const bgColor = hexToRgba(category.color, 0.15);
     const borderColor = hexToRgba(category.color, 0.4);

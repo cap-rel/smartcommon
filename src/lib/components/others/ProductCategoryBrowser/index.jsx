@@ -17,9 +17,27 @@ import { Cart } from "./Cart";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
+/**
+ * Mount gate. Everything below only exists while the browser is open, so each
+ * opening starts from freshly seeded state instead of being wiped by a reset
+ * effect. Remounting on a new prefilled product / mode reproduces what that
+ * effect used to do when those props changed mid-flight.
+ */
 export const ProductCategoryBrowser = (props) => {
+    if (!props.open) {
+        return null;
+    }
+
+    return (
+        <ProductCategoryBrowserContent
+            key={`${props.prefillProduct?.id ?? ""}|${props.mode ?? "select"}`}
+            {...props}
+        />
+    );
+};
+
+const ProductCategoryBrowserContent = (props) => {
     const {
-        open,
         onClose,
         mode = "select",
         multiple = false,
@@ -62,40 +80,25 @@ export const ProductCategoryBrowser = (props) => {
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 
-    const [step, setStep] = useState("browse");
+    // A prefilled product in a quantity mode opens straight on the confirm
+    // step (edit-an-existing-line flow).
+    const canPrefill = prefillProduct
+        && (mode === "quantity" || mode === "quantity-discount");
+
+    const [step, setStep] = useState(canPrefill ? "confirm" : "browse");
     const [parentId, setParentId] = useState(null);
     const [categoryPath, setCategoryPath] = useState([]);
-    const [subCategories, setSubCategories] = useState([]);
-    const [subLoading, setSubLoading] = useState(false);
+    // Subcategories, tagged with the request they answer. Holding the answer
+    // and its question together lets "loading" be derived (we hold nothing for
+    // what we are rendering) instead of being flipped on from the effect.
+    const [subResult, setSubResult] = useState({ key: null, items: [] });
     const [searchInput, setSearchInput] = useState("");
     const [searchDebounced, setSearchDebounced] = useState("");
-    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [selectedProduct, setSelectedProduct] = useState(canPrefill ? prefillProduct : null);
     const [cart, setCart] = useState([]);
-
-    // Reset internal state every time the modal opens, so a previous run does
-    // not leak into the next one. If prefillProduct is provided in a quantity
-    // mode, jump straight to the confirm step (edit-an-existing-line flow).
-    useEffect(() => {
-        if (!open) return;
-        setParentId(null);
-        setCategoryPath([]);
-        setSearchInput("");
-        setSearchDebounced("");
-        setCart([]);
-        const canPrefill = prefillProduct
-            && (mode === "quantity" || mode === "quantity-discount");
-        if (canPrefill) {
-            setStep("confirm");
-            setSelectedProduct(prefillProduct);
-        } else {
-            setStep("browse");
-            setSelectedProduct(null);
-        }
-    }, [open, prefillProduct, mode]);
 
     // Body scroll lock + escape key.
     useEffect(() => {
-        if (!open) return undefined;
         document.body.style.overflow = "hidden";
         const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
         document.addEventListener("keydown", onKey);
@@ -103,7 +106,7 @@ export const ProductCategoryBrowser = (props) => {
             document.body.style.overflow = "";
             document.removeEventListener("keydown", onKey);
         };
-    }, [open, onClose]);
+    }, [onClose]);
 
     // Debounce search input.
     const debounceRef = useRef(null);
@@ -121,30 +124,36 @@ export const ProductCategoryBrowser = (props) => {
     const inSearchMode = Boolean(searchDebounced);
     const isSpecialTile = parentId === ALL_PRODUCTS_ID || parentId === UNCATEGORIZED_ID;
 
+    // Identifies the subcategory request the current render needs.
+    const subKey = inSearchMode || isSpecialTile ? null : `${parentId}|${productType}`;
+    const subLoading = subKey !== null && subResult.key !== subKey;
+    const subCategories = subResult.key === subKey ? subResult.items : [];
+
     // NOTE: `categoriesAdapter` and `productsAdapter` MUST be referentially
     // stable (memoized by the consumer with useMemo). They are dependencies of
     // this effect and of the search/product effects; an adapter rebuilt on every
     // parent render would re-trigger these fetches on each render/keystroke
     // (refetch storm). Pass the SAME object reference across renders.
     useEffect(() => {
-        if (!open || inSearchMode || isSpecialTile) {
-            setSubCategories([]);
+        // Nothing to fetch in search mode or on a special tile: `subCategories`
+        // above already reads as empty in those states.
+        if (subKey === null) {
             return undefined;
         }
         let cancelled = false;
-        setSubLoading(true);
         const fetcher = parentId === null
             ? categoriesAdapter.getRoots(productType)
             : categoriesAdapter.getChildren(parentId);
         Promise.resolve(fetcher)
-            .then((items) => { if (!cancelled) setSubCategories(items || []); })
+            .then((items) => { if (!cancelled) setSubResult({ key: subKey, items: items || [] }); })
             .catch((err) => {
                 console.error("ProductCategoryBrowser: failed to load categories", err);
-                if (!cancelled) setSubCategories([]);
-            })
-            .finally(() => { if (!cancelled) setSubLoading(false); });
+                // Tag the failure with the key too, otherwise the derived
+                // `subLoading` would stay true forever on an adapter error.
+                if (!cancelled) setSubResult({ key: subKey, items: [] });
+            });
         return () => { cancelled = true; };
-    }, [open, parentId, productType, categoriesAdapter, inSearchMode, isSpecialTile]);
+    }, [subKey, parentId, productType, categoriesAdapter]);
 
     // Navigation handlers.
     const navigateInto = useCallback((id, label) => {
@@ -265,8 +274,6 @@ export const ProductCategoryBrowser = (props) => {
         });
         return m;
     }, [cart, mode, multiple]);
-
-    if (!open) return null;
 
     // Decide what to render in the browse step.
     let browseContent;
@@ -445,6 +452,11 @@ export const ProductCategoryBrowser = (props) => {
                 <div className="flex-1 flex flex-col min-h-0">{browseContent}</div>
             ) : (
                 <ConfirmStep
+                    // Remounting on a new product / new defaults is what resets
+                    // the qty + discount inputs: ConfirmStep seeds them from
+                    // these props in its state initializers, so React's own
+                    // "reset state with a key" is enough - no reset effect.
+                    key={`${selectedProduct?.id}|${defaultQty}|${defaultDiscountPercent}`}
                     product={selectedProduct}
                     mode={mode}
                     defaultQty={defaultQty}

@@ -7,6 +7,23 @@ import { useGlobalStates, useLibConfig } from "lib/hooks";
 
 // TODO .query(params) .scroll(false) .preserveState()
 
+// Chainable navigation builder. Each step returns a NEW builder instead of
+// mutating a shared `options` object: the previous version created one builder
+// per render, so a `nav.replace()` left `replace: true` set for every later
+// `nav.to()` of that same render.
+const createNavBuilder = (navigate, pathname, options) => ({
+    replace: () => createNavBuilder(navigate, pathname, { ...options, replace: true }),
+    state: (state) => createNavBuilder(navigate, pathname, {
+        ...options,
+        state: isUndefined(state)
+            ? options.state
+            : isFunction(state) ? state(options.state) : state,
+    }),
+    to: (to) => {
+        navigate(isUndefined(to) ? pathname : to, options);
+    },
+});
+
 export const useNavigationContext = () => {    
     const libConfig = useLibConfig();
 
@@ -49,30 +66,10 @@ export const useNavigationContext = () => {
     // here because it reads the URL query string, not the route match.
     const searchParams = useSearchParams();
 
-    const navBuilder = () => {
-        const options = { replace: false, state: filteredLocation.state };
-
-        const builder = {
-            replace: () => {
-                options.replace = true;
-                return builder;
-            },
-            state: (state) => {
-                if (!isUndefined(state)) {
-                    options.state = isFunction(state) ? state(options.state) : state;
-                }
-
-                return builder;
-            },
-            to: (to) => {
-                navigate(isUndefined(to) ? pathname : to, options);
-            },
-        };
-
-        return builder;
-    };
-
-    const nav = navBuilder();
+    const nav = createNavBuilder(navigate, pathname, {
+        replace: false,
+        state: filteredLocation.state,
+    });
 
     // ---------------------- return ----------------------
 

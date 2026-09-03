@@ -46,9 +46,20 @@ export const ImageCanvas = ({
     const bgLongPressTimer = useRef(null);
     const bgLongPressPos = useRef(null);
 
-    // Drag state for the marker currently being moved.
+    // Drag state for the marker currently being moved. The live position is
+    // held BOTH in state and in a ref: state because it is render data (the
+    // marker must follow the finger), ref because the pointermove/pointerup
+    // listeners must read it without re-subscribing on every move. It used to
+    // be ref-only, with the repaint forced by a setDraggingId(id => id) no-op
+    // that React is free to bail out of.
     const [draggingId, setDraggingId] = useState(null);
+    const [draggingPos, setDraggingPos] = useState(null);
     const draggingPosRef = useRef(null);
+
+    const setDragPosition = (pos) => {
+        draggingPosRef.current = pos;
+        setDraggingPos(pos);
+    };
 
     // Last-tap tracker for double-click on markers (works on touch + mouse).
     const lastMarkerTap = useRef({ id: null, t: 0 });
@@ -56,8 +67,8 @@ export const ImageCanvas = ({
     // Keep a per-render copy of annotations so the active drag preview can
     // diverge from the prop array until pointer up.
     const annotationsToRender = annotations.map((a) =>
-        a.id === draggingId && draggingPosRef.current
-            ? { ...a, x: draggingPosRef.current.x, y: draggingPosRef.current.y }
+        a.id === draggingId && draggingPos
+            ? { ...a, x: draggingPos.x, y: draggingPos.y }
             : a
     );
 
@@ -88,7 +99,7 @@ export const ImageCanvas = ({
                 onAnnotationDragEnd(draggingId, draggingPosRef.current);
             }
             setDraggingId(null);
-            draggingPosRef.current = null;
+            setDragPosition(null);
             cancelBackgroundLongPress();
             lastPinchRef.current = null;
             lastPanRef.current = null;
@@ -110,9 +121,7 @@ export const ImageCanvas = ({
                 const rect = imageBoxRef.current?.getBoundingClientRect();
                 if (!rect) return;
                 const { x, y } = clientToPercent(e.clientX, e.clientY, rect);
-                draggingPosRef.current = { x, y };
-                // Force a re-render via state so the marker visually follows.
-                setDraggingId((id) => id);
+                setDragPosition({ x, y });
                 return;
             }
             if (panActiveRef.current && lastPanRef.current && zoom > 1) {
@@ -191,7 +200,7 @@ export const ImageCanvas = ({
         let downTimer = setTimeout(() => {
             downTimer = null;
             setDraggingId(annotation.id);
-            draggingPosRef.current = { x: annotation.x, y: annotation.y };
+            setDragPosition({ x: annotation.x, y: annotation.y });
         }, longPressMs);
 
         const cancelMarkerLongPress = () => {

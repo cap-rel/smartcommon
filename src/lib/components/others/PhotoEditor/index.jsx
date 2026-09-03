@@ -45,9 +45,47 @@ const initialState = {
 
 const ADJUST_SLIDERS = ["brightness", "contrast", "saturation", "temperature"];
 
+// A source can be a Blob or a File, neither of which can serve as a React key.
+// Hand out a stable id per object instead, so swapping the edited photo while
+// the editor is open remounts it (dropping the previous photo's edit recipe)
+// while a re-render with the same object does not.
+const sourceKeys = new WeakMap();
+let nextSourceKey = 0;
+
+const keyForSource = (src) => {
+    if (typeof src === "string") {
+        return src;
+    }
+    if (!src || typeof src !== "object") {
+        return String(src);
+    }
+    if (!sourceKeys.has(src)) {
+        nextSourceKey += 1;
+        sourceKeys.set(src, `src-${nextSourceKey}`);
+    }
+    return sourceKeys.get(src);
+};
+
+/**
+ * Mount gate. The editor only exists while open, and it is remounted when the
+ * source image changes, so the edit recipe / active tool / error start from
+ * their initial values instead of being reset by an effect.
+ */
 export const PhotoEditor = (props) => {
+    if (!props.open) {
+        return null;
+    }
+
+    return (
+        <PhotoEditorContent
+            key={`${keyForSource(props.src)}|${props.previewMaxDimension ?? ""}`}
+            {...props}
+        />
+    );
+};
+
+const PhotoEditorContent = (props) => {
     const {
-        open,
         src,
         onSave,
         onCancel,
@@ -108,12 +146,17 @@ export const PhotoEditor = (props) => {
     }, []);
 
     // ----- load + downscale the source once ----------------------------------
+    // No state reset here: this component is mounted fresh for each source (see
+    // the gate above), so state/activeTool/error already hold their initial
+    // values when this runs.
     useEffect(() => {
-        if (!open || !src) return;
+        // Opened without a source: the shell renders, there is just nothing to
+        // load. Reporting a load error here would be wrong.
+        if (!src) {
+            return undefined;
+        }
+
         let cancelled = false;
-        setError(null);
-        setState(initialState);
-        setActiveTool(null);
 
         (async () => {
             try {
@@ -136,7 +179,7 @@ export const PhotoEditor = (props) => {
         return () => {
             cancelled = true;
         };
-    }, [open, src, previewMaxDimension]);
+    }, [src, previewMaxDimension]);
 
     // Repaint when a baked geometry tool changes, or when switching the active
     // overlay tool (which moves an op between "baked" and "overlay"). The crop
@@ -202,8 +245,6 @@ export const PhotoEditor = (props) => {
             setSaving(false);
         }
     };
-
-    if (!open) return null;
 
     const toolButton = (key, icon, label, onClick, active) => (
         <button

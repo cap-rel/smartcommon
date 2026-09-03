@@ -97,17 +97,15 @@ export const useAuthenticatedImage = ({
         }
     };
 
+    // With no url there is nothing to load: the result is the placeholder,
+    // derived below rather than pushed into state by the effect.
+    const hasSource = Boolean(url && cacheKey);
+
     useEffect(() => {
         mountedRef.current = true;
 
-        if (!url || !cacheKey) {
-            setState({
-                src: placeholder,
-                isLoading: false,
-                isFromCache: false,
-                error: null
-            });
-            return;
+        if (!hasSource) {
+            return undefined;
         }
 
         let localObjectUrl = null;
@@ -233,7 +231,7 @@ export const useAuthenticatedImage = ({
                 URL.revokeObjectURL(localObjectUrl);
             }
         };
-    }, [url, cacheKey, token, ttl, staleTime, isOnline, placeholder, db, store]);
+    }, [hasSource, url, cacheKey, token, ttl, staleTime, isOnline, placeholder, db, store]);
 
     // Final cleanup on unmount
     useEffect(() => {
@@ -241,6 +239,15 @@ export const useAuthenticatedImage = ({
             revokeCurrentUrl();
         };
     }, []);
+
+    if (!hasSource) {
+        return {
+            src: placeholder,
+            isLoading: false,
+            isFromCache: false,
+            error: null
+        };
+    }
 
     return {
         src: state.src,

@@ -43,6 +43,9 @@ export const useEffect = (props = {}) => {
     throwTypeError({ value: deps, name: "deps", type: ["array"] });
     throwTypeError({ value: fn, name: "fn", type: ["function"] });
 
+    // Run counter, used by the debug log only. It is deliberately NOT returned:
+    // a ref read during render is not reactive, so the caller received the count
+    // of whatever render happened to run last rather than the current one.
     const activationsRef = useRef(1);
 
     useReactEffect(() => {
@@ -53,8 +56,4 @@ export const useEffect = (props = {}) => {
         activationsRef.current += 1;
         fn();
     }, deps);
-
-    return {
-        activations: activationsRef.current
-    }
 };

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { useApi } from "lib/hooks";
 import { createLogger } from "lib/utils";
@@ -76,9 +76,10 @@ const detectSupport = () =>
 export const usePushNotifications = () => {
     const api = useApi();
 
-    // isSupported is stable for the lifetime of the page, capture it once.
-    const isSupportedRef = useRef(detectSupport());
-    const isSupported = isSupportedRef.current;
+    // isSupported is stable for the lifetime of the page, capture it once. Held
+    // in state rather than in a ref: it IS render data (it drives the returned
+    // permission and the rendered branch), so it must be readable during render.
+    const [isSupported] = useState(detectSupport);
 
     const [permission, setPermission] = useState(
         isSupported ? Notification.permission : "unsupported"
@@ -101,27 +102,38 @@ export const usePushNotifications = () => {
         }
     }, [api]);
 
-    const checkSubscription = useCallback(async () => {
-        try {
-            const registration = await navigator.serviceWorker.ready;
-            const subscription = await registration.pushManager.getSubscription();
-            setIsSubscribed(subscription !== null);
-        } catch (err) {
-            log.error("Failed to read current push subscription", err);
-        } finally {
-            setIsLoading(false);
-        }
-    }, []);
-
-    // Initial state: read permission and detect an existing subscription.
+    // Initial state: detect an existing subscription. `permission` needs no
+    // resync here - the state initializer above already seeded it from
+    // Notification.permission, and nothing can change that between that render
+    // and this commit (it only moves on an explicit user prompt).
+    // The lookup is guarded by a `cancelled` latch so a hook unmounted while
+    // the service worker is still booting does not write to dead state.
     useEffect(() => {
         if (!isSupported) {
             log.warning("Web Push not supported by this browser");
-            return;
+            return undefined;
         }
-        setPermission(Notification.permission);
-        checkSubscription();
-    }, [isSupported, checkSubscription]);
+
+        let cancelled = false;
+
+        navigator.serviceWorker.ready
+            .then((registration) => registration.pushManager.getSubscription())
+            .then((subscription) => {
+                if (!cancelled) {
+                    setIsSubscribed(subscription !== null);
+                }
+            })
+            .catch((err) => log.error("Failed to read current push subscription", err))
+            .finally(() => {
+                if (!cancelled) {
+                    setIsLoading(false);
+                }
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [isSupported]);
 
     // Service Worker subscription renewal: the SW cannot re-register the new
     // subscription server-side (no auth token in the SW), so it posts a

@@ -1,22 +1,7 @@
-import { useEffect, useState } from "react";
-
 // Resolves an image source (string URL, Blob, File) to a usable URL string.
-// Handles createObjectURL/revokeObjectURL bookkeeping for Blobs and Files.
-export const useImageUrl = (src) => {
-    const [url, setUrl] = useState(null);
-    useEffect(() => {
-        if (!src) { setUrl(null); return undefined; }
-        if (typeof src === "string") { setUrl(src); return undefined; }
-        if (src instanceof Blob || src instanceof File) {
-            const u = URL.createObjectURL(src);
-            setUrl(u);
-            return () => URL.revokeObjectURL(u);
-        }
-        setUrl(null);
-        return undefined;
-    }, [src]);
-    return url;
-};
+// Re-exported from the shared hook, which is also used by the product catalog
+// tiles; kept here so the existing PhotoAnnotator imports stay valid.
+export { useImageUrl } from "lib/hooks";
 
 // Generate a unique-ish id for new annotations. Consumers that already track
 // stable ids (e.g. local_id from Dexie) should override this in onSave.

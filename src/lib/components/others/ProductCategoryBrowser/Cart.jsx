@@ -8,6 +8,26 @@ const formatTotal = (total, currency, ttc) => {
     return `${total.toFixed(2)}${currency ? " " + currency : ""}${suffix}`;
 };
 
+// Aggregates the priced lines. Kept out of the component body: picking up the
+// running currency/ttc used to reassign render-scope variables from inside a
+// reduce callback.
+const summarizeItems = (items, mode) => {
+    const empty = { total: null, currency: null, ttc: null };
+    if (mode !== "quantity-discount" && mode !== "quantity") return empty;
+
+    const priced = items.filter((it) => it.computedTotal != null);
+    if (priced.length === 0) return empty;
+
+    return {
+        total: priced.reduce((acc, it) => acc + it.computedTotal, 0),
+        // First line that carries the information wins, as before.
+        currency: priced.find((it) => it.product?.__display?.currency != null)
+            ?.product?.__display?.currency ?? null,
+        ttc: priced.find((it) => it.product?.__display?.ttc != null)
+            ?.product?.__display?.ttc ?? null,
+    };
+};
+
 export const Cart = ({
     items,
     mode,
@@ -21,22 +41,7 @@ export const Cart = ({
     const count = items.length;
     if (count === 0) return null;
 
-    let total = null;
-    let currency = null;
-    let ttc = null;
-    if (mode === "quantity-discount" || mode === "quantity") {
-        total = items.reduce((acc, it) => {
-            if (it.computedTotal != null) {
-                if (currency == null) currency = it.product?.__display?.currency;
-                if (ttc == null) ttc = it.product?.__display?.ttc;
-                return acc + it.computedTotal;
-            }
-            return acc;
-        }, 0);
-        if (total === 0 && !items.some((it) => it.computedTotal != null)) {
-            total = null;
-        }
-    }
+    const { total, currency, ttc } = summarizeItems(items, mode);
     const totalLabel = formatTotal(total, currency, ttc);
     const validateText = totalLabel
         ? `${labels.validateLabel} (${count}) - ${totalLabel}`

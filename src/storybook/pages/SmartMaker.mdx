@@ -34,7 +34,7 @@ Pour plus de détails concernant les PWA vous pouvez consulter la fiche wikipéd
 
 SmartMaker est un projet porté par CAP-REL (preferred partner dolibarr) complètement ouvert et dont nous espérons voir le plus possible de choses intégrées dans le projet Dolibarr.
 
-## Backoffice (PHP)
+## Backoffice (PHP)
 
 SmartMaker s'intègre dans un module normal dolibarr (par exemple généré avec le module builder natif de dolibarr) et propose l'utilisation d'API(s) côté backoffice pour rendre accessible les éléments dont l'application frontale a besoin.
 
@@ -72,13 +72,13 @@ Implémente la méthode "GET /home" et fait appel à la fonction "index" de la c
 
 La classe `HomeController` étant tout simplement implémentée dans le fichier `./smartmaker-api/HomeController.php` et sera chargée automatiquement par un autoloader (PSR-4). Note: Vous trouverez l'autoloader dans le fichier `smartmaker-api-prepend.php`
 
-## Front en react
+## Front en react
 
 Le front est développé en react et de nombreux objets prêts à l'emploi sont proposés.
 
 Note: Si vous n'avez jamais mis les pieds dans le monde du développement mobile : votre code source pour la plate-forme mobile sera compilé (pour résumer le résultat sera un gros fichier "js"). Il est donc important de maîtriser la chaîne complète pour pouvoir implémenter l'application mobile.
 
-## Des outils complémentaires
+## Des outils complémentaires
 
 SmartMaker est livré avec des outils complémentaires dont en particulier un fichier Makefile qui fera sourire les "vieux" développeurs (make est particulièrement utilisé dans le développement C/C++).
 

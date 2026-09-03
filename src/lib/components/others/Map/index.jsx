@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef } from "react";
 
 import { twMerge, log } from "lib/utils";
 
@@ -90,11 +90,15 @@ export const Map = (props) => {
 
   const containerRef = useRef(null);
   // Keep the latest callbacks/labels reachable from the effect without
-  // re-initialising the map on every render.
+  // re-initialising the map on every render. Refreshed at commit time so a
+  // discarded render never leaks into them; the Leaflet handlers that read
+  // them only fire on user interaction, well after the commit.
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
   const labelsRef = useRef(labels);
-  labelsRef.current = labels;
+  useLayoutEffect(() => {
+    onChangeRef.current = onChange;
+    labelsRef.current = labels;
+  });
 
   useEffect(() => {
     let map;

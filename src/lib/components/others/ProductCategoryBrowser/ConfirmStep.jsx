@@ -1,20 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { FaBox, FaMinus, FaPlus } from "react-icons/fa6";
 import { Button } from "lib/components";
 import { twMerge } from "lib/utils";
+import { useImageUrl } from "lib/hooks";
 
 import { buildDefaultPriceLabel } from "./props";
-
-const useObjectUrl = (blob) => {
-    const [url, setUrl] = useState(null);
-    useEffect(() => {
-        if (!blob) { setUrl(null); return undefined; }
-        const u = URL.createObjectURL(blob);
-        setUrl(u);
-        return () => URL.revokeObjectURL(u);
-    }, [blob]);
-    return url;
-};
 
 export const ConfirmStep = ({
     product,
@@ -31,15 +21,13 @@ export const ConfirmStep = ({
     cancelButtonProps = {},
     ...rest
 }) => {
+    // Seeded once per mount. The parent keys this component on
+    // product.id + defaults, so switching product or reopening on a different
+    // line remounts it and re-seeds both inputs.
     const [qty, setQty] = useState(defaultQty);
     const [discountPercent, setDiscountPercent] = useState(defaultDiscountPercent);
 
-    useEffect(() => {
-        setQty(defaultQty);
-        setDiscountPercent(defaultDiscountPercent);
-    }, [product?.id, defaultQty, defaultDiscountPercent]);
-
-    const blobUrl = useObjectUrl(product?.image?.blob);
+    const blobUrl = useImageUrl(product?.image?.blob);
     const imageUrl = blobUrl || product?.image?.url || null;
 
     const display = getProductPriceDisplay?.(product, customerContext);

@@ -1,12 +1,49 @@
 import ky from "ky";
 import { floor, isEmpty, isUndefined } from "lodash";
 import { v4 } from "uuid";
-import { useMemo, useRef, useEffect } from "react";
+import { useMemo, useRef, useEffect, useLayoutEffect } from "react";
 
 import { log, navigatorInfo, throwTypeError } from "lib/utils";
 import { useGlobalStates, useLibConfig } from "lib/hooks";
 import { loginMap } from "lib/hooks/useApiTest2/useLogin";
 import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessToken";
+
+/**
+ * Circuit breaker helpers, kept at module scope: they read the clock, which is
+ * not something a component body may do. They operate on the mutable record
+ * held in circuitRef and are only ever called from request-time code.
+ *
+ * @param {{ openUntil: number, offline: boolean }} circuit
+ */
+const isCircuitOpen = (circuit) => {
+    if (Date.now() >= circuit.openUntil) {
+        return false;
+    }
+    // A breaker that was tripped only because we were offline must not keep
+    // blocking once connectivity is back: the queued drains that fire on
+    // 'online' would otherwise all reject with "Circuit breaker open" and
+    // strand the offline work. Server/auth-driven trips (offline=false)
+    // still block for their full cooldown.
+    if (circuit.offline && navigatorInfo.isOnLine === true) {
+        return false;
+    }
+    return true;
+};
+
+/**
+ * `offline` tags a breaker opened only because connectivity was lost. Such a
+ * breaker MUST stop blocking the moment we are back online (see isCircuitOpen),
+ * otherwise queued work (offline submit queue, inventory cascade) never flushes
+ * on reconnect -- the breaker keeps re-opening on every drain attempt because
+ * navigatorInfo lags. Server/auth-driven openings (5xx, dead session) leave
+ * `offline` false so their throttle is honoured even while online.
+ *
+ * @param {{ openUntil: number, offline: boolean }} circuit
+ */
+const openCircuit = (circuit, ms = 10000, offline = false) => {
+    circuit.openUntil = Date.now() + ms;
+    circuit.offline = !!offline;
+};
 
 export const useApiContext = () => {
     const libConfig = useLibConfig();
@@ -51,32 +88,6 @@ export const useApiContext = () => {
 
     const circuitRef = useRef({ openUntil: 0, offline: false });
 
-    const isCircuitOpen = () => {
-        if (Date.now() >= circuitRef.current.openUntil) {
-            return false;
-        }
-        // A breaker that was tripped only because we were offline must not keep
-        // blocking once connectivity is back: the queued drains that fire on
-        // 'online' would otherwise all reject with "Circuit breaker open" and
-        // strand the offline work. Server/auth-driven trips (offline=false)
-        // still block for their full cooldown.
-        if (circuitRef.current.offline && navigatorInfo.isOnLine === true) {
-            return false;
-        }
-        return true;
-    };
-
-    // `offline` tags a breaker opened only because connectivity was lost. Such a
-    // breaker MUST stop blocking the moment we are back online (see isCircuitOpen),
-    // otherwise queued work (offline submit queue, inventory cascade) never flushes
-    // on reconnect -- the breaker keeps re-opening on every drain attempt because
-    // navigatorInfo lags. Server/auth-driven openings (5xx, dead session) leave
-    // `offline` false so their throttle is honoured even while online.
-    const openCircuit = (ms = 10000, offline = false) => {
-        circuitRef.current.openUntil = Date.now() + ms;
-        circuitRef.current.offline = !!offline;
-    };
-
     // Stable (useMemo []) so it keeps the same identity across renders and can
     // be exposed on the api object without busting its memo. Immediately closes
     // the breaker: used on reconnection and as the consumer-facing escape hatch.
@@ -97,34 +108,43 @@ export const useApiContext = () => {
         gst,
         debug,
         prefixUrl,
-        onApiError,
-        onLoginPersist
-    });
-
-    // Update ref on each render
-    valuesRef.current = {
-        user,
-        accessToken,
-        refreshToken,
-        tokenExpiry,
-        rememberMe,
-        deviceOptions,
-        deviceId,
-        gst,
-        debug,
-        prefixUrl,
+        timeout,
         onApiError,
         onLoginPersist,
         onSessionExpired
-    };
+    });
+
+    // Refreshed at COMMIT time, not during render: everything downstream (ky
+    // hooks, login/refresh, the dead-session eject) reads this mirror from
+    // network callbacks and user actions, so publishing values from a render
+    // React may still throw away would let an abandoned tree drive real
+    // requests. Layout timing keeps it ahead of every passive effect.
+    useLayoutEffect(() => {
+        valuesRef.current = {
+            user,
+            accessToken,
+            refreshToken,
+            tokenExpiry,
+            rememberMe,
+            deviceOptions,
+            deviceId,
+            gst,
+            debug,
+            prefixUrl,
+            timeout,
+            onApiError,
+            onLoginPersist,
+            onSessionExpired
+        };
+    });
 
     // ---------------------- refreshPromise ref ----------------------
 
     const refreshPromiseRef = useRef(null);
 
     // Synchronous mirror of the most recently issued refresh token. `valuesRef`
-    // is refreshed on RENDER, so it lags one render behind the gst.set() that a
-    // refresh() / login() performs. Without this ref, a refresh triggered in that
+    // is only refreshed when the next render COMMITS, so it lags behind the
+    // gst.set() that a refresh() / login() performs. Without this ref, a refresh triggered in that
     // gap (e.g. a second in-flight 401 after the first refresh already resolved and
     // cleared refreshPromiseRef) would read the STALE, already-consumed refresh
     // token from valuesRef and replay it -- which smartauth treats as an attack and
@@ -151,7 +171,7 @@ export const useApiContext = () => {
         sessionDeadRef.current = true;
         latestRefreshTokenRef.current = null;
         const { gst: currentGst, onSessionExpired: sessionExpiredCallback } = valuesRef.current;
-        openCircuit(30000);
+        openCircuit(circuitRef.current, 30000);
         currentGst.unset("user"); // RouteGuard redirects to /login
         if (sessionExpiredCallback) {
             sessionExpiredCallback();
@@ -195,13 +215,24 @@ export const useApiContext = () => {
         return () => window.removeEventListener("online", handleOnline);
     }, [resetCircuit]);
 
-    // ---------------------- baseApi ----------------------
+    // ---------------------- ky instances (lazily built) ----------------------
 
-    const baseApi = useMemo(() => ky.create({
-        prefixUrl,
-        timeout,
+    // The three ky instances are created on FIRST USE, never during render.
+    // Their hooks close over valuesRef / circuitRef and read them at request
+    // time; building them inside a useMemo handed those refs to ky while React
+    // was rendering, which is what made the whole hook unanalysable (and, in a
+    // discarded render, would have wired an abandoned tree to the network).
+    //
+    // The cache is keyed on the config that actually shapes an instance
+    // (prefixUrl, timeout, deviceId), so a change to any of them rebuilds all
+    // three on the next call - same trigger as the previous useMemo deps.
+    const instancesRef = useRef({ key: null, base: null, publicApi: null, privateApi: null });
+
+    const buildBaseApi = (currentPrefixUrl, currentTimeout, currentDeviceId) => ky.create({
+        prefixUrl: currentPrefixUrl,
+        timeout: currentTimeout,
         headers: {
-            "X-DEVICEID": deviceId,
+            "X-DEVICEID": currentDeviceId,
         },
         hooks: {
             beforeRequest: [
@@ -210,7 +241,7 @@ export const useApiContext = () => {
                     const { delay } = options;
                     const { debug: currentDebug } = valuesRef.current;
 
-                    if (isCircuitOpen()) {
+                    if (isCircuitOpen(circuitRef.current)) {
                         if (currentDebug) {
                             log.apiError(`${method} - BLOCKED`, url);
                         }
@@ -223,7 +254,7 @@ export const useApiContext = () => {
                             log.apiError(`${method} - NO CONNECTION`, url);
                         }
 
-                        openCircuit(5000, true);
+                        openCircuit(circuitRef.current, 5000, true);
 
                         return Promise.reject(new Error("No internet connection"));
                     }
@@ -276,7 +307,37 @@ export const useApiContext = () => {
                 }
             ]
         }
-    }), [prefixUrl, timeout, deviceId]);
+    });
+
+    // Resolves the instances for the CURRENT config, rebuilding them only when
+    // that config changed. Called from request time (event handlers, effects,
+    // promise callbacks), never from render. The authenticated instance is
+    // attached on demand by getPrivateApi(), declared next to its builder.
+    const getInstances = () => {
+        const {
+            prefixUrl: currentPrefixUrl,
+            timeout: currentTimeout,
+            deviceId: currentDeviceId,
+        } = valuesRef.current;
+
+        const key = `${currentPrefixUrl}|${currentTimeout}|${currentDeviceId}`;
+
+        if (instancesRef.current.key !== key) {
+            const base = buildBaseApi(currentPrefixUrl, currentTimeout, currentDeviceId);
+
+            instancesRef.current = {
+                key,
+                base,
+                publicApi: base.extend({}),
+                privateApi: null,
+            };
+        }
+
+        return instancesRef.current;
+    };
+
+    const getBaseApi = () => getInstances().base;
+    const getPublicApi = () => getInstances().publicApi;
 
     // ---------------------- refresh ----------------------
 
@@ -288,7 +349,7 @@ export const useApiContext = () => {
             // consumed token and gets the whole family revoked. See latestRefreshTokenRef.
             const currentRefreshToken = latestRefreshTokenRef.current ?? valuesRef.current.refreshToken;
 
-            refreshPromiseRef.current = baseApi
+            refreshPromiseRef.current = getBaseApi()
                 .get("refresh", {
                     headers: {
                         Authorization: `Bearer ${currentRefreshToken}`
@@ -319,11 +380,9 @@ export const useApiContext = () => {
         }
 
         return refreshPromiseRef.current;
-    }, [baseApi]);
+    }, []);
 
     // ---------------------- publicApi ----------------------
-
-    const publicApi = useMemo(() => baseApi.extend({}), [baseApi]);
 
     // Public counterpart of createApiMethod: wraps a public endpoint call in
     // the same try/catch + error enrichment so a non-JSON 2xx body (e.g. a
@@ -334,7 +393,7 @@ export const useApiContext = () => {
     const callPublic = async (method, url, options = {}) => {
         const { debug: currentDebug } = valuesRef.current;
         try {
-            return await publicApi[method](url, options).json();
+            return await getPublicApi()[method](url, options).json();
         } catch (error) {
             if (currentDebug) {
                 log.apiError(`${method.toUpperCase()} (public) failed`, url, error.message);
@@ -357,7 +416,7 @@ export const useApiContext = () => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         return callPublic("get", options.url ?? "login", options);
-    }, [publicApi]);
+    }, []);
 
     // ---------------------- login ----------------------
 
@@ -461,7 +520,7 @@ export const useApiContext = () => {
                     existingUserDevices,
                 };
             });
-    }, [publicApi]);
+    }, []);
 
     // ---------------------- QR pairing (smartAuth) ----------------------
     //
@@ -487,7 +546,7 @@ export const useApiContext = () => {
                 json: body,
                 ...options,
             });
-    }, [publicApi]);
+    }, []);
 
     const pollQrPair = useMemo(() => (pairingId, claimToken, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
@@ -541,12 +600,14 @@ export const useApiContext = () => {
 
                 return data;
             });
-    }, [publicApi]);
+    }, []);
 
     // ---------------------- privateApi ----------------------
 
-    const privateApi = useMemo(() => {
-        const api = baseApi.extend({
+    // Built by getInstances() from the base instance it just created, so the
+    // authenticated instance is always derived from the matching config.
+    function buildPrivateApi(base) {
+        const api = base.extend({
             hooks: {
                 beforeRequest: [
                     async (request, options) => {
@@ -609,14 +670,14 @@ export const useApiContext = () => {
                                     context: state
                                 });
                             } catch (error) {
-                                openCircuit(30000);
+                                openCircuit(circuitRef.current, 30000);
 
                                 throw error;
                             }
                         }
 
                         if (status >= 500) {
-                            openCircuit(5000);
+                            openCircuit(circuitRef.current, 5000);
                         }
 
                     }
@@ -626,7 +687,20 @@ export const useApiContext = () => {
             }
         });
         return api;
-    }, [baseApi, refresh]);
+    }
+
+    // Attaches the authenticated instance to the current instance record on
+    // first use. Separate from getInstances() so the builder above is declared
+    // before anything reaches for it.
+    const getPrivateApi = () => {
+        const instances = getInstances();
+
+        if (!instances.privateApi) {
+            instances.privateApi = buildPrivateApi(instances.base);
+        }
+
+        return instances.privateApi;
+    };
 
     // ---------------------- logout ----------------------
 
@@ -639,7 +713,7 @@ export const useApiContext = () => {
         // authenticated locally. We therefore unset in finally and swallow the
         // network/parse error (logged), so the caller can always navigate to
         // /login.
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? "logout", options)
             .json()
             .catch((error) => {
@@ -654,7 +728,7 @@ export const useApiContext = () => {
                 latestRefreshTokenRef.current = null;
                 currentGst.unset("user");
             });
-    }, [privateApi]);
+    }, []);
 
     // ---------------------- device ----------------------
 
@@ -676,7 +750,7 @@ export const useApiContext = () => {
             jsonBody.viewport_mode = viewportMode;
         }
 
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? "device", {
                 json: jsonBody,
             })
@@ -707,7 +781,7 @@ export const useApiContext = () => {
 
                 return mappedData;
             });
-    }, [privateApi]);
+    }, []);
 
     // ---------------------- user devices (logical, smartAuth) ----------------------
     //
@@ -729,16 +803,16 @@ export const useApiContext = () => {
     const listUserDevices = useMemo(() => (options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .get(options.url ?? "account/user-devices", options)
             .json();
-    }, [privateApi]);
+    }, []);
 
     const createUserDevice = useMemo(() => (body, options = {}) => {
         throwTypeError({ value: body, name: "body (param)", type: ["plain object"] });
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? "account/user-devices", {
                 json: body,
                 ...options,
@@ -748,38 +822,38 @@ export const useApiContext = () => {
                 clearNeedsDevicePick();
                 return data;
             });
-    }, [privateApi]);
+    }, []);
 
     const linkUserDevice = useMemo(() => (id, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? `account/user-devices/${id}/link`, options)
             .json()
             .then((data) => {
                 clearNeedsDevicePick();
                 return data;
             });
-    }, [privateApi]);
+    }, []);
 
     const renameUserDevice = useMemo(() => (id, label, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? `account/user-devices/${id}/rename`, {
                 json: { label },
                 ...options,
             })
             .json();
-    }, [privateApi]);
+    }, []);
 
     const deleteUserDevice = useMemo(() => (id, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .delete(options.url ?? `account/user-devices/${id}`, options)
             .json();
-    }, [privateApi]);
+    }, []);
 
     // Persist a viewport_mode choice on a logical user_device. Lower-
     // level helper: the caller is responsible for knowing which
@@ -789,13 +863,13 @@ export const useApiContext = () => {
     const setDeviceViewportMode = useMemo(() => (id, viewportMode, options = {}) => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
-        return privateApi
+        return getPrivateApi()
             .post(options.url ?? `account/user-devices/${id}/viewport-mode`, {
                 json: { viewport_mode: viewportMode ?? null },
                 ...options,
             })
             .json();
-    }, [privateApi]);
+    }, []);
 
     // ---------------------- stable API methods ----------------------
 
@@ -823,7 +897,7 @@ export const useApiContext = () => {
         const { silent, ...kyOptions } = options ?? {};
         const { debug: currentDebug, onApiError: errorCallback } = valuesRef.current;
         try {
-            const response = await privateApi[method](url, kyOptions);
+            const response = await getPrivateApi()[method](url, kyOptions);
             const data = await handleResponse(response, kyOptions);
 
             // A successful response means the session is alive again: release
@@ -904,18 +978,23 @@ export const useApiContext = () => {
         }
     };
 
-    const get = useMemo(() => createApiMethod('get'), [privateApi]);
+    const get = useMemo(() => createApiMethod('get'), []);
 
-    const post = useMemo(() => createApiMethod('post'), [privateApi]);
+    const post = useMemo(() => createApiMethod('post'), []);
 
-    const put = useMemo(() => createApiMethod('put'), [privateApi]);
+    const put = useMemo(() => createApiMethod('put'), []);
 
-    const patch = useMemo(() => createApiMethod('patch'), [privateApi]);
+    const patch = useMemo(() => createApiMethod('patch'), []);
 
-    const del = useMemo(() => createApiMethod('delete'), [privateApi]);
+    const del = useMemo(() => createApiMethod('delete'), []);
 
     // ---------------------- return ----------------------
 
+    // `public` and `private` are getters: the instances they expose are built
+    // on first access instead of during this render. Consumers keep reading
+    // them as plain properties (api.private.get(...), const { private } =
+    // useApi()), and the returned instance is the cached one, so its identity
+    // is stable for as long as the config is.
     return useMemo(() => ({
         user,
         entities,
@@ -932,8 +1011,12 @@ export const useApiContext = () => {
         renameUserDevice,
         deleteUserDevice,
         setDeviceViewportMode,
-        public: publicApi,
-        private: privateApi,
+        get public() {
+            return getPublicApi();
+        },
+        get private() {
+            return getPrivateApi();
+        },
         get,
         post,
         put,
@@ -954,8 +1037,12 @@ export const useApiContext = () => {
         renameUserDevice,
         deleteUserDevice,
         setDeviceViewportMode,
-        publicApi,
-        privateApi,
+        // The instances are no longer render values, but the api object must
+        // still get a new identity when the config that shapes them changes -
+        // consumers re-run their effects on it.
+        prefixUrl,
+        timeout,
+        deviceId,
         get,
         post,
         put,

@@ -36,9 +36,21 @@ const safeStopScanner = (scanner) => {
     }
 };
 
+/**
+ * Mount gate: the scanner only exists while open, so each opening starts on a
+ * clean camera error / manual entry state instead of having a reset effect wipe
+ * the previous run's.
+ */
 export const BarcodeScanner = (props) => {
+    if (!props.open) {
+        return null;
+    }
+
+    return <BarcodeScannerContent {...props} />;
+};
+
+const BarcodeScannerContent = (props) => {
     const {
-        open,
         onClose,
         onScan,
         continuous = false,
@@ -88,13 +100,6 @@ export const BarcodeScanner = (props) => {
     });
 
     useEffect(() => {
-        if (!open) return undefined;
-
-        setCameraError(null);
-        setShowManualEntry(false);
-        setManualBarcode("");
-        lastScanRef.current = null;
-
         let cancelled = false;
 
         // html5-qrcode is heavy (~150kB). Lazy-load it only when the scanner
@@ -185,7 +190,7 @@ export const BarcodeScanner = (props) => {
                 html5QrCodeRef.current = null;
             }
         };
-    }, [open]);
+    }, []);
 
     const handleClose = useCallback(() => {
         safeStopScanner(html5QrCodeRef.current);
@@ -208,8 +213,6 @@ export const BarcodeScanner = (props) => {
             setManualBarcode("");
         }
     }, [manualBarcode, onScan, continuous, handleClose]);
-
-    if (!open) return null;
 
     // Embedded mode: render only the camera region (and optional manual
     // entry fallback) inline. The parent component is responsible for

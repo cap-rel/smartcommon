@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from "react";
 import { useApi } from "lib/hooks";
 import { createLogger } from "lib/utils";
 import { downloadBundle } from "../utils/functions/zipBundle";
@@ -673,12 +673,18 @@ export const useReferenceSync = ({
     const clientUuidRef = useRef(null);
 
     // Config through a ref: keeps syncNow/resetSync stable across renders
-    // even when the consumer passes inline arrays/objects
-    const configRef = useRef(null);
-    configRef.current = { db, appVersion, entities, documents, dataFeeds, metaStore, getSyncPreferences };
+    // even when the consumer passes inline arrays/objects. Populated at commit
+    // time (layout phase) so a discarded render never publishes its config;
+    // syncNow/resetSync only run from effects and user actions, both of which
+    // happen after the commit.
+    const configRef = useRef({ db, appVersion, entities, documents, dataFeeds, metaStore, getSyncPreferences });
 
     const onProgressRef = useRef(onProgress);
-    onProgressRef.current = onProgress;
+
+    useLayoutEffect(() => {
+        configRef.current = { db, appVersion, entities, documents, dataFeeds, metaStore, getSyncPreferences };
+        onProgressRef.current = onProgress;
+    });
 
     // Keep api ref updated (useApi returns new object each render)
     useEffect(() => {

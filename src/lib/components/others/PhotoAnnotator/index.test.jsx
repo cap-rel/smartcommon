@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { act, render, screen, fireEvent } from "@testing-library/react";
 
@@ -393,11 +393,11 @@ describe("PhotoAnnotator - event-based mode", () => {
 // happen via real useEffect, not from inside renderEditor's call.
 const HeadlessEditorContent = ({ onSave }) => {
     const triggered = useRef(false);
-    useState(() => {
+    useEffect(() => {
         if (triggered.current) return;
         triggered.current = true;
         Promise.resolve().then(() => onSave({ payload: { auto: true } }));
-    });
+    }, [onSave]);
     return <div data-testid="headless-editor-content" />;
 };
 

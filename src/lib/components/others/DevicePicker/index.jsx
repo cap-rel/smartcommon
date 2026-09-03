@@ -78,21 +78,18 @@ export const DevicePicker = (props) => {
     //   "form" - user fills label + icon to create a new one.
     // When the user has zero existing devices we start directly on
     // "form" since there's nothing to pick.
-    const [mode, setMode] = useState(hasExistingDevices ? "list" : "form");
+    const [pickedMode, setMode] = useState(hasExistingDevices ? "list" : "form");
     const [label, setLabel] = useState("");
     const [icon, setIcon] = useState(DEFAULT_DEVICE_ICON);
     const [localSubmitting, setLocalSubmitting] = useState(false);
     const [localError, setLocalError] = useState(null);
 
     // If `existingDevices` becomes empty (parent re-fetched and got
-    // nothing back) while we're still on the list, fall back to the
-    // form. We don't auto-switch the other way around: once the user
-    // is on the form, we let them finish.
-    useEffect(() => {
-        if (!hasExistingDevices && mode === "list") {
-            setMode("form");
-        }
-    }, [hasExistingDevices, mode]);
+    // nothing back) there is nothing left to pick, so the form is the only
+    // possible mode. Derived rather than pushed through an effect: the list
+    // has no valid content to show in the meantime. We don't auto-switch the
+    // other way around: once the user is on the form, we let them finish.
+    const mode = hasExistingDevices ? pickedMode : "form";
 
     // External error always wins over the locally derived one: the
     // parent owns the source of truth for the error message displayed
