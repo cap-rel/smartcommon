@@ -13,7 +13,7 @@ const { kyState, gstState, libConfigState } = vi.hoisted(() => ({
         local: { set: vi.fn() },
         session: { set: vi.fn() },
         unset: vi.fn(),
-        values: { user: undefined, deviceId: "test-device-id" },
+        values: { user: undefined, deviceId: "11111111-2222-4333-8444-555555555555" },
     },
     libConfigState: {
         api: { prefixUrl: "https://example.com/", timeout: 5000 },

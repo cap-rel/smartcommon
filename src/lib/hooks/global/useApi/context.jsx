@@ -45,6 +45,19 @@ const openCircuit = (circuit, ms = 10000, offline = false) => {
     circuit.offline = !!offline;
 };
 
+/**
+ * Shape accepted by smartAuth for X-DEVICEID (InputSanitizer::sanitizeUUID):
+ * an RFC 4122 UUID, or a 32-64 char hex string (sha256 included). Anything
+ * else - most importantly an empty string - is refused by the backend ON
+ * /login, i.e. before the user can do anything about it, so the value must be
+ * validated here rather than shipped and rejected.
+ *
+ * @param {*} value
+ * @returns {boolean}
+ */
+const isValidDeviceId = (value) => typeof value === "string"
+    && /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}|[0-9a-f]{32,64})$/i.test(value.trim());
+
 export const useApiContext = () => {
     const libConfig = useLibConfig();
 
@@ -75,9 +88,17 @@ export const useApiContext = () => {
     // Use ref to track if deviceId was already set to avoid infinite loop
     const deviceIdSetRef = useRef(false);
 
+    // Regenerate on ANY invalid value, not only on `undefined`. A stored ""
+    // (what device() used to persist when the picker submitted an empty uuid)
+    // passed the old isUndefined() check, so the browser kept sending an empty
+    // X-DEVICEID forever and every /login answered 500 - with no way for the
+    // user to recover short of clearing the storage by hand.
     useEffect(() => {
-        if (isUndefined(deviceId) && !deviceIdSetRef.current) {
+        if (!isValidDeviceId(deviceId) && !deviceIdSetRef.current) {
             deviceIdSetRef.current = true;
+            if (!isUndefined(deviceId)) {
+                log.warning("invalid stored deviceId, regenerating", deviceId);
+            }
             gst.local.set("deviceId", v4());
         }
     }, [deviceId, gst]);
@@ -309,15 +330,41 @@ export const useApiContext = () => {
         }
     });
 
+    // Resolves the device id to send RIGHT NOW, repairing it if needed. The
+    // mount effect above normally covers it, but two cases slip past: a request
+    // fired before that effect commits (the header would be dropped by ky and
+    // reach the backend as ''), and a value persisted invalid by an earlier
+    // session. Both end in a 500 on /login, so the repair happens here too,
+    // synchronously, and the fixed value is mirrored into valuesRef at once so
+    // two calls in the same tick cannot mint two different ids.
+    const ensureDeviceId = () => {
+        const { deviceId: currentDeviceId, gst: currentGst } = valuesRef.current;
+
+        if (isValidDeviceId(currentDeviceId)) {
+            return currentDeviceId;
+        }
+
+        const newDeviceId = v4();
+
+        log.warning("missing or invalid deviceId at request time, regenerating", currentDeviceId);
+
+        deviceIdSetRef.current = true;
+        valuesRef.current = { ...valuesRef.current, deviceId: newDeviceId };
+        currentGst.local.set("deviceId", newDeviceId);
+
+        return newDeviceId;
+    };
+
     // Resolves the instances for the CURRENT config, rebuilding them only when
     // that config changed. Called from request time (event handlers, effects,
     // promise callbacks), never from render. The authenticated instance is
     // attached on demand by getPrivateApi(), declared next to its builder.
     const getInstances = () => {
+        const currentDeviceId = ensureDeviceId();
+
         const {
             prefixUrl: currentPrefixUrl,
             timeout: currentTimeout,
-            deviceId: currentDeviceId,
         } = valuesRef.current;
 
         const key = `${currentPrefixUrl}|${currentTimeout}|${currentDeviceId}`;
@@ -611,7 +658,8 @@ export const useApiContext = () => {
             hooks: {
                 beforeRequest: [
                     async (request, options) => {
-                        const { accessToken: currentAccessToken, tokenExpiry: currentTokenExpiry, deviceId: currentDeviceId } = valuesRef.current;
+                        const { accessToken: currentAccessToken, tokenExpiry: currentTokenExpiry } = valuesRef.current;
+                        const currentDeviceId = ensureDeviceId();
 
                         // Proactively refresh an expired access token before the
                         // request leaves. refresh() dedupes concurrent callers via
@@ -736,9 +784,23 @@ export const useApiContext = () => {
         throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
 
         const { label, uuid, viewport_mode: viewportMode } = body;
-        const { deviceOptions: currentDeviceOptions, deviceId: currentDeviceId, rememberMe: currentRememberMe, user: currentUser, gst: currentGst } = valuesRef.current;
+        const { deviceOptions: currentDeviceOptions, rememberMe: currentRememberMe, user: currentUser, gst: currentGst } = valuesRef.current;
 
         const noUuid = (uuid === "noDevice" || isEmpty(currentDeviceOptions));
+        const currentDeviceId = ensureDeviceId();
+
+        // Refuse to adopt an id the backend would reject. This call used to
+        // persist whatever the caller passed (an empty uuid when a device
+        // picker submitted with no selection), which poisoned localStorage and
+        // locked the browser out of /login for good.
+        if (!noUuid && !isValidDeviceId(uuid)) {
+            log.error("POST device - refused, invalid device uuid", uuid);
+
+            const error = new Error("Invalid device uuid");
+            error.apiCode = "invalid_device_uuid";
+
+            return Promise.reject(error);
+        }
 
         // viewport_mode is only sent when explicitly provided. Omitting
         // the field on the backend signals "do not touch the stored
@@ -775,6 +837,8 @@ export const useApiContext = () => {
                         tokenExpiry: floor(Date.now() / 1000) + mappedData.expiresIn
                 });
 
+                // Safe: the guard above already rejected any uuid the backend
+                // (and our own header) would not accept.
                 if (!noUuid) {
                     currentGst.local.set("deviceId", uuid);
                 }
