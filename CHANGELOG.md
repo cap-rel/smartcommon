@@ -8,7 +8,7 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
-## [Unreleased]
+## [1.0.376] - 2026-09-15
 
 ### Fixed
 - `Input`, `Select`, `ColorPicker` and `Range` now forward their
