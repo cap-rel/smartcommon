@@ -10,6 +10,23 @@ understand what may have changed at the API surface.
 
 ## [Unreleased]
 
+### Fixed
+- `Input`, `Select`, `ColorPicker` and `Range` now forward their
+  `disabled` / `readOnly` / `name` / `onBlur` / `onFocus` quick props to
+  the element they render. `mergeQuickProps` was called with the key list
+  as its FIRST argument while the signature is `(props, keys)`, so it got
+  no key at all and returned `{}`: a field declared `<Input disabled />`
+  rendered as an enabled control. The components did ignore the
+  keystrokes, so the value itself was never altered, but the field looked
+  editable, missed its `:disabled` styling and exposed nothing to
+  assistive technologies.
+- `mergeQuickProps` no longer emits entries that resolve to `undefined`.
+  Its result is spread AFTER the element props, so an absent quick prop
+  used to erase a value the consumer passed through `inputProps` /
+  `selectProps` (typically `inputProps={{ disabled: true }}`), and any
+  unset quick key (`onClick`, `name`, ...) silently overrode the element
+  props with `undefined`.
+
 ## [1.0.370] - 2026-09-01
 
 ### Changed

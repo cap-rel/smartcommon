@@ -279,7 +279,7 @@ export const Input = (props) => {
           // inputProps) still wins thanks to the `...props` spread below.
           "aria-label": label ? undefined : placeholder,
           ...props,
-          ...mergeQuickProps(["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
+          ...mergeQuickProps(props, ["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
           id: inputId,
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {

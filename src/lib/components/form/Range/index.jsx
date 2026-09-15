@@ -68,7 +68,7 @@ export const Range = (props) => {
                     min: rangeMin,
                     max: rangeMax,
                     ...props,
-                    ...mergeQuickProps(["name", "disabled", "readOnly", "onFocus", "onBlur"]),
+                    ...mergeQuickProps(props, ["name", "disabled", "readOnly", "onFocus", "onBlur"]),
                     type: "range",
                     onChange: e => {
                         handleColorOnChange(e);

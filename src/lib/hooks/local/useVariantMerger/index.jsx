@@ -186,6 +186,11 @@ export const useVariantMerger = (componentKey, props) => {
         }
     };
 
+    // Resolved entries whose value is undefined are dropped instead of being
+    // emitted: the result is spread AFTER the element props, so a `{disabled:
+    // undefined}` entry would erase a value the consumer passed through
+    // inputProps/selectProps. Absent quick prop = say nothing, let the element
+    // props stand.
     const mergeQuickProps = (props, quickPropsKeys = []) => {
         return Object.fromEntries(quickPropsKeys.map(key => {
 
@@ -194,7 +199,7 @@ export const useVariantMerger = (componentKey, props) => {
             const currentKey = isArray(key) ? key[0] : key;
 
             return [currentKey, quickProp ?? defaultProp]
-        }))
+        }).filter(([, value]) => !isUndefined(value)))
     };
     
     return { variantProps, mergeProps, mergeQuickProps, setParams };

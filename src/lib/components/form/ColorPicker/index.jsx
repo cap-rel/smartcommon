@@ -50,7 +50,7 @@ export const ColorPicker = (props) => {
         >
             <input { ...mergeProps("input", props => ({
                 ...props,
-                ...mergeQuickProps(["name", "disabled", "readOnly", "onFocus", "onBlur"]),
+                ...mergeQuickProps(props, ["name", "disabled", "readOnly", "onFocus", "onBlur"]),
                 type: "color",
                 onChange: e => {
                     handleColorOnChange(e);
