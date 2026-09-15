@@ -1,3 +1,4 @@
+import { useId } from "react";
 import { isNil, isObject, isEmpty } from "lodash";
 
 import { Label } from "lib/components";
@@ -14,6 +15,7 @@ export const Select = (props) => {
   const {
     id,
     name,
+    label,
     value,
     defaultValue,
     onChange = () => {},
@@ -34,6 +36,12 @@ export const Select = (props) => {
   } = variantProps;
 
   const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+  // Stable id to wire the <label htmlFor> to the <select id>, same as Input.
+  // Without it the control has no accessible name: a screen reader announces
+  // "combobox" alone, and getByLabel() finds nothing in a test.
+  const generatedId = useId();
+  const selectId = id ?? generatedId;
 
   const errors = (currentValue) => ({
     required: {
@@ -68,8 +76,9 @@ export const Select = (props) => {
   };
 
   return (
-    <Label 
+    <Label
       { ...variantProps}
+      id={selectId}
       showErrors={isFormSubmitted}
       errors={filteredErrors}
       mergeProps={mergeProps}
@@ -79,8 +88,13 @@ export const Select = (props) => {
         className={twMerge(`relative`, selectContainerProps?.className)}
       > */}
         <select { ...mergeProps("select", props => ({
+          // Without a visible label the control has no accessible name, so fall
+          // back to the placeholder. A consumer-provided aria-label still wins
+          // thanks to the `...props` spread below. Mirrors Input.
+          "aria-label": label ? undefined : placeholder,
           ...props,
           ...mergeQuickProps(props, ["name", "multiple", "disabled", "readOnly", "onBlur", "onFocus"]),
+          id: selectId,
           value: currentValue ?? (multiple ? [] : ""),
           onChange: e => {
             handleSelectOnChange(e);
