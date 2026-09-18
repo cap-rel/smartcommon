@@ -19,12 +19,33 @@ export const useStates = (props = {}) => {
   const [states, setStates] = useState(initialStates);
   const statesRef = useRef(states);
 
-  // Mirrors kept for the stable get/set/unset callbacks. Written in a LAYOUT
-  // effect, not during render: a render that React throws away (concurrent
-  // rendering, StrictMode double-invoke) must not leak its values into a ref
-  // that outlives it. Layout timing means the mirror is refreshed as part of
-  // the commit, so every passive effect and event handler still reads the
-  // value of the render they were scheduled from.
+  // Mirror backing the stable get/set/unset callbacks. It is refreshed at TWO
+  // moments, and both are needed:
+  //
+  // 1. During the render (the assignment right below), so that get() called
+  //    while rendering returns the state of THIS render. Refreshing only at
+  //    commit time made every component reading through get() paint the state
+  //    from before the set() that triggered the render: the screen stayed one
+  //    step behind the data, and only an unrelated re-render caught it up.
+  //    Found in a POS cart, where "+" moved the order to qty 2 while the line
+  //    and the totals kept showing qty 1.
+  // 2. In a layout effect, so that after a commit the mirror is back on the
+  //    state React actually kept, in case a render that was thrown away
+  //    (concurrent rendering, StrictMode double-invoke) wrote to it first.
+  //
+  // Writing during render is safe here: the value comes from this render's own
+  // useState, so a discarded render can only leave behind a value that the next
+  // render or the next commit overwrites straight away.
+  //
+  // The lint rule below guards against refs used to DRIVE a render; this one
+  // only mirrors state that React already owns. The alternative -- rebuilding
+  // get() from a closure on every state change -- was rejected on purpose: get
+  // feeds the dependency arrays of useGlobalStates, and making it unstable
+  // cascades into effects re-running on every write, the very loop the set()
+  // short-circuit below exists to prevent.
+  // oxlint-disable-next-line react/refs
+  statesRef.current = states;
+
   useLayoutEffect(() => {
     debugRef.current = debug;
     statesRef.current = states;
