@@ -8,3 +8,4 @@ export * from "./useUpload";
 export * from "./useUploadQueue";
 export * from "./useViewport";
 export * from "./usePushNotifications";
+export * from "./useInstallPrompt";

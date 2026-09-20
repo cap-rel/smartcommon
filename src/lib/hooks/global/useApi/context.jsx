@@ -935,6 +935,25 @@ export const useApiContext = () => {
             .json();
     }, []);
 
+    // Report how the PWA runs on this device: 'standalone' (launched
+    // from the home screen) or 'browser' (a tab). No id is passed: the
+    // backend resolves the logical user_device from the JWT, because the
+    // login response never surfaces a "current device id".
+    //
+    // The backend keeps the value monotonic (standalone is never
+    // downgraded back to browser), so a caller may report on every boot
+    // without erasing what it learnt earlier.
+    const setDeviceInstallState = useMemo(() => (installMode, options = {}) => {
+        throwTypeError({ value: options, name: "options (param)", type: ["plain object"] });
+
+        return getPrivateApi()
+            .post(options.url ?? "account/device-install-state", {
+                json: { install_mode: installMode },
+                ...options,
+            })
+            .json();
+    }, []);
+
     // ---------------------- stable API methods ----------------------
 
     // Helper to handle raw vs json response based on options
@@ -1075,6 +1094,7 @@ export const useApiContext = () => {
         renameUserDevice,
         deleteUserDevice,
         setDeviceViewportMode,
+        setDeviceInstallState,
         get public() {
             return getPublicApi();
         },
@@ -1101,6 +1121,7 @@ export const useApiContext = () => {
         renameUserDevice,
         deleteUserDevice,
         setDeviceViewportMode,
+        setDeviceInstallState,
         // The instances are no longer render values, but the api object must
         // still get a new identity when the config that shapes them changes -
         // consumers re-run their effects on it.

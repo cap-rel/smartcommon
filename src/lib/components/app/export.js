@@ -33,6 +33,8 @@ export * from "./Toaster";
 
 export * from "./UpdatePrompt";
 
+export * from "./InstallPrompt";
+
 export * from "./ViewportProvider";
 export * from "./ViewportProvider/context";
 export * from "./ViewportProvider/DualShell";
