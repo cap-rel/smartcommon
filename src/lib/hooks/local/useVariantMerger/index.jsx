@@ -1,4 +1,4 @@
-import { isArray, isFunction, isNil, isString, isUndefined, toArray } from "lodash";
+import { castArray, isArray, isFunction, isNil, isString, isUndefined } from "lodash";
 import { useCallback } from "react";
 
 import { mergeObj, twMerge } from "lib/utils";
@@ -66,7 +66,7 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedVariant;
     };
 
-    const { components } = useLibConfig ?? {};
+    const { components } = useLibConfig() ?? {};
 
     const { theme, themes, variants } = components ?? {};
 
@@ -85,7 +85,11 @@ export const useVariantMerger = (componentKey, props) => {
 
     const themeVariant = mergeObj(scThemes, themes)?.[theme]?.[componentKey];
 
-    const themeVariantArray = isNil(themeVariant) ? [] : toArray(themeVariant);
+    // castArray, NOT toArray: lodash's toArray splits a string into its
+    // characters ("rounded" -> ["r","o","u","n","d","e","d"]) and reduces an
+    // object to its values, so a theme naming a single variant resolved to a
+    // series of one-letter lookups that never matched anything.
+    const themeVariantArray = isNil(themeVariant) ? [] : castArray(themeVariant);
 
     // if (isNil(variants)) {
     //   throw new Error("No variants provided");
@@ -126,7 +130,12 @@ export const useVariantMerger = (componentKey, props) => {
         }
     };
 
-    const variant = [...themeVariantArray, ...toArray(props.variant)].map(variant => {
+    // Same reason as above: `variant="rounded"` and `variant={{ buttonProps }}`
+    // must reach the lookup whole. isNil is checked first because
+    // castArray(undefined) yields [undefined].
+    const propsVariantArray = isNil(props.variant) ? [] : castArray(props.variant);
+
+    const variant = [...themeVariantArray, ...propsVariantArray].map(variant => {
         if (isString(variant)) {
             return mergeObj(scVariants, variants)?.[componentKey]?.[variant] || {};
         } else {

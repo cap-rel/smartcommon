@@ -16,6 +16,8 @@
 import { describe, it, expect } from "vitest";
 import { renderHook } from "@testing-library/react";
 
+import { LibConfigProvider } from "lib/components/app/LibConfigProvider";
+
 import { useVariantMerger } from "./index";
 
 describe("useVariantMerger - defensive smoke", () => {
@@ -116,5 +118,83 @@ describe("useVariantMerger - defensive smoke", () => {
         ]);
         expect(quick.size).toBe("md");
         expect(quick.kind).toBeUndefined();
+    });
+});
+
+/**
+ * Resolution tests: the suite above only ever asserted that the hook does not
+ * throw, which is how two defects survived in it.
+ *
+ *  1. `useLibConfig` was destructured without being called, so nothing declared
+ *     under `components` in the LibConfigProvider value was ever read.
+ *  2. `toArray` (lodash) was used to normalise `variant` into a list. On a
+ *     string it returns one entry per CHARACTER, on an object it returns the
+ *     object's values -- so a named variant was looked up letter by letter and
+ *     an inline object lost its `<element>Props` level.
+ *
+ * Every case below fails on the pre-fix code.
+ *
+ * NOTE: LibConfigProvider takes its configuration through a prop named
+ * `value`, not `config`. Passing `config` silently yields an empty context and
+ * makes these tests fail for the wrong reason.
+ */
+describe("useVariantMerger - variant resolution", () => {
+    const DANGER = { buttonProps: { className: "bg-red-600" } };
+
+    const value = {
+        components: {
+            variants: { Button: { danger: DANGER } },
+            theme: "corporate",
+            themes: { corporate: { Button: "danger" } },
+        },
+    };
+
+    const wrapper = ({ children }) => (
+        <LibConfigProvider value={value}>{children}</LibConfigProvider>
+    );
+
+    const classNameFor = (props, options) => {
+        const { result } = renderHook(
+            () => useVariantMerger("Button", props),
+            options
+        );
+
+        return result.current.mergeProps("button", (p) => p).className;
+    };
+
+    it("applies a native variant named by a bare string", () => {
+        expect(classNameFor({ variant: "rounded" })).toContain("rounded-full");
+    });
+
+    it("applies a native variant named inside an array", () => {
+        expect(classNameFor({ variant: ["rounded"] })).toContain("rounded-full");
+    });
+
+    it("applies a variant declared in the LibConfigProvider value", () => {
+        expect(classNameFor({ variant: "danger" }, { wrapper })).toContain("bg-red-600");
+    });
+
+    it("applies a configured variant named inside an array", () => {
+        expect(classNameFor({ variant: ["danger"] }, { wrapper })).toContain("bg-red-600");
+    });
+
+    it("applies the variant the active theme maps to the component", () => {
+        expect(classNameFor({}, { wrapper })).toContain("bg-red-600");
+    });
+
+    it("applies an inline variant object without losing its element props", () => {
+        const inline = { buttonProps: { className: "bg-blue-500" } };
+        expect(classNameFor({ variant: inline })).toContain("bg-blue-500");
+    });
+
+    it("still resolves an unknown variant name to nothing", () => {
+        // No active theme here: with `corporate` on, Button would legitimately
+        // carry the theme's variant and hide what the unknown name resolved to.
+        const noTheme = { components: { variants: { Button: { danger: DANGER } } } };
+        const noThemeWrapper = ({ children }) => (
+            <LibConfigProvider value={noTheme}>{children}</LibConfigProvider>
+        );
+
+        expect(classNameFor({ variant: "does-not-exist" }, { wrapper: noThemeWrapper })).toBe("");
     });
 });
