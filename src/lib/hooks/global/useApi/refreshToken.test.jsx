@@ -171,3 +171,55 @@ describe("useApi - refresh token rotation (replay guard)", () => {
         expect(refreshAuths).toEqual(["Bearer RT0"]);
     });
 });
+
+// /refresh answering with an HTTP error: ky throws an HTTPError carrying the
+// response, which the mock reproduces in json().
+const makeFailingRefreshResponder = (status) => (method, url) => {
+    if (url === "refresh") {
+        return {
+            ok: false,
+            status,
+            json: async () => {
+                const error = new Error(`Request failed with status code ${status}`);
+                error.response = { status };
+                throw error;
+            },
+        };
+    }
+    return { ok: true, status: 200, json: async () => ({ ok: true }) };
+};
+
+describe("useApi - refresh failure keeps or ends the session", () => {
+    it("keeps the session when the server cannot check the token (503)", async () => {
+        kyCtrl.responder = makeFailingRefreshResponder(503);
+        const { result } = renderHook(() => useApiContext());
+
+        await act(async () => {
+            await expect(result.current.get("a")).rejects.toThrow();
+        });
+
+        expect(gstState.unset).not.toHaveBeenCalledWith("user");
+    });
+
+    it("keeps the session on a concurrent refresh (409)", async () => {
+        kyCtrl.responder = makeFailingRefreshResponder(409);
+        const { result } = renderHook(() => useApiContext());
+
+        await act(async () => {
+            await expect(result.current.get("a")).rejects.toThrow();
+        });
+
+        expect(gstState.unset).not.toHaveBeenCalledWith("user");
+    });
+
+    it("ends the session when the refresh token is refused (401)", async () => {
+        kyCtrl.responder = makeFailingRefreshResponder(401);
+        const { result } = renderHook(() => useApiContext());
+
+        await act(async () => {
+            await expect(result.current.get("a")).rejects.toThrow();
+        });
+
+        expect(gstState.unset).toHaveBeenCalledWith("user");
+    });
+});

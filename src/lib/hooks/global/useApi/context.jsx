@@ -419,8 +419,18 @@ export const useApiContext = () => {
                     });
                 })
                 .catch((error) => {
-                    latestRefreshTokenRef.current = null;
-                    currentGst.unset("user");
+                    // Only a definitive refusal ends the session. A 503 (the
+                    // server could not check the token and kept its family), a
+                    // 409 (concurrent refresh) or a network failure leave the
+                    // refresh token valid: dropping the user there logged people
+                    // out over a transient fault, and offline PWAs with it.
+                    const status = error?.response?.status;
+                    if (status === 401 || status === 403) {
+                        latestRefreshTokenRef.current = null;
+                        currentGst.unset("user");
+                    } else {
+                        console.error("refresh failed without ending the session", status ?? error?.message);
+                    }
                     throw error;
                 })
                 .finally(() => refreshPromiseRef.current = null);
