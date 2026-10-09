@@ -66,7 +66,7 @@ export const useUpload = (defaultOptions = {}) => {
             // modern browsers the fetch API does not stream upload
             // progress either. onProgress is accepted for forward
             // compatibility but currently ignored. Document this in
-            // ~/docs/UPLOAD_PWA.md.
+            // capdoc:UPLOAD_PWA.md.
             const { onProgress: _onProgress, ...kyOptions } = options;
 
             return api.post(endpoint, {

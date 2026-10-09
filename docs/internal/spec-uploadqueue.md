@@ -261,7 +261,7 @@ Pour `useUpload({ queue: true })` : ajouter des cas qui vérifient
 - rallumer le réseau, attendre la résolution,
 - vérifier côté backend que la photo est bien arrivée (et qu'elle n'a pas été dupliquée si le réseau a flappé pendant l'upload, cf §14).
 
-Référence : `~/docs/TESTING_PWA.md`.
+Référence : `capdoc:TESTING_PWA.md`.
 
 ## 8. Documentation
 
@@ -272,7 +272,7 @@ Référence : `~/docs/TESTING_PWA.md`.
   - schéma des états (`idle -> uploading -> resolved` / `idle -> failed -> retrying`),
   - quotas et garbage collection,
   - rappel du contrat backend (Idempotency-Key, section 14).
-- Mettre à jour `~/docs/UPLOAD_PWA.md` (doc transverse cap-rel) : section "Mode offline-first" qui pointe vers smartcommon et vers le contrat backend smartAuth.
+- Mettre à jour `capdoc:UPLOAD_PWA.md` (doc transverse cap-rel) : section "Mode offline-first" qui pointe vers smartcommon et vers le contrat backend smartAuth.
 
 ## 9. Versioning et migration
 

@@ -76,5 +76,5 @@ export default [{ ignores: ['dist', 'storybook-static'] }, {
   // Two-pass lint strategy: oxlint runs first (fast, native), eslint second
   // for the residual it cannot do (the custom local/ rule + storybook). This
   // last block reads .oxlintrc.json and turns OFF in eslint every rule oxlint
-  // already owns, so no rule runs (or reports) twice. See ~/docs/LINTING.md.
+  // already owns, so no rule runs (or reports) twice. See capdoc:LINTING.md.
   ...oxlint.buildFromOxlintConfigFile('.oxlintrc.json')];

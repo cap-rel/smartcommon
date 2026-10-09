@@ -193,4 +193,4 @@ timers de retry et supprime la DB IDB. NE PAS appeler en runtime.
 
 - Spec complete (incluant le contrat backend smartAuth) :
   `docs/internal/spec-uploadqueue.md`.
-- Doc transverse upload PWA : `~/docs/UPLOAD_PWA.md`.
+- Doc transverse upload PWA : `capdoc:UPLOAD_PWA.md`.
