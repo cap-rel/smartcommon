@@ -35,7 +35,7 @@ export const SignaturePad = (props) => {
 
     // For outputFormat="upload" only: route uploads through the offline-first
     // useUploadQueue. Same semantics as PhotosUploader.queue (cf
-    // ~/docs/upload-queue.md).
+    // capdoc:UPLOAD_PWA.md#Mode offline-first).
     queue: queueMode = false,
 
     // For outputFormat="upload" only: override the /upload endpoint path.

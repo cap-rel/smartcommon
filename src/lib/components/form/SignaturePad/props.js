@@ -21,7 +21,7 @@ export const propTypes = {
   outputFormat: PropTypes.oneOf(["dataURL", "upload"]),
 
   // outputFormat="upload" only: route uploads through useUploadQueue
-  // (offline-first). See ~/docs/upload-queue.md.
+  // (offline-first). See capdoc:UPLOAD_PWA.md#Mode offline-first.
   queue: PropTypes.bool,
 
   // outputFormat="upload" only: override the /upload endpoint path.
