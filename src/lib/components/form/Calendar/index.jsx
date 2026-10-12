@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa6";
 import { isNumber, isNil, isArray, isString } from "lodash";
 
@@ -61,7 +61,9 @@ export const Calendar = (props) => {
     return yearData;
   }
 
-  const dateNow = new Date();
+  // Read once, at mount: it only seeds the month shown first, which the
+  // initial state consumes on the first render alone.
+  const [dateNow] = useState(() => new Date());
 
   const initialStates = () => {
     let year = dateNow.getFullYear();
@@ -131,7 +133,7 @@ export const Calendar = (props) => {
 
   useEffect(() => {  
     const lowerContainer = lowerContainerRef.current;
-    let scrollDate = dateNow;
+    let scrollDate = new Date();
     
     // if (isString(currentValue)) {
     //   scrollDate = new Date(currentValue);
