@@ -115,6 +115,20 @@ export const usePWAUpdate = (options = {}) => {
 
                     // Listen for new updates
                     reg.addEventListener("updatefound", () => handleUpdateFound(reg));
+
+                    // Ask the server now, instead of waiting for the first
+                    // checkInterval tick. Without this the only check left is
+                    // the one the browser runs on register(), and that one can
+                    // be answered from the HTTP cache: a host serving the entry
+                    // point with no Cache-Control lets the browser treat it as
+                    // fresh for a tenth of its age (RFC 9111, 4.2.2), so an
+                    // installed app opened a few minutes at a time never learns
+                    // that a new version exists. Registered AFTER the
+                    // updatefound listener above, otherwise a fast answer would
+                    // fire the event before anything listens for it.
+                    reg.update().catch((error) => {
+                        console.error("[PWA] Initial update check failed:", error);
+                    });
                 }
 
                 // Listen for controller changes (new SW activated)
