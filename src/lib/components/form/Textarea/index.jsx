@@ -74,6 +74,9 @@ export const Textarea = (props) => {
     >
       <textarea { ...mergeProps("textarea", props => ({
         ...props,
+        // The Label points at this id (htmlFor): without it, clicking the label
+        // does not focus the field and the field has no accessible name.
+        id,
         placeholder,
         disabled,
         readOnly,
