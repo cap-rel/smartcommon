@@ -8,6 +8,28 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.381] - 2026-10-12
+
+Stay logged in when a token refresh fails on a network error or a temporary server fault
+
+Let an installed app notice a new version as soon as it opens, not one interval later
+
+Focus a Textarea by clicking its label, which also gives the field an accessible name
+
+## [1.0.380] - 2026-09-21
+
+Apply variants named in a string, an object, a theme or the Provider config, all ignored before
+
+## [1.0.379] - 2026-09-20
+
+Offer to install the PWA with the new InstallPrompt component and useInstallPrompt hook
+
+Tell the server whether the app runs installed or in a tab with api.setDeviceInstallState
+
+## [1.0.378] - 2026-09-18
+
+Show the current state in components reading useStates get() in render (broken in 1.0.373)
+
 ## [1.0.376] - 2026-09-15
 
 ### Fixed
@@ -27,7 +49,33 @@ understand what may have changed at the API surface.
   unset quick key (`onClick`, `name`, ...) silently overrode the element
   props with `undefined`.
 
-## [1.0.370] - 2026-09-01
+Give the Select an accessible name, so clicking its label focuses it
+
+## [1.0.374] - 2026-09-14
+
+Recover from an invalid stored device id instead of failing every login with an error 500
+
+## [1.0.373] - 2026-09-08
+
+Turn a Blob, a File or a URL into an image src with the new useImageUrl hook
+
+Stop waiting forever on an unanswered server health check: it gives up after 5 seconds
+
+Read the online status defaults from the newly exported ONLINE_STATUS_DEFAULTS
+
+Keep a replace() from leaking into the next navigation calls of the same render
+
+See a dragged PhotoAnnotator marker follow the finger every time
+
+Stop relying on activations from the local useEffect hook: it was always stale and is removed
+
+## [1.0.372] - 2026-09-03
+
+Keep the session when two refreshes overlap, instead of replaying a used token and losing it
+
+Get working dark mode and dark: utilities: the library now ships its real stylesheet
+
+Type a PIN on a physical keyboard: PinPad listens on the whole page unless keyboard says not
 
 ### Changed
 - `PlainCalendar`: tapping a day of the neighbouring month (the leading /
@@ -39,6 +87,12 @@ understand what may have changed at the API surface.
   `onYearChange` fire exactly as for any other selection. Consumers that
   relied on those cells being inert must now filter on
   `data-outside-month="true"` themselves.
+
+## [1.0.371] - 2026-07-03
+
+Use FAB, now with a speed-dial (actions, direction, isOpen), in place of the removed Fab
+
+Keep PinPad keys square whatever the layout around the pad
 
 ## [1.0.337] - 2026-05-27
 
