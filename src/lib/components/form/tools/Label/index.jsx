@@ -1,5 +1,5 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { isNil, isEmpty,filter, map, some } from "lodash";
+import { isNil, isEmpty, filter, map } from "lodash";
 
 import { twMerge } from "lib/utils";
 
@@ -27,6 +27,10 @@ export const Label = (props) => {
     // FilesUploader), fall back to a passthrough that still applies each
     // element's default classes plus the consumer's matching `${slot}Props`,
     // instead of crashing on `mergeProps is not a function`.
+    // Only failing rules are displayed, once the form has been submitted.
+    const failingErrors = showErrors ? filter(errors, { condition: true }) : [];
+    const hasError = !isNil(error) || !isEmpty(failingErrors);
+
     const mergeProps = props.mergeProps ?? ((slotKey, build) => {
         const slotProps = props[`${slotKey}Props`] ?? {};
         const built = build({ ...slotProps });
@@ -99,10 +103,10 @@ export const Label = (props) => {
 
             </div>
 
-            {(help || !isNil(error) || (some(errors, Boolean) && showErrors)) &&
+            {(help || hasError) &&
                 <div { ...mergeProps("footer", props => ({
                     ...props,
-                    className: `${(!isNil(error) || (showErrors && !some(errors, Boolean))) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
+                    className: `${hasError ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
                 }))}>
                     <IoMdInformationCircleOutline { ...mergeProps("helpIcon", props => ({
                         ...props,
@@ -118,17 +122,11 @@ export const Label = (props) => {
                                 {error}
                             </div>
                         }
-                        {showErrors &&
-                            map(filter(errors, { condition: true }), ({ condition, message }, EI) => {
-                                if (condition) {
-                                    return (
-                                        <div key={`error${EI}`} { ...mergeProps("error", props => props)}>
-                                            {message}
-                                        </div>
-                                    );
-                                }
-                            })
-                        }
+                        {map(failingErrors, ({ message }, EI) => (
+                            <div key={`error${EI}`} { ...mergeProps("error", props => props)}>
+                                {message}
+                            </div>
+                        ))}
                     </div>
                 </div>
             }

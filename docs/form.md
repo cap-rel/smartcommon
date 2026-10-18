@@ -106,9 +106,9 @@ appelle `useFormContext().submit`) :
 
 1. `e.preventDefault()` (le caller passe l'event s'il vient d'un
    `<form>` HTML).
-2. `await onPreSubmit()` — utile pour normaliser les valeurs, logger,
+2. `await onPreSubmit()` - utile pour normaliser les valeurs, logger,
    trigger analytics. Pas pour valider.
-3. `form.set("isFormSubmitted", true)` — déclenche le rendu des erreurs
+3. `form.set("isFormSubmitted", true)` - déclenche le rendu des erreurs
    sur tous les champs montés.
 4. Un effet sur un compteur `submitToken` interne re-évalue les
    `errors` :
@@ -156,6 +156,22 @@ détermine si le formulaire est globalement valide.
 Chaque champ rend ses propres messages via le composant `<Label>` qui
 combine `filteredErrors` + `isFormSubmitted` pour afficher (ou non) le
 texte. Pas besoin de boucler manuellement sur `form.errors` côté caller.
+`form.errors` ne stocke que les booléens (pour bloquer le submit) :
+`useField` recalcule les objets `{ condition, message }` depuis la valeur
+courante pour que `<Label>` affiche les messages des règles en échec, en
+rouge.
+
+### Page sans `<Form>`
+
+Un champ contrôlé (`value` + `onChange`) hors `<Form>` accepte :
+
+- `formSubmitted` (bool) : affiche les messages des règles en échec,
+  comme `isFormSubmitted` le fait dans un `<Form>`.
+- `onError(ruleKey, condition)` : appelé pour chaque règle au montage,
+  puis seulement quand le résultat d'une règle change. La page agrège
+  ces booléens pour décider si le submit peut partir.
+- `error` (node) : message fourni par l'appelant (erreur serveur par
+  exemple), affiché en rouge sous le champ, sans attendre de submit.
 
 ## Limites connues
 

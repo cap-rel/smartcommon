@@ -8,7 +8,7 @@ export const useField = (props) => {
 
   const isControlledByForm = !isUndefined(FormContext) && !isUndefined(name) && isUndefined(value);
 
-  const { isFormSubmitting, isFormSubmitted: contextIsFormSubmitted, values, errors: formErrors, setField } = useContext(FormContext) ?? {};
+  const { isFormSubmitting, isFormSubmitted: contextIsFormSubmitted, values, setField } = useContext(FormContext) ?? {};
 
   const currentValue = isControlledByForm ? values[name] : value;
 
@@ -71,7 +71,10 @@ export const useField = (props) => {
   };
 
   return {
-    filteredErrors: isControlledByForm ? formErrors[name] : {},
+    // Rule objects ({ condition, message }) for Label, in both modes: the
+    // form context only stores the booleans (for its submit gate), so the
+    // messages are recomputed from the current value.
+    filteredErrors: errors(currentValue),
     currentValue,
     setValue,
     isFormSubmitting,
