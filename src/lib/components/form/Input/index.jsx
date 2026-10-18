@@ -1,9 +1,9 @@
 import { Button, Spinner } from "lib/components";
 import { useEffect, useId } from "react";
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
-import { isNumber, isNil, isEmpty, includes } from "lodash";
+import { isNumber, isNil, includes } from "lodash";
 
-import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes, minutesToTime } from "lib/utils";
+import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes, minutesToTime, isEmptyValue } from "lib/utils";
 import { Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
@@ -118,16 +118,18 @@ export const Input = (props) => {
     //   message: "Ce champ est requis." 
     // },
     // url: {
-    //   condition: required && isEmpty(currentValue),
+    //   condition: required && isEmptyValue(currentValue),
     //   message: "Ce champ est requis." 
     // },
 
     number: { 
-      condition: includes(NUMBER_TYPES, filteredType) && isNumber(currentValue),
+      // Error when a non-empty value is not a finite number (the rule used to
+      // fire on every valid number).
+      condition: includes(NUMBER_TYPES, filteredType) && !isEmptyValue(currentValue) && !globalThis.Number.isFinite(globalThis.Number(currentValue)),
       message: "Veuillez rentrer un nombre valide." 
     },
     required: { 
-      condition: required && isEmpty(currentValue),
+      condition: required && isEmptyValue(currentValue),
       message: "Ce champ est requis." 
     },
 

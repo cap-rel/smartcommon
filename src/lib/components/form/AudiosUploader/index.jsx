@@ -5,7 +5,7 @@ import { isNil, isEmpty } from "lodash";
 
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 import { Popup, Button, Textarea, Input, Label } from "lib/components";
-import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
+import { applyFunctionIfNotNil, locate, splitFileExtension, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
@@ -39,7 +39,7 @@ export const AudiosUploader = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: labels.requiredError,
         },
         min: {

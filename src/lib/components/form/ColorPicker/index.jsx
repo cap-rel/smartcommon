@@ -1,9 +1,8 @@
 import { useEffect } from "react";
-import { isEmpty } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
 import { propTypes } from "./props";
 
@@ -27,7 +26,7 @@ export const ColorPicker = (props) => {
 
     const errors = (currentValue) => ( {
         required: { 
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: "Ce champ est requis."
         },
     });

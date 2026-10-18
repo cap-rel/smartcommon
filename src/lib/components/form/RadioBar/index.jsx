@@ -1,7 +1,7 @@
 import { Fragment, useEffect } from "react";
-import { isObject, isEmpty } from "lodash";
+import { isObject } from "lodash";
 
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 
@@ -31,7 +31,7 @@ export const RadioBar = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: labels.requiredError,
         },
     });

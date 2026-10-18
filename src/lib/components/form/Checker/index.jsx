@@ -4,7 +4,7 @@ import { isEmpty, isObject, isNil } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Switch, Checkbox, Radio, Icon, Label } from "lib/components";
-import { applyFunctionIfFunction } from "lib/utils";
+import { applyFunctionIfFunction, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
@@ -42,7 +42,7 @@ export const Checker = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: labels.requiredError,
         },
         min: {

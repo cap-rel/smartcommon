@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import { isEmpty } from "lodash";
+
+import { isEmptyValue } from "lib/utils";
 
 import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
@@ -39,7 +40,7 @@ export const SearchableSelect = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: "Ce champ est requis."
         }
     });

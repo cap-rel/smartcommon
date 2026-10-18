@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { isNil, isEmpty } from "lodash";
+import { isNil } from "lodash";
 
 import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
 import { propTypes } from "./props";
 
@@ -31,7 +31,7 @@ export const Range = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: "Ce champ est requis."
         },
         min: {

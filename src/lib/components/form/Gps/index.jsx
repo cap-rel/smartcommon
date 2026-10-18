@@ -3,7 +3,7 @@ import { FaLocationDot } from "react-icons/fa6";
 import { useEffect, useRef } from "react";
 import { isNil, isEmpty } from "lodash";
 
-import { applyFunctionIfNotNil, locate } from "lib/utils";
+import { applyFunctionIfNotNil, locate, isEmptyValue } from "lib/utils";
 import { Button, Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
@@ -71,7 +71,7 @@ export const Gps = props => {
 
   const errors = (currentValue) => ({
     required: {
-      condition: required && isEmpty(currentValue),
+      condition: required && isEmptyValue(currentValue),
       message: labels.requiredError,
     },
   });

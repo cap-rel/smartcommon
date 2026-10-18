@@ -1,9 +1,9 @@
 import { useId } from "react";
-import { isNil, isObject, isEmpty } from "lodash";
+import { castArray, isNil, isObject, isEmpty } from "lodash";
 
 import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
@@ -45,7 +45,7 @@ export const Select = (props) => {
 
   const errors = (currentValue) => ({
     required: {
-      condition: required && isEmpty(currentValue),
+      condition: required && isEmptyValue(currentValue),
       message: labels.requiredError,
     },
     min: {
@@ -61,7 +61,11 @@ export const Select = (props) => {
       message: labels.exactError(exact),
     },
     notAnOption: {
-      condition: !isEmpty(currentValue) && !options.includes(currentValue),
+      // Options may be plain values or { value, label } objects, and the DOM
+      // hands back strings: compare stringified option values.
+      condition: !isEmptyValue(currentValue) && !castArray(currentValue).every(selected =>
+        options.some(option => String(isObject(option) ? option.value : option) === String(selected))
+      ),
       message: labels.notAnOptionError,
     }
   });

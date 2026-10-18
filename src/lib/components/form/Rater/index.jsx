@@ -1,6 +1,7 @@
 import { FaStar } from "react-icons/fa6";
 import { useEffect } from "react";
-import { isNil, isEmpty } from "lodash";
+import { isNil } from "lodash";
+import { isEmptyValue } from "lib/utils";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label, Icon } from "lib/components";
@@ -33,7 +34,8 @@ export const Rater = (props) => {
 
     const errors = (currentValue) => ({
         required: { 
-            condition: required && isEmpty(currentValue),
+            // 0 stars means "not rated yet".
+            condition: required && (isEmptyValue(currentValue) || currentValue === 0),
             message: "Ce champ est requis."
         },
         min: {
@@ -42,7 +44,7 @@ export const Rater = (props) => {
         },
         max: { 
             condition: !isNil(max) && currentValue > max,
-            message: `La notation doit être de ${max} au minimum.`
+            message: `La notation doit être de ${max} au maximum.`
         },
     });    
 

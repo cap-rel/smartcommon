@@ -6,7 +6,7 @@ import { isNil, isEmpty } from "lodash";
 
 import { useFile, useStates, useField, useVariantMerger, useUpload, useUploadQueue } from "lib/hooks";
 import { Popup, Button, Label, Input, Textarea } from "lib/components";
-import { applyFunctionIfNotNil, locate, splitFileExtension } from "lib/utils";
+import { applyFunctionIfNotNil, locate, splitFileExtension, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
@@ -68,7 +68,7 @@ export const PhotosUploader = (props) => {
 
     const errors = (currentValue) => ({
         required: {
-            condition: required && isEmpty(currentValue),
+            condition: required && isEmptyValue(currentValue),
             message: labels.requiredError,
         },
         min: {
