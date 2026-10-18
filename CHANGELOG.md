@@ -8,6 +8,21 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.382] - 2026-10-18
+
+Show form error messages, inside a Form or with formSubmitted on a standalone page
+Accept valid numbers, dates, ratings and option values in required form fields
+Show a caller-provided message under a field with the error prop
+Give a Page a compact header with title, icon, actions and a translated back button
+Pass the full coordinates and position to the Gps onLocate callback, as documented
+Stop adding a stray "false" class to elements when a style condition is off
+Translate field error messages and search placeholders through labels, English by default
+Treat a cleared number, date or time field as empty instead of 0
+Treat a Gps point with blank coordinates as not located
+Navigate with LazyLink, after an optional delay, instead of rendering nothing
+Show datetime-local inputs at the typed hour instead of shifting them by the timezone
+Enforce Input min, max, length and pattern props, with translated messages
+
 ## [1.0.381] - 2026-10-12
 
 Stay logged in when a token refresh fails on a network error or a temporary server fault
