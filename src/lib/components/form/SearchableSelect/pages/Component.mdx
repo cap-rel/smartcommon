@@ -13,10 +13,10 @@ tape pour filtrer la liste. Form-aware via `useField`.
 
 ## Quand l'utiliser
 
-- 10-300 options → `<SearchableSelect>` (scroll inefficace, search
+- 10-300 options -> `<SearchableSelect>` (scroll inefficace, search
   payante).
 - `<10 options` -> `<Select>` classique.
-- Catalogue hiérarchique riche → `<ProductCategoryBrowser>`.
+- Catalogue hiérarchique riche -> `<ProductCategoryBrowser>`.
 
 ## Format des options
 
@@ -29,16 +29,16 @@ case-insensitive ET l'affichage.
 
 ## Comportement
 
-- Focus / clic → ouvre le dropdown.
-- Saisie → filtre par substring case-insensitive sur `label`.
-- Click sur option → `onChange(value)` + close + reset search.
-- Click outside → close + reset search.
-- Bouton X → reset la sélection.
+- Focus / clic -> ouvre le dropdown.
+- Saisie -> filtre par substring case-insensitive sur `label`.
+- Click sur option -> `onChange(value)` + close + reset search.
+- Click outside -> close + reset search.
+- Bouton X -> reset la sélection.
 
 ## Validation
 
-Règle `required` intégrée si la prop `required` est `true`. Message en
-dur "Ce champ est requis." (pas extrait en `labels`).
+Règle `required` intégrée si la prop `required` est `true`. Message dans
+`labels.requiredError` (clé `SearchableSelect` des bundles de langue).
 
 ## Limites
 

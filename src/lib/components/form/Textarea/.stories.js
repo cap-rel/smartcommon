@@ -74,7 +74,7 @@ export default {
       control: false,
       table: { category: 'Validation' },
     },
-    patternMessage: {
+    patternError: {
       table: { category: 'Validation' },
     },
     name: {
