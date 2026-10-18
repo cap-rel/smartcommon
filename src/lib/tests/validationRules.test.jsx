@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
-import { render } from "@testing-library/react";
+import { render, fireEvent, screen } from "@testing-library/react";
 
 import { Input } from "lib/components/form/Input";
 import { Select } from "lib/components/form/Select";
@@ -79,5 +79,22 @@ describe("Textarea rules", () => {
     it("flags an empty required text and accepts a filled one", () => {
         expect(reportedRules(<Textarea required value="" />)).toMatchObject({ required: true });
         expect(reportedRules(<Textarea required value="ok" />)).toMatchObject({ required: false });
+    });
+});
+
+describe("cleared parsed inputs", () => {
+    it.each(["number", "date", "time"])("a cleared %s field emits null and fails required", (type) => {
+        const onChange = vi.fn();
+        const onError = vi.fn();
+        const initial = type === "number" ? 5 : type === "date" ? 1700000000000 : 90;
+
+        const { rerender } = render(<Input label="Field" type={type} required value={initial} onChange={onChange} onError={onError} />);
+        fireEvent.change(screen.getByLabelText("Field"), { target: { value: "" } });
+
+        expect(onChange).toHaveBeenCalledWith(null, expect.anything());
+        expect(onChange).toHaveBeenCalledTimes(1);
+
+        rerender(<Input label="Field" type={type} required value={null} onChange={onChange} onError={onError} />);
+        expect(onError).toHaveBeenLastCalledWith("required", true);
     });
 });

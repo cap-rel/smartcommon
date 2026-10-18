@@ -217,7 +217,15 @@ export const Input = (props) => {
 
     let value = e.target.value;
 
-    if (NUMBER_TYPES.includes(filteredType)) {
+    const isParsedType = NUMBER_TYPES.includes(filteredType)
+      || DATETIME_TYPES.includes(filteredType)
+      || TIME_TYPES.includes(filteredType);
+
+    if (isParsedType && value === "") {
+      // A cleared number/date/time field is empty (null), not 0 / NaN:
+      // Number("") is 0, which made a required field look filled.
+      value = null;
+    } else if (NUMBER_TYPES.includes(filteredType)) {
       value = Number(value);
     } else if (DATETIME_TYPES.includes(filteredType)) {
       value = (new Date(value)).getTime();
