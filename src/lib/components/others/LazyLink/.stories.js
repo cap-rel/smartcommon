@@ -1,6 +1,7 @@
 import { fn } from 'storybook/test';
 
 import { LazyLink } from './';
+import { withMemoryRouter } from './decorators';
 
 import * as variants from "./variants";
 
@@ -14,6 +15,7 @@ export default {
     layout: 'centered',
   },
   tags: ["Others"],
+  decorators: [withMemoryRouter],
   argTypes: {
     to: {
       control: 'text',
@@ -39,7 +41,11 @@ export default {
     onClick: {
       table: { category: 'Events' },
     },
-    lazyLinkProps: {
+    replace: {
+      control: 'boolean',
+      table: { category: 'Behavior' },
+    },
+    Link: {
       control: 'object',
       table: { category: 'Elements' },
     },

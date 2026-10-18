@@ -7,5 +7,5 @@ export const LazyLink = setTestStory({
         children: "Go to About"
     },
     props: propTypes,
-    hidden: ["onClick", "lazyLinkProps"]
+    hidden: ["onClick", "Link"]
 });

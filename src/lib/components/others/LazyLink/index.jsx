@@ -1,42 +1,48 @@
-import { isNil } from 'lodash';
+import { useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { useVariantMerger } from 'lib/hooks';
+import { applyFunctionIfNotNil } from 'lib/utils';
 
 import { propTypes } from './props';
 
-const Link = () => {
-  return null;
-}
-
+// Router link that waits `duration` ms before navigating, so an exit
+// animation or a pending side effect started by onClick can finish first.
+// Modified clicks (ctrl/meta/shift, middle button) keep the native behaviour
+// (new tab / window) and bypass the delay.
 export const LazyLink = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("LazyLink", props);
 
-  // Top-level to/onClick used to be dropped silently (only the Link slot was
-  // read); the slot keeps priority, the top-level props act as fallback.
-  const { duration = 0, to, onClick, children } = variantProps;
+  // The Link slot keeps priority over the top-level props.
+  const { duration = 0, to, state, replace, onClick, children } = variantProps;
 
-  const linkProps = variantProps.Link || {};
+  const navigate = useNavigate();
+  const timeoutRef = useRef(null);
 
-  const { to: slotTo, onClick: slotOnClick } = linkProps;
-
-  // const navigate = useNavigate();
-
-  const handleLinkOnClick = e => {
-    e.preventDefault();
-    if (!isNil(slotOnClick)) {
-      slotOnClick();
-    } else if (!isNil(onClick)) {
-      onClick();
-    }
-    // setTimeout(() => navigate(slotTo ?? to, { ...linkProps }), duration);
-  };
+  useEffect(() => () => clearTimeout(timeoutRef.current), []);
 
   return (
-    <Link { ...mergeProps("Link", props => ({
-      ...props,
-      to: slotTo ?? to,
-      onClick: handleLinkOnClick
-    }))}>
+    <Link { ...mergeProps("Link", props => {
+      const target = props.to ?? to;
+      const navigateOptions = { state: props.state ?? state, replace: props.replace ?? replace };
+
+      return {
+        ...props,
+        to: target,
+        state: navigateOptions.state,
+        replace: navigateOptions.replace,
+        onClick: e => {
+          applyFunctionIfNotNil(props.onClick ?? onClick, e);
+
+          const isModifiedClick = e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey;
+          if (e.defaultPrevented || isModifiedClick) return;
+
+          e.preventDefault();
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = setTimeout(() => navigate(target, navigateOptions), duration);
+        }
+      };
+    })}>
       {children}
     </Link>
   );
