@@ -75,7 +75,7 @@ export const Range = (props) => {
                         applyFunctionIfNotNil(props.onChange, e);
                     },
                     value: currentValue ?? "",
-                    className: `grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize ${disabled && "brightness-soft"}`,
+                    className: `grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize ${disabled ? "brightness-soft" : ""}`,
                 }))} />
                 <div { ...mergeProps("value", props => props)}>
                     {currentValue}

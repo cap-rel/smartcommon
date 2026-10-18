@@ -139,7 +139,7 @@ export const Panel = (props) => {
                     },
                     style: { "--z-index": zIndex, opacity },
                     className: `
-                        z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen && "pointer-events-none"}
+                        z-(--z-index) fixed bg-black/50 inset-0 ${!isOpen ? "pointer-events-none" : ""}
                     `
                     // duration-(--medium) ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
                 }))} />

@@ -98,13 +98,13 @@ export const Editor = ({
           id={`textarea`}
           onChange={handleTextareaOnChange}
           value={realValue}
-          className={twMerge(`rounded-b-none border-b-0 focus:ring-0 ${isViewMode && "hidden"}`, textareaPs?.className)}
+          className={twMerge(`rounded-b-none border-b-0 focus:ring-0 ${isViewMode ? "hidden" : ""}`, textareaPs?.className)}
         />
         <div
           { ...htmlProps}
           dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(marked(realValue)) }}
           style={{ "--height": `${textareaHeight}px`, ...htmlProps?.style }}
-          className={twMerge(`p-2 rounded-t-md border border-b-0 bg-strong border-soft-border overflow-y-auto h-(--height) ${!isViewMode && "hidden"}`, htmlProps?.className)}
+          className={twMerge(`p-2 rounded-t-md border border-b-0 bg-strong border-soft-border overflow-y-auto h-(--height) ${!isViewMode ? "hidden" : ""}`, htmlProps?.className)}
         />
         <div
           { ...buttonContainerProps}

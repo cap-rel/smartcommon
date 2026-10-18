@@ -31,7 +31,7 @@ export const UpperNavbarItem = (props) => {
                 }
                 applyFunctionIfNotNil(onClick, e);
             },
-            className: `flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled && "pointer-events-none"}`
+            className: `flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled ? "pointer-events-none" : ""}`
         }))}>
 
             {!isNil(icon) &&

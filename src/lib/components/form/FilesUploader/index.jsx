@@ -254,7 +254,7 @@ export const FilesUploader = ({
             >
                 <ul 
                     { ...listProps}
-                    className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty && "border border-b-0 border-soft-border"}`, listProps?.className)}
+                    className={twMerge(`divide-y col rounded-t-md divide-soft-border ${!isRealValueEmpty ? "border border-b-0 border-soft-border" : ""}`, listProps?.className)}
                 >
                     {
                         multiple

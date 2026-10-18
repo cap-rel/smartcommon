@@ -208,12 +208,12 @@ export const Page = (props) => {
             className: twMerge(`
                 text-strong-text text-app-sm overflow-y-auto bg-medium-bg
                 ${isDesktop ? "min-h-screen" : "fixed inset-x-0 top-0 h-dvh"}
-                ${tabbarHeight > 0 && "pb-(--page-tabbar-height)"}
-                ${responsive && `
+                ${tabbarHeight > 0 ? "pb-(--page-tabbar-height)" : ""}
+                ${responsive ? `
                     lg:px-20 lg:py-app-xl
-                    ${tabbarWidth > 0 && "lg:left-(--page-tabbar-width)"}
+                    ${tabbarWidth > 0 ? "lg:left-(--page-tabbar-width)" : ""}
                     xl:px-30
-                `}
+                ` : ""}
             `, className),
             ...animations[animation()]
         }))}>

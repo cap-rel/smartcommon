@@ -23,8 +23,8 @@ export const TabbarItem = (props) => {
         <div { ...mergeProps("container", props => ({
             ...props,
             className: `
-                group flex-1 py-app-xs ${disabled && "pointer-events-none"}
-                ${responsive && `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}`}
+                group flex-1 py-app-xs ${disabled ? "pointer-events-none" : ""}
+                ${responsive ? `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}` : ""}
             `,
             onClick
         }))}>
@@ -33,7 +33,7 @@ export const TabbarItem = (props) => {
                 ...props,
                 className: `
                     flex flex-col items-center gap-app-xxs
-                    ${responsive && "lg:flex-row lg:gap-app-xs"}
+                    ${responsive ? "lg:flex-row lg:gap-app-xs" : ""}
                 `
             }))}>
 
@@ -42,7 +42,7 @@ export const TabbarItem = (props) => {
                         ...props,
                         className: `
                             text-lg flex justify-center items-center py-app-xs px-app-md rounded-app-xl duration-(--really-quick) ${active ? "text-primary lg:text-white bg-primary/15" : "text-soft-text group-active:brightness-soft bg-soft-bg"}
-                            ${responsive && "lg:p-0 lg:bg-transparent"}
+                            ${responsive ? "lg:p-0 lg:bg-transparent" : ""}
                         `
                     }))}>
                         {typeof currentIcon === 'function' ? currentIcon() : currentIcon}
@@ -54,7 +54,7 @@ export const TabbarItem = (props) => {
                         ...props,
                         className: `
                             truncate text-app-xs ${active ? "text-primary lg:text-white" : "text-soft-text"}
-                            ${responsive && "lg:grow"}
+                            ${responsive ? "lg:grow" : ""}
                         `
                     }))}>
                         {label}

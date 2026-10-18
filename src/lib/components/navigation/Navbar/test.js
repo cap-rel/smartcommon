@@ -31,7 +31,7 @@
                                     key={`link${LI}`}
                                     { ...link}
                                     onClick={() => set("linkActive", LI)}
-                                    className={twMerge(`duration-100 active:brightness-soft row-v-center gap-2 ${linkActive == LI ? "bg-soft text-primary rounded-t-xl first:rounded-tl-none last:rounded-tr-none" : "text-white bg-primary"} px-4 py-2 ${LI == linkActive - 1 && "rounded-br-xl"} ${LI == linkActive + 1 && "rounded-bl-xl"}`)}
+                                    className={twMerge(`duration-100 active:brightness-soft row-v-center gap-2 ${linkActive == LI ? "bg-soft text-primary rounded-t-xl first:rounded-tl-none last:rounded-tr-none" : "text-white bg-primary"} px-4 py-2 ${LI == linkActive - 1 ? "rounded-br-xl" : ""} ${LI == linkActive + 1 ? "rounded-bl-xl" : ""}`)}
                                 >
                                     <div
                                         className={twMerge(`text-lg`)}

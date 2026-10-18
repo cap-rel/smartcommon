@@ -29,7 +29,7 @@ export const Block = (props) => {
             ...props,
             className: twMerge(`
                 flex flex-col gap-app-xs
-                ${!isTitleBar && "my-app-base lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md"}
+                ${!isTitleBar ? "my-app-base lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md" : ""}
             `, className)
         }))}>
             {title && 

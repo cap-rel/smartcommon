@@ -32,7 +32,7 @@ export const LowerNavbarItem = (props) => {
             },
             className: `
                 bg-primary text-app-sm snap-center px-app-base py-app-xs border-b-4 flex justify-center items-center gap-app-xs flex-1 whitespace-nowrap rounded-app-base border-primary
-                ${disabled && "pointer-events-none"}
+                ${disabled ? "pointer-events-none" : ""}
                 ${active ? "text-white border-white font-app-semibold" : "font-app-base text-soft-text border-primary active:brightness-soft"}
                 lg:bg-transparent lg:cursor-pointer lg:border-b-2
                 ${active ? "lg:text-strong-text lg:border-primary" : "border-transparent lg:border-border"}

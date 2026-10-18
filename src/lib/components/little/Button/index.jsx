@@ -59,7 +59,7 @@ export const Button = (props) => {
             gap-app-base ${sizeClassName} rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
             not-disabled:active:brightness-soft disabled:brightness-soft
-            ${(!disabled && !loading) && "cursor-pointer"}
+            ${(!disabled && !loading) ? "cursor-pointer" : ""}
             `;
 
     const Tag = isLink ? "a" : "button";

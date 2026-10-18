@@ -393,7 +393,7 @@ export const Calendar = (props) => {
                       applyFunctionIfNotNil(props.onClick, e);
                     },
                     className: `relative h-8 w-10 flex justify-center items-center text-soft-text font-app-semibold duration-(--really-quick)
-                    ${isLimit(date) ? `bg-primary text-white ${isFirst(date) && "rounded-l-app-md"} ${isLast(date) && "rounded-r-app-md"}` : isSelected(date) ? "bg-primary/50 text-white" : "bg-soft-bg text-strong-text active:brightness-soft rounded-app-md"}`
+                    ${isLimit(date) ? `bg-primary text-white ${isFirst(date) ? "rounded-l-app-md" : ""} ${isLast(date) ? "rounded-r-app-md" : ""}` : isSelected(date) ? "bg-primary/50 text-white" : "bg-soft-bg text-strong-text active:brightness-soft rounded-app-md"}`
                 }))}> 
                     {number}
                     {badge !== 0 &&

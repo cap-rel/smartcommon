@@ -11,10 +11,10 @@ export const String = (props) => {
         <div { ...mergeProps("string", props => ({
             ...props,
             className: `
-                ${underline && "underline"}
-                ${uppercase && "uppercase"}
-                ${italic && "italic"}
-                ${bold && "font-app-semibold"}
+                ${underline ? "underline" : ""}
+                ${uppercase ? "uppercase" : ""}
+                ${italic ? "italic" : ""}
+                ${bold ? "font-app-semibold" : ""}
             `
         }))}>
             {value}

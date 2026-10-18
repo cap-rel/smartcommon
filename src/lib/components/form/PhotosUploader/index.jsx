@@ -393,7 +393,7 @@ export const PhotosUploader = (props) => {
                         selectPhoto(index);
                         applyFunctionIfNotNil(props.onClick, e);
                     },
-                    className: `self-start max-w-30 flex flex-col gap-app-xs ${!disabled && "active:brightness-soft"}
+                    className: `self-start max-w-30 flex flex-col gap-app-xs ${!disabled ? "active:brightness-soft" : ""}
                     rounded-app-md bg-strong-bg p-app-sm duration-(--quick)`
                 }))}>
                     {(photo?.previewUrl || photo?.src)
@@ -587,7 +587,7 @@ export const PhotosUploader = (props) => {
             }))}>
                 <div { ...mergeProps("photosContainer", props => ({
                     ...props,
-                    className: `flex flex-wrap justify-center gap-app-xs p-app-xs ${disabled && "brightness-soft"}
+                    className: `flex flex-wrap justify-center gap-app-xs p-app-xs ${disabled ? "brightness-soft" : ""}
                     overflow-y-auto max-h-50 rounded-app-md bg-strong-bg inset-shadow-sm`
                 }))}>
                     {!isEmpty(currentValue)

@@ -54,7 +54,7 @@ export const RadioBar = (props) => {
         >
             <div { ...mergeProps("optionsContainer", props => ({
                 ...props,
-                className: `bg-strong-bg flex flex-wrap items-center p-app-xxs gap-app-xxs inset-shadow-sm rounded-app-md ${disabled && "brightness-soft"}`
+                className: `bg-strong-bg flex flex-wrap items-center p-app-xxs gap-app-xxs inset-shadow-sm rounded-app-md ${disabled ? "brightness-soft" : ""}`
             }))}>
                 {(options ?? []).map((option, OI) => {
                     const optionValue = isObject(option) ? option.value : option;
@@ -78,7 +78,7 @@ export const RadioBar = (props) => {
                                     applyFunctionIfNotNil(props.onClick, e);
                                 },
                                 style: { transition: "background-color 300ms, color 300ms, filter 100ms" },
-                                className: `rounded-app-md px-app-xs py-app-xxs ${isChecked ? "bg-soft-bg text-strong-text shadow-md" : `bg-strong-bg text-soft-text ${!disabled && "active:brightness-soft"}`}`
+                                className: `rounded-app-md px-app-xs py-app-xxs ${isChecked ? "bg-soft-bg text-strong-text shadow-md" : `bg-strong-bg text-soft-text ${!disabled ? "active:brightness-soft" : ""}`}`
                             }))}>
                                 {optionLabel}
                             </div>

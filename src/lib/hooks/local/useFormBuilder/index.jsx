@@ -163,7 +163,7 @@ export const useFormBuilder = (form) => {
                             {(children ?? []).map((child, CI) =>
                                 <div
                                     key={child?.id ?? `child${CI}`}
-                                    className={`${states.selectedTabs[id] !== child.id && "hidden"}`}
+                                    className={`${states.selectedTabs[id] !== child.id ? "hidden" : ""}`}
                                 >
                                     {renderComponent(child, component)}
                                 </div>
