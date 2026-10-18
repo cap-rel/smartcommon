@@ -292,6 +292,47 @@ export const es = {
             files: (n) => (n === 1 ? `${n} archivo` : `${n} archivos`),
         },
     },
+    Input: {
+        requiredError: "Este campo es obligatorio.",
+        numberError: "Introduzca un número válido.",
+    },
+    Textarea: {
+        requiredError: "Este campo es obligatorio.",
+        minLengthError: (n) => `Debe tener al menos ${n} caracteres.`,
+        lengthError: (n) => `Debe tener exactamente ${n} caracteres.`,
+        maxLengthError: (n) => `Debe tener como máximo ${n} caracteres.`,
+    },
+    Rater: {
+        requiredError: "Este campo es obligatorio.",
+        minError: (n) => `La valoración debe ser de al menos ${n}.`,
+        maxError: (n) => `La valoración debe ser como máximo ${n}.`,
+    },
+    Range: {
+        requiredError: "Este campo es obligatorio.",
+        minError: (n) => `El valor debe ser de al menos ${n}.`,
+        maxError: (n) => `El valor debe ser como máximo ${n}.`,
+    },
+    Timer: {
+        requiredError: "Este campo es obligatorio.",
+        minError: (duration) => `La duración debe ser de al menos ${duration}.`,
+        maxError: (duration) => `La duración debe ser como máximo ${duration}.`,
+    },
+    SearchableSelect: {
+        requiredError: "Este campo es obligatorio.",
+        searchPlaceholder: "Buscar...",
+    },
+    ColorPicker: {
+        requiredError: "Este campo es obligatorio.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Buscar una dirección...",
+    },
+    Array: {
+        addPlaceholder: "Añadir...",
+    },
+    List: {
+        searchPlaceholder: "Buscar...",
+    },
     Page: {
         back: "Volver",
     },

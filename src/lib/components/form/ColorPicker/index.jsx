@@ -4,7 +4,7 @@ import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 // TODO tailwind color
 
@@ -22,12 +22,15 @@ export const ColorPicker = (props) => {
         required,
         disabled,
         readOnly,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const errors = (currentValue) => ( {
         required: { 
             condition: required && isEmptyValue(currentValue),
-            message: "Ce champ est requis."
+            message: labels.requiredError
         },
     });
 

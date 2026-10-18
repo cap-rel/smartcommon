@@ -291,6 +291,47 @@ export const nl = {
             files: (n) => (n === 1 ? `${n} bestand` : `${n} bestanden`),
         },
     },
+    Input: {
+        requiredError: "Dit veld is verplicht.",
+        numberError: "Voer een geldig getal in.",
+    },
+    Textarea: {
+        requiredError: "Dit veld is verplicht.",
+        minLengthError: (n) => `Minimaal ${n} tekens vereist.`,
+        lengthError: (n) => `Precies ${n} tekens vereist.`,
+        maxLengthError: (n) => `Maximaal ${n} tekens toegestaan.`,
+    },
+    Rater: {
+        requiredError: "Dit veld is verplicht.",
+        minError: (n) => `De beoordeling moet minimaal ${n} zijn.`,
+        maxError: (n) => `De beoordeling mag maximaal ${n} zijn.`,
+    },
+    Range: {
+        requiredError: "Dit veld is verplicht.",
+        minError: (n) => `De waarde moet minimaal ${n} zijn.`,
+        maxError: (n) => `De waarde mag maximaal ${n} zijn.`,
+    },
+    Timer: {
+        requiredError: "Dit veld is verplicht.",
+        minError: (duration) => `De duur moet minimaal ${duration} zijn.`,
+        maxError: (duration) => `De duur mag maximaal ${duration} zijn.`,
+    },
+    SearchableSelect: {
+        requiredError: "Dit veld is verplicht.",
+        searchPlaceholder: "Zoeken...",
+    },
+    ColorPicker: {
+        requiredError: "Dit veld is verplicht.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Zoek een adres...",
+    },
+    Array: {
+        addPlaceholder: "Toevoegen...",
+    },
+    List: {
+        searchPlaceholder: "Zoeken...",
+    },
     Page: {
         back: "Terug",
     },

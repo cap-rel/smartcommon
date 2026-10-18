@@ -12,8 +12,10 @@ import { render, screen, act } from "@testing-library/react";
 import { Input } from "lib/components/form/Input";
 import { Form } from "lib/components/form/Form";
 import { useForm } from "lib/hooks/local/useForm";
+import { Textarea } from "lib/components/form/Textarea";
+import { fr } from "lib/locales";
 
-const REQUIRED = "Ce champ est requis.";
+const REQUIRED = "This field is required.";
 
 describe("standalone field (no <Form>)", () => {
     it("hides rule messages before submit", () => {
@@ -82,5 +84,22 @@ describe("onError reporting", () => {
 
         rerender(<Input required value="filled" onChange={vi.fn()} onError={onError} />);
         expect(onError).toHaveBeenCalledWith("required", false);
+    });
+});
+
+describe("translated rule messages", () => {
+    it("uses the locale bundle passed through labels", () => {
+        render(<Input required value="" onChange={vi.fn()} formSubmitted labels={fr.Input} />);
+        expect(screen.getByText("Ce champ est requis.")).toBeTruthy();
+    });
+
+    it("lets a single key be overridden", () => {
+        render(<Input required value="" onChange={vi.fn()} formSubmitted labels={{ requiredError: "Mandatory" }} />);
+        expect(screen.getByText("Mandatory")).toBeTruthy();
+    });
+
+    it("interpolates the limit in function labels", () => {
+        render(<Textarea maxLength={3} value="abcdef" onChange={vi.fn()} formSubmitted />);
+        expect(screen.getByText("Must be at most 3 characters long.")).toBeTruthy();
     });
 });

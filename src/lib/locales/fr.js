@@ -288,6 +288,47 @@ export const fr = {
             files: (n) => (n === 1 ? `${n} fichier` : `${n} fichiers`),
         },
     },
+    Input: {
+        requiredError: "Ce champ est requis.",
+        numberError: "Veuillez saisir un nombre valide.",
+    },
+    Textarea: {
+        requiredError: "Ce champ est requis.",
+        minLengthError: (n) => `La longueur doit être de ${n} caractères au minimum.`,
+        lengthError: (n) => `La longueur doit être de ${n} caractères exactement.`,
+        maxLengthError: (n) => `La longueur doit être de ${n} caractères au maximum.`,
+    },
+    Rater: {
+        requiredError: "Ce champ est requis.",
+        minError: (n) => `La notation doit être de ${n} au minimum.`,
+        maxError: (n) => `La notation doit être de ${n} au maximum.`,
+    },
+    Range: {
+        requiredError: "Ce champ est requis.",
+        minError: (n) => `La valeur doit être de ${n} au minimum.`,
+        maxError: (n) => `La valeur doit être de ${n} au maximum.`,
+    },
+    Timer: {
+        requiredError: "Ce champ est requis.",
+        minError: (duration) => `La durée doit être de ${duration} au minimum.`,
+        maxError: (duration) => `La durée doit être de ${duration} au maximum.`,
+    },
+    SearchableSelect: {
+        requiredError: "Ce champ est requis.",
+        searchPlaceholder: "Rechercher...",
+    },
+    ColorPicker: {
+        requiredError: "Ce champ est requis.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Rechercher une adresse...",
+    },
+    Array: {
+        addPlaceholder: "Ajouter...",
+    },
+    List: {
+        searchPlaceholder: "Rechercher...",
+    },
     Page: {
         back: "Retour",
     },

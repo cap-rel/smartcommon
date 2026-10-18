@@ -5,7 +5,7 @@ import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
 import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 export const Textarea = (props) => {
   const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Textarea", props);
@@ -32,24 +32,27 @@ export const Textarea = (props) => {
     rows,
     cols,
     wrap,
-   } = variantProps;
+    labels: userLabels = {},
+  } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const errors = (currentValue) => ({
     required: { 
       condition: required && isEmptyValue(currentValue),
-      message: "Ce champ est requis."
+      message: labels.requiredError
     },
     minLength: { 
       condition: !isNil(minLength) && currentValue?.length < minLength,
-      message: `La longueur doit être de ${minLength} caractères au minimum.`
+      message: labels.minLengthError(minLength)
     },
     length: { 
       condition: !isNil(length) && currentValue?.length !== length,
-      message: `La longueur doit être de ${length} caractères exactement.`
+      message: labels.lengthError(length)
     },
     maxLength: { 
       condition: !isNil(maxLength) && currentValue?.length > maxLength,
-      message: `La valeur doit être de ${maxLength} au maximum.`
+      message: labels.maxLengthError(maxLength)
     },
     pattern: { 
       condition: !isNil(pattern) && !pattern.test(currentValue),

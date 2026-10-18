@@ -300,6 +300,47 @@ export const pl = {
             files: (n) => (n === 1 ? `${n} plik` : `${n} plików`),
         },
     },
+    Input: {
+        requiredError: "To pole jest wymagane.",
+        numberError: "Wprowadź prawidłową liczbę.",
+    },
+    Textarea: {
+        requiredError: "To pole jest wymagane.",
+        minLengthError: (n) => `Wymagane co najmniej ${n} znaków.`,
+        lengthError: (n) => `Wymagane dokładnie ${n} znaków.`,
+        maxLengthError: (n) => `Dozwolone maksymalnie ${n} znaków.`,
+    },
+    Rater: {
+        requiredError: "To pole jest wymagane.",
+        minError: (n) => `Ocena musi wynosić co najmniej ${n}.`,
+        maxError: (n) => `Ocena może wynosić maksymalnie ${n}.`,
+    },
+    Range: {
+        requiredError: "To pole jest wymagane.",
+        minError: (n) => `Wartość musi wynosić co najmniej ${n}.`,
+        maxError: (n) => `Wartość może wynosić maksymalnie ${n}.`,
+    },
+    Timer: {
+        requiredError: "To pole jest wymagane.",
+        minError: (duration) => `Czas trwania musi wynosić co najmniej ${duration}.`,
+        maxError: (duration) => `Czas trwania może wynosić maksymalnie ${duration}.`,
+    },
+    SearchableSelect: {
+        requiredError: "To pole jest wymagane.",
+        searchPlaceholder: "Szukaj...",
+    },
+    ColorPicker: {
+        requiredError: "To pole jest wymagane.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Szukaj adresu...",
+    },
+    Array: {
+        addPlaceholder: "Dodaj...",
+    },
+    List: {
+        searchPlaceholder: "Szukaj...",
+    },
     Page: {
         back: "Wstecz",
     },

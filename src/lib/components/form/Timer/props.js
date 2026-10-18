@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.object,
     id: PropTypes.string,
 
     label: PropTypes.string,
@@ -52,4 +54,10 @@ export const propTypes = {
     optionProps: PropTypes.object,
     footerProps: PropTypes.object,
     okButtonProps: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "This field is required.",
+    minError: (duration) => `The duration must be at least ${duration}.`,
+    maxError: (duration) => `The duration must be at most ${duration}.`,
 };

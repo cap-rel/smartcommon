@@ -5,7 +5,7 @@ import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 export const Range = (props) => {
     const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("Range", props);
@@ -27,20 +27,23 @@ export const Range = (props) => {
 
         rangeMin = 0,
         rangeMax = 100,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const errors = (currentValue) => ({
         required: {
             condition: required && isEmptyValue(currentValue),
-            message: "Ce champ est requis."
+            message: labels.requiredError
         },
         min: {
             condition: !isNil(min) && currentValue < min,
-            message: `La valeur doit être de ${min} au minimum.`
+            message: labels.minError(min)
         },
         max: {
             condition: !isNil(max) && currentValue > max,
-            message: `La valeur doit être de ${max} au minimum.`
+            message: labels.maxError(max)
         },
     });
 

@@ -7,7 +7,7 @@ import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes, minutesToTime, is
 import { Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
-import { defaultProps, propTypes } from "./props";
+import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
 
 // IDEA Types week, month, year
 // IDEA Clipboard
@@ -70,7 +70,10 @@ export const Input = (props) => {
     placeholder,
     step,
     inputMode,
+    labels: userLabels = {},
   } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   // Stable id to wire the <label htmlFor> to the <input id>. Falls back to a
   // generated id so the association works even when the consumer passes none.
@@ -126,11 +129,11 @@ export const Input = (props) => {
       // Error when a non-empty value is not a finite number (the rule used to
       // fire on every valid number).
       condition: includes(NUMBER_TYPES, filteredType) && !isEmptyValue(currentValue) && !globalThis.Number.isFinite(globalThis.Number(currentValue)),
-      message: "Veuillez rentrer un nombre valide." 
+      message: labels.numberError 
     },
     required: { 
       condition: required && isEmptyValue(currentValue),
-      message: "Ce champ est requis." 
+      message: labels.requiredError 
     },
 
     // minTime: { 

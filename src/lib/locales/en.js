@@ -34,6 +34,16 @@ import { DEFAULT_LABELS as BarcodeScanner } from "lib/components/others/BarcodeS
 import { DEFAULT_LABELS as AboutModal } from "lib/components/others/AboutModal/props";
 import { DEFAULT_LABELS as NotificationToggle } from "lib/components/others/NotificationToggle/props";
 import { DEFAULT_LABELS as Files } from "lib/components/formats/Files/props";
+import { DEFAULT_LABELS as Input } from "lib/components/form/Input/props";
+import { DEFAULT_LABELS as Textarea } from "lib/components/form/Textarea/props";
+import { DEFAULT_LABELS as Rater } from "lib/components/form/Rater/props";
+import { DEFAULT_LABELS as Range } from "lib/components/form/Range/props";
+import { DEFAULT_LABELS as Timer } from "lib/components/form/Timer/props";
+import { DEFAULT_LABELS as SearchableSelect } from "lib/components/form/SearchableSelect/props";
+import { DEFAULT_LABELS as ColorPicker } from "lib/components/form/ColorPicker/props";
+import { DEFAULT_LABELS as AddressInput } from "lib/components/form/AddressInput/props";
+import { DEFAULT_LABELS as ArrayLabels } from "lib/components/form/Array/props";
+import { DEFAULT_LABELS as List } from "lib/components/main/List/props";
 import { DEFAULT_LABELS as Page } from "lib/components/main/Page/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
@@ -64,6 +74,16 @@ export const en = {
     AboutModal,
     NotificationToggle,
     Files,
+    Input,
+    Textarea,
+    Rater,
+    Range,
+    Timer,
+    SearchableSelect,
+    ColorPicker,
+    AddressInput,
+    Array: ArrayLabels,
+    List,
     Page,
     UpdatePrompt,
     ViewportProvider,

@@ -292,6 +292,47 @@ export const de = {
             files: (n) => (n === 1 ? `${n} Datei` : `${n} Dateien`),
         },
     },
+    Input: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        numberError: "Bitte geben Sie eine gültige Zahl ein.",
+    },
+    Textarea: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        minLengthError: (n) => `Mindestens ${n} Zeichen erforderlich.`,
+        lengthError: (n) => `Genau ${n} Zeichen erforderlich.`,
+        maxLengthError: (n) => `Höchstens ${n} Zeichen erlaubt.`,
+    },
+    Rater: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        minError: (n) => `Die Bewertung muss mindestens ${n} betragen.`,
+        maxError: (n) => `Die Bewertung darf höchstens ${n} betragen.`,
+    },
+    Range: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        minError: (n) => `Der Wert muss mindestens ${n} betragen.`,
+        maxError: (n) => `Der Wert darf höchstens ${n} betragen.`,
+    },
+    Timer: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        minError: (duration) => `Die Dauer muss mindestens ${duration} betragen.`,
+        maxError: (duration) => `Die Dauer darf höchstens ${duration} betragen.`,
+    },
+    SearchableSelect: {
+        requiredError: "Dieses Feld ist erforderlich.",
+        searchPlaceholder: "Suchen...",
+    },
+    ColorPicker: {
+        requiredError: "Dieses Feld ist erforderlich.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Adresse suchen...",
+    },
+    Array: {
+        addPlaceholder: "Hinzufügen...",
+    },
+    List: {
+        searchPlaceholder: "Suchen...",
+    },
     Page: {
         back: "Zurück",
     },

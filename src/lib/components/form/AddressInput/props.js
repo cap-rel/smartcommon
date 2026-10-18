@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.object,
   label: PropTypes.string,
   help: PropTypes.string,
   name: PropTypes.string,
@@ -26,4 +28,8 @@ export const propTypes = {
   inputIconProps: PropTypes.object,
   listProps: PropTypes.object,
   listItemProps: PropTypes.object
+};
+
+export const DEFAULT_LABELS = {
+    searchPlaceholder: "Search for an address...",
 };

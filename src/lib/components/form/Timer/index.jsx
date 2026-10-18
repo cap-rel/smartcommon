@@ -5,7 +5,7 @@ import { formatDuration, secsToDuration, twMerge } from "lib/utils";
 import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 export const Timer = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Timer", props);
@@ -25,20 +25,23 @@ export const Timer = (props) => {
 
         showSeconds = true,
         maxDays,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const errors = (currentValue) => ({
         required: {
             condition: required && currentValue === 0,
-            message: "Ce champ est requis."
+            message: labels.requiredError
         },
         min: {
             condition: !isNil(min) && currentValue < min,
-            message: `La durée doit être de ${formatDuration(min)} au minimum.`
+            message: labels.minError(formatDuration(min))
         },
         max: {
             condition: !isNil(max) && currentValue > max,
-            message: `La valeur doit être de ${formatDuration(max)} au maximum.`
+            message: labels.maxError(formatDuration(max))
         },
     });
 

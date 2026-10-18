@@ -83,9 +83,12 @@ Trois règles intégrées :
 
 | Règle | Condition | Message |
 |-------|-----------|---------|
-| `required` | `required && currentValue === 0` | "Ce champ est requis." |
-| `min` | `currentValue < min` (si `min` fourni) | "La durée doit être de {formatDuration(min)} au minimum." |
-| `max` | `currentValue > max` (si `max` fourni) | "La valeur doit être de {formatDuration(max)} au maximum." |
+| `required` | `required && currentValue === 0` | `labels.requiredError` |
+| `min` | `currentValue < min` (si `min` fourni) | `labels.minError(formatDuration(min))` |
+| `max` | `currentValue > max` (si `max` fourni) | `labels.maxError(formatDuration(max))` |
+
+Messages en anglais par défaut, traduits par la clé `Timer` des bundles
+de langue.
 
 `formatDuration(seconds)` produit une chaîne du genre `"1 h 30 min"`,
 intégré dans le message.

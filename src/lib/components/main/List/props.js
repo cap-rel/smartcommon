@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.object,
     id: PropTypes.string.isRequired,
     title: PropTypes.string,
     responsive: PropTypes.bool,
@@ -20,4 +22,8 @@ export const defaultProps = {
     sortProps: [],
     searchProps: [],
     responsive: true
+};
+
+export const DEFAULT_LABELS = {
+    searchPlaceholder: "Search...",
 };

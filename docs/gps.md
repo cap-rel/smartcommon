@@ -70,13 +70,14 @@ Règle `required` intégrée :
 ```js
 errors = (currentValue) => ({
     required: {
-        condition: required && isEmpty(currentValue),
-        message: "Vous devez géolocaliser."
+        condition: required && isEmptyValue(currentValue),
+        message: labels.requiredError,
     }
 });
 ```
 
-Message en dur (pas extrait en `labels`).
+Message traduisible via `labels.requiredError` (clé `Gps` des bundles
+de langue).
 
 ## Limites connues
 

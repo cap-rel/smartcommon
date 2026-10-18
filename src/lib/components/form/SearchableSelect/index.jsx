@@ -5,7 +5,7 @@ import { isEmptyValue } from "lib/utils";
 import { Label } from "lib/components";
 import { useField, useVariantMerger } from "lib/hooks";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 /**
  * SearchableSelect - A select component with search/filter capability
@@ -28,8 +28,11 @@ export const SearchableSelect = (props) => {
         onChange = () => {},
         required,
         disabled,
-        placeholder = "Rechercher...",
+        placeholder,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     // Get options directly from props to avoid variantMerger issues
     const options = props.options || [];
@@ -41,7 +44,7 @@ export const SearchableSelect = (props) => {
     const errors = (currentValue) => ({
         required: {
             condition: required && isEmptyValue(currentValue),
-            message: "Ce champ est requis."
+            message: labels.requiredError
         }
     });
 
@@ -107,7 +110,7 @@ export const SearchableSelect = (props) => {
                 <input
                     type="text"
                     disabled={disabled}
-                    placeholder={selectedOption ? selectedOption.label : placeholder}
+                    placeholder={selectedOption ? selectedOption.label : (placeholder ?? labels.searchPlaceholder)}
                     value={isOpen ? search : (selectedOption?.label || "")}
                     onChange={handleInputChange}
                     onFocus={handleFocus}

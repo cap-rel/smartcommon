@@ -5,7 +5,7 @@ import { isEmpty } from 'lodash';
 import { useStates, useField, useVariantMerger } from 'lib/hooks';
 import { Label, Input } from 'lib/components';
 
-import { propTypes } from './props';
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 // TODO Find a way to replace input focus condition
 
@@ -56,7 +56,10 @@ export const AddressInput = (props) => {
     defaultValue,
     value,
     onChange,
+    labels: userLabels = {},
   } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const initialStates = {
     suggestions: [],
@@ -167,7 +170,7 @@ export const AddressInput = (props) => {
           readOnly: isFormSubmitting,
           loading: isSearching,
           inputIcon: <FaSearchLocation />,
-          placeholder: `Rechercher une adresse...`,
+          placeholder: props.placeholder ?? labels.searchPlaceholder,
           onChange: value => {
             handleInputOnChange(value)
           },

@@ -294,6 +294,47 @@ export const pt = {
             files: (n) => (n === 1 ? `${n} ficheiro` : `${n} ficheiros`),
         },
     },
+    Input: {
+        requiredError: "Este campo é obrigatório.",
+        numberError: "Introduza um número válido.",
+    },
+    Textarea: {
+        requiredError: "Este campo é obrigatório.",
+        minLengthError: (n) => `Deve ter pelo menos ${n} caracteres.`,
+        lengthError: (n) => `Deve ter exatamente ${n} caracteres.`,
+        maxLengthError: (n) => `Deve ter no máximo ${n} caracteres.`,
+    },
+    Rater: {
+        requiredError: "Este campo é obrigatório.",
+        minError: (n) => `A classificação deve ser de pelo menos ${n}.`,
+        maxError: (n) => `A classificação deve ser no máximo ${n}.`,
+    },
+    Range: {
+        requiredError: "Este campo é obrigatório.",
+        minError: (n) => `O valor deve ser de pelo menos ${n}.`,
+        maxError: (n) => `O valor deve ser no máximo ${n}.`,
+    },
+    Timer: {
+        requiredError: "Este campo é obrigatório.",
+        minError: (duration) => `A duração deve ser de pelo menos ${duration}.`,
+        maxError: (duration) => `A duração deve ser no máximo ${duration}.`,
+    },
+    SearchableSelect: {
+        requiredError: "Este campo é obrigatório.",
+        searchPlaceholder: "Pesquisar...",
+    },
+    ColorPicker: {
+        requiredError: "Este campo é obrigatório.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Pesquisar um endereço...",
+    },
+    Array: {
+        addPlaceholder: "Adicionar...",
+    },
+    List: {
+        searchPlaceholder: "Pesquisar...",
+    },
     Page: {
         back: "Voltar",
     },

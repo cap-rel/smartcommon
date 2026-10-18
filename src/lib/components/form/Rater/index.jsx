@@ -6,7 +6,7 @@ import { isEmptyValue } from "lib/utils";
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label, Icon } from "lib/components";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 // IDEA Add decimal rating system
 
@@ -30,21 +30,24 @@ export const Rater = (props) => {
 
         ratingIcon = <FaStar />,
         ratingMax = 5,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const errors = (currentValue) => ({
         required: { 
             // 0 stars means "not rated yet".
             condition: required && (isEmptyValue(currentValue) || currentValue === 0),
-            message: "Ce champ est requis."
+            message: labels.requiredError
         },
         min: {
             condition: !isNil(min) && currentValue < min,
-            message: `La notation doit être de ${min} au minimum.`
+            message: labels.minError(min)
         },
         max: { 
             condition: !isNil(max) && currentValue > max,
-            message: `La notation doit être de ${max} au maximum.`
+            message: labels.maxError(max)
         },
     });    
 

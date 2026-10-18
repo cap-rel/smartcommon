@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const arrayPropTypes = {
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.object,
     label: PropTypes.string,
     help: PropTypes.string,
     onValueChange: PropTypes.func,
@@ -18,4 +20,8 @@ export const arrayPropTypes = {
     tagsContainerProps: PropTypes.object,
     tagProps: PropTypes.object,
     inputProps: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    addPlaceholder: "Add...",
 };

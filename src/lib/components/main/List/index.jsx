@@ -5,7 +5,7 @@ import { isEmpty } from "lodash";
 import { Input, Button } from "lib/components";
 import { useVariantMerger } from "lib/hooks";
 
-import { defaultProps, propTypes } from "./props";
+import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
 
 export const List = props => {
     const { variantProps, mergeProps } = useVariantMerger("List", props);
@@ -17,8 +17,11 @@ export const List = props => {
         sortProps = [],
         searchProps = [],
         responsive = true,
-        children
+        children,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     return (
         <div { ...mergeProps("container", props => ({
@@ -57,7 +60,7 @@ export const List = props => {
                     }))}>
                         <Input { ...mergeProps("SearchInput", props => ({
                             inputIcon: IoSearch,
-                            placeholder: "Rechercher ...",
+                            placeholder: labels.searchPlaceholder,
                             ...props,
                             containerProps: {
                                 ...props.containerProps,

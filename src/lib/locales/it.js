@@ -292,6 +292,47 @@ export const it = {
             files: (n) => `${n} file`,
         },
     },
+    Input: {
+        requiredError: "Questo campo è obbligatorio.",
+        numberError: "Inserisci un numero valido.",
+    },
+    Textarea: {
+        requiredError: "Questo campo è obbligatorio.",
+        minLengthError: (n) => `Deve contenere almeno ${n} caratteri.`,
+        lengthError: (n) => `Deve contenere esattamente ${n} caratteri.`,
+        maxLengthError: (n) => `Deve contenere al massimo ${n} caratteri.`,
+    },
+    Rater: {
+        requiredError: "Questo campo è obbligatorio.",
+        minError: (n) => `La valutazione deve essere almeno ${n}.`,
+        maxError: (n) => `La valutazione deve essere al massimo ${n}.`,
+    },
+    Range: {
+        requiredError: "Questo campo è obbligatorio.",
+        minError: (n) => `Il valore deve essere almeno ${n}.`,
+        maxError: (n) => `Il valore deve essere al massimo ${n}.`,
+    },
+    Timer: {
+        requiredError: "Questo campo è obbligatorio.",
+        minError: (duration) => `La durata deve essere almeno ${duration}.`,
+        maxError: (duration) => `La durata deve essere al massimo ${duration}.`,
+    },
+    SearchableSelect: {
+        requiredError: "Questo campo è obbligatorio.",
+        searchPlaceholder: "Cerca...",
+    },
+    ColorPicker: {
+        requiredError: "Questo campo è obbligatorio.",
+    },
+    AddressInput: {
+        searchPlaceholder: "Cerca un indirizzo...",
+    },
+    Array: {
+        addPlaceholder: "Aggiungi...",
+    },
+    List: {
+        searchPlaceholder: "Cerca...",
+    },
     Page: {
         back: "Indietro",
     },

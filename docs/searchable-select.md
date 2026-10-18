@@ -7,7 +7,7 @@ Form-aware via `useField` quand monté dans un `<Form>`.
 Quand utiliser :
 
 - **`<SearchableSelect>`** : liste de 10-300 options où le scroll devient
-  inefficace (pays, communes, catégories) — l'utilisateur tape 2-3
+  inefficace (pays, communes, catégories) - l'utilisateur tape 2-3
   lettres pour trouver.
 - **`<Select>`** (sans search) : liste courte (<10 options).
 - **`<ProductCategoryBrowser>`** : pour les catalogues produits avec
@@ -70,7 +70,7 @@ number).
 - **Au focus / clic** : ouverture du dropdown.
 - **Saisie clavier** : filtre `options` par `option.label` (substring,
   case-insensitive).
-- **Sélection** : click sur une option → `onChange(value)` + dropdown
+- **Sélection** : click sur une option -> `onChange(value)` + dropdown
   fermé + champ search vidé.
 - **Click outside** : `mousedown` listener global ferme le dropdown +
   reset le champ search.
@@ -85,14 +85,15 @@ avec une règle `required` intégrée :
 ```js
 errors = (currentValue) => ({
     required: {
-        condition: required && isEmpty(currentValue),
-        message: "Ce champ est requis."
+        condition: required && isEmptyValue(currentValue),
+        message: labels.requiredError,
     }
 });
 ```
 
-Le message d'erreur **est en dur** ("Ce champ est requis.") — pas
-extrait en `labels` aujourd'hui.
+Le message (`requiredError`) et le placeholder par défaut
+(`searchPlaceholder`) passent par `labels` (clé `SearchableSelect` des
+bundles de langue).
 
 ## Props
 
@@ -103,7 +104,8 @@ extrait en `labels` aujourd'hui.
 | `value` | string \| number | - | controlled |
 | `defaultValue` | string \| number | - | uncontrolled |
 | `onChange` | func | - | `(value) => void` |
-| `placeholder` | string | `"Rechercher..."` | texte si rien de sélectionné |
+| `placeholder` | string | `labels.searchPlaceholder` | texte si rien de sélectionné |
+| `labels` | object | `DEFAULT_LABELS` (anglais) | `requiredError`, `searchPlaceholder` |
 | `required` | bool | - | active la validation `required` |
 | `disabled` | bool | - | grise le champ |
 | `variant` | object | - | hook variantMerger (rare en usage direct) |
@@ -111,12 +113,11 @@ extrait en `labels` aujourd'hui.
 ## Limites connues
 
 - **Filtre client-only** sur `option.label`. Pour un dataset >300
-  options, préférer un adapter async — pas géré nativement, à forker
+  options, préférer un adapter async - pas géré nativement, à forker
   ou utiliser `<ProductCategoryBrowser>` qui a le pattern adapter.
 - **Pas de groupe / sous-headers** dans le dropdown.
 - **Pas de multi-select** (une seule valeur). Pour du multi, regarder
   `<Array>` (tag input) ou composer plusieurs `<SearchableSelect>`.
-- **Pas d'extraction i18n du message d'erreur** "Ce champ est requis.".
 - **Pas de mise en surbrillance** du texte qui match dans les options
   (juste le filtre).
 

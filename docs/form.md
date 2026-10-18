@@ -187,9 +187,10 @@ Un champ contrôlé (`value` + `onChange`) hors `<Form>` accepte :
   cross-field). Faire la validation dans `onPreSubmit` ou exposer
   l'erreur via `errors(value)` qui peut lire `form.values` via le
   scope englobant.
-- Pas de **support i18n** des messages d'erreur : à toi de les passer
-  en dur via `errors` (ils restent en français par défaut dans les
-  composants livrés).
+- Messages d'erreur : en anglais par défaut (`DEFAULT_LABELS` de chaque
+  champ). Pour une autre langue, passer le bundle via `labels`
+  (`labels={locales.fr.Input}`), ou surcharger une seule clé
+  (`labels={{ requiredError: "..." }}`).
 
 ## Voir aussi
 

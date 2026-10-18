@@ -4,7 +4,7 @@ import { isNil, isEmpty } from "lodash";
 import { useStates, useVariantMerger } from "lib/hooks";
 import { Input, Label } from "lib/components";
 
-import { arrayPropTypes } from "./props";
+import { arrayPropTypes, DEFAULT_LABELS } from "./props";
 
 export const Array = (rawProps) => {
   const { variantProps, mergeProps } = useVariantMerger("Array", rawProps);
@@ -39,8 +39,11 @@ export const Array = (rawProps) => {
     tagsContainerProps,
     tagProps,
     inputProps,
+    labels: userLabels = {},
     ...props
   } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const inputPs = { ...props, ...inputProps };
 
@@ -87,7 +90,7 @@ export const Array = (rawProps) => {
         className={twMerge(`gap-2 col`, arrayContainerProps?.className)}
       >
         <Input 
-          placeholder={`Ajouter...`}
+          placeholder={labels.addPlaceholder}
           { ...arrayInputProps}
           onChange={value => set("inputValue", value)}
           value={inputValue}

@@ -1,6 +1,8 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.object,
   id: PropTypes.string,
 
   label: PropTypes.string,
@@ -51,4 +53,11 @@ export const propTypes = {
   errorProps: PropTypes.object,
   
   textareaProps: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    requiredError: "This field is required.",
+    minLengthError: (n) => `Must be at least ${n} characters long.`,
+    lengthError: (n) => `Must be exactly ${n} characters long.`,
+    maxLengthError: (n) => `Must be at most ${n} characters long.`,
 };
