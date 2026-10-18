@@ -294,6 +294,16 @@ export const nl = {
     Input: {
         requiredError: "Dit veld is verplicht.",
         numberError: "Voer een geldig getal in.",
+        minError: (min) => `De waarde moet minimaal ${min} zijn.`,
+        maxError: (max) => `De waarde mag maximaal ${max} zijn.`,
+        minDateError: (min) => `De datum moet op of na ${min} liggen.`,
+        maxDateError: (max) => `De datum moet op of voor ${max} liggen.`,
+        minTimeError: (min) => `Het tijdstip moet ${min} of later zijn.`,
+        maxTimeError: (max) => `Het tijdstip moet ${max} of eerder zijn.`,
+        minLengthError: (n) => `Minimaal ${n} tekens vereist.`,
+        lengthError: (n) => `Precies ${n} tekens vereist.`,
+        maxLengthError: (n) => `Maximaal ${n} tekens toegestaan.`,
+        patternError: "De waarde heeft niet het verwachte formaat.",
     },
     Textarea: {
         requiredError: "Dit veld is verplicht.",

@@ -295,6 +295,16 @@ export const it = {
     Input: {
         requiredError: "Questo campo è obbligatorio.",
         numberError: "Inserisci un numero valido.",
+        minError: (min) => `Il valore deve essere almeno ${min}.`,
+        maxError: (max) => `Il valore deve essere al massimo ${max}.`,
+        minDateError: (min) => `La data deve essere il ${min} o successiva.`,
+        maxDateError: (max) => `La data deve essere il ${max} o precedente.`,
+        minTimeError: (min) => `L'orario deve essere ${min} o successivo.`,
+        maxTimeError: (max) => `L'orario deve essere ${max} o precedente.`,
+        minLengthError: (n) => `Deve contenere almeno ${n} caratteri.`,
+        lengthError: (n) => `Deve contenere esattamente ${n} caratteri.`,
+        maxLengthError: (n) => `Deve contenere al massimo ${n} caratteri.`,
+        patternError: "Il valore non rispetta il formato previsto.",
     },
     Textarea: {
         requiredError: "Questo campo è obbligatorio.",

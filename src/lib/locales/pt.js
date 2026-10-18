@@ -297,6 +297,16 @@ export const pt = {
     Input: {
         requiredError: "Este campo é obrigatório.",
         numberError: "Introduza um número válido.",
+        minError: (min) => `O valor deve ser de pelo menos ${min}.`,
+        maxError: (max) => `O valor deve ser no máximo ${max}.`,
+        minDateError: (min) => `A data deve ser ${min} ou posterior.`,
+        maxDateError: (max) => `A data deve ser ${max} ou anterior.`,
+        minTimeError: (min) => `A hora deve ser ${min} ou posterior.`,
+        maxTimeError: (max) => `A hora deve ser ${max} ou anterior.`,
+        minLengthError: (n) => `Deve ter pelo menos ${n} caracteres.`,
+        lengthError: (n) => `Deve ter exatamente ${n} caracteres.`,
+        maxLengthError: (n) => `Deve ter no máximo ${n} caracteres.`,
+        patternError: "O valor não respeita o formato esperado.",
     },
     Textarea: {
         requiredError: "Este campo é obrigatório.",

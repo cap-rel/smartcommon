@@ -94,7 +94,84 @@ describe("cleared parsed inputs", () => {
         expect(onChange).toHaveBeenCalledWith(null, expect.anything());
         expect(onChange).toHaveBeenCalledTimes(1);
 
+        onError.mockClear();
         rerender(<Input label="Field" type={type} required value={null} onChange={onChange} onError={onError} />);
-        expect(onError).toHaveBeenLastCalledWith("required", true);
+        expect(onError).toHaveBeenCalledWith("required", true);
+    });
+});
+
+describe("Input bounds, length and pattern rules", () => {
+    it("checks number bounds, negative values included", () => {
+        expect(reportedRules(<Input type="number" value={-5} />)).toMatchObject({ min: false, max: false });
+        expect(reportedRules(<Input type="number" min={1} max={10} value={0} />)).toMatchObject({ min: true, max: false });
+        expect(reportedRules(<Input type="number" min={1} max={10} value={11} />)).toMatchObject({ min: false, max: true });
+        expect(reportedRules(<Input type="number" min={1} max={10} value={10} />)).toMatchObject({ min: false, max: false });
+    });
+
+    it("checks date bounds on timestamps", () => {
+        const day = Date.UTC(2026, 9, 18);
+        expect(reportedRules(<Input type="date" min={day} value={day - 86400000} />)).toMatchObject({ min: true });
+        expect(reportedRules(<Input type="date" max={day} value={day} />)).toMatchObject({ max: false });
+    });
+
+    it("checks time bounds in minutes", () => {
+        expect(reportedRules(<Input type="time" min={8 * 60} value={7 * 60} />)).toMatchObject({ min: true });
+        expect(reportedRules(<Input type="time" max={18 * 60} value={17 * 60} />)).toMatchObject({ max: false });
+    });
+
+    it("leaves an empty value to the required rule", () => {
+        expect(reportedRules(<Input type="number" min={1} value={null} />)).toMatchObject({ min: false });
+        expect(reportedRules(<Input minLength={3} value="" />)).toMatchObject({ minLength: false });
+    });
+
+    it("checks lengths on text values", () => {
+        expect(reportedRules(<Input minLength={3} value="ab" />)).toMatchObject({ minLength: true });
+        expect(reportedRules(<Input length={5} value="12345" />)).toMatchObject({ length: false });
+        expect(reportedRules(<Input length={5} value="1234" />)).toMatchObject({ length: true });
+        expect(reportedRules(<Input maxLength={3} value="abcd" />)).toMatchObject({ maxLength: true });
+    });
+
+    it("matches a string pattern against the whole value", () => {
+        expect(reportedRules(<Input pattern="[0-9]{5}" value="75001" />)).toMatchObject({ pattern: false });
+        expect(reportedRules(<Input pattern="[0-9]{5}" value="75001x" />)).toMatchObject({ pattern: true });
+    });
+
+    it("uses a RegExp pattern as given, even with the g flag", () => {
+        const pattern = /^[A-Z]+$/g;
+        expect(reportedRules(<Input pattern={pattern} value="ABC" />)).toMatchObject({ pattern: false });
+        expect(reportedRules(<Input pattern={pattern} value="ABC" />)).toMatchObject({ pattern: false });
+        expect(reportedRules(<Input pattern={pattern} value="abc" />)).toMatchObject({ pattern: true });
+    });
+});
+
+describe("Input rule messages and native attributes", () => {
+    const messageFor = (element) => {
+        render({ ...element, props: { ...element.props, onChange: vi.fn(), formSubmitted: true } });
+    };
+
+    it("shows the bound in the message, and patternError over the label", () => {
+        messageFor(<Input label="Qty" type="number" min={2} value={1} />);
+        expect(screen.getByText("The value must be at least 2.")).toBeTruthy();
+
+        messageFor(<Input label="Zip" pattern="[0-9]{5}" patternError="5 digits" value="12" />);
+        expect(screen.getByText("5 digits")).toBeTruthy();
+
+        messageFor(<Input label="Start" type="time" min={8 * 60} value={7 * 60} />);
+        expect(screen.getByText("The time must be 08:00 or later.")).toBeTruthy();
+    });
+
+    it("forwards bounds and limits to the native input", () => {
+        render(<Input label="Qty" type="number" min={1} max={9} value={3} onChange={vi.fn()} />);
+        const qty = screen.getByLabelText("Qty");
+        expect(qty.getAttribute("min")).toBe("1");
+        expect(qty.getAttribute("max")).toBe("9");
+
+        render(<Input label="Day" type="date" min={Date.UTC(2026, 9, 18)} value={null} onChange={vi.fn()} />);
+        expect(screen.getByLabelText("Day").getAttribute("min")).toBe("2026-10-18");
+
+        render(<Input label="Code" maxLength={4} pattern="[A-Z]+" value="" onChange={vi.fn()} />);
+        const code = screen.getByLabelText("Code");
+        expect(code.getAttribute("maxlength")).toBe("4");
+        expect(code.getAttribute("pattern")).toBe("[A-Z]+");
     });
 });

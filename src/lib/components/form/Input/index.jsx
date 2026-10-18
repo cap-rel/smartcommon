@@ -56,9 +56,9 @@ export const Input = (props) => {
     readOnly = false,
 
     type = "text",
-    min = 0,
+    min,
     max,
-    minLength = 0,
+    minLength,
     length,
     maxLength,
     pattern,
@@ -111,6 +111,43 @@ export const Input = (props) => {
   // (and friends) activate the native widget.
   const filteredType = typeMap[type]?.type ?? (includes(NATIVE_HTML_TYPES, type) ? type : "text");
 
+  const isStringType = includes(STRING_TYPES, filteredType);
+  const isDateType = includes(DATETIME_TYPES, filteredType);
+  const isTimeType = includes(TIME_TYPES, filteredType);
+  const hasBounds = includes(NUMBER_TYPES, filteredType) || isDateType || isTimeType;
+
+  // A string pattern follows the HTML attribute semantics (whole value must
+  // match); a RegExp is used as given, minus the stateful g / y flags.
+  const patternRegExp = isNil(pattern)
+    ? undefined
+    : typeof pattern === "string"
+      ? new RegExp(`^(?:${pattern})$`)
+      : new RegExp(pattern.source, pattern.flags.replace(/[gy]/g, ""));
+
+  const boundLabel = (side) => {
+    const key = isDateType ? `${side}DateError` : isTimeType ? `${side}TimeError` : `${side}Error`;
+    return labels[key];
+  };
+
+  // Human readable bound for the error message.
+  const formatBound = (bound) => {
+    if (isNil(bound)) return "";
+    if (filteredType === "date") return datetimeFormat(new Date(bound), { dateStyle: "short", timeZone: "UTC" });
+    if (isDateType) return datetimeFormat(new Date(bound), { dateStyle: "short", timeStyle: "short" });
+    if (isTimeType) return minutesToTime(bound);
+    return globalThis.String(bound);
+  };
+
+  // Bound in the string format the native input expects (min / max
+  // attributes drive the native pickers and spinners).
+  const toNativeBound = (bound) => {
+    if (isNil(bound) || !hasBounds) return undefined;
+    if (filteredType === "date") return new Date(bound).toISOString().split("T")[0];
+    if (isDateType) return ISOFormat(new Date(bound));
+    if (isTimeType) return minutesToTime(bound);
+    return bound;
+  };
+
   const errors = (currentValue) => ({
     // email: { 
     //   condition: type === "email" && !yup.email().isValidSync(currentValue),
@@ -136,47 +173,33 @@ export const Input = (props) => {
       message: labels.requiredError 
     },
 
-    // minTime: { 
-    //   condition: !isNil(min) && timeTypes.includes(type) && currentValue < min,
-    //   message: `L'heure doit être après ${datetimeFormat((new Date().setHours(minutesToTime(min ?? 0, "units").hours, minutesToTime(min ?? 0, "units").minutes)), { timeStyle: "short" })}.`
-    // },
-    // maxTime: {
-    //   condition: !isNil(max) && timeTypes.includes(type) && currentValue > max,
-    //   message: `L'heure doit être avant ${datetimeFormat((new Date()).setHours(minutesToTime(max ?? 0, "units").hours, minutesToTime(max ?? 0, "units").minutes)), { timeStyle: "short" })}.`
-    // },
-
-    // minDateTime: { 
-    //   condition: !isNil(min) && datetimeTypes.includes(type) && currentValue < min,
-    //   message: `La date doit être après ${datetimeFormat(!isNil(min) ? min * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
-    // },
-    // maxDatetime: { 
-    //   condition: !isNil(max) && datetimeTypes.includes(type) && currentValue > max,
-    //   message: `La date doit être avant ${datetimeFormat(!isNil(max) ? max * 1000 : 0, { dateStyle: "short", timeStyle: type === "datetime" ? "short" : undefined })}.`
-    // },
-    // minNumber: { 
-    //   condition: !isNil(min) && numberTypes.includes(type) && currentValue < min,
-    //   message: `La valeur doit être de ${min} minimum.`
-    // },
-    // maxNumber: { 
-    //   condition: !isNil(max) && numberTypes.includes(type) && currentValue > max,
-    //   message: `La valeur doit être de ${max} maximum.`
-    // },
-    // minLength: { 
-    //   condition: !isNil(minLength) && stringTypes.includes(type) && currentValue?.length < minLength,
-    //   message: `La longueur doit être de ${minLength} caractères au minimum.`
-    // },
-    // length: { 
-    //   condition: !isNil(length) && stringTypes.includes(type) && currentValue?.length !== length,
-    //   message: `La longueur doit être de ${length} caractères exactement.`
-    // },
-    // maxLength: { 
-    //   condition: !isNil(maxLength) && stringTypes.includes(type) && currentValue?.length > maxLength,
-    //   message: `La valeur doit être de ${maxLength} au maximum.`
-    // },
-    // pattern: { 
-    //   condition: !isNil(pattern) && stringTypes.includes(type) && !pattern.test(currentValue),
-    //   message: patternError 
-    // },
+    // Bounds use the unit of the emitted value: the number itself for
+    // number inputs, a ms timestamp for date / datetime-local, minutes since
+    // midnight for time. Empty values are left to the `required` rule.
+    min: {
+      condition: hasBounds && !isNil(min) && !isEmptyValue(currentValue) && globalThis.Number(currentValue) < min,
+      message: boundLabel("min")(formatBound(min)),
+    },
+    max: {
+      condition: hasBounds && !isNil(max) && !isEmptyValue(currentValue) && globalThis.Number(currentValue) > max,
+      message: boundLabel("max")(formatBound(max)),
+    },
+    minLength: {
+      condition: isStringType && !isNil(minLength) && !isEmptyValue(currentValue) && globalThis.String(currentValue).length < minLength,
+      message: labels.minLengthError(minLength),
+    },
+    length: {
+      condition: isStringType && !isNil(length) && !isEmptyValue(currentValue) && globalThis.String(currentValue).length !== length,
+      message: labels.lengthError(length),
+    },
+    maxLength: {
+      condition: isStringType && !isNil(maxLength) && !isEmptyValue(currentValue) && globalThis.String(currentValue).length > maxLength,
+      message: labels.maxLengthError(maxLength),
+    },
+    pattern: {
+      condition: isStringType && !isNil(patternRegExp) && !isEmptyValue(currentValue) && !patternRegExp.test(globalThis.String(currentValue)),
+      message: patternError ?? labels.patternError,
+    },
   });
 
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
@@ -295,6 +318,11 @@ export const Input = (props) => {
           "aria-label": label ? undefined : placeholder,
           ...props,
           ...mergeQuickProps(props, ["disabled", "readOnly", "name", "size", "onBlur", "onFocus", "inputMode"]),
+          min: props.min ?? toNativeBound(min),
+          max: props.max ?? toNativeBound(max),
+          // Native hard limit while typing (string types only).
+          maxLength: props.maxLength ?? (isStringType ? maxLength : undefined),
+          pattern: props.pattern ?? (isStringType && typeof pattern === "string" ? pattern : undefined),
           id: inputId,
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {

@@ -295,6 +295,16 @@ export const de = {
     Input: {
         requiredError: "Dieses Feld ist erforderlich.",
         numberError: "Bitte geben Sie eine gültige Zahl ein.",
+        minError: (min) => `Der Wert muss mindestens ${min} betragen.`,
+        maxError: (max) => `Der Wert darf höchstens ${max} betragen.`,
+        minDateError: (min) => `Das Datum muss am oder nach dem ${min} liegen.`,
+        maxDateError: (max) => `Das Datum muss am oder vor dem ${max} liegen.`,
+        minTimeError: (min) => `Die Uhrzeit muss ${min} oder später sein.`,
+        maxTimeError: (max) => `Die Uhrzeit muss ${max} oder früher sein.`,
+        minLengthError: (n) => `Mindestens ${n} Zeichen erforderlich.`,
+        lengthError: (n) => `Genau ${n} Zeichen erforderlich.`,
+        maxLengthError: (n) => `Höchstens ${n} Zeichen erlaubt.`,
+        patternError: "Der Wert entspricht nicht dem erwarteten Format.",
     },
     Textarea: {
         requiredError: "Dieses Feld ist erforderlich.",

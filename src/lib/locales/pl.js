@@ -303,6 +303,16 @@ export const pl = {
     Input: {
         requiredError: "To pole jest wymagane.",
         numberError: "Wprowadź prawidłową liczbę.",
+        minError: (min) => `Wartość musi wynosić co najmniej ${min}.`,
+        maxError: (max) => `Wartość może wynosić maksymalnie ${max}.`,
+        minDateError: (min) => `Data musi przypadać ${min} lub później.`,
+        maxDateError: (max) => `Data musi przypadać ${max} lub wcześniej.`,
+        minTimeError: (min) => `Godzina musi być ${min} lub późniejsza.`,
+        maxTimeError: (max) => `Godzina musi być ${max} lub wcześniejsza.`,
+        minLengthError: (n) => `Wymagane co najmniej ${n} znaków.`,
+        lengthError: (n) => `Wymagane dokładnie ${n} znaków.`,
+        maxLengthError: (n) => `Dozwolone maksymalnie ${n} znaków.`,
+        patternError: "Wartość nie ma oczekiwanego formatu.",
     },
     Textarea: {
         requiredError: "To pole jest wymagane.",
