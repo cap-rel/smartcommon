@@ -65,6 +65,7 @@ export const propTypes = {
     headerProps: PropTypes.object,
     toolbarProps: PropTypes.object,
     imageContainerProps: PropTypes.object,
+    markerProps: PropTypes.object,
     listProps: PropTypes.object,
     listItemProps: PropTypes.object,
     typePickerProps: PropTypes.object,

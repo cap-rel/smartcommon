@@ -75,7 +75,9 @@ export const SignaturePad = (props) => {
     defaultValue: defaultValue ?? defaultValueForMode,
     value,
     onChange,
-    errors
+    errors,
+    formSubmitted: variantProps.formSubmitted,
+    onError: variantProps.onError
   });
 
   const initialStates = {

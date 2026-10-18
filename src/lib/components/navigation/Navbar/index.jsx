@@ -230,4 +230,4 @@ export const Navbar = (props) => {
 };
 
 Navbar.propTypes = propTypes;
-Navbar.propTypes = defaultProps;
+Navbar.defaultProps = defaultProps;

@@ -46,7 +46,7 @@ export const Rater = (props) => {
         },
     });    
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
     const updateRating = (index) => {
         if (!disabled && !readOnly && !isFormSubmitting) {

@@ -57,7 +57,7 @@ export const Textarea = (props) => {
     },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
   const handleValueOnChange = (e) => {
     if (!disabled && !readOnly && !isFormSubmitting) {

@@ -16,6 +16,7 @@ export const Button = (props) => {
         id,
         label,
         type,
+        size,
         responsive = true,
         loading = false,
         icon,
@@ -45,8 +46,17 @@ export const Button = (props) => {
     const isLoading = loading || (isSubmitType && isFormSubmitting);
     const isInactive = loading || disabled || isFormSubmitting;
 
+    // Single branch lands in the class list so a `size` never fights itself
+    // through twMerge (the app-* font/padding tokens are not always grouped
+    // the way stock Tailwind classes are).
+    const sizeClassName = size === "sm"
+        ? "px-app-sm py-app-xs text-app-sm"
+        : size === "lg"
+            ? "px-app-lg py-app-md text-app-lg"
+            : "px-app-md py-app-sm text-app-base";
+
     const sharedClassName = `relative flex justify-center items-center
-            gap-app-base px-app-md py-app-sm text-app-base rounded-app-md font-app-semibold
+            gap-app-base ${sizeClassName} rounded-app-md font-app-semibold
             text-white duration-(--really-quick) bg-primary
             not-disabled:active:brightness-soft disabled:brightness-soft
             ${(!disabled && !loading) && "cursor-pointer"}

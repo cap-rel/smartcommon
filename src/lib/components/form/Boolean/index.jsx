@@ -41,7 +41,7 @@ export const Boolean = (props) => {
         }
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors }); // false
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError }); // false
 
     const handleOnClick = () => {
         if (!disabled && !readOnly && !isFormSubmitting) {

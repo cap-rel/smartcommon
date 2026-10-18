@@ -2,9 +2,11 @@ import PropTypes from "prop-types";
 
 export const arrayPropTypes = {
     label: PropTypes.string,
-    labelRow: PropTypes.bool,
     help: PropTypes.string,
     onValueChange: PropTypes.func,
+    name: PropTypes.string,
+    value: PropTypes.array,
+    defaultValue: PropTypes.array,
   
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,

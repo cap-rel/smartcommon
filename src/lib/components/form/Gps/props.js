@@ -1,11 +1,20 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
-    label: PropTypes.string, 
-    labelRow: PropTypes.bool,
+    label: PropTypes.string,
     help: PropTypes.string,
     multiple: PropTypes.bool,
-    onLocate: PropTypes.func,
+    name: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+    onChange: PropTypes.func,
+    required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readOnly: PropTypes.bool,
+    // Forces error display on standalone pages (no <Form> context).
+    formSubmitted: PropTypes.bool,
+    // Called with (ruleKey, conditionBoolean) each time a rule result flips.
+    onError: PropTypes.func,
     
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,

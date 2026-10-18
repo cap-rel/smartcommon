@@ -1,14 +1,14 @@
 import { useContext, useEffect, useRef } from "react";
-import { fromPairs, isEqual, isUndefined } from "lodash";
+import { fromPairs, isEqual, isUndefined, map } from "lodash";
 
 import { FormContext } from "lib/components";
 
 export const useField = (props) => {
-  const { name, defaultValue, value, onChange, errors } = props;
+  const { name, defaultValue, value, onChange, errors, formSubmitted, onError } = props;
 
   const isControlledByForm = !isUndefined(FormContext) && !isUndefined(name) && isUndefined(value);
 
-  const { isFormSubmitting, isFormSubmitted, values, errors: formErrors, setField } = useContext(FormContext) ?? {};
+  const { isFormSubmitting, isFormSubmitted: contextIsFormSubmitted, values, errors: formErrors, setField } = useContext(FormContext) ?? {};
 
   const currentValue = isControlledByForm ? values[name] : value;
 
@@ -23,7 +23,7 @@ export const useField = (props) => {
   // Handles two scenarios:
   // 1. Initial mount: field is registered with its defaultValue
   // 2. Async defaultValue: when defaultValue changes from undefined to a value
-  //    (e.g., when data is fetched from API after initial render)
+  //    (e.g., when data is fetched from API after mount)
   useEffect(() => {
     if (isControlledByForm) {
       const wasUndefined = prevDefaultValueRef.current === undefined;
@@ -40,6 +40,23 @@ export const useField = (props) => {
       prevDefaultValueRef.current = defaultValue;
     }
   }, [name, defaultValue, isControlledByForm, setField]);
+
+  // Report each validation rule result (rule key, boolean) to the consumer's
+  // onError, but only when a result actually flips. Standalone pages (no
+  // smartcommon <Form>) aggregate these booleans to decide whether a submit
+  // may proceed; before this channel existed the aggregation stayed empty.
+  const reportedErrorsRef = useRef(null);
+
+  useEffect(() => {
+    if (isUndefined(onError)) return;
+
+    const conditions = fromPairs(map(errors(currentValue), (error, key) => [key, Boolean(error.condition)]));
+
+    if (isEqual(conditions, reportedErrorsRef.current)) return;
+
+    reportedErrorsRef.current = conditions;
+    map(conditions, (condition, key) => onError(key, condition));
+  });
 
   const setValue = (newValue) => {
     if (!isEqual(currentValue, newValue)) {
@@ -58,6 +75,8 @@ export const useField = (props) => {
     currentValue,
     setValue,
     isFormSubmitting,
-    isFormSubmitted
+    // A `formSubmitted` prop (standalone pages) forces error display the same
+    // way the <Form> context does after a submit attempt.
+    isFormSubmitted: formSubmitted || contextIsFormSubmitted
   };
 };

@@ -32,7 +32,7 @@ export const ColorPicker = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
     const handleColorOnChange = (e) => {
         if (!disabled && !readOnly && !isFormSubmitting) {

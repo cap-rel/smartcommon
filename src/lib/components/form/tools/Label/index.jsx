@@ -17,6 +17,7 @@ export const Label = (props) => {
         showErrors,
 
         errors = {},
+        error,
         children,
     } = props;
 
@@ -98,10 +99,10 @@ export const Label = (props) => {
 
             </div>
 
-            {(help || (some(errors, Boolean) && showErrors)) &&
+            {(help || !isNil(error) || (some(errors, Boolean) && showErrors)) &&
                 <div { ...mergeProps("footer", props => ({
                     ...props,
-                    className: `${(showErrors && !some(errors, Boolean)) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
+                    className: `${(!isNil(error) || (showErrors && !some(errors, Boolean))) ? "text-error" : "text-soft-text"} flex gap-app-xxs text-app-xs italic`
                 }))}>
                     <IoMdInformationCircleOutline { ...mergeProps("helpIcon", props => ({
                         ...props,
@@ -112,6 +113,11 @@ export const Label = (props) => {
                         className: `flex flex-col`
                     }))}>
                         <div { ...mergeProps("help", props => props)}>{help}</div>
+                        {!isNil(error) &&
+                            <div { ...mergeProps("error", props => props)}>
+                                {error}
+                            </div>
+                        }
                         {showErrors &&
                             map(filter(errors, { condition: true }), ({ condition, message }, EI) => {
                                 if (condition) {

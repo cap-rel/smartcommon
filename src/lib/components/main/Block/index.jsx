@@ -1,5 +1,6 @@
 import { isNil } from "lodash";
 import { useVariantMerger } from "lib/hooks";
+import { twMerge } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -9,19 +10,27 @@ export const Block = (props) => {
     const { 
         id,
         responsive = true,
+        type,
         title,
         header,
         footer,
+        className,
         children
     } = variantProps;
+
+    // "title-bar": an horizontal action bar (back button, title, trailing
+    // action) instead of the boxed content card. A top-level className used
+    // to be dropped silently; it is merged here so the standard override
+    // point works.
+    const isTitleBar = type === "title-bar";
 
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
-            className: `
-                flex flex-col gap-app-xs my-app-base
-                lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md
-            `
+            className: twMerge(`
+                flex flex-col gap-app-xs
+                ${!isTitleBar && "my-app-base lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md"}
+            `, className)
         }))}>
             {title && 
                 <div { ...mergeProps("title", props => ({
@@ -45,7 +54,9 @@ export const Block = (props) => {
             {children &&
                 <div { ...mergeProps("block", props => ({
                     ...props,
-                    className: `
+                    className: isTitleBar
+                        ? `flex flex-row items-center justify-between gap-app-base`
+                        : `
                         flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text shadow-md text-app-sm
                         lg:shadow-none lg:p-0
                     `
@@ -66,4 +77,4 @@ export const Block = (props) => {
 }
 
 Block.propTypes = propTypes;
-Block.propTypes = defaultProps;
+Block.defaultProps = defaultProps;

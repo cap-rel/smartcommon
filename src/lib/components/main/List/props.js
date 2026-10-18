@@ -10,10 +10,9 @@ export const propTypes = {
     children: PropTypes.node,
     containerProps: PropTypes.object,
     titleProps: PropTypes.object,
-    controlsContainer: PropTypes.object,
+    controlsContainerProps: PropTypes.object,
     SearchInput: PropTypes.object,
     SortButton: PropTypes.object,
-    paginationContainerProps: PropTypes.object,
 };
 
 export const defaultProps = {

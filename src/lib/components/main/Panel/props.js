@@ -10,13 +10,15 @@ export const propTypes = {
     closeOnDrag: PropTypes.bool,
     isOpen: PropTypes.bool,
     close: PropTypes.func,
+    title: PropTypes.string,
     duration: PropTypes.number,
     goBackLimit: PropTypes.number,
     zIndex: PropTypes.number,
 
     overlayProps: PropTypes.object,
     panelProps: PropTypes.object,
-    dashProps: PropTypes.object
+    dashProps: PropTypes.object,
+    titleProps: PropTypes.object
 };
 
 export const defaultProps = {

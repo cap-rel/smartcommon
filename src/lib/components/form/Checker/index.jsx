@@ -59,7 +59,7 @@ export const Checker = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : ""
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError }); // multiple ? [] : ""
 
     const handleOnClick = (optionValue) => {
         if (!disabled && !readOnly && ! isFormSubmitting) {

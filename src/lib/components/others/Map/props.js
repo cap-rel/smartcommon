@@ -11,6 +11,8 @@ export const propTypes = {
     type: PropTypes.oneOf(["search", "route"]),
     center: PropTypes.arrayOf(PropTypes.number),
     zoom: PropTypes.number,
+    /** Called with the picked / moved location. */
+    onChange: PropTypes.func,
 
     // Data sources (default to OpenStreetMap / Nominatim).
     tileUrl: PropTypes.string,

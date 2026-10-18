@@ -3,6 +3,8 @@ import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
 
+import { propTypes, defaultProps } from "./props";
+
 // Floating Action Button: a fixed, circular, icon-only action trigger
 // (the "+" add button at the bottom of a list, etc.).
 //
@@ -182,3 +184,6 @@ export const FAB = (props) => {
         </div>
     );
 };
+
+FAB.propTypes = propTypes;
+FAB.defaultProps = defaultProps;

@@ -8,6 +8,12 @@ export const propTypes = {
     variant: PropTypes.oneOfType([PropTypes.arrayOf([PropTypes.string, PropTypes.object]), PropTypes.string, PropTypes.object]),
     /** Content og  */
     label: PropTypes.string,
+    /** Native button type ("button", "submit", ...). Forwarded to the DOM
+     * element; "submit" also routes through the smartcommon Form provider
+     * when present. */
+    type: PropTypes.string,
+    /** Visual size of the button. */
+    size: PropTypes.oneOf(["sm", "lg"]),
     /** The icon must be */
     icon: PropTypes.func,
     /** UI button component for user interaction */

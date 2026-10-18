@@ -17,14 +17,22 @@ export const propTypes = {
     max: PropTypes.number,
     multiple: PropTypes.bool,
     options: PropTypes.array,
+    placeholder: PropTypes.string,
 
     name: PropTypes.string,
-    value: PropTypes.bool,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
     onChange: PropTypes.func,
-    defaultValue: PropTypes.bool,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
 
+    // Consumer-provided message, rendered by Label below the field.
+    error: PropTypes.node,
+    // Forces error display on standalone pages (no <Form> context).
     formSubmitted: PropTypes.bool,
+    // Called with (ruleKey, conditionBoolean) each time a rule result flips.
     onError: PropTypes.func,
+
+    onFocus: PropTypes.func,
+    onBlur: PropTypes.func,
 
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,

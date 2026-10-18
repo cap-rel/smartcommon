@@ -20,6 +20,7 @@ export const Panel = (props) => {
         closeOnDrag = true,
         close = () => {},
         isOpen,
+        title,
         duration = 0.18,
         goBackLimit = 1/5
     } = variantProps;
@@ -163,7 +164,18 @@ export const Panel = (props) => {
             }))}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
-                <div className={`mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`}/>
+                <div { ...mergeProps("dash", props => ({
+                    ...props,
+                    className: `mx-auto w-app-xl h-app-xxs bg-strong-bg rounded-full`
+                }))}/>
+                {title &&
+                    <div { ...mergeProps("title", props => ({
+                        ...props,
+                        className: `text-app-base font-app-semibold`
+                    }))}>
+                        {title}
+                    </div>
+                }
                 {children}
             </motion.div>
         </>

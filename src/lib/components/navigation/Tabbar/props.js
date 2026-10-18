@@ -5,7 +5,6 @@ export const propTypes = {
     children: PropTypes.node,
     responsive: PropTypes.bool,
     hideOnScroll: PropTypes.bool,
-    centralButton: PropTypes.object, // TODO
     tabbarProps: PropTypes.object,
 };
 

@@ -174,7 +174,7 @@ export const Input = (props) => {
     // },
   });
 
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
   // Format the value for display in the input element
   // Timestamps need to be converted back to the format expected by HTML inputs
@@ -279,7 +279,7 @@ export const Input = (props) => {
           // inputProps) still wins thanks to the `...props` spread below.
           "aria-label": label ? undefined : placeholder,
           ...props,
-          ...mergeQuickProps(props, ["disabled", "readOnly", "name", "size", "onBlur", "onFocus"]),
+          ...mergeQuickProps(props, ["disabled", "readOnly", "name", "size", "onBlur", "onFocus", "inputMode"]),
           id: inputId,
           className: `outline-hidden min-w-0 grow placeholder-soft-text truncate text-strong-text`,
           onChange: e => {

@@ -65,7 +65,10 @@ export const List = props => {
                             } 
                         }))} />
                         <Button
-                            icon={RxCaretSort}
+                            { ...mergeProps("SortButton", props => ({
+                                ...props,
+                                icon: props.icon ?? RxCaretSort
+                            }))}
                         />
                     </div>
                 }

@@ -4,7 +4,7 @@ import { useVariantMerger } from "lib/hooks";
 import { defaultProps, propTypes } from "./props";
 
 export const LowerNavbarItem = (props) => {
-    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("LowerNavbarLinks", props);
+    const { variantProps, mergeProps, mergeQuickProps } = useVariantMerger("LowerNavbarItem", props);
 
      const { 
         id,

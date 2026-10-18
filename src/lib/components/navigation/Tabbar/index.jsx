@@ -141,4 +141,4 @@ export const Tabbar = (props) => {
 };
 
 Tabbar.propTypes = propTypes;
-Tabbar.propTypes = defaultProps;
+Tabbar.defaultProps = defaultProps;

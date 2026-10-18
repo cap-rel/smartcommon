@@ -89,7 +89,7 @@ export const Array = (rawProps) => {
         <Input 
           placeholder={`Ajouter...`}
           { ...arrayInputProps}
-          onValueChange={value => set("inputValue", value)}
+          onChange={value => set("inputValue", value)}
           value={inputValue}
           onKeyDown={addItem}
         />

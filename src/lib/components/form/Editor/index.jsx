@@ -96,7 +96,7 @@ export const Editor = ({
           placeholder={label ? `${label}...` : ""}
           { ...textareaPs}
           id={`textarea`}
-          onValueChange={handleTextareaOnChange}
+          onChange={handleTextareaOnChange}
           value={realValue}
           className={twMerge(`rounded-b-none border-b-0 focus:ring-0 ${isViewMode && "hidden"}`, textareaPs?.className)}
         />

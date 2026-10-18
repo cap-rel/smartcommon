@@ -69,7 +69,7 @@ export const AddressInput = (props) => {
 
   const errors = (currentValue) => ({});
   
-  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+  const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
   const fetchSuggestions = async (query) => {
     // Abort any pending request before starting a new one

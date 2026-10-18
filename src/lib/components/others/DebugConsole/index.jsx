@@ -4,6 +4,8 @@ import { LogEntry } from "./LogEntry";
 import { Toolbar } from "./Toolbar";
 import { openDetachedWindow } from "./detachedWindow";
 
+import { propTypes } from "./props";
+
 const S = {
     fab: {
         position: "fixed",
@@ -162,3 +164,5 @@ export const DebugConsole = ({
         </>
     );
 };
+
+DebugConsole.propTypes = propTypes;

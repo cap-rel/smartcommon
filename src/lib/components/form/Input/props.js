@@ -14,6 +14,8 @@ export const propTypes = {
   inputMode: PropTypes.string, // arrayOf
   size: PropTypes.number,
   placeholder: PropTypes.string,
+  type: PropTypes.string,
+  step: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 
   required: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -24,15 +26,22 @@ export const propTypes = {
   length: PropTypes.number,
   maxLength: PropTypes.number,
   pattern: PropTypes.instanceOf(RegExp),
-  patternMessage: PropTypes.string,
 
   name: PropTypes.string,
   value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   onChange: PropTypes.func,
   defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 
+  // Consumer-provided message, rendered by Label below the field (unlike
+  // `errors`, which useField computes from the validation rules).
+  error: PropTypes.node,
+  // Forces error display on standalone pages (no <Form> context).
   formSubmitted: PropTypes.bool,
+  // Called with (ruleKey, conditionBoolean) each time a rule result flips.
   onError: PropTypes.func,
+
+  onFocus: PropTypes.func,
+  onBlur: PropTypes.func,
 
   containerProps: PropTypes.object,
   labelContainerProps: PropTypes.object,

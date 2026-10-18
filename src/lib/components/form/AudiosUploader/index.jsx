@@ -56,7 +56,7 @@ export const AudiosUploader = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitting, isFormSubmitted, filteredErrors } = useField({ name, defaultValue, value, onChange, errors }); // multiple ? [] : null;
+    const { currentValue, setValue, isFormSubmitting, isFormSubmitted, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError }); // multiple ? [] : null;
 
     const initialStates = {
         // isPanelOpen: false,

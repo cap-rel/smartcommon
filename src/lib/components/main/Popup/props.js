@@ -11,9 +11,10 @@ export const propTypes = {
     isOpen: PropTypes.bool,
     close: PropTypes.func,
     keepMounted: PropTypes.bool,
+    zIndex: PropTypes.number,
 
     Overlay: PropTypes.object,
-    popupBackdrop: PropTypes.object,
+    popupBackdropProps: PropTypes.object,
     popupProps: PropTypes.object,
     titleAndButtonContainerProps: PropTypes.object,
     titleProps: PropTypes.object,

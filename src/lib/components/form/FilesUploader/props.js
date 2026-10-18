@@ -2,9 +2,14 @@ import PropTypes from "prop-types";
 
 export const propTypes = {
     label: PropTypes.string,
-    labelRow: PropTypes.bool,
     help: PropTypes.string,
     multiple: PropTypes.bool,
+    name: PropTypes.string,
+    value: PropTypes.array,
+    defaultValue: PropTypes.array,
+    required: PropTypes.bool,
+    disabled: PropTypes.bool,
+    readOnly: PropTypes.bool,
     onValueChange: PropTypes.func,
     
     containerProps: PropTypes.object,

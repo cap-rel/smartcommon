@@ -1,8 +1,10 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { RiArrowLeftSLine } from "react-icons/ri";
 
 import { useLibConfig, useStates, useVariantMerger, useIsDesktop } from "lib/hooks";
-import { log, navigatorInfo } from "lib/utils";
+import { log, navigatorInfo, twMerge, applyFunctionIfNotNil } from "lib/utils";
+import { Button } from "lib/components";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -51,7 +53,7 @@ let prevPathname = null;
 export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
-    const { id, responsive = true, location, children } = variantProps;
+    const { id, responsive = true, location, title, icon, actions, showBack, onBack, className, children } = variantProps;
 
     const libConfig = useLibConfig();
     const isDesktop = useIsDesktop();
@@ -194,11 +196,14 @@ export const Page = (props) => {
             ...props,
             "data-component": "Page",
             ref: pageRef,
-            style: { 
+            style: {
                 "--page-tabbar-height": `${tabbarHeight}px`,
                 "--page-tabbar-width": `${tabbarWidth}px`
             },
-            className: `
+            // A top-level className used to be dropped silently (only
+            // pageProps.className reached the DOM); merge it here so the
+            // standard override point works.
+            className: twMerge(`
                 text-strong-text text-app-sm overflow-y-auto bg-medium-bg
                 ${isDesktop ? "min-h-screen" : "fixed inset-x-0 top-0 h-dvh"}
                 ${tabbarHeight > 0 && "pb-(--page-tabbar-height)"}
@@ -207,7 +212,7 @@ export const Page = (props) => {
                     ${tabbarWidth > 0 && "lg:left-(--page-tabbar-width)"}
                     xl:px-30
                 `}
-            `,
+            `, className),
             ...animations[animation()]
         }))}>
             <div {...mergeProps("content", props => ({
@@ -216,6 +221,63 @@ export const Page = (props) => {
                     lg:max-w-[1024px] lg:mx-auto lg:grid lg:grid-cols-2 lg:gap-app-base
                 `
             }))}>
+                {(title || icon || actions || showBack || onBack) &&
+                    <header {...mergeProps("header", props => ({
+                        ...props,
+                        className: `
+                            flex items-center gap-app-base px-app-base pt-app-base pb-app-sm
+                            lg:col-span-full lg:px-0 lg:pt-0 lg:pb-app-base
+                        `
+                    }))}>
+                        {(showBack || onBack) &&
+                            <Button {...mergeProps("BackButton", props => ({
+                                ...props,
+                                icon: props.icon ?? RiArrowLeftSLine,
+                                onClick: e => {
+                                    e.preventDefault();
+                                    if (onBack) {
+                                        onBack(e);
+                                    } else if (typeof window !== "undefined") {
+                                        window.history.back();
+                                    }
+                                    applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                                },
+                                buttonProps: {
+                                    "aria-label": "Retour",
+                                    ...props.buttonProps,
+                                    className: `bg-transparent text-soft-text p-app-xs`
+                                }
+                            }))} />
+                        }
+                        {icon &&
+                            <div {...mergeProps("headerIcon", props => ({
+                                ...props,
+                                className: `shrink-0 text-soft-text`
+                            }))}>
+                                {typeof icon === "function" ? icon() : icon}
+                            </div>
+                        }
+                        {title &&
+                            <h1 {...mergeProps("headerTitle", props => ({
+                                ...props,
+                                className: `grow min-w-0 truncate font-app-semibold text-strong-text text-app-lg`
+                            }))}>
+                                {title}
+                            </h1>
+                        }
+                        {actions && !title &&
+                            <div className="grow" />
+                        }
+                        {actions &&
+                            <div {...mergeProps("headerActions", props => ({
+                                ...props,
+                                className: `flex shrink-0 items-center gap-app-base`
+                            }))}>
+                                {typeof actions === "function" ? actions() : actions}
+                            </div>
+                        }
+                    </header>
+                }
                 {children}
             </div>
         </motion.div>

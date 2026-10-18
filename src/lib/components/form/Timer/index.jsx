@@ -42,7 +42,7 @@ export const Timer = (props) => {
         },
     });
 
-    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors });
+    const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
 
     // Guarantee a finite number for duration maths - currentValue may be undefined
     // (before field init) or a non-numeric string coming from a parent form.
