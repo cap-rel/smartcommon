@@ -64,3 +64,24 @@ describe("Gps - onLocate", () => {
         expect(onLocate).not.toHaveBeenCalled();
     });
 });
+
+describe("Gps - empty point", () => {
+    const rules = (value) => {
+        const onError = vi.fn();
+        render(<Gps required value={value} onChange={vi.fn()} onError={onError} />);
+        return Object.fromEntries(onError.mock.calls);
+    };
+
+    it.each([[null], [["", ""]], [[null, null]]])("treats %o as empty", (value) => {
+        expect(rules(value)).toEqual({ required: true });
+    });
+
+    it("accepts a located point", () => {
+        expect(rules([45.75, 4.85])).toEqual({ required: false });
+    });
+
+    it("shows the empty state for blank coordinates", () => {
+        render(<Gps value={["", ""]} onChange={vi.fn()} />);
+        expect(screen.getByText("No location saved")).toBeTruthy();
+    });
+});

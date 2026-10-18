@@ -1,7 +1,6 @@
 import toast from "react-hot-toast";
 import { FaLocationDot } from "react-icons/fa6";
 import { useEffect, useRef } from "react";
-import { isNil, isEmpty } from "lodash";
 
 import { applyFunctionIfNotNil, locate, isEmptyValue } from "lib/utils";
 import { Button, Label } from "lib/components";
@@ -47,6 +46,10 @@ import { DEFAULT_LABELS, propTypes } from "./props";
 
 // TODO multiple
 
+// A point is empty when absent or when its coordinates are blank
+// (["", ""], [null, null]): such values may come from the caller.
+const isEmptyPoint = (point) => isEmptyValue(point) || (globalThis.Array.isArray(point) && point.every(isEmptyValue));
+
 export const Gps = props => {
   const { variantProps, mergeProps } = useVariantMerger("Gps", props);
   
@@ -71,7 +74,7 @@ export const Gps = props => {
 
   const errors = (currentValue) => ({
     required: {
-      condition: required && isEmptyValue(currentValue),
+      condition: required && isEmptyPoint(currentValue),
       message: labels.requiredError,
     },
   });
@@ -134,7 +137,7 @@ export const Gps = props => {
 
   const deleteGpsPoints = (e, index) => {
     e.preventDefault();
-    const newValue = multiple ? [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)] : ["", ""];
+    const newValue = multiple ? [...(currentValue ?? []).slice(0, index), ...(currentValue ?? []).slice(index + 1)] : null;
 
     setValue(newValue);
   };
@@ -220,7 +223,7 @@ export const Gps = props => {
           {labels.locateButton}
         </Button>
         <div { ...mergeProps("location", props => props)}>
-          {!isNil(currentValue) ? labels.savedState : labels.emptyState}
+          {!isEmptyPoint(currentValue) ? labels.savedState : labels.emptyState}
         </div>
         {/* <ul 
           { ...listProps}
