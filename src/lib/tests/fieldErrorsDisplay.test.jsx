@@ -6,6 +6,7 @@
  */
 
 import { describe, it, expect, vi } from "vitest";
+import { useEffect } from "react";
 import { render, screen, act } from "@testing-library/react";
 
 import { Input } from "lib/components/form/Input";
@@ -38,10 +39,14 @@ describe("standalone field (no <Form>)", () => {
 });
 
 describe("field inside <Form>", () => {
-    let form;
+    const Harness = ({ submitted }) => {
+        const form = useForm();
+        const { set } = form;
 
-    const Harness = () => {
-        form = useForm();
+        useEffect(() => {
+            if (submitted) set("isFormSubmitted", true);
+        }, [submitted, set]);
+
         return (
             <Form form={form}>
                 <Input name="email" label="Email" required />
@@ -50,10 +55,10 @@ describe("field inside <Form>", () => {
     };
 
     it("shows the rule message once the form is submitted", () => {
-        render(<Harness />);
+        const { rerender } = render(<Harness submitted={false} />);
         expect(screen.queryByText(REQUIRED)).toBeNull();
 
-        act(() => form.set("isFormSubmitted", true));
+        act(() => rerender(<Harness submitted />));
         expect(screen.getByText(REQUIRED)).toBeTruthy();
     });
 });
