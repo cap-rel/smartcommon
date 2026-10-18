@@ -23,8 +23,8 @@ export const UpperNavbarItem = (props) => {
     return (
         <div { ...mergeProps("link", props => ({
             ...props,
-            // A top-level onClick used to be dropped silently (only
-            // linkProps.onClick reached the element); chain both now.
+            // linkProps.onClick runs first, then the top-level onClick: both
+            // fire, neither replaces the other.
             onClick: e => {
                 if (props.onClick) {
                     props.onClick(e);
