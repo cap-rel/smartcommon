@@ -3,7 +3,7 @@ import { useEffect, useId } from "react";
 import { FaEye, FaEyeSlash, FaMinus, FaPlus } from "react-icons/fa6";
 import { isNumber, isNil, includes } from "lodash";
 
-import { applyFunctionIfNotNil, datetimeFormat, timeToMinutes, minutesToTime, isEmptyValue } from "lib/utils";
+import { applyFunctionIfNotNil, datetimeFormat, ISOFormat, timeToMinutes, minutesToTime, isEmptyValue } from "lib/utils";
 import { Label } from "lib/components";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
@@ -194,8 +194,10 @@ export const Input = (props) => {
       if (filteredType === "date") {
         return date.toISOString().split("T")[0]; // yyyy-MM-dd
       } else {
-        // datetime-local format: yyyy-MM-ddTHH:mm
-        return date.toISOString().slice(0, 16);
+        // datetime-local format: yyyy-MM-ddTHH:mm, in LOCAL time: the change
+        // handler parses the typed value as local time, so formatting in UTC
+        // (toISOString) shifted the displayed hour by the timezone offset.
+        return ISOFormat(date);
       }
     }
 
