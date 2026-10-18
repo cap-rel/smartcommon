@@ -52,7 +52,9 @@ vi.mock('lib/components', () => ({
   Panel: ({ children }) => <div>{children}</div>,
 }));
 
-vi.mock('lib/utils', () => ({
+vi.mock('lib/utils', async () => ({
+  // Real implementation: the null-safety cases are exactly what it handles.
+  isEmptyValue: (await vi.importActual('lib/utils/functions/lodashComplement/emptiness')).isEmptyValue,
   applyFunctionIfNotNil: vi.fn(),
   applyFunctionIfFunction: vi.fn(),
   locate: vi.fn(),
