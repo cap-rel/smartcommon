@@ -8,6 +8,10 @@ export const propTypes = {
     value: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     defaultValue: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
     onChange: PropTypes.func,
+    /** Called after onChange with (position.coords, position): the full
+     * GeolocationCoordinates (accuracy, altitude, ...) and the raw
+     * GeolocationPosition (timestamp). */
+    onLocate: PropTypes.func,
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,

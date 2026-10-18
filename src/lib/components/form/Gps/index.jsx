@@ -56,7 +56,7 @@ export const Gps = props => {
     value,
     defaultValue,
     onChange = () => {},
-
+    onLocate,
 
     required,
     disabled,
@@ -109,8 +109,9 @@ export const Gps = props => {
       }
       geoLocateTimeoutRef.current = setTimeout(() => {
         locate(
-          coords => {
+          (coords, position) => {
             setValue(coords);
+            applyFunctionIfNotNil(onLocate, position.coords, position);
             toast.success(labels.locateSuccess);
             set("isLocating", false);
           },

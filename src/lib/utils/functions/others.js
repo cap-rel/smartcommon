@@ -237,7 +237,10 @@ export const locate = (success = () => {}, error = () => {}) => {
         position => {
           const coords = [position.coords.latitude, position.coords.longitude];
           console.log(`Geolocation success`, coords);
-          success(coords);
+          // The raw position goes second so callers that only want
+          // [lat, lng] keep working, while others can read accuracy,
+          // altitude or timestamp.
+          success(coords, position);
         },
         err => {
           console.error(`Geolocation error`, err);

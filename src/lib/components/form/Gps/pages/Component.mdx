@@ -9,7 +9,7 @@ import * as stories from "../.stories";
 # Gps
 
 Champ qui capture la position GPS du device via
-`navigator.geolocation`. Bouton "Localiser" → géolocalisation native,
+`navigator.geolocation`. Bouton "Localiser" -> géolocalisation native,
 valeur stockée comme `[latitude, longitude]`.
 
 ## Forme de la valeur
@@ -19,11 +19,14 @@ valeur stockée comme `[latitude, longitude]`.
 
 ## Comportement
 
-- Bouton "Localiser" → `navigator.geolocation.getCurrentPosition`.
-- Permission refusée → toast d'erreur "Echec de géolocatisation".
+- Bouton "Localiser" -> `navigator.geolocation.getCurrentPosition`.
+- Permission refusée -> toast d'erreur "Echec de géolocatisation".
 - **HTTPS obligatoire** (limitation browser).
-- `onLocate(coords)` : callback optionnel en plus de `onChange`, pour
-  les side effects (logging, appel API associé).
+- `onLocate(coords, position)` : callback optionnel appelé après
+  `onChange`, pour les side effects (logging, appel API associé).
+  `coords` est l'objet `GeolocationCoordinates` complet (`latitude`,
+  `longitude`, `accuracy`, `altitude`...), `position` la
+  `GeolocationPosition` brute (pour `timestamp`).
 
 ## Validation
 
@@ -37,7 +40,7 @@ Règle `required` intégrée. Message en dur "Vous devez géolocaliser."
   (`// TODO Find a solution for multigps`).
 - Bouton de localisation en cours de finition
   (`// TODO Finish the location button`).
-- Pas de `accuracy` / `timestamp` dans la valeur — uniquement
+- Pas de `accuracy` / `timestamp` dans la valeur, uniquement
   `[lat, lng]`. Pour les métadonnées : passer par `onLocate`.
 
 ## Voir aussi

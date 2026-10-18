@@ -56,9 +56,10 @@ Dans un `<Form>` :
 - **HTTPS requis** : `navigator.geolocation` n'est disponible que sur
   origine sécurisée (HTTPS ou localhost). En dev plain HTTP, ça ne
   fonctionnera pas.
-- **`onLocate(coords)`** : callback optionnel appelé en plus du
-  `onChange`, utile pour des side effects (logging, trigger d'un
-  appel API associé).
+- **`onLocate(coords, position)`** : callback optionnel appelé après
+  le `onChange`, utile pour des side effects (logging, trigger d'un
+  appel API associé). `coords` est l'objet `GeolocationCoordinates`
+  complet, `position` la `GeolocationPosition` brute (`timestamp`).
 - **Mode `multiple`** : un bouton "+" ajoute un point, chaque point a
   son bouton "supprimer".
 
@@ -85,11 +86,12 @@ Message en dur (pas extrait en `labels`).
 - **Mode `multiple`** partiellement implémenté (commentaire
   `// TODO Find a solution for multigps` dans le code). Vérifier le
   comportement avant usage production.
-- **Bouton "Localiser"** noté `// TODO Finish the location button` —
+- **Bouton "Localiser"** noté `// TODO Finish the location button` -
   des polish UX restent à faire (états visuels, accessibilité).
 - **Pas de `accuracy` / `timestamp`** dans la valeur stockée :
   seulement `[lat, lng]`. Si tu veux ces métadonnées, utiliser
-  `onLocate` qui reçoit l'objet complet `coords`.
+  `onLocate` qui reçoit l'objet complet `coords` (et `position` pour
+  le `timestamp`).
 - **Pas de timeout configurable** sur la géolocalisation : si le device
   met longtemps à répondre, le user attend.
 - **HTTPS obligatoire** pour `getCurrentPosition` (limitation
@@ -106,7 +108,7 @@ complète dans
 
 ## Voir aussi
 
-- `<AddressInput>` : autocomplete adresse (Nominatim) — donne aussi
+- `<AddressInput>` : autocomplete adresse (Nominatim) - donne aussi
   lat/lng dans la valeur.
 - `formats/Coordinates` : formateur d'affichage de coordonnées GPS en
   lecture seule.
