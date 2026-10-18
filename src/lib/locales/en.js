@@ -34,6 +34,7 @@ import { DEFAULT_LABELS as BarcodeScanner } from "lib/components/others/BarcodeS
 import { DEFAULT_LABELS as AboutModal } from "lib/components/others/AboutModal/props";
 import { DEFAULT_LABELS as NotificationToggle } from "lib/components/others/NotificationToggle/props";
 import { DEFAULT_LABELS as Files } from "lib/components/formats/Files/props";
+import { DEFAULT_LABELS as Page } from "lib/components/main/Page/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
 import { DEFAULT_LABELS as Print } from "lib/print/labels";
@@ -63,6 +64,7 @@ export const en = {
     AboutModal,
     NotificationToggle,
     Files,
+    Page,
     UpdatePrompt,
     ViewportProvider,
     Print,

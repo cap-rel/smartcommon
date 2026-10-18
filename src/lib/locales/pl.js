@@ -300,6 +300,9 @@ export const pl = {
             files: (n) => (n === 1 ? `${n} plik` : `${n} plików`),
         },
     },
+    Page: {
+        back: "Wstecz",
+    },
     UpdatePrompt: {
         title: "Dostępna aktualizacja",
         message: "Nowa wersja jest dostępna.",

@@ -6,7 +6,7 @@ import { useLibConfig, useStates, useVariantMerger, useIsDesktop } from "lib/hoo
 import { log, navigatorInfo, twMerge, applyFunctionIfNotNil } from "lib/utils";
 import { Button } from "lib/components";
 
-import { defaultProps, propTypes } from "./props";
+import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
 
 const config = {
     pages: {
@@ -53,7 +53,9 @@ let prevPathname = null;
 export const Page = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Page", props);
 
-    const { id, responsive = true, location, title, icon, actions, showBack, onBack, className, children } = variantProps;
+    const { id, responsive = true, location, title, icon, actions, showBack, onBack, className, labels: userLabels, children } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const libConfig = useLibConfig();
     const isDesktop = useIsDesktop();
@@ -243,7 +245,7 @@ export const Page = (props) => {
                                     applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                                 },
                                 buttonProps: {
-                                    "aria-label": "Retour",
+                                    "aria-label": labels.back,
                                     ...props.buttonProps,
                                     className: `bg-transparent text-soft-text p-app-xs`
                                 }

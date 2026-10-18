@@ -288,6 +288,9 @@ export const fr = {
             files: (n) => (n === 1 ? `${n} fichier` : `${n} fichiers`),
         },
     },
+    Page: {
+        back: "Retour",
+    },
     UpdatePrompt: {
         title: "Mise à jour disponible",
         message: "Une nouvelle version est disponible.",

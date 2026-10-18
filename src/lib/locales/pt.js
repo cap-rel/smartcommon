@@ -294,6 +294,9 @@ export const pt = {
             files: (n) => (n === 1 ? `${n} ficheiro` : `${n} ficheiros`),
         },
     },
+    Page: {
+        back: "Voltar",
+    },
     UpdatePrompt: {
         title: "Atualização disponível",
         message: "Está disponível uma nova versão.",

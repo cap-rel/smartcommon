@@ -292,6 +292,9 @@ export const it = {
             files: (n) => `${n} file`,
         },
     },
+    Page: {
+        back: "Indietro",
+    },
     UpdatePrompt: {
         title: "Aggiornamento disponibile",
         message: "È disponibile una nuova versione.",

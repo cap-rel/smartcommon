@@ -292,6 +292,9 @@ export const de = {
             files: (n) => (n === 1 ? `${n} Datei` : `${n} Dateien`),
         },
     },
+    Page: {
+        back: "Zurück",
+    },
     UpdatePrompt: {
         title: "Update verfügbar",
         message: "Eine neue Version ist verfügbar.",

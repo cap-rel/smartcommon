@@ -18,6 +18,10 @@ export const propTypes = {
     showBack: PropTypes.bool,
     /** Called when the header back button is clicked. */
     onBack: PropTypes.func,
+    /** Overrides DEFAULT_LABELS (see locales bundles, "Page" namespace). */
+    labels: PropTypes.shape({
+        back: PropTypes.string,
+    }),
     children: PropTypes.node,
     pageProps: PropTypes.object,
     contentProps: PropTypes.object,
@@ -26,6 +30,10 @@ export const propTypes = {
     headerIconProps: PropTypes.object,
     headerTitleProps: PropTypes.object,
     headerActionsProps: PropTypes.object
+};
+
+export const DEFAULT_LABELS = {
+    back: "Back",
 };
 
 export const defaultProps = {

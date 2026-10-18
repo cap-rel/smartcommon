@@ -291,6 +291,9 @@ export const nl = {
             files: (n) => (n === 1 ? `${n} bestand` : `${n} bestanden`),
         },
     },
+    Page: {
+        back: "Terug",
+    },
     UpdatePrompt: {
         title: "Update beschikbaar",
         message: "Er is een nieuwe versie beschikbaar.",
