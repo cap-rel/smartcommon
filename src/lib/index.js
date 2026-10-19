@@ -4,5 +4,6 @@ export * from "./utils";
 export * from "./themes";
 export * from "./global-state";
 export * from "./print";
+export * from "./upload";
 export * from "./imageEditor";
 export * as locales from "./locales";

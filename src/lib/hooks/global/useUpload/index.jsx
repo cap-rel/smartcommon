@@ -1,6 +1,14 @@
 import { useMemo } from "react";
 
 import { useApi, useUploadQueue } from "lib/hooks";
+import { createLogger } from "lib/utils";
+import { UPLOAD_TIMEOUT } from "lib/upload/uploadErrors";
+
+const log = createLogger("useUpload");
+
+// Extra attempts of a legacy-mode upload when nothing came back from the
+// server (network drop, timeout). A 4xx/5xx would answer the same: no retry.
+const DEFAULT_UPLOAD_RETRIES = 1;
 
 /**
  * useUpload
@@ -15,9 +23,16 @@ import { useApi, useUploadQueue } from "lib/hooks";
  *
  * Two modes, picked at hook level via the `queue` option:
  *
- * Default mode (queue: false, unchanged legacy behaviour):
+ * Default mode (queue: false):
  *   uploadFile(file) -> Promise<{ upload_id, filename, mime, size, sha256 }>
  *   Throws on any error. No IDB, no Idempotency-Key, no pending_id.
+ *   When nothing came back (network drop, timeout) the upload is sent again
+ *   `retries` times (default 1) before the error is thrown.
+ *
+ * Timeout (both modes): UPLOAD_TIMEOUT (120 s) instead of the 10 s ky
+ * default, too short for a photo on a mobile uplink. Override per hook
+ * (useUpload({ timeout })) or per call (uploadFile(file, { timeout })),
+ * `timeout: false` disables it.
  *
  * Queue mode (queue: true, offline-first):
  *   uploadFile(file, options?) ->
@@ -52,27 +67,46 @@ export const useUpload = (defaultOptions = {}) => {
 
     return useMemo(() => {
         const endpoint = defaultOptions.endpoint ?? "upload";
+        const timeoutOf = (options) => (
+            "timeout" in options ? options.timeout
+                : ("timeout" in defaultOptions ? defaultOptions.timeout : UPLOAD_TIMEOUT)
+        );
 
         const uploadFileLegacy = async (file, options = {}) => {
             if (!file) {
                 throw new Error("useUpload.uploadFile: file is required");
             }
 
-            const formData = new FormData();
             const filename = options.filename ?? file.name ?? "upload.bin";
-            formData.append("file", file, filename);
 
             // Note: ky does not expose XHR upload progress events; on
             // modern browsers the fetch API does not stream upload
             // progress either. onProgress is accepted for forward
             // compatibility but currently ignored. Document this in
             // capdoc:UPLOAD_PWA.md.
-            const { onProgress: _onProgress, ...kyOptions } = options;
+            const {
+                onProgress: _onProgress,
+                retries = defaultOptions.retries ?? DEFAULT_UPLOAD_RETRIES,
+                ...kyOptions
+            } = options;
+            const timeout = timeoutOf(options);
 
-            return api.post(endpoint, {
-                body: formData,
-                ...kyOptions,
-            });
+            for (let attempt = 0; ; attempt++) {
+                const formData = new FormData();
+                formData.append("file", file, filename);
+                try {
+                    return await api.post(endpoint, {
+                        body: formData,
+                        ...kyOptions,
+                        timeout,
+                    });
+                } catch (err) {
+                    if (err?.response || attempt >= retries) {
+                        throw err;
+                    }
+                    log.warning("upload attempt failed, retrying", filename, err?.name, err?.message);
+                }
+            }
         };
 
         const uploadFileQueued = async (file, options = {}) => {
@@ -108,7 +142,7 @@ export const useUpload = (defaultOptions = {}) => {
             const formData = new FormData();
             formData.append("file", file, filename);
 
-            const { onProgress: _onProgress, meta: _meta, ...kyOptions } = options;
+            const { onProgress: _onProgress, meta: _meta, retries: _retries, ...kyOptions } = options;
             const headers = {
                 ...(kyOptions.headers || {}),
                 "Idempotency-Key": pendingId,
@@ -118,6 +152,7 @@ export const useUpload = (defaultOptions = {}) => {
                 const result = await api.post(endpoint, {
                     body: formData,
                     ...kyOptions,
+                    timeout: timeoutOf(options),
                     headers,
                 });
                 return {
@@ -160,5 +195,5 @@ export const useUpload = (defaultOptions = {}) => {
         };
 
         return { uploadFile, uploadFiles, cancelUpload };
-    }, [api, queue, queueMode, defaultOptions.endpoint]);
+    }, [api, queue, queueMode, defaultOptions.endpoint, defaultOptions.timeout, defaultOptions.retries]);
 };

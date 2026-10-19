@@ -70,6 +70,51 @@ describe("useUpload", () => {
         expect(out.upload_id).toBe("abc");
     });
 
+    it("sends with the 120 s upload timeout instead of the ky default", async () => {
+        apiMock.post.mockResolvedValueOnce({ upload_id: "t" });
+        const { result } = renderHook(() => useUpload());
+        await result.current.uploadFile(new File(["x"], "x.jpg", { type: "image/jpeg" }));
+        expect(apiMock.post.mock.calls[0][1].timeout).toBe(120000);
+    });
+
+    it("lets the hook or the call override the timeout, false disabling it", async () => {
+        apiMock.post.mockResolvedValue({ upload_id: "t" });
+        const file = new File(["x"], "x.jpg", { type: "image/jpeg" });
+        const { result: hook } = renderHook(() => useUpload({ timeout: 30000 }));
+        await hook.current.uploadFile(file);
+        await hook.current.uploadFile(file, { timeout: false });
+        expect(apiMock.post.mock.calls[0][1].timeout).toBe(30000);
+        expect(apiMock.post.mock.calls[1][1].timeout).toBe(false);
+    });
+
+    it("sends again once when nothing came back, then succeeds", async () => {
+        const timeout = Object.assign(new Error("Request timed out"), { name: "TimeoutError" });
+        apiMock.post.mockRejectedValueOnce(timeout).mockResolvedValueOnce({ upload_id: "second" });
+        const { result } = renderHook(() => useUpload());
+
+        const out = await result.current.uploadFile(new File(["x"], "x.jpg", { type: "image/jpeg" }));
+
+        expect(apiMock.post).toHaveBeenCalledTimes(2);
+        expect(apiMock.post.mock.calls[1][1].body.get("file")).toBeInstanceOf(File);
+        expect(out.upload_id).toBe("second");
+    });
+
+    it("never sends again when the server answered", async () => {
+        apiMock.post.mockRejectedValueOnce(httpError(413));
+        const { result } = renderHook(() => useUpload());
+
+        await expect(result.current.uploadFile(new File(["x"], "x.jpg", { type: "image/jpeg" }))).rejects.toThrow("HTTP 413");
+        expect(apiMock.post).toHaveBeenCalledTimes(1);
+    });
+
+    it("throws the network error once the retries are spent", async () => {
+        apiMock.post.mockRejectedValue(new TypeError("Failed to fetch"));
+        const { result } = renderHook(() => useUpload({ retries: 2 }));
+
+        await expect(result.current.uploadFile(new File(["x"], "x.jpg", { type: "image/jpeg" }))).rejects.toThrow("Failed to fetch");
+        expect(apiMock.post).toHaveBeenCalledTimes(3);
+    });
+
     it("respects a custom endpoint", async () => {
         apiMock.post.mockResolvedValueOnce({ upload_id: "z" });
         const { result } = renderHook(() => useUpload({ endpoint: "custom/upload" }));

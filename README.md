@@ -34,6 +34,8 @@ Component-specific guides live in [`docs/`](./docs):
 
 - [`network.md`](./docs/network.md) - HTTP requests via `useApi`
 - [`offline.md`](./docs/offline.md) - offline-first patterns
+- [`upload.md`](./docs/upload.md) - photo uploads from a phone: image
+  preparation under the server limits, timeout and retry, failure reading
 - [`quality.md`](./docs/quality.md) - defensive programming guide
 - [`product-category-browser.md`](./docs/product-category-browser.md) -
   `<ProductCategoryBrowser>` (catalog browser modal) +
