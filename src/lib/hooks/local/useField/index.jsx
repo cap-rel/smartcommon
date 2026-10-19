@@ -1,16 +1,33 @@
-import { useContext, useEffect, useRef } from "react";
-import { fromPairs, isEqual, isUndefined, map } from "lodash";
+import { useContext, useEffect, useRef, useState } from "react";
+import { fromPairs, isEqual, isNil, isUndefined, map } from "lodash";
 
 import { FormContext } from "lib/components";
 
 export const useField = (props) => {
   const { name, defaultValue, value, onChange, errors, formSubmitted, onError } = props;
 
-  const isControlledByForm = !isUndefined(FormContext) && !isUndefined(name) && isUndefined(value);
+  const formContext = useContext(FormContext);
 
-  const { isFormSubmitting, isFormSubmitted: contextIsFormSubmitted, values, setField } = useContext(FormContext) ?? {};
+  const { isFormSubmitting, isFormSubmitted: contextIsFormSubmitted, values, setField } = formContext ?? {};
 
-  const currentValue = isControlledByForm ? values[name] : value;
+  // Three modes, like a native input:
+  // - inside a mounted <Form>, a named field without `value` lives in the form;
+  // - with a `value` prop, the caller owns the value (controlled);
+  // - otherwise the field keeps its own value (uncontrolled), seeded from
+  //   defaultValue. Testing the FormContext object itself (always defined)
+  //   used to route that last case to the form and crash on `values[name]`.
+  const isControlledByForm = !isNil(formContext) && !isUndefined(name) && isUndefined(value);
+  const isUncontrolled = !isControlledByForm && isUndefined(value);
+
+  // Undefined until the user edits the field: an untouched field shows
+  // defaultValue, including one that arrives after mount (async data).
+  const [localValue, setLocalValue] = useState(undefined);
+
+  const currentValue = isControlledByForm
+    ? values[name]
+    : isUncontrolled
+      ? (isUndefined(localValue) ? defaultValue : localValue)
+      : value;
 
   // const currentErrors = fromPairs(map(errors(currentValue), (error, key) => [key, error.condition]));
 
@@ -65,7 +82,12 @@ export const useField = (props) => {
       if (isControlledByForm) {
         setField({ name, value: newValue, errors: newErrors });
       } else {
-        onChange(newValue, newErrors);
+        if (isUncontrolled) {
+          setLocalValue(newValue);
+        }
+        if (onChange) {
+          onChange(newValue, newErrors);
+        }
       }
     }
   };

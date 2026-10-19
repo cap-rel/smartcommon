@@ -126,11 +126,15 @@ appelle `useFormContext().submit`) :
 Chaque champ `<Input>`, `<Select>`, etc. appelle `useField({ name,
 defaultValue, errors })` en interne. Comportement :
 
-- Si **pas de FormContext** ou si `value` est passé en prop -> mode
-  contrôlé externe (le parent gère la valeur via `value`+`onChange`).
-- Sinon -> le champ se branche sur le `FormContext`, register son
-  `name` + `defaultValue`, met à jour `values[name]` à chaque saisie,
-  recalcule ses `errors[name]` à chaque changement.
+- Si `value` est passé en prop -> mode contrôlé (le parent gère la
+  valeur via `value` + `onChange`).
+- Sinon, dans un `<Form>` monté et avec un `name` -> le champ se branche
+  sur le `FormContext`, register son `name` + `defaultValue`, met à jour
+  `values[name]` à chaque saisie, recalcule ses `errors[name]` à chaque
+  changement.
+- Sinon -> mode non contrôlé, comme un `<input>` natif : le champ garde
+  sa propre valeur, initialisée par `defaultValue` (même si elle arrive
+  après le montage), et appelle `onChange` s'il est fourni.
 
 Pour rendre un composant custom "form-aware", il suffit d'appeler
 `useField({ name, defaultValue, value, onChange, errors })` et de
