@@ -12,6 +12,10 @@ describe("uploadFailureDetail", () => {
         expect(uploadFailureDetail({ name: "TimeoutError" }, 30000)).toEqual({ kind: "timeout", seconds: 30 });
     });
 
+    it("names the 5xx behind a request the circuit breaker blocked", () => {
+        expect(uploadFailureDetail({ circuitOpen: true, circuitStatus: 503 })).toEqual({ kind: "http", status: 503 });
+    });
+
     it("reports a network failure when nothing came back", () => {
         expect(uploadFailureDetail(new TypeError("Failed to fetch"))).toEqual({ kind: "network", message: "Failed to fetch" });
     });

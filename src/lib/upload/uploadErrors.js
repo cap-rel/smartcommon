@@ -17,13 +17,15 @@ export const toMegabytes = (bytes) => Math.round((bytes / (1024 * 1024)) * 10) /
  * the HTTP status when the server (or a proxy, a WAF in front of it)
  * answered, a timeout, or "network" when nothing came back. A refusal by
  * Apache, ModSecurity or a proxy never reaches the server log, only this.
+ * A request blocked by the useApi circuit breaker reports the status of the
+ * server error that opened it (circuitStatus).
  *
  * @param {Error} error ky HTTPError, TimeoutError, TypeError...
  * @param {number} [timeout] timeout the request ran with, in ms
  * @returns {{kind: "http", status: number}|{kind: "timeout", seconds: number}|{kind: "network", message: string}}
  */
 export const uploadFailureDetail = (error, timeout = UPLOAD_TIMEOUT) => {
-    const status = error?.response?.status;
+    const status = error?.response?.status ?? error?.circuitStatus;
     if (status) {
         return { kind: "http", status };
     }

@@ -43,7 +43,7 @@ const { kyCtrl, gstState, libConfigState } = vi.hoisted(() => ({
 // hook in order (so the circuit/offline checks really run), then hands off to
 // the controllable responder.
 vi.mock("ky", () => {
-    const buildInstance = (beforeHooks) => {
+    const buildInstance = (beforeHooks, afterHooks = []) => {
         const run = (method, url, options = {}) => {
             const responsePromise = (async () => {
                 const request = {
@@ -55,7 +55,19 @@ vi.mock("ky", () => {
                 for (const hook of beforeHooks) {
                     await hook(request, { ...options }, state);
                 }
-                return kyCtrl.responder(method, url, options);
+                const response = await kyCtrl.responder(method, url, options);
+                // Like ky: afterResponse hooks see every answer, then a
+                // non-2xx answer rejects as an HTTPError carrying it.
+                for (const hook of afterHooks) {
+                    await hook(request, { ...options }, response);
+                }
+                if (response && response.ok === false) {
+                    throw Object.assign(new Error(`Request failed with status code ${response.status}`), {
+                        name: "HTTPError",
+                        response,
+                    });
+                }
+                return response;
             })();
             // Mirror ky's ResponsePromise: the returned value is awaitable to
             // the Response (used by createApiMethod, which awaits then calls
@@ -73,12 +85,18 @@ vi.mock("ky", () => {
             inst[m] = (url, options) => run(m, url, options);
         }
         inst.extend = (config) =>
-            buildInstance([...beforeHooks, ...(config?.hooks?.beforeRequest ?? [])]);
+            buildInstance(
+                [...beforeHooks, ...(config?.hooks?.beforeRequest ?? [])],
+                [...afterHooks, ...(config?.hooks?.afterResponse ?? [])],
+            );
         return inst;
     };
     return {
         default: {
-            create: (config) => buildInstance([...(config?.hooks?.beforeRequest ?? [])]),
+            create: (config) => buildInstance(
+                [...(config?.hooks?.beforeRequest ?? [])],
+                [...(config?.hooks?.afterResponse ?? [])],
+            ),
         },
     };
 });
@@ -245,5 +263,35 @@ describe("session + response hardening (review P1-7/8/9/10)", () => {
 
         await expect(result.current.get("a")).resolves.toEqual({ ok: true });
         expect(refreshCount).toBe(1);
+    });
+});
+
+describe("circuit breaker - cause of a server-side trip", () => {
+    const serverError = () => ({ ok: false, status: 500, json: async () => ({ error: "Database error" }) });
+
+    it("keeps the 5xx that opened the breaker on the requests it then blocks", async () => {
+        const { result } = renderHook(() => useApiContext());
+
+        kyCtrl.responder = serverError;
+        await expect(result.current.get("albums/5/photos", { silent: true })).rejects.toMatchObject({ response: { status: 500 } });
+
+        // ky retries the failed GET straight into the open breaker: the app
+        // must still learn the server answered 500.
+        kyCtrl.responder = success;
+        const blocked = await result.current.get("albums/5/photos", { silent: true }).catch((e) => e);
+        expect(blocked.message).toMatch(/Circuit breaker open/);
+        expect(blocked.circuitOpen).toBe(true);
+        expect(blocked.circuitStatus).toBe(500);
+        expect(blocked.circuitUrl).toMatch(/albums\/5\/photos$/);
+    });
+
+    it("blocks without a server status when connectivity opened the breaker", async () => {
+        const { result } = renderHook(() => useApiContext());
+
+        navigatorInfo.isOnLine = false;
+        await expect(result.current.get("x")).rejects.toThrow(/No internet connection/);
+        const blocked = await result.current.get("x").catch((e) => e);
+        expect(blocked.circuitOpen).toBe(true);
+        expect(blocked.circuitStatus).toBeUndefined();
     });
 });

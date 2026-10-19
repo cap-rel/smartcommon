@@ -38,11 +38,34 @@ const isCircuitOpen = (circuit) => {
  * navigatorInfo lags. Server/auth-driven openings (5xx, dead session) leave
  * `offline` false so their throttle is honoured even while online.
  *
- * @param {{ openUntil: number, offline: boolean }} circuit
+ * `cause` keeps the server answer that tripped the breaker ({ status, url }):
+ * the requests it then blocks, ky's own automatic retry of the failed GET
+ * first, reject with it attached instead of losing the 5xx behind a bare
+ * "Circuit breaker open".
+ *
+ * @param {{ openUntil: number, offline: boolean, cause: ?{status: number, url: string} }} circuit
  */
-const openCircuit = (circuit, ms = 10000, offline = false) => {
+const openCircuit = (circuit, ms = 10000, offline = false, cause = null) => {
     circuit.openUntil = Date.now() + ms;
     circuit.offline = !!offline;
+    circuit.cause = cause;
+};
+
+/**
+ * Error of a request blocked by the open breaker: circuitOpen, plus the
+ * status and url of the answer that opened it when it was a server error.
+ *
+ * @param {{ cause: ?{status: number, url: string} }} circuit
+ * @returns {Error}
+ */
+const circuitBlockedError = (circuit) => {
+    const error = new Error("Circuit breaker open - requests blocked");
+    error.circuitOpen = true;
+    if (circuit.cause) {
+        error.circuitStatus = circuit.cause.status;
+        error.circuitUrl = circuit.cause.url;
+    }
+    return error;
 };
 
 /**
@@ -107,7 +130,7 @@ export const useApiContext = () => {
 
     // ---------------------- circuit ----------------------
 
-    const circuitRef = useRef({ openUntil: 0, offline: false });
+    const circuitRef = useRef({ openUntil: 0, offline: false, cause: null });
 
     // Stable (useMemo []) so it keeps the same identity across renders and can
     // be exposed on the api object without busting its memo. Immediately closes
@@ -267,7 +290,7 @@ export const useApiContext = () => {
                             log.apiError(`${method} - BLOCKED`, url);
                         }
 
-                        return Promise.reject(new Error("Circuit breaker open - requests blocked"));
+                        return Promise.reject(circuitBlockedError(circuitRef.current));
                     }
 
                     if (!navigatorInfo.isOnLine) {
@@ -735,7 +758,7 @@ export const useApiContext = () => {
                         }
 
                         if (status >= 500) {
-                            openCircuit(circuitRef.current, 5000);
+                            openCircuit(circuitRef.current, 5000, false, { status, url: request.url });
                         }
 
                     }

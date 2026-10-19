@@ -245,8 +245,9 @@ try {
 } catch (error) {
     if (error.message === 'No internet connection') {
         // Handle offline
-    } else if (error.message === 'Circuit breaker open – requests blocked') {
-        // Too many errors, requests are temporarily blocked
+    } else if (error.circuitOpen) {
+        // Requests are temporarily blocked. When a server error opened the
+        // breaker, error.circuitStatus / error.circuitUrl name it (5xx).
     } else {
         // Other errors (callback already called if apiMessage exists)
     }
@@ -257,6 +258,10 @@ try {
 
 - Les requêtes `get`, `post`, `put`, `patch`, `del` sont automatiquement authentifiées (utilisent `privateApi`)
 - Le refresh token est géré automatiquement en cas d'expiration
-- Un circuit breaker bloque les requêtes pendant 10 secondes après une erreur réseau
+- Un circuit breaker bloque les requêtes après une erreur : 5 s après une réponse 5xx ou
+  une perte de connexion, 30 s après une session expirée. Une requête bloquée rejette avec
+  `error.circuitOpen = true` et, si une erreur serveur l'a ouvert, `error.circuitStatus` et
+  `error.circuitUrl`. C'est le cas de la relance automatique d'un GET par ky après un 500 :
+  sans ces champs, l'application ne voyait que "Circuit breaker open" et perdait le 500
 - L'option `raw: true` est implémentée dans [context.jsx:347-352](../src/lib/hooks/global/useApi/context.jsx#L347-L352)
 - Le callback `onApiError` est appelé automatiquement pour les erreurs API (supprimable avec `{ silent: true }`)
