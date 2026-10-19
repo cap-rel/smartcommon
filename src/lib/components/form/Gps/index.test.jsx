@@ -85,3 +85,15 @@ describe("Gps - empty point", () => {
         expect(screen.getByText("No location saved")).toBeTruthy();
     });
 });
+
+describe("Gps - hidden inputs", () => {
+    it.each([[null], [undefined], [[null, null]]])("render %o without React value warnings", (value) => {
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+        const { container } = render(<Gps name="position" value={value} onChange={vi.fn()} />);
+
+        const hidden = container.querySelectorAll("input[name='position']");
+        expect([...hidden].map(input => input.value)).toEqual(["", ""]);
+        expect(consoleError).not.toHaveBeenCalled();
+        consoleError.mockRestore();
+    });
+});

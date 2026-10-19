@@ -200,13 +200,13 @@ export const Gps = props => {
         <input
           name={name}
           onChange={() => {}}
-          value={currentValue?.[0]}
+          value={currentValue?.[0] ?? ""}
           hidden
         />
         <input
           name={name}
           onChange={() => {}}
-          value={currentValue?.[1]}
+          value={currentValue?.[1] ?? ""}
           hidden
         />
         <Button { ...mergeProps("LocateButton", props => ({
