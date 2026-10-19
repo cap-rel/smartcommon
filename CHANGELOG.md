@@ -8,6 +8,12 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.383] - 2026-10-19
+
+Stop a named field rendered outside a Form from crashing the page
+Let a field without value or Form keep what the user types, seeded by defaultValue
+Remove the React warning about null values in Gps hidden inputs
+
 ## [1.0.382] - 2026-10-18
 
 Show form error messages, inside a Form or with formSubmitted on a standalone page
