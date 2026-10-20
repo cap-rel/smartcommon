@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 
 const { toastCalls, mockHookState } = vi.hoisted(() => ({
-    toastCalls: { count: 0 },
+    toastCalls: { count: 0, dismissed: [] },
     mockHookState: {
         updateAvailable: false,
         isApplying: false,
@@ -31,13 +31,19 @@ vi.mock("react-hot-toast", () => {
     const toast = (...args) => {
         toastCalls.count += 1;
         toastCalls.lastArgs = args;
+        return `toast-${toastCalls.count}`;
     };
-    toast.dismiss = () => {};
+    toast.dismiss = (id) => {
+        toastCalls.dismissed.push(id);
+    };
     return { default: toast };
 });
 
 vi.mock("lib/hooks", () => ({
-    usePWAUpdate: () => mockHookState,
+    usePWAUpdate: (options) => {
+        mockHookState.options = options;
+        return mockHookState;
+    },
 }));
 
 import { UpdatePrompt } from "./index";
@@ -49,7 +55,22 @@ describe("UpdatePrompt", () => {
         mockHookState.applyUpdate = vi.fn();
         toastCalls.count = 0;
         toastCalls.lastArgs = undefined;
+        toastCalls.dismissed = [];
+        mockHookState.options = undefined;
     });
+
+    // Simulates usePWAUpdate reporting a newly installed Service Worker.
+    const detectUpdate = () => {
+        act(() => {
+            mockHookState.options.onUpdateAvailable();
+        });
+    };
+
+    // Renders the toast body react-hot-toast would have received.
+    const renderToastBody = () => {
+        const [renderFn] = toastCalls.lastArgs;
+        return render(renderFn({ id: `toast-${toastCalls.count}` }));
+    };
 
     describe("default (toast) variant", () => {
         it("renders nothing in DOM (toast handled by react-hot-toast)", () => {
@@ -62,6 +83,39 @@ describe("UpdatePrompt", () => {
             mockHookState.updateAvailable = true;
             render(<UpdatePrompt />);
             expect(toastCalls.count).toBe(1);
+        });
+
+        it("does not stack a new toast on re-render", () => {
+            mockHookState.updateAvailable = true;
+            const { rerender } = render(<UpdatePrompt />);
+            rerender(<UpdatePrompt labels={{ title: "Other" }} />);
+            rerender(<UpdatePrompt />);
+            expect(toastCalls.count).toBe(1);
+        });
+
+        it("keeps the toast closed after Later until the next detection", () => {
+            mockHookState.updateAvailable = true;
+            const { rerender } = render(<UpdatePrompt />);
+            detectUpdate();
+            const body = renderToastBody();
+
+            act(() => {
+                fireEvent.click(body.getByRole("button", { name: "Later" }));
+            });
+            rerender(<UpdatePrompt />);
+
+            expect(toastCalls.dismissed).toContain("toast-1");
+            expect(toastCalls.count).toBe(1);
+
+            detectUpdate();
+            expect(toastCalls.count).toBe(2);
+        });
+
+        it("forwards onUpdateAvailable to the consumer", () => {
+            const onUpdateAvailable = vi.fn();
+            render(<UpdatePrompt onUpdateAvailable={onUpdateAvailable} />);
+            detectUpdate();
+            expect(onUpdateAvailable).toHaveBeenCalledTimes(1);
         });
 
         it("does not call toast() when updateAvailable is false", () => {
@@ -133,6 +187,19 @@ describe("UpdatePrompt", () => {
             const button = screen.getByRole("button", { name: /Refresh/ });
             expect(button.disabled).toBe(true);
         });
+
+        it("shows a Later button that hides the prompt until the next detection", () => {
+            mockHookState.updateAvailable = true;
+            const { container } = render(<UpdatePrompt variant="banner" />);
+            detectUpdate();
+
+            fireEvent.click(screen.getByRole("button", { name: "Later" }));
+            expect(container.firstChild).toBeNull();
+            expect(mockHookState.applyUpdate).not.toHaveBeenCalled();
+
+            detectUpdate();
+            expect(screen.getByText("Update available")).toBeDefined();
+        });
     });
 
     describe("modal variant", () => {
@@ -166,6 +233,19 @@ describe("UpdatePrompt", () => {
 
             const button = screen.getByRole("button", { name: /Refresh/ });
             expect(button.disabled).toBe(true);
+        });
+
+        it("shows a Later button that hides the prompt until the next detection", () => {
+            mockHookState.updateAvailable = true;
+            const { container } = render(<UpdatePrompt variant="modal" />);
+            detectUpdate();
+
+            fireEvent.click(screen.getByRole("button", { name: "Later" }));
+            expect(container.firstChild).toBeNull();
+            expect(mockHookState.applyUpdate).not.toHaveBeenCalled();
+
+            detectUpdate();
+            expect(screen.getByText("Update available")).toBeDefined();
         });
     });
 });
