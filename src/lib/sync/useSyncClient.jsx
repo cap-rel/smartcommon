@@ -1,16 +1,27 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
+import { useApi } from 'lib/hooks';
+import { createLogger } from 'lib/utils';
 import { useOnlineStatus } from '../hooks/local/useOnlineStatus';
 import { SyncStorage } from './SyncStorage';
 import { SyncApi } from './SyncApi';
 import { SyncEngine } from './SyncEngine';
 
+const logger = createLogger('useSyncClient');
+
 /**
- * React hook for offline sync functionality
+ * React hook for offline-first, bidirectional sync against SmartAuth
+ * (sync/register, sync/pull, sync/push, sync/conflicts).
+ *
+ * Requests go through useApi().private: the token, X-DeviceId and token
+ * refresh are handled there. The client registers itself on first sync
+ * (client_uuid generated and stored locally); the user must have gone
+ * through device identification, the server reads the device from the token.
  *
  * @param {Object} options
- * @param {string} options.apiUrl - Base URL for sync API
- * @param {Function} options.getAccessToken - Function returning JWT access token
- * @param {string[]} options.scope - Tables to sync
+ * @param {string[]} options.scope - Object types to sync (thirdparty, contact...), parents first
+ * @param {string} options.appVersion - App version sent to sync/register
+ * @param {string|null} options.healthCheckUrl - Server reachability probe for useOnlineStatus
+ *   (default: null, browser online status only)
  * @param {boolean} options.autoSync - Auto-sync when returning online (default: true)
  * @param {number|null} options.syncInterval - Periodic sync interval in ms (default: null)
  * @param {Function} options.onConflict - Callback when conflicts are detected
@@ -23,6 +34,8 @@ export const useSyncClient = ({
     apiUrl,
     getAccessToken,
     scope,
+    appVersion = null,
+    healthCheckUrl = null,
     autoSync = true,
     syncInterval = null,
     onConflict = null,
@@ -31,15 +44,30 @@ export const useSyncClient = ({
     onSyncError = null,
     dbName = 'smartauth_sync'
 } = {}) => {
-    // Online status from SmartCommon
+    const { private: http } = useApi();
+    const httpRef = useRef(http);
+
+    // apiUrl/getAccessToken belonged to the former contract: requests now use
+    // useApi's prefixUrl and token. Said once, they are otherwise ignored.
+    const legacyOptionsWarnedRef = useRef(false);
+    useEffect(() => {
+        if (legacyOptionsWarnedRef.current || (apiUrl === undefined && getAccessToken === undefined)) {
+            return;
+        }
+        legacyOptionsWarnedRef.current = true;
+        logger.warning('apiUrl and getAccessToken are ignored: sync requests go through useApi (prefixUrl, token)');
+    }, [apiUrl, getAccessToken]);
+
+    // Online status from SmartCommon. No default probe: sync/status needs a
+    // token and a client_uuid, a bare HEAD on it always fails.
     const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
-        healthCheckUrl: apiUrl ? `${apiUrl.replace(/\/$/, '')}/sync/status` : null,
+        healthCheckUrl,
         healthCheckInterval: 60000
     });
 
     // Refs to stabilize callbacks and avoid re-renders
-    const getAccessTokenRef = useRef(getAccessToken);
     const scopeRef = useRef(scope);
+    const appVersionRef = useRef(appVersion);
     const onConflictRef = useRef(onConflict);
     const onSyncStartRef = useRef(onSyncStart);
     const onSyncCompleteRef = useRef(onSyncComplete);
@@ -50,8 +78,9 @@ export const useSyncClient = ({
     // Layout effects run before any passive effect, so the init effect below
     // and the timers it arms still read the values of the committed render.
     useLayoutEffect(() => {
-        getAccessTokenRef.current = getAccessToken;
+        httpRef.current = http;
         scopeRef.current = scope;
+        appVersionRef.current = appVersion;
         onConflictRef.current = onConflict;
         onSyncStartRef.current = onSyncStart;
         onSyncCompleteRef.current = onSyncComplete;
@@ -86,14 +115,14 @@ export const useSyncClient = ({
                 await storage.init();
 
                 const api = new SyncApi({
-                    baseUrl: apiUrl,
-                    getAccessToken: () => getAccessTokenRef.current?.()
+                    getHttp: () => httpRef.current
                 });
 
                 const engine = new SyncEngine({
                     storage,
                     api,
                     scope: scopeRef.current,
+                    appVersion: appVersionRef.current,
                     pushChunkSize: 50
                 });
 
@@ -118,7 +147,7 @@ export const useSyncClient = ({
                     setIsInitialized(true);
                 }
             } catch (error) {
-                console.error('SyncClient initialization failed:', error);
+                logger.error('SyncClient initialization failed:', error);
                 if (mounted) {
                     setSyncError(error);
                 }
@@ -133,7 +162,7 @@ export const useSyncClient = ({
                 storageRef.current.close();
             }
         };
-    }, [apiUrl, dbName]);
+    }, [dbName]);
 
     // Refresh counts
     const refreshCounts = useCallback(async () => {
@@ -148,13 +177,14 @@ export const useSyncClient = ({
         setConflictsCount(conflicts);
     }, []);
 
-    // Register client
-    const register = useCallback(async (deviceUuid) => {
+    // Register (or re-register) the client. sync/push/pull register on their
+    // own; calling this is only needed to register ahead of the first sync.
+    const register = useCallback(async () => {
         if (!engineRef.current) {
             throw new Error('SyncClient not initialized');
         }
 
-        const result = await engineRef.current.register(deviceUuid);
+        const result = await engineRef.current.register();
         setIsRegistered(true);
 
         return result;
@@ -178,6 +208,7 @@ export const useSyncClient = ({
 
             // Update state
             const status = await engineRef.current.getStatus();
+            setIsRegistered(status.isRegistered);
             setLastSyncTime(status.lastSyncTime);
             setPendingCount(status.pendingCount);
             setConflictsCount(status.conflictsCount);
@@ -211,6 +242,11 @@ export const useSyncClient = ({
 
         const result = await engineRef.current.push();
         await refreshCounts();
+        setIsRegistered(await engineRef.current.isRegistered());
+
+        if (result.conflicts.length > 0 && onConflictRef.current) {
+            onConflictRef.current(result.conflicts);
+        }
 
         return result;
     }, [refreshCounts]);
@@ -224,6 +260,7 @@ export const useSyncClient = ({
         const result = await engineRef.current.pull();
 
         const status = await engineRef.current.getStatus();
+        setIsRegistered(status.isRegistered);
         setLastSyncTime(status.lastSyncTime);
 
         return result;
@@ -330,6 +367,15 @@ export const useSyncClient = ({
         return await engineRef.current.getStatus();
     }, []);
 
+    // Server-side status of this client (GET sync/status)
+    const getServerStatus = useCallback(async () => {
+        if (!engineRef.current) {
+            throw new Error('SyncClient not initialized');
+        }
+
+        return await engineRef.current.getServerStatus();
+    }, []);
+
     // Reset all sync data
     const reset = useCallback(async () => {
         if (!engineRef.current) {
@@ -360,7 +406,9 @@ export const useSyncClient = ({
         }
 
         // Detect transition from offline to online
-        if (wasOfflineRef.current && isOnline && isServerReachable) {
+        // isServerReachable is null without a healthCheckUrl: only an actual
+        // failed probe (false) holds the sync back.
+        if (wasOfflineRef.current && isOnline && isServerReachable !== false) {
             // Wait 2 seconds for stability before syncing
             if (autoSyncTimeoutRef.current) {
                 clearTimeout(autoSyncTimeoutRef.current);
@@ -372,7 +420,7 @@ export const useSyncClient = ({
                     try {
                         await syncRef.current();
                     } catch (error) {
-                        console.error('Auto-sync failed:', error);
+                        logger.error('Auto-sync failed:', error);
                     }
                 }
             }, 2000);
@@ -404,11 +452,11 @@ export const useSyncClient = ({
         }
 
         syncIntervalRef.current = setInterval(async () => {
-            if (isOnlineRef.current && isServerReachableRef.current && !isSyncingRef.current) {
+            if (isOnlineRef.current && isServerReachableRef.current !== false && !isSyncingRef.current) {
                 try {
                     await syncRef.current();
                 } catch (error) {
-                    console.error('Periodic sync failed:', error);
+                    logger.error('Periodic sync failed:', error);
                 }
             }
         }, syncInterval);
@@ -457,6 +505,7 @@ export const useSyncClient = ({
 
         // Utilities
         getStatus,
+        getServerStatus,
         reset
     };
 };

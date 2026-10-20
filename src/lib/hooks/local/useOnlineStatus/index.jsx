@@ -16,7 +16,8 @@ export const ONLINE_STATUS_DEFAULTS = {
  * Includes a stability delay to prevent rapid oscillations when going online.
  *
  * @param {Object} options - Configuration options
- * @param {string|null} options.healthCheckUrl - URL to check server reachability (null to disable)
+ * @param {string|null} options.healthCheckUrl - URL to check server reachability (null to disable).
+ *   Probed with an unauthenticated HEAD: a protected route (sync/status...) always fails.
  * @param {number} options.healthCheckInterval - Interval between health checks in ms (default: 30000)
  * @param {number} options.stabilityDelay - Delay before declaring online in ms (default: 2000)
  * @param {number} options.timeout - Health check timeout in ms (default: 5000)
@@ -40,11 +41,6 @@ export const ONLINE_STATUS_DEFAULTS = {
  * const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
  *     healthCheckUrl: '/api/health',
  *     healthCheckInterval: 60000
- * });
- *
- * // In SmartAuth useSyncClient
- * const { isOnline } = useOnlineStatus({
- *     healthCheckUrl: `${apiUrl}/sync/status`
  * });
  */
 export const useOnlineStatus = ({

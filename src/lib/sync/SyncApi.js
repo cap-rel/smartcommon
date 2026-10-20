@@ -1,288 +1,198 @@
 /**
- * SyncApi - HTTP client for sync endpoints
- * Handles authentication, retry with exponential backoff, and error handling
+ * SyncApi - HTTP client for the SmartAuth sync endpoints (SyncController).
+ *
+ * Requests go through the ky instance of useApi().private, which already adds
+ * the access token and X-DeviceId, refreshes an expired token and applies the
+ * circuit breaker. This class only shapes the payloads of the sync contract:
+ * the client is identified by `client_uuid` in the query string (GET) or the
+ * JSON body (POST), and pull/push handle ONE object type per call.
  */
+
+/**
+ * Turns a ky HTTPError (or a network error) into an Error carrying
+ * `status` (0 for network errors), `code` and the parsed body in `data`.
+ */
+const toSyncError = async (error, endpoint) => {
+    const response = error?.response;
+    if (!response) {
+        const networkError = new Error(`${endpoint}: ${error?.message || 'network error'}`);
+        networkError.status = 0;
+        networkError.cause = error;
+        return networkError;
+    }
+
+    let data = null;
+    try {
+        data = await response.clone().json();
+    } catch {
+        data = null;
+    }
+
+    const message = data?.error || data?.message || error.apiMessage || `HTTP ${response.status}`;
+    const syncError = new Error(`${endpoint}: ${message}`);
+    syncError.status = response.status;
+    syncError.code = error.apiCode || data?.code || null;
+    syncError.data = data;
+    syncError.cause = error;
+    return syncError;
+};
+
+/** Drops null/undefined entries: ky would send them as the string "undefined". */
+const compactParams = (params) => Object.fromEntries(
+    Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== '')
+);
+
 class SyncApi {
     /**
      * @param {Object} options
-     * @param {string} options.baseUrl - Base URL for the API (e.g., '/api/smartauth')
-     * @param {Function} options.getAccessToken - Function that returns the JWT access token
-     * @param {number} options.maxRetries - Maximum retry attempts (default: 3)
-     * @param {number} options.baseDelay - Base delay in ms for exponential backoff (default: 1000)
-     * @param {number} options.maxDelay - Maximum delay in ms (default: 30000)
+     * @param {Function} options.getHttp - Returns the ky instance to use
+     *   (useApi().private). Read on every request: useApi hands out a new
+     *   instance on each render.
      */
-    constructor({
-        baseUrl,
-        getAccessToken,
-        maxRetries = 3,
-        baseDelay = 1000,
-        maxDelay = 30000
-    }) {
-        this.baseUrl = baseUrl.replace(/\/$/, '');
-        this.getAccessToken = getAccessToken;
-        this.maxRetries = maxRetries;
-        this.baseDelay = baseDelay;
-        this.maxDelay = maxDelay;
+    constructor({ getHttp }) {
+        if (typeof getHttp !== 'function') {
+            throw new Error('SyncApi: getHttp must be a function returning the useApi().private instance');
+        }
+        this.getHttp = getHttp;
         this.clientUuid = null;
     }
 
-    /**
-     * Set the client UUID for X-Sync-Client-UUID header
-     */
     setClientUuid(uuid) {
         this.clientUuid = uuid;
     }
 
-    /**
-     * Build headers for API requests
-     */
-    async _buildHeaders() {
-        const token = await this.getAccessToken();
-        const headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        };
-
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-
-        if (this.clientUuid) {
-            headers['X-Sync-Client-UUID'] = this.clientUuid;
-        }
-
-        return headers;
-    }
-
-    /**
-     * Calculate delay for exponential backoff
-     */
-    _calculateDelay(attempt) {
-        const delay = this.baseDelay * Math.pow(2, attempt);
-        return Math.min(delay, this.maxDelay);
-    }
-
-    /**
-     * Sleep for a given duration
-     */
-    _sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    /**
-     * Check if error is retryable
-     */
-    _isRetryable(status) {
-        // Retry on network errors (status 0) and server errors (5xx)
-        return status === 0 || (status >= 500 && status < 600);
-    }
-
-    /**
-     * Execute a fetch request with retry logic
-     */
-    async _fetchWithRetry(url, options) {
-        let lastError = null;
-
-        for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-            try {
-                const response = await fetch(url, options);
-
-                // Don't retry on success or client errors (except network issues)
-                if (response.ok || !this._isRetryable(response.status)) {
-                    return response;
-                }
-
-                // Server error - will retry if attempts remaining
-                lastError = new Error(`HTTP ${response.status}: ${response.statusText}`);
-                lastError.status = response.status;
-
-            } catch (error) {
-                // Network error
-                lastError = error;
-                lastError.status = 0;
-            }
-
-            // If we have retries left, wait before next attempt
-            if (attempt < this.maxRetries) {
-                const delay = this._calculateDelay(attempt);
-                await this._sleep(delay);
-            }
-        }
-
-        // All retries exhausted
-        throw lastError;
-    }
-
-    /**
-     * Parse response and handle errors
-     */
-    async _parseResponse(response) {
-        const data = await response.json();
-
-        if (!response.ok) {
-            const error = new Error(data.message || data.error || `HTTP ${response.status}`);
-            error.status = response.status;
-            error.code = data.code || null;
-            error.data = data;
+    _http(endpoint) {
+        const http = this.getHttp();
+        if (!http) {
+            const error = new Error(`${endpoint}: API client not available`);
+            error.status = 0;
             throw error;
         }
-
-        return data;
+        return http;
     }
 
-    /**
-     * Execute a GET request
-     */
-    async _get(endpoint, params = {}) {
-        const url = new URL(`${this.baseUrl}${endpoint}`, window.location.origin);
-        Object.entries(params).forEach(([key, value]) => {
-            if (value !== undefined && value !== null) {
-                url.searchParams.append(key, value);
-            }
-        });
-
-        const headers = await this._buildHeaders();
-        const response = await this._fetchWithRetry(url.toString(), {
-            method: 'GET',
-            headers
-        });
-
-        return this._parseResponse(response);
+    _requireClientUuid(endpoint) {
+        if (!this.clientUuid) {
+            throw new Error(`${endpoint}: client_uuid not set, register the sync client first`);
+        }
     }
 
-    /**
-     * Execute a POST request
-     */
-    async _post(endpoint, body = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
-        const headers = await this._buildHeaders();
+    async _get(endpoint, searchParams = {}) {
+        const http = this._http(endpoint);
+        try {
+            return await http.get(endpoint, { searchParams: compactParams(searchParams) }).json();
+        } catch (error) {
+            throw await toSyncError(error, endpoint);
+        }
+    }
 
-        const response = await this._fetchWithRetry(url, {
-            method: 'POST',
-            headers,
-            body: JSON.stringify(body)
-        });
-
-        return this._parseResponse(response);
+    async _post(endpoint, json = {}) {
+        const http = this._http(endpoint);
+        try {
+            return await http.post(endpoint, { json }).json();
+        } catch (error) {
+            throw await toSyncError(error, endpoint);
+        }
     }
 
     // ==================== SYNC ENDPOINTS ====================
 
     /**
-     * Register a new sync client
-     * POST /sync/register
-     *
-     * @param {string} deviceUuid - Device UUID from smartAuth
-     * @param {string[]} scope - Requested sync scope (table names)
-     * @returns {Object} {client_uuid, sync_scope, server_time, config}
+     * GET sync/objects - syncable object types and the caller's rights.
+     * @returns {Promise<{objects: Object[], server_time: string}>}
      */
-    async register(deviceUuid, scope) {
-        const data = await this._post('/sync/register', {
-            device_uuid: deviceUuid,
-            platform: 'PWA',
-            user_agent: navigator.userAgent,
-            requested_scope: scope
+    async getObjects() {
+        return await this._get('sync/objects');
+    }
+
+    /**
+     * POST sync/register (idempotent for a given client_uuid).
+     * Requires a device-bound token: the server reads the device from the JWT.
+     *
+     * @param {string} clientUuid - UUID generated and stored by the client
+     * @param {string[]} scope - Object types to sync
+     * @param {string} [appVersion]
+     * @returns {Promise<{client_id: number, client_uuid: string, server_time: string, sync_scope: Object}>}
+     */
+    async register(clientUuid, scope, appVersion) {
+        const data = await this._post('sync/register', {
+            client_uuid: clientUuid,
+            sync_scope: scope,
+            ...(appVersion ? { app_version: appVersion } : {})
         });
-
-        // Store the client UUID for future requests
-        if (data.client_uuid) {
-            this.setClientUuid(data.client_uuid);
-        }
-
+        this.setClientUuid(clientUuid);
         return data;
     }
 
     /**
-     * Pull changes from server
-     * GET /sync/pull
+     * GET sync/pull for one object type.
      *
-     * @param {string|string[]} tables - Table names or '*' for all
-     * @param {string|null} since - ISO8601 timestamp of last sync
-     * @param {number} limit - Max objects per table (default: 500)
-     * @param {number} offset - Pagination offset
-     * @returns {Object} {server_time, changes: {table: {updated, deleted, has_more}}, stats}
+     * @param {string} objectType
+     * @param {Object} [options]
+     * @param {string|null} [options.lastSyncAt] - Keep it FIXED across pages
+     * @param {number} [options.limit] - 1..1000
+     * @param {string|null} [options.cursor] - next_cursor of the previous page
+     * @returns {Promise<{updated: Object[], deleted: Object[], has_more: boolean, next_cursor?: string, server_time: string}>}
      */
-    async pull(tables, since = null, limit = 500, offset = 0) {
-        const tablesParam = Array.isArray(tables) ? tables.join(',') : tables;
-
-        return await this._get('/sync/pull', {
-            tables: tablesParam,
-            since,
+    async pull(objectType, { lastSyncAt = null, limit = 500, cursor = null } = {}) {
+        this._requireClientUuid('sync/pull');
+        return await this._get('sync/pull', {
+            client_uuid: this.clientUuid,
+            object_type: objectType,
+            last_sync_at: lastSyncAt,
             limit,
-            offset
+            cursor
         });
     }
 
     /**
-     * Push changes to server
-     * POST /sync/push
+     * POST sync/push for one object type.
      *
-     * @param {Object[]} changes - Array of changes
-     * @param {string} changes[].table - Table name
-     * @param {string} changes[].action - 'create', 'update', or 'delete'
-     * @param {number|string} changes[].id - Object ID (or temp_id for create)
-     * @param {string} changes[].base_tms - Base timestamp for conflict detection
-     * @param {Object} changes[].data - Object data
-     * @returns {Object} {server_time, results: {success, conflicts, errors, id_mappings}, stats}
+     * @param {string} objectType
+     * @param {Object[]} changes - {action, id, temp_id?, base_tms, data}
+     * @returns {Promise<{success: number[], conflicts: Object[], errors: Object[], id_mapping: Object, server_time: string}>}
      */
-    async push(changes) {
-        return await this._post('/sync/push', { changes });
+    async push(objectType, changes) {
+        this._requireClientUuid('sync/push');
+        return await this._post('sync/push', {
+            client_uuid: this.clientUuid,
+            object_type: objectType,
+            changes
+        });
     }
 
     /**
-     * Get pending conflicts
-     * GET /sync/conflicts
-     *
-     * @returns {Object} {conflicts: [...], total}
+     * GET sync/conflicts - pending conflicts of this client.
+     * @returns {Promise<{conflicts: Object[], server_time: string}>}
      */
     async getConflicts() {
-        return await this._get('/sync/conflicts');
+        this._requireClientUuid('sync/conflicts');
+        return await this._get('sync/conflicts', { client_uuid: this.clientUuid });
     }
 
     /**
-     * Resolve a conflict
-     * POST /sync/conflicts/{id}/resolve
+     * POST sync/conflicts/{id}/resolve
      *
-     * @param {number} conflictId - Conflict ID
-     * @param {string} resolution - 'client', 'server', or 'merged'
-     * @param {Object|null} data - Merged data (required if resolution is 'merged')
-     * @returns {Object} {status, object}
+     * @param {number} conflictId - Server conflict id
+     * @param {'client'|'server'|'merged'} resolution
+     * @param {Object|null} data - Required for 'merged'
+     * @returns {Promise<{success: boolean, message: string}>}
      */
     async resolveConflict(conflictId, resolution, data = null) {
         const body = { resolution };
         if (data !== null) {
             body.data = data;
         }
-
-        return await this._post(`/sync/conflicts/${conflictId}/resolve`, body);
+        return await this._post(`sync/conflicts/${encodeURIComponent(conflictId)}/resolve`, body);
     }
 
     /**
-     * Get sync status
-     * GET /sync/status
-     *
-     * @returns {Object} {client_uuid, last_sync_at, pending_conflicts, sync_scope, server_stats}
+     * GET sync/status - server-side state of this client.
+     * @returns {Promise<{client_uuid: string, last_sync_at: string|null, pending_conflicts: number, server_time: string, sync_scope: Object}>}
      */
     async getStatus() {
-        return await this._get('/sync/status');
-    }
-
-    /**
-     * Unregister the sync client
-     * DELETE /sync/client
-     *
-     * @returns {Object} {status}
-     */
-    async unregister() {
-        const url = `${this.baseUrl}/sync/client`;
-        const headers = await this._buildHeaders();
-
-        const response = await this._fetchWithRetry(url, {
-            method: 'DELETE',
-            headers
-        });
-
-        return this._parseResponse(response);
+        this._requireClientUuid('sync/status');
+        return await this._get('sync/status', { client_uuid: this.clientUuid });
     }
 }
 

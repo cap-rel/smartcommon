@@ -1,370 +1,190 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SyncApi } from './SyncApi';
 
+// ky-like instance: get/post return an object exposing .json()
+const createHttp = () => {
+    const reply = (value) => ({ json: () => (value instanceof Error ? Promise.reject(value) : Promise.resolve(value)) });
+    return {
+        nextGet: {},
+        nextPost: {},
+        get: vi.fn(function (url, options) { void url; void options; return reply(this.nextGet); }),
+        post: vi.fn(function (url, options) { void url; void options; return reply(this.nextPost); })
+    };
+};
+
+// What ky throws on a non-2xx answer
+const httpError = (status, body, extra = {}) => {
+    const error = new Error(`Request failed with status code ${status}`);
+    error.response = {
+        status,
+        clone: () => ({ json: () => (body === undefined ? Promise.reject(new Error('used')) : Promise.resolve(body)) })
+    };
+    return Object.assign(error, extra);
+};
+
 describe('SyncApi', () => {
+    let http;
     let api;
-    let mockFetch;
 
     beforeEach(() => {
-        mockFetch = vi.fn();
-        global.fetch = mockFetch;
-        global.navigator = { userAgent: 'test-agent' };
-
-        api = new SyncApi({
-            baseUrl: '/api/smartauth',
-            getAccessToken: () => 'test-token'
-        });
-    });
-
-    afterEach(() => {
-        vi.restoreAllMocks();
+        http = createHttp();
+        api = new SyncApi({ getHttp: () => http });
     });
 
     describe('constructor', () => {
-        it('should initialize with correct defaults', () => {
-            expect(api.baseUrl).toBe('/api/smartauth');
-            expect(api.maxRetries).toBe(3);
-            expect(api.baseDelay).toBe(1000);
+        it('requires getHttp', () => {
+            expect(() => new SyncApi({})).toThrow(/getHttp/);
         });
 
-        it('should strip trailing slash from baseUrl', () => {
-            const api2 = new SyncApi({
-                baseUrl: '/api/smartauth/',
-                getAccessToken: () => 'token'
-            });
-            expect(api2.baseUrl).toBe('/api/smartauth');
-        });
-    });
+        it('reads the http instance on every request', async () => {
+            const other = createHttp();
+            let current = http;
+            api = new SyncApi({ getHttp: () => current });
 
-    describe('setClientUuid', () => {
-        it('should set client UUID for headers', () => {
-            api.setClientUuid('uuid-123');
-            expect(api.clientUuid).toBe('uuid-123');
-        });
-    });
+            await api.getObjects();
+            current = other;
+            await api.getObjects();
 
-    describe('_buildHeaders', () => {
-        it('should include Authorization header when token is available', async () => {
-            const headers = await api._buildHeaders();
-
-            expect(headers['Content-Type']).toBe('application/json');
-            expect(headers['Accept']).toBe('application/json');
-            expect(headers['Authorization']).toBe('Bearer test-token');
+            expect(http.get).toHaveBeenCalledTimes(1);
+            expect(other.get).toHaveBeenCalledTimes(1);
         });
 
-        it('should include X-Sync-Client-UUID when set', async () => {
-            api.setClientUuid('uuid-456');
-            const headers = await api._buildHeaders();
-
-            expect(headers['X-Sync-Client-UUID']).toBe('uuid-456');
-        });
-
-        it('should not include Authorization when no token', async () => {
-            const api2 = new SyncApi({
-                baseUrl: '/api',
-                getAccessToken: () => null
-            });
-
-            const headers = await api2._buildHeaders();
-            expect(headers['Authorization']).toBeUndefined();
-        });
-    });
-
-    describe('_calculateDelay', () => {
-        it('should calculate exponential backoff', () => {
-            expect(api._calculateDelay(0)).toBe(1000);
-            expect(api._calculateDelay(1)).toBe(2000);
-            expect(api._calculateDelay(2)).toBe(4000);
-            expect(api._calculateDelay(3)).toBe(8000);
-        });
-
-        it('should cap at maxDelay', () => {
-            expect(api._calculateDelay(10)).toBe(30000);
-        });
-    });
-
-    describe('_isRetryable', () => {
-        it('should return true for status 0 (network error)', () => {
-            expect(api._isRetryable(0)).toBe(true);
-        });
-
-        it('should return true for 5xx status', () => {
-            expect(api._isRetryable(500)).toBe(true);
-            expect(api._isRetryable(502)).toBe(true);
-            expect(api._isRetryable(503)).toBe(true);
-        });
-
-        it('should return false for 4xx status', () => {
-            expect(api._isRetryable(400)).toBe(false);
-            expect(api._isRetryable(401)).toBe(false);
-            expect(api._isRetryable(404)).toBe(false);
-        });
-
-        it('should return false for 2xx status', () => {
-            expect(api._isRetryable(200)).toBe(false);
-            expect(api._isRetryable(201)).toBe(false);
+        it('fails with status 0 when no http instance is available', async () => {
+            api = new SyncApi({ getHttp: () => null });
+            await expect(api.getObjects()).rejects.toMatchObject({ status: 0 });
         });
     });
 
     describe('register', () => {
-        it('should call POST /sync/register with correct data', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({
-                    client_uuid: 'new-client-uuid',
-                    sync_scope: ['thirdparty', 'contact']
-                })
+        it('posts client_uuid, sync_scope and app_version', async () => {
+            http.nextPost = { client_id: 4, client_uuid: 'uuid-1', sync_scope: { thirdparty: true } };
+
+            const result = await api.register('uuid-1', ['thirdparty'], '1.2.3');
+
+            expect(http.post).toHaveBeenCalledWith('sync/register', {
+                json: { client_uuid: 'uuid-1', sync_scope: ['thirdparty'], app_version: '1.2.3' }
             });
+            expect(result.client_id).toBe(4);
+            expect(api.clientUuid).toBe('uuid-1');
+        });
 
-            const result = await api.register('device-uuid', ['thirdparty', 'contact']);
+        it('omits app_version when not given', async () => {
+            await api.register('uuid-1', ['thirdparty']);
+            expect(http.post.mock.calls[0][1].json).toEqual({ client_uuid: 'uuid-1', sync_scope: ['thirdparty'] });
+        });
 
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/smartauth/sync/register',
-                expect.objectContaining({
-                    method: 'POST',
-                    body: JSON.stringify({
-                        device_uuid: 'device-uuid',
-                        platform: 'PWA',
-                        user_agent: 'test-agent',
-                        requested_scope: ['thirdparty', 'contact']
-                    })
-                })
-            );
-
-            expect(result.client_uuid).toBe('new-client-uuid');
-            expect(api.clientUuid).toBe('new-client-uuid');
+        it('sends no custom header and no URL prefix (useApi owns both)', async () => {
+            await api.register('uuid-1', []);
+            const [url, options] = http.post.mock.calls[0];
+            expect(url).toBe('sync/register');
+            expect(options.headers).toBeUndefined();
         });
     });
 
-    describe('pull', () => {
-        it('should call GET /sync/pull with correct params', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({
-                    server_time: '2024-01-15T10:00:00Z',
-                    changes: {}
-                })
-            });
-
-            await api.pull(['thirdparty', 'contact'], '2024-01-01T00:00:00Z');
-
-            const calledUrl = mockFetch.mock.calls[0][0];
-            expect(calledUrl).toContain('/sync/pull');
-            expect(calledUrl).toContain('tables=thirdparty%2Ccontact');
-            expect(calledUrl).toContain('since=2024-01-01T00%3A00%3A00Z');
+    describe('client-bound endpoints', () => {
+        it('refuse to run before a client_uuid is set', async () => {
+            await expect(api.pull('product')).rejects.toThrow(/client_uuid not set/);
+            await expect(api.push('product', [])).rejects.toThrow(/client_uuid not set/);
+            await expect(api.getConflicts()).rejects.toThrow(/client_uuid not set/);
+            await expect(api.getStatus()).rejects.toThrow(/client_uuid not set/);
+            expect(http.get).not.toHaveBeenCalled();
+            expect(http.post).not.toHaveBeenCalled();
         });
 
-        it('should handle single table as string', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({ changes: {} })
+        it('pull sends one object_type and client_uuid in the query', async () => {
+            api.setClientUuid('uuid-1');
+            http.nextGet = { updated: [], deleted: [], has_more: false, server_time: 'now' };
+
+            await api.pull('product', { lastSyncAt: '2025-01-01T00:00:00+00:00', limit: 200 });
+
+            expect(http.get).toHaveBeenCalledWith('sync/pull', {
+                searchParams: {
+                    client_uuid: 'uuid-1',
+                    object_type: 'product',
+                    last_sync_at: '2025-01-01T00:00:00+00:00',
+                    limit: 200
+                }
             });
-
-            await api.pull('thirdparty');
-
-            const calledUrl = mockFetch.mock.calls[0][0];
-            expect(calledUrl).toContain('tables=thirdparty');
-        });
-    });
-
-    describe('push', () => {
-        it('should call POST /sync/push with changes', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({
-                    results: { success: [], conflicts: [], errors: [] }
-                })
-            });
-
-            const changes = [
-                { table: 'thirdparty', action: 'create', temp_id: 'local_1', data: { name: 'Test' } }
-            ];
-
-            await api.push(changes);
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/smartauth/sync/push',
-                expect.objectContaining({
-                    method: 'POST',
-                    body: JSON.stringify({ changes })
-                })
-            );
-        });
-    });
-
-    describe('getConflicts', () => {
-        it('should call GET /sync/conflicts', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({ conflicts: [], total: 0 })
-            });
-
-            const result = await api.getConflicts();
-
-            const calledUrl = mockFetch.mock.calls[0][0];
-            expect(calledUrl).toContain('/sync/conflicts');
-            expect(result.conflicts).toEqual([]);
-        });
-    });
-
-    describe('resolveConflict', () => {
-        it('should call POST /sync/conflicts/{id}/resolve with resolution', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({ status: 'resolved' })
-            });
-
-            await api.resolveConflict(123, 'client');
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/smartauth/sync/conflicts/123/resolve',
-                expect.objectContaining({
-                    method: 'POST',
-                    body: JSON.stringify({ resolution: 'client' })
-                })
-            );
         });
 
-        it('should include data for merged resolution', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({ status: 'resolved' })
+        it('pull forwards the cursor and drops empty parameters', async () => {
+            api.setClientUuid('uuid-1');
+
+            await api.pull('product', { cursor: 'abc' });
+
+            expect(http.get.mock.calls[0][1].searchParams).toEqual({
+                client_uuid: 'uuid-1',
+                object_type: 'product',
+                limit: 500,
+                cursor: 'abc'
             });
+        });
 
-            const mergedData = { name: 'Merged Name' };
-            await api.resolveConflict(123, 'merged', mergedData);
+        it('push sends client_uuid, object_type and changes in the body', async () => {
+            api.setClientUuid('uuid-1');
+            const changes = [{ action: 'update', id: 3, base_tms: 't', data: { name: 'A' } }];
 
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/smartauth/sync/conflicts/123/resolve',
-                expect.objectContaining({
-                    body: JSON.stringify({ resolution: 'merged', data: mergedData })
-                })
-            );
+            await api.push('thirdparty', changes);
+
+            expect(http.post).toHaveBeenCalledWith('sync/push', {
+                json: { client_uuid: 'uuid-1', object_type: 'thirdparty', changes }
+            });
+        });
+
+        it('conflicts and status carry client_uuid in the query', async () => {
+            api.setClientUuid('uuid-1');
+
+            await api.getConflicts();
+            await api.getStatus();
+
+            expect(http.get).toHaveBeenNthCalledWith(1, 'sync/conflicts', { searchParams: { client_uuid: 'uuid-1' } });
+            expect(http.get).toHaveBeenNthCalledWith(2, 'sync/status', { searchParams: { client_uuid: 'uuid-1' } });
+        });
+
+        it('resolveConflict posts the resolution and merged data', async () => {
+            await api.resolveConflict(12, 'merged', { name: 'B' });
+            await api.resolveConflict(13, 'server');
+
+            expect(http.post).toHaveBeenNthCalledWith(1, 'sync/conflicts/12/resolve', {
+                json: { resolution: 'merged', data: { name: 'B' } }
+            });
+            expect(http.post).toHaveBeenNthCalledWith(2, 'sync/conflicts/13/resolve', {
+                json: { resolution: 'server' }
+            });
         });
     });
 
-    describe('getStatus', () => {
-        it('should call GET /sync/status', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({
-                    client_uuid: 'uuid',
-                    last_sync_at: '2024-01-15T10:00:00Z'
-                })
-            });
+    describe('errors', () => {
+        it('exposes status, code and body of an HTTP error', async () => {
+            api.setClientUuid('uuid-1');
+            http.nextGet = httpError(404, { error: 'Client not registered' });
 
-            const result = await api.getStatus();
+            const error = await api.getStatus().catch(e => e);
 
-            const calledUrl = mockFetch.mock.calls[0][0];
-            expect(calledUrl).toContain('/sync/status');
-            expect(result.client_uuid).toBe('uuid');
-        });
-    });
-
-    describe('unregister', () => {
-        it('should call DELETE /sync/client', async () => {
-            mockFetch.mockResolvedValue({
-                ok: true,
-                json: () => Promise.resolve({ status: 'unregistered' })
-            });
-
-            await api.unregister();
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                '/api/smartauth/sync/client',
-                expect.objectContaining({
-                    method: 'DELETE'
-                })
-            );
-        });
-    });
-
-    describe('retry logic', () => {
-        it('should retry on 500 error when calling pull', async () => {
-            const api2 = new SyncApi({
-                baseUrl: '/api',
-                getAccessToken: () => 'token',
-                maxRetries: 2,
-                baseDelay: 10
-            });
-
-            mockFetch
-                .mockResolvedValueOnce({ ok: false, status: 500, statusText: 'Server Error' })
-                .mockResolvedValueOnce({ ok: false, status: 500, statusText: 'Server Error' })
-                .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ changes: {} }) });
-
-            const result = await api2.pull(['thirdparty']);
-
-            expect(mockFetch).toHaveBeenCalledTimes(3);
-            expect(result.changes).toEqual({});
+            expect(error.status).toBe(404);
+            expect(error.data).toEqual({ error: 'Client not registered' });
+            expect(error.message).toBe('sync/status: Client not registered');
         });
 
-        it('should not retry on 400 error', async () => {
-            mockFetch.mockResolvedValue({
-                ok: false,
-                status: 400,
-                json: () => Promise.resolve({ error: 'Bad Request' })
-            });
+        it('falls back to the fields set by useApi when the body was already read', async () => {
+            api.setClientUuid('uuid-1');
+            http.nextGet = httpError(400, undefined, { apiMessage: 'Invalid cursor', apiCode: 'Invalid cursor' });
 
-            await expect(api.pull(['thirdparty'])).rejects.toThrow();
-            expect(mockFetch).toHaveBeenCalledTimes(1);
+            const error = await api.pull('product').catch(e => e);
+
+            expect(error.status).toBe(400);
+            expect(error.data).toBeNull();
+            expect(error.message).toBe('sync/pull: Invalid cursor');
         });
 
-        it('should throw after max retries', async () => {
-            const api2 = new SyncApi({
-                baseUrl: '/api',
-                getAccessToken: () => 'token',
-                maxRetries: 2,
-                baseDelay: 10
-            });
+        it('reports a network failure with status 0', async () => {
+            http.nextPost = new TypeError('Failed to fetch');
 
-            mockFetch.mockResolvedValue({
-                ok: false,
-                status: 500,
-                statusText: 'Server Error'
-            });
+            const error = await api.register('uuid-1', []).catch(e => e);
 
-            await expect(api2.pull(['thirdparty'])).rejects.toThrow('HTTP 500');
-            expect(mockFetch).toHaveBeenCalledTimes(3);
-        });
-
-        it('should retry on network error', async () => {
-            const api2 = new SyncApi({
-                baseUrl: '/api',
-                getAccessToken: () => 'token',
-                maxRetries: 1,
-                baseDelay: 10
-            });
-
-            mockFetch
-                .mockRejectedValueOnce(new Error('Network error'))
-                .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve({ changes: {} }) });
-
-            const result = await api2.pull(['thirdparty']);
-
-            expect(mockFetch).toHaveBeenCalledTimes(2);
-            expect(result.changes).toEqual({});
-        });
-    });
-
-    describe('error handling', () => {
-        it('should parse error response', async () => {
-            mockFetch.mockResolvedValue({
-                ok: false,
-                status: 404,
-                json: () => Promise.resolve({
-                    message: 'Not found',
-                    code: 'NOT_FOUND'
-                })
-            });
-
-            try {
-                await api.pull(['thirdparty']);
-            } catch (error) {
-                expect(error.message).toBe('Not found');
-                expect(error.status).toBe(404);
-                expect(error.code).toBe('NOT_FOUND');
-            }
+            expect(error.status).toBe(0);
+            expect(error.message).toContain('Failed to fetch');
+            expect(api.clientUuid).toBeNull();
         });
     });
 });

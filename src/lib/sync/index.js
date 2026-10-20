@@ -19,9 +19,9 @@
  *         getConflicts,
  *         resolveConflict
  *     } = useSyncClient({
- *         apiUrl: '/api/smartauth',
- *         getAccessToken: () => localStorage.getItem('access_token'),
- *         scope: ['thirdparty', 'contact', 'product']
+ *         // Requests go through useApi (token, device id): mount under <Provider>
+ *         scope: ['thirdparty', 'contact', 'product'],
+ *         appVersion: '1.0.0'
  *     });
  *
  *     // Create offline
@@ -55,7 +55,8 @@ export { SyncEngine } from './SyncEngine';
 
 // React hooks
 export { useSyncClient } from './useSyncClient';
-export { useReferenceSync, ForbiddenSyncError } from './useReferenceSync';
+export { useReferenceSync } from './useReferenceSync';
+export { ForbiddenSyncError } from './errors';
 
 // UI components
 export { ConflictResolver } from './ConflictResolver';

@@ -16,6 +16,15 @@ const mockApiInstance = {
     setClientUuid: vi.fn()
 };
 
+// Arguments each SyncApi/SyncEngine was built with
+const constructed = { api: [], engine: [] };
+
+const mockHttp = { name: 'useApi-private' };
+const mockUseApi = vi.fn(() => ({ private: mockHttp }));
+
+// Hoisted: useSyncClient creates its logger at import time.
+const mockLogger = vi.hoisted(() => ({ warning: vi.fn(), error: vi.fn(), info: vi.fn(), debug: vi.fn() }));
+
 const mockEngineInstance = {
     getStatus: vi.fn().mockResolvedValue({
         isRegistered: false,
@@ -26,6 +35,8 @@ const mockEngineInstance = {
         stats: {}
     }),
     register: vi.fn().mockResolvedValue({ client_uuid: 'new-uuid', sync_scope: ['thirdparty'] }),
+    isRegistered: vi.fn().mockResolvedValue(true),
+    getServerStatus: vi.fn().mockResolvedValue({ client_uuid: 'new-uuid', pending_conflicts: 0 }),
     sync: vi.fn().mockResolvedValue({ pushed: { success: 0 }, pulled: { updated: 0 }, conflicts: [], errors: [] }),
     push: vi.fn().mockResolvedValue({ success: 0, conflicts: [], errors: [] }),
     pull: vi.fn().mockResolvedValue({ updated: 0, deleted: 0 }),
@@ -44,6 +55,14 @@ const mockUseOnlineStatus = vi.fn(() => ({
 }));
 
 // Mock the dependencies before importing useSyncClient
+vi.mock('lib/hooks', () => ({
+    useApi: (...args) => mockUseApi(...args)
+}));
+
+vi.mock('lib/utils', () => ({
+    createLogger: () => mockLogger
+}));
+
 vi.mock('../hooks/local/useOnlineStatus', () => ({
     useOnlineStatus: (...args) => mockUseOnlineStatus(...args)
 }));
@@ -58,7 +77,8 @@ vi.mock('./SyncStorage', () => ({
 
 vi.mock('./SyncApi', () => ({
     SyncApi: class MockSyncApi {
-        constructor() {
+        constructor(options) {
+            constructed.api.push(options);
             Object.assign(this, mockApiInstance);
         }
     }
@@ -66,7 +86,8 @@ vi.mock('./SyncApi', () => ({
 
 vi.mock('./SyncEngine', () => ({
     SyncEngine: class MockSyncEngine {
-        constructor() {
+        constructor(options) {
+            constructed.engine.push(options);
             Object.assign(this, mockEngineInstance);
         }
     }
@@ -82,6 +103,10 @@ describe('useSyncClient', () => {
         Object.values(mockApiInstance).forEach(fn => fn.mockClear?.());
         Object.values(mockEngineInstance).forEach(fn => fn.mockClear?.());
         mockUseOnlineStatus.mockClear();
+        Object.values(mockLogger).forEach(fn => fn.mockClear());
+        constructed.api.length = 0;
+        constructed.engine.length = 0;
+        mockEngineInstance.isRegistered.mockResolvedValue(true);
 
         // Reset default implementations
         mockStorageInstance.init.mockResolvedValue();
@@ -114,9 +139,8 @@ describe('useSyncClient', () => {
     });
 
     const defaultOptions = {
-        apiUrl: '/api/smartauth',
-        getAccessToken: () => 'test-token',
-        scope: ['thirdparty', 'contact']
+        scope: ['thirdparty', 'contact'],
+        appVersion: '1.2.3'
     };
 
     describe('initialization', () => {
@@ -141,6 +165,63 @@ describe('useSyncClient', () => {
             expect(result.current.isOnline).toBe(true);
             expect(result.current.isServerReachable).toBe(true);
         });
+
+        it('sends requests through the useApi private instance', async () => {
+            const { result } = renderHook(() => useSyncClient(defaultOptions));
+
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+
+            expect(constructed.api).toHaveLength(1);
+            expect(constructed.api[0].getHttp()).toBe(mockHttp);
+            expect(constructed.engine[0]).toMatchObject({
+                scope: ['thirdparty', 'contact'],
+                appVersion: '1.2.3'
+            });
+        });
+
+        it('does not probe sync/status by default', async () => {
+            renderHook(() => useSyncClient(defaultOptions));
+
+            await waitFor(() => {
+                expect(mockUseOnlineStatus).toHaveBeenCalled();
+            });
+            expect(mockUseOnlineStatus.mock.calls[0][0].healthCheckUrl).toBeNull();
+        });
+
+        it('forwards a custom healthCheckUrl', async () => {
+            renderHook(() => useSyncClient({ ...defaultOptions, healthCheckUrl: '/health' }));
+
+            await waitFor(() => {
+                expect(mockUseOnlineStatus).toHaveBeenCalled();
+            });
+            expect(mockUseOnlineStatus.mock.calls[0][0].healthCheckUrl).toBe('/health');
+        });
+
+        it('warns once that apiUrl and getAccessToken are ignored', async () => {
+            const { result, rerender } = renderHook(
+                (props) => useSyncClient(props),
+                { initialProps: { ...defaultOptions, apiUrl: '/api/smartauth', getAccessToken: () => 't' } }
+            );
+
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+            rerender({ ...defaultOptions, apiUrl: '/api/other', getAccessToken: () => 'u' });
+
+            expect(mockLogger.warning).toHaveBeenCalledTimes(1);
+            expect(mockLogger.warning.mock.calls[0][0]).toContain('ignored');
+        });
+
+        it('does not warn without legacy options', async () => {
+            const { result } = renderHook(() => useSyncClient(defaultOptions));
+
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+            expect(mockLogger.warning).not.toHaveBeenCalled();
+        });
     });
 
     describe('register', () => {
@@ -152,10 +233,10 @@ describe('useSyncClient', () => {
             });
 
             await act(async () => {
-                await result.current.register('device-uuid');
+                await result.current.register();
             });
 
-            expect(mockEngineInstance.register).toHaveBeenCalledWith('device-uuid');
+            expect(mockEngineInstance.register).toHaveBeenCalledWith();
             expect(result.current.isRegistered).toBe(true);
         });
     });
@@ -344,6 +425,78 @@ describe('useSyncClient', () => {
             unmount();
 
             expect(mockStorageInstance.close).toHaveBeenCalled();
+        });
+    });
+
+    describe('server reachability', () => {
+        afterEach(() => {
+            vi.useRealTimers();
+        });
+
+        it('runs the periodic sync when no probe is configured (reachability null)', async () => {
+            mockUseOnlineStatus.mockReturnValue({ isOnline: true, isServerReachable: null, checkNow: vi.fn() });
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+
+            const { result } = renderHook(() => useSyncClient({ ...defaultOptions, syncInterval: 1000 }));
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(1100);
+            });
+
+            expect(mockEngineInstance.sync).toHaveBeenCalled();
+        });
+
+        it('holds the periodic sync when the probe failed', async () => {
+            mockUseOnlineStatus.mockReturnValue({ isOnline: true, isServerReachable: false, checkNow: vi.fn() });
+            vi.useFakeTimers({ shouldAdvanceTime: true });
+
+            const { result } = renderHook(() => useSyncClient({ ...defaultOptions, syncInterval: 1000 }));
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(1100);
+            });
+
+            expect(mockEngineInstance.sync).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('push conflicts and server status', () => {
+        it('calls onConflict when a push reports conflicts', async () => {
+            const onConflict = vi.fn();
+            const conflict = { conflict_id: 'local:thirdparty:1', table: 'thirdparty', object_id: 1 };
+            mockEngineInstance.push.mockResolvedValue({ success: 0, conflicts: [conflict], errors: [] });
+
+            const { result } = renderHook(() => useSyncClient({ ...defaultOptions, onConflict }));
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+
+            await act(async () => {
+                await result.current.push();
+            });
+
+            expect(onConflict).toHaveBeenCalledWith([conflict]);
+            expect(result.current.isRegistered).toBe(true);
+        });
+
+        it('exposes the server status', async () => {
+            const { result } = renderHook(() => useSyncClient(defaultOptions));
+            await waitFor(() => {
+                expect(result.current.isInitialized).toBe(true);
+            });
+
+            let status;
+            await act(async () => {
+                status = await result.current.getServerStatus();
+            });
+
+            expect(status).toEqual({ client_uuid: 'new-uuid', pending_conflicts: 0 });
         });
     });
 });
