@@ -5,9 +5,11 @@ export const propTypes = {
     checkInterval: PropTypes.number,
     variant: PropTypes.oneOf(["toast", "banner", "modal"]),
     position: PropTypes.oneOf(["top", "bottom"]),
+    versionUrl: PropTypes.string,
     labels: PropTypes.shape({
         title: PropTypes.string,
         message: PropTypes.string,
+        messageWithVersion: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
         reloadButton: PropTypes.string,
         dismissButton: PropTypes.string,
     }),
@@ -18,6 +20,7 @@ export const propTypes = {
 export const DEFAULT_LABELS = {
     title: "Update available",
     message: "A new version is available.",
+    messageWithVersion: (version) => `Version ${version} is available.`,
     reloadButton: "Refresh",
     dismissButton: "Later",
 };

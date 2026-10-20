@@ -8,7 +8,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
  * @param {number} options.checkInterval - Interval in ms to check for updates (default: 0 = disabled)
  * @param {Function} options.onUpdateAvailable - Callback when update is available
  * @param {Function} options.onUpdateActivated - Callback when update is activated
- * @returns {Object} { updateAvailable, updateActivated, checkForUpdates, applyUpdate }
+ * @param {string|null} options.versionUrl - JSON file describing the deployed build,
+ *   `{ "version": "1.4.0", "notes": "..." }`, read when an update is detected.
+ *   Resolved against the document base URL (default: "version.json", null to disable)
+ * @returns {Object} { updateAvailable, updateActivated, newVersion, releaseNotes, checkForUpdates, applyUpdate }
  */
 export const usePWAUpdate = (options = {}) => {
     const {
@@ -16,12 +19,15 @@ export const usePWAUpdate = (options = {}) => {
         checkInterval = 0,
         onUpdateAvailable,
         onUpdateActivated,
+        versionUrl = "version.json",
     } = options;
 
     const [updateAvailable, setUpdateAvailable] = useState(false);
     const [updateActivated, setUpdateActivated] = useState(false);
     const [isApplying, setIsApplying] = useState(false);
     const [registration, setRegistration] = useState(null);
+    const [newVersion, setNewVersion] = useState(null);
+    const [releaseNotes, setReleaseNotes] = useState(null);
     const waitingWorkerRef = useRef(null);
 
     // Check for updates manually
@@ -41,6 +47,36 @@ export const usePWAUpdate = (options = {}) => {
         }
         return false;
     }, []);
+
+    // Read the version of the build the waiting Service Worker carries. The
+    // query parameter matters: projects precache every *.json, and Workbox
+    // would otherwise answer with the version.json of the build still running.
+    const fetchVersionInfo = useCallback(async () => {
+        if (!versionUrl) {
+            return;
+        }
+
+        try {
+            const url = new URL(versionUrl, document.baseURI);
+            url.searchParams.set("_", String(Date.now()));
+            const response = await fetch(url, { cache: "no-store" });
+            if (!response.ok) {
+                console.warn(`[PWA] ${versionUrl} answered HTTP ${response.status}, new version number unknown`);
+                return;
+            }
+
+            const data = await response.json();
+            const version = data?.version;
+            const notes = data?.notes;
+            if (typeof version !== "string" && typeof version !== "number") {
+                console.warn(`[PWA] ${versionUrl} has no "version" field`);
+            }
+            setNewVersion(typeof version === "string" || typeof version === "number" ? String(version) : null);
+            setReleaseNotes(typeof notes === "string" && notes.trim() ? notes : null);
+        } catch (error) {
+            console.error(`[PWA] Could not read ${versionUrl}:`, error);
+        }
+    }, [versionUrl]);
 
     // Apply the pending update (skip waiting and reload)
     const applyUpdate = useCallback(() => {
@@ -88,6 +124,7 @@ export const usePWAUpdate = (options = {}) => {
                 // New SW installed and waiting
                 waitingWorkerRef.current = sw;
                 setUpdateAvailable(true);
+                fetchVersionInfo();
                 onUpdateAvailable?.();
             }
         };
@@ -110,6 +147,7 @@ export const usePWAUpdate = (options = {}) => {
                     if (reg.waiting) {
                         waitingWorkerRef.current = reg.waiting;
                         setUpdateAvailable(true);
+                        fetchVersionInfo();
                         onUpdateAvailable?.();
                     }
 
@@ -151,11 +189,13 @@ export const usePWAUpdate = (options = {}) => {
                 clearInterval(intervalId);
             }
         };
-    }, [autoReload, checkInterval, checkForUpdates, onUpdateAvailable, onUpdateActivated]);
+    }, [autoReload, checkInterval, checkForUpdates, fetchVersionInfo, onUpdateAvailable, onUpdateActivated]);
 
     return {
         updateAvailable,
         updateActivated,
+        newVersion,
+        releaseNotes,
         isApplying,
         registration,
         checkForUpdates,

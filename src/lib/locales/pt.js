@@ -351,6 +351,7 @@ export const pt = {
     UpdatePrompt: {
         title: "Atualização disponível",
         message: "Está disponível uma nova versão.",
+        messageWithVersion: (version) => `Está disponível a versão ${version}.`,
         reloadButton: "Atualizar",
         dismissButton: "Mais tarde",
     },

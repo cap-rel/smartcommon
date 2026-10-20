@@ -6,6 +6,8 @@ const { toastCalls, mockHookState } = vi.hoisted(() => ({
     mockHookState: {
         updateAvailable: false,
         isApplying: false,
+        newVersion: null,
+        releaseNotes: null,
         applyUpdate: () => {},
     },
 }));
@@ -52,6 +54,8 @@ describe("UpdatePrompt", () => {
     beforeEach(() => {
         mockHookState.updateAvailable = false;
         mockHookState.isApplying = false;
+        mockHookState.newVersion = null;
+        mockHookState.releaseNotes = null;
         mockHookState.applyUpdate = vi.fn();
         toastCalls.count = 0;
         toastCalls.lastArgs = undefined;
@@ -246,6 +250,51 @@ describe("UpdatePrompt", () => {
 
             detectUpdate();
             expect(screen.getByText("Update available")).toBeDefined();
+        });
+    });
+
+    describe("new version number", () => {
+        it.each(["banner", "modal"])("shows the version and notes in %s mode", (variant) => {
+            mockHookState.updateAvailable = true;
+            mockHookState.newVersion = "1.4.0";
+            mockHookState.releaseNotes = "Faster sync";
+            render(<UpdatePrompt variant={variant} />);
+
+            expect(screen.getByText("Version 1.4.0 is available.")).toBeDefined();
+            expect(screen.getByText("Faster sync")).toBeDefined();
+            expect(screen.queryByText("A new version is available.")).toBeNull();
+        });
+
+        it("accepts a localized messageWithVersion", () => {
+            mockHookState.updateAvailable = true;
+            mockHookState.newVersion = "2.0";
+            render(
+                <UpdatePrompt
+                    variant="banner"
+                    labels={{ messageWithVersion: (v) => `La version ${v} est disponible.` }}
+                />
+            );
+
+            expect(screen.getByText("La version 2.0 est disponible.")).toBeDefined();
+        });
+
+        it("updates the existing toast in place when the version arrives", () => {
+            mockHookState.updateAvailable = true;
+            const { rerender } = render(<UpdatePrompt />);
+            expect(toastCalls.count).toBe(1);
+
+            mockHookState.newVersion = "1.4.0";
+            rerender(<UpdatePrompt />);
+
+            expect(toastCalls.count).toBe(2);
+            expect(toastCalls.lastArgs[1].id).toBe("toast-1");
+            const body = renderToastBody();
+            expect(body.getByText("Version 1.4.0 is available.")).toBeDefined();
+        });
+
+        it("forwards versionUrl to usePWAUpdate", () => {
+            render(<UpdatePrompt versionUrl="/build.json" />);
+            expect(mockHookState.options.versionUrl).toBe("/build.json");
         });
     });
 });

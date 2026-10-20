@@ -348,6 +348,7 @@ export const nl = {
     UpdatePrompt: {
         title: "Update beschikbaar",
         message: "Er is een nieuwe versie beschikbaar.",
+        messageWithVersion: (version) => `Versie ${version} is beschikbaar.`,
         reloadButton: "Vernieuwen",
         dismissButton: "Later",
     },

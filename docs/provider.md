@@ -156,10 +156,12 @@ UI intégrée via `<Provider pwaUpdate={{ ... }}>` :
         position: "bottom", // pour variant="banner"
         autoReload: false,
         checkInterval: 0, // ms, 0 = pas de polling
+        versionUrl: "version.json", // null pour ne pas lire de version
         labels: {
-            title: "Mise a jour disponible",
+            title: "Mise à jour disponible",
             message: "Une nouvelle version est disponible.",
-            reloadButton: "Rafraichir",
+            messageWithVersion: (version) => `La version ${version} est disponible.`,
+            reloadButton: "Rafraîchir",
             dismissButton: "Plus tard",
         },
         onUpdateAvailable: () => {},
@@ -168,21 +170,46 @@ UI intégrée via `<Provider pwaUpdate={{ ... }}>` :
 >
 ```
 
+Les trois modes (`toast`, `banner`, `modal`) affichent "Rafraîchir" et
+"Plus tard". "Plus tard" masque l'invite jusqu'à la prochaine mise à
+jour détectée par le service worker.
+
+### Numéro de la nouvelle version
+
+Le service worker ne connaît pas le numéro de version. Quand une mise à
+jour est détectée, `usePWAUpdate` lit `versionUrl` (par défaut
+`version.json`, relatif à l'URL de base du document), que le projet
+produit à chaque build :
+
+```json
+{ "version": "1.4.0", "notes": "Synchronisation plus rapide." }
+```
+
+`notes` est facultatif (texte brut, retours à la ligne conservés).
+`UpdatePrompt` affiche alors `messageWithVersion(version)` à la place de
+`message`, puis les notes. Si le fichier manque ou est invalide, la
+raison est journalisée (`[PWA] ...`) et l'invite garde le message sans
+numéro. La lecture ajoute un paramètre anti-cache : sans lui, un projet
+qui met tous les `*.json` en précache recevrait le `version.json` de la
+version en cours.
+
 Pour une UI sur mesure, utiliser le hook directement :
 
 ```js
 const {
     updateAvailable,
     updateActivated,
+    newVersion,     // null tant que version.json n'est pas lu
+    releaseNotes,   // null si absent
     checkForUpdates,
     applyUpdate,
     reloadPage,
-} = usePWAUpdate({ autoReload, checkInterval, ... });
+} = usePWAUpdate({ autoReload, checkInterval, versionUrl, ... });
 ```
 
-Internes : le service worker met a jour en arriere-plan -> le hook
-ecoute `controllerchange` -> set `updateActivated` -> auto-reload ou
-prompt utilisateur.
+Internes : le service worker met à jour en arrière-plan -> le hook
+écoute `controllerchange` -> set `updateActivated` -> auto-reload ou
+invite utilisateur.
 
 ## Providers NON auto-montés
 
