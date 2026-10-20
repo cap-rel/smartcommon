@@ -90,6 +90,60 @@ export const detectPlatform = () => {
 export const needsManualInstall = (platform) => platform === "ios";
 
 /**
+ * Embedded browsers of social and mail apps (Facebook, Instagram,
+ * LinkedIn, Android WebView...). None of them can install a web app:
+ * the page has to be reopened in the real browser first.
+ */
+const IN_APP_UA = /fban|fbav|fb_iab|instagram|linkedinapp|snapchat|micromessenger|line\/|; wv\)/;
+
+/**
+ * Which "how to install" guide fits this browser?
+ *
+ * Only Chromium can trigger an install from a button. Everywhere else
+ * the user has to go through the browser's own menu, and the wording of
+ * that menu differs per browser - hence one guide per family:
+ *  - "ios": Safari share sheet (also Chrome/Edge on iOS 16.4+, same sheet)
+ *  - "in-app": embedded browser, reopen the page in the real one
+ *  - "android": Chrome menu
+ *  - "android-firefox", "android-samsung": their own menus
+ *  - "desktop-chromium": install icon in the address bar (Chrome, Edge, Opera, Brave)
+ *  - "macos-safari": File > Add to Dock (Safari 17+)
+ *  - "desktop-firefox": cannot install, suggest another browser
+ *  - "unknown": generic wording
+ *
+ * An iOS user agent without the "Safari" token is a WebView: its share
+ * sheet has no "Add to Home Screen".
+ *
+ * @returns {"ios"|"in-app"|"android"|"android-firefox"|"android-samsung"|"desktop-chromium"|"macos-safari"|"desktop-firefox"|"unknown"}
+ */
+export const detectInstallGuide = () => {
+    if (typeof navigator === "undefined") return "unknown";
+
+    const ua = (navigator.userAgent || "").toLowerCase();
+    const platform = detectPlatform();
+
+    if (IN_APP_UA.test(ua)) return "in-app";
+
+    if (platform === "ios") {
+        return /safari/.test(ua) ? "ios" : "in-app";
+    }
+
+    if (platform === "android") {
+        if (/samsungbrowser/.test(ua)) return "android-samsung";
+        if (/firefox/.test(ua)) return "android-firefox";
+        return "android";
+    }
+
+    if (platform === "desktop") {
+        if (/firefox/.test(ua)) return "desktop-firefox";
+        if (/edg\/|chrome|chromium|opr\//.test(ua)) return "desktop-chromium";
+        if (/macintosh/.test(ua) && /safari/.test(ua)) return "macos-safari";
+    }
+
+    return "unknown";
+};
+
+/**
  * Ask the browser whether THIS web app is already installed, from a
  * plain browser tab. Chromium only (Android, and desktop since 2023),
  * and only if the manifest lists itself in `related_applications` with

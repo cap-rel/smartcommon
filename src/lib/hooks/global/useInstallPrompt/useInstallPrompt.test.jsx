@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { renderHook, act, waitFor } from "@testing-library/react";
 
-import { INSTALL_STATE_KEY, useInstallPrompt } from "./index";
-import { detectPlatform, detectStandalone, queryRelatedAppInstalled } from "./detect";
+import { INSTALL_STATE_KEY, isAppKnownInstalled, useInstallPrompt } from "./index";
+import { detectInstallGuide, detectPlatform, detectStandalone, queryRelatedAppInstalled } from "./detect";
 
 const apiMock = {
     user: { accessToken: "jwt" },
@@ -102,6 +102,29 @@ describe("detect helpers", () => {
         });
     });
 
+    it("picks the install guide of each browser family", () => {
+        const cases = [
+            [IPHONE_UA, "ios"],
+            ["Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 CriOS/120 Safari/604.1", "ios"],
+            // iOS WebView of a mail app: no "Safari" token.
+            ["Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148", "in-app"],
+            ["Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148 [FBAN/FBIOS;FBAV/440]", "in-app"],
+            ["Mozilla/5.0 (Linux; Android 14; Pixel 8; wv) AppleWebKit/537.36 Version/4.0 Chrome/120 Mobile Safari/537.36", "in-app"],
+            [ANDROID_UA, "android"],
+            ["Mozilla/5.0 (Android 14; Mobile; rv:131.0) Gecko/131.0 Firefox/131.0", "android-firefox"],
+            ["Mozilla/5.0 (Linux; Android 14; SM-S918B) AppleWebKit/537.36 SamsungBrowser/25.0 Chrome/121 Mobile Safari/537.36", "android-samsung"],
+            [DESKTOP_UA, "desktop-chromium"],
+            ["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36 Edg/120", "desktop-chromium"],
+            ["Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0", "desktop-firefox"],
+            ["Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 Version/17.0 Safari/605.1.15", "macos-safari"],
+        ];
+
+        for (const [ua, guide] of cases) {
+            setUserAgent(ua);
+            expect(detectInstallGuide(), ua).toBe(guide);
+        }
+    });
+
     it("never answers 'not installed' from getInstalledRelatedApps", async () => {
         // An empty list means "no related app declared", which a manifest
         // without related_applications also produces. Answering false
@@ -182,14 +205,39 @@ describe("useInstallPrompt", () => {
         expect(second.result.current.shouldOffer).toBe(true);
     });
 
-    it("offers nothing on a browser that can neither prompt nor be instructed", () => {
-        setUserAgent(DESKTOP_UA);
+    it("offers the browser's own steps when no native prompt is available", () => {
+        setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0");
         const { result } = renderHook(() => useInstallPrompt({ minVisits: 0 }));
 
-        // No beforeinstallprompt fired: Firefox/desktop Safari cannot install.
+        // No beforeinstallprompt: the answer to "how do I install it" is
+        // still worth showing, even if it is "use another browser".
         expect(result.current.canPrompt).toBe(false);
+        expect(result.current.needsManualInstructions).toBe(true);
+        expect(result.current.installGuide).toBe("desktop-firefox");
+        expect(result.current.shouldOffer).toBe(true);
+    });
+
+    it("switches to the native prompt once Chromium offers one", () => {
+        setUserAgent(DESKTOP_UA);
+        const { result } = renderHook(() => useInstallPrompt({ minVisits: 0 }));
+        expect(result.current.needsManualInstructions).toBe(true);
+
+        fireBeforeInstallPrompt();
+
+        expect(result.current.canPrompt).toBe(true);
         expect(result.current.needsManualInstructions).toBe(false);
-        expect(result.current.shouldOffer).toBe(false);
+    });
+
+    it("tells an install entry whether to hide, without counting a visit", () => {
+        expect(isAppKnownInstalled()).toBe(false);
+        expect(localStorage.getItem(INSTALL_STATE_KEY)).toBeNull();
+
+        localStorage.setItem(INSTALL_STATE_KEY, JSON.stringify({ everStandalone: true }));
+        expect(isAppKnownInstalled()).toBe(true);
+
+        localStorage.clear();
+        mockMatchMedia(["standalone"]);
+        expect(isAppKnownInstalled()).toBe(true);
     });
 
     it("offers manual instructions on iOS, where no native prompt exists", () => {

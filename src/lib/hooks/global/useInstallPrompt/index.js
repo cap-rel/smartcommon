@@ -6,9 +6,9 @@ import { createLogger, getLocal, setLocal } from "lib/utils";
 import {
     INSTALL_MODE_BROWSER,
     INSTALL_MODE_STANDALONE,
+    detectInstallGuide,
     detectPlatform,
     detectStandalone,
-    needsManualInstall,
     queryRelatedAppInstalled,
 } from "./detect";
 
@@ -16,6 +16,9 @@ const log = createLogger("useInstallPrompt");
 
 /** Remembers, per browser profile, what we already know and what the user answered. */
 export const INSTALL_STATE_KEY = "smartcommon.install.state";
+
+/** Window event asking the mounted InstallPrompt to open on demand. */
+export const INSTALL_PROMPT_OPEN_EVENT = "smartcommon:install-prompt:open";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -32,6 +35,31 @@ const readState = () => {
         visits: typeof stored?.visits === "number" ? stored.visits : 0,
     };
 };
+
+/**
+ * Open the install invitation now, whatever the reminder policy says.
+ *
+ * For an explicit "Install the app" entry (settings, profile, help): the
+ * user asked, so neither the snooze nor the three-refusals rule applies,
+ * and closing it does not count as a refusal. Requires an InstallPrompt
+ * mounted somewhere in the tree; a single mounted instance keeps the
+ * visit counter and the server report right.
+ */
+export const openInstallPrompt = () => {
+    if (typeof window === "undefined") return;
+    window.dispatchEvent(new Event(INSTALL_PROMPT_OPEN_EVENT));
+};
+
+/**
+ * Has this app been seen installed on this browser profile?
+ *
+ * Same monotonic answer as `isInstalled` from the hook, minus the live
+ * Chromium signals, without mounting a second hook (which would count an
+ * extra visit). Meant to hide an "Install the app" entry.
+ *
+ * @returns {boolean}
+ */
+export const isAppKnownInstalled = () => detectStandalone() || readState().everStandalone;
 
 /**
  * useInstallPrompt
@@ -72,6 +100,7 @@ const readState = () => {
  *   canPrompt: boolean,
  *   needsManualInstructions: boolean,
  *   platform: ("ios"|"android"|"desktop"|"unknown"),
+ *   installGuide: string,
  *   shouldOffer: boolean,
  *   promptInstall: () => Promise<"accepted"|"dismissed"|"unavailable">,
  *   dismiss: (options?: { forever?: boolean }) => void,
@@ -89,6 +118,7 @@ export const useInstallPrompt = (options = {}) => {
     const api = useApi();
 
     const [platform] = useState(detectPlatform);
+    const [installGuide] = useState(detectInstallGuide);
     const [isStandalone] = useState(detectStandalone);
 
     // Snapshot of the stored state for THIS visit, including whether the
@@ -273,19 +303,19 @@ export const useInstallPrompt = (options = {}) => {
         if (refusal.neverAsk || refusal.snoozed) return false;
         if (visit.visits < minVisits) return false;
 
-        // Nothing to offer: no native prompt available and no manual
-        // instructions worth showing (a desktop Firefox cannot install).
-        if (!canPrompt && !needsManualInstall(platform)) return false;
-
+        // Without a native prompt there is always a guide to show, even
+        // if it only says "open this page in another browser": that is
+        // still the answer to "how do I install the app?".
         return true;
-    }, [isInstalled, refusal, visit.visits, minVisits, canPrompt, platform]);
+    }, [isInstalled, refusal, visit.visits, minVisits]);
 
     return {
         isStandalone,
         isInstalled,
         canPrompt,
-        needsManualInstructions: needsManualInstall(platform),
+        needsManualInstructions: !canPrompt,
         platform,
+        installGuide,
         shouldOffer,
         promptInstall,
         dismiss,
@@ -293,6 +323,6 @@ export const useInstallPrompt = (options = {}) => {
     };
 };
 
-export { INSTALL_MODE_BROWSER, INSTALL_MODE_STANDALONE, detectPlatform, detectStandalone };
+export { INSTALL_MODE_BROWSER, INSTALL_MODE_STANDALONE, detectInstallGuide, detectPlatform, detectStandalone };
 
 export default useInstallPrompt;
