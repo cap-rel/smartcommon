@@ -20,8 +20,8 @@ const logger = createLogger('useSyncClient');
  * @param {Object} options
  * @param {string[]} options.scope - Object types to sync (thirdparty, contact...), parents first
  * @param {string} options.appVersion - App version sent to sync/register
- * @param {string|null} options.healthCheckUrl - Server reachability probe for useOnlineStatus
- *   (default: null, browser online status only)
+ * @param {string|null} [options.healthCheckUrl] - Server reachability probe for useOnlineStatus
+ *   (default: SmartAuth `health` route under useApi's prefixUrl, null for browser online status only)
  * @param {boolean} options.autoSync - Auto-sync when returning online (default: true)
  * @param {number|null} options.syncInterval - Periodic sync interval in ms (default: null)
  * @param {Function} options.onConflict - Callback when conflicts are detected
@@ -35,7 +35,7 @@ export const useSyncClient = ({
     getAccessToken,
     scope,
     appVersion = null,
-    healthCheckUrl = null,
+    healthCheckUrl,
     autoSync = true,
     syncInterval = null,
     onConflict = null,
@@ -58,8 +58,8 @@ export const useSyncClient = ({
         logger.warning('apiUrl and getAccessToken are ignored: sync requests go through useApi (prefixUrl, token)');
     }, [apiUrl, getAccessToken]);
 
-    // Online status from SmartCommon. No default probe: sync/status needs a
-    // token and a client_uuid, a bare HEAD on it always fails.
+    // Online status from SmartCommon. Default probe: the public SmartAuth
+    // health route (sync/status needs a token and a client_uuid).
     const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
         healthCheckUrl,
         healthCheckInterval: 60000

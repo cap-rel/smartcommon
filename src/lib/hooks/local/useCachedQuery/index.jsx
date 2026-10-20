@@ -82,7 +82,8 @@ export const useCachedQuery = ({
     staleTime = CACHED_QUERY_DEFAULTS.STALE_TIME,
     enabled = true
 } = {}) => {
-    const { isOnline } = useOnlineStatus();
+    // Network state only: this hook never reads server reachability.
+    const { isOnline } = useOnlineStatus({ healthCheckUrl: null });
     const mountedRef = useRef(true);
     const executingRef = useRef(false);
     // Monotonic request token: every execute() run claims a new id; only the run

@@ -1,6 +1,20 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useOnlineStatus, ONLINE_STATUS_DEFAULTS } from './index.jsx';
+import { LibConfigContext } from 'lib/components/app/LibConfigProvider/context';
+import {
+    useOnlineStatus,
+    ONLINE_STATUS_DEFAULTS,
+    defaultHealthCheckUrl,
+    resetHealthCheckCache
+} from './index.jsx';
+
+// LibConfigProvider stand-in carrying only the API prefix.
+const withPrefixUrl = (prefixUrl) => {
+    const PrefixUrlWrapper = ({ children }) => (
+        <LibConfigContext.Provider value={{ api: { prefixUrl } }}>{children}</LibConfigContext.Provider>
+    );
+    return PrefixUrlWrapper;
+};
 
 describe('useOnlineStatus', () => {
     let originalNavigator;
@@ -16,6 +30,7 @@ describe('useOnlineStatus', () => {
             removeEventListener: vi.fn()
         };
         global.fetch = vi.fn();
+        resetHealthCheckCache();
 
         vi.useFakeTimers();
     });
@@ -239,6 +254,8 @@ describe('useOnlineStatus', () => {
 
             // 1 = the mount probe.
             expect(global.fetch).toHaveBeenCalledTimes(1);
+            // Let it settle: a tick firing while it is still in flight shares it.
+            await act(async () => {});
 
             await act(async () => {
                 vi.advanceTimersByTime(5000);
@@ -260,6 +277,7 @@ describe('useOnlineStatus', () => {
                 healthCheckUrl: '/api/health',
                 healthCheckInterval: 5000
             }));
+            await act(async () => {});
 
             await act(async () => {
                 vi.advanceTimersByTime(5000);
@@ -406,6 +424,103 @@ describe('useOnlineStatus', () => {
             expect(ONLINE_STATUS_DEFAULTS.HEALTH_CHECK_INTERVAL).toBe(30000);
             expect(ONLINE_STATUS_DEFAULTS.STABILITY_DELAY).toBe(1000);
             expect(ONLINE_STATUS_DEFAULTS.TIMEOUT).toBe(5000);
+        });
+    });
+
+    describe('default health route', () => {
+        it('builds the URL from the API prefix', () => {
+            expect(defaultHealthCheckUrl('/mymodule/pwa/api.php/')).toBe('/mymodule/pwa/api.php/health');
+            expect(defaultHealthCheckUrl('https://erp.example.com/api.php')).toBe('https://erp.example.com/api.php/health');
+            expect(defaultHealthCheckUrl('')).toBeNull();
+            expect(defaultHealthCheckUrl(undefined)).toBeNull();
+        });
+
+        it('probes the SmartAuth health route of LibConfig when no URL is given', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true, status: 204 });
+
+            const { result } = renderHook(() => useOnlineStatus(), { wrapper: withPrefixUrl('/mymodule/pwa/api.php/') });
+            await act(async () => {});
+
+            expect(global.fetch).toHaveBeenCalledWith('/mymodule/pwa/api.php/health', expect.objectContaining({ method: 'HEAD' }));
+            expect(result.current.isServerReachable).toBe(true);
+        });
+
+        it('does not probe when the URL is explicitly null', async () => {
+            const { result } = renderHook(() => useOnlineStatus({ healthCheckUrl: null }), { wrapper: withPrefixUrl('/api.php/') });
+            await act(async () => {});
+
+            expect(global.fetch).not.toHaveBeenCalled();
+            expect(result.current.isServerReachable).toBeNull();
+        });
+
+        it('lets an explicit URL win over the default one', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+            renderHook(() => useOnlineStatus({ healthCheckUrl: '/custom' }), { wrapper: withPrefixUrl('/api.php/') });
+            await act(async () => {});
+
+            expect(global.fetch.mock.calls[0][0]).toBe('/custom');
+        });
+    });
+
+    describe('reachability rule', () => {
+        it.each([
+            [401, true],
+            [404, true],
+            [405, true],
+            [500, false],
+            [503, false]
+        ])('treats HTTP %i as reachable=%s', async (status, expected) => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: false, status });
+
+            const { result } = renderHook(() => useOnlineStatus({ healthCheckUrl: '/api/health' }));
+            await act(async () => {});
+
+            expect(result.current.isServerReachable).toBe(expected);
+        });
+    });
+
+    describe('shared probe', () => {
+        it('sends one request for several instances on the same URL', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+            const first = renderHook(() => useOnlineStatus({ healthCheckUrl: '/api/health' }));
+            const second = renderHook(() => useOnlineStatus({ healthCheckUrl: '/api/health' }));
+            await act(async () => {});
+
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+            expect(first.result.current.isServerReachable).toBe(true);
+            expect(second.result.current.isServerReachable).toBe(true);
+        });
+
+        it('reuses a recent answer for a periodic check, not for checkNow', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+            renderHook(() => useOnlineStatus({ healthCheckUrl: '/api/health', healthCheckInterval: 10000 }));
+            await act(async () => {});
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+
+            // A second instance mounting 2s later: its mount probe is periodic
+            const late = renderHook(() => useOnlineStatus({ healthCheckUrl: '/api/health', healthCheckInterval: 10000 }));
+            await act(async () => {
+                await vi.advanceTimersByTimeAsync(2000);
+            });
+            expect(global.fetch).toHaveBeenCalledTimes(1);
+
+            await act(async () => {
+                await late.result.current.checkNow();
+            });
+            expect(global.fetch).toHaveBeenCalledTimes(2);
+        });
+
+        it('keeps probes on different URLs separate', async () => {
+            global.fetch = vi.fn().mockResolvedValue({ ok: true });
+
+            renderHook(() => useOnlineStatus({ healthCheckUrl: '/a/health' }));
+            renderHook(() => useOnlineStatus({ healthCheckUrl: '/b/health' }));
+            await act(async () => {});
+
+            expect(global.fetch).toHaveBeenCalledTimes(2);
         });
     });
 });

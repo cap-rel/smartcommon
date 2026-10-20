@@ -181,13 +181,13 @@ describe('useSyncClient', () => {
             });
         });
 
-        it('does not probe sync/status by default', async () => {
+        it('leaves the default health route to useOnlineStatus', async () => {
             renderHook(() => useSyncClient(defaultOptions));
 
             await waitFor(() => {
                 expect(mockUseOnlineStatus).toHaveBeenCalled();
             });
-            expect(mockUseOnlineStatus.mock.calls[0][0].healthCheckUrl).toBeNull();
+            expect(mockUseOnlineStatus.mock.calls[0][0].healthCheckUrl).toBeUndefined();
         });
 
         it('forwards a custom healthCheckUrl', async () => {

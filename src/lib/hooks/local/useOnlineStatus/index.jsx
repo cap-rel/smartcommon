@@ -1,4 +1,10 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useContext } from 'react';
+// Path import, not the lib/components barrel: that barrel re-exports
+// components which import lib/hooks, a cycle Vitest resolves to undefined.
+import { LibConfigContext } from 'lib/components/app/LibConfigProvider/context';
+import { createLogger } from 'lib/utils';
+
+const logger = createLogger('useOnlineStatus');
 
 /**
  * Default configuration for useOnlineStatus
@@ -10,14 +16,99 @@ export const ONLINE_STATUS_DEFAULTS = {
 };
 
 /**
+ * Public SmartAuth route answering 204 to GET and HEAD, without token,
+ * database access nor request log.
+ */
+export const HEALTH_ROUTE = 'health';
+
+/**
+ * Health URL derived from the API prefix of LibConfig (`api.prefixUrl`),
+ * null when there is none.
+ * @param {string|undefined|null} prefixUrl
+ * @returns {string|null}
+ */
+export const defaultHealthCheckUrl = (prefixUrl) => {
+    if (typeof prefixUrl !== 'string' || prefixUrl.trim() === '') {
+        return null;
+    }
+    return `${prefixUrl.trim().replace(/\/+$/, '')}/${HEALTH_ROUTE}`;
+};
+
+// One probe per URL for the whole app: every mounted instance shares the
+// in-flight request and, for periodic checks, a recent answer. Without it a
+// screen of N components each probing on its own sends N requests per tick.
+const probes = new Map();
+
+/** Forgets every shared probe result (tests, logout). */
+export const resetHealthCheckCache = () => {
+    probes.clear();
+};
+
+// The server is reachable as soon as it answers below 500: a 401/404 from an
+// older SmartAuth without the health route still proves it is up, while a
+// 5xx (SmartAuth disabled, proxy error) means it cannot serve requests.
+const isReachableResponse = (response) => Boolean(response?.ok)
+    || (typeof response?.status === 'number' && response.status < 500);
+
+const probeServer = (url, timeout, maxAgeMs) => {
+    let entry = probes.get(url);
+    if (!entry) {
+        entry = { inFlight: null, result: null, at: 0 };
+        probes.set(url, entry);
+    }
+    if (entry.inFlight) {
+        return entry.inFlight;
+    }
+    if (maxAgeMs > 0 && entry.at && Date.now() - entry.at < maxAgeMs) {
+        return Promise.resolve(entry.result);
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+    entry.inFlight = fetch(url, {
+        method: 'HEAD',
+        cache: 'no-store',
+        signal: controller.signal
+    })
+        .then((response) => {
+            const reachable = isReachableResponse(response);
+            if (!reachable && entry.result !== false) {
+                logger.warning(`Server unreachable: HEAD ${url} answered HTTP ${response?.status ?? '?'}`);
+            }
+            return reachable;
+        })
+        .catch((error) => {
+            if (entry.result !== false) {
+                logger.warning(`Server unreachable: HEAD ${url} failed:`, error?.name === 'AbortError' ? `timeout after ${timeout}ms` : error);
+            }
+            return false;
+        })
+        .then((reachable) => {
+            // Cleared on both paths: an aborted or failed request used to
+            // leave its timer running.
+            clearTimeout(timeoutId);
+            entry.result = reachable;
+            entry.at = Date.now();
+            entry.inFlight = null;
+            return reachable;
+        });
+
+    return entry.inFlight;
+};
+
+/**
  * Hook for robust online/offline detection with optional server health check
  *
  * Detects network connectivity changes and optionally verifies server reachability.
  * Includes a stability delay to prevent rapid oscillations when going online.
  *
  * @param {Object} options - Configuration options
- * @param {string|null} options.healthCheckUrl - URL to check server reachability (null to disable).
- *   Probed with an unauthenticated HEAD: a protected route (sync/status...) always fails.
+ * @param {string|null} [options.healthCheckUrl] - URL to check server reachability.
+ *   Omitted: the SmartAuth `health` route under LibConfig `api.prefixUrl` (no probe
+ *   without a prefixUrl). null: no probe. Probed with an unauthenticated HEAD,
+ *   shared by every instance using the same URL; any answer below 500 counts
+ *   as reachable.
  * @param {number} options.healthCheckInterval - Interval between health checks in ms (default: 30000)
  * @param {number} options.stabilityDelay - Delay before declaring online in ms (default: 2000)
  * @param {number} options.timeout - Health check timeout in ms (default: 5000)
@@ -37,18 +128,27 @@ export const ONLINE_STATUS_DEFAULTS = {
  * const { isOnline, isOffline } = useOnlineStatus();
  *
  * @example
- * // With server health check
+ * // Network only, no server probe
+ * const { isOnline } = useOnlineStatus({ healthCheckUrl: null });
+ *
+ * @example
+ * // Custom probe URL and interval
  * const { isOnline, isServerReachable, checkNow } = useOnlineStatus({
  *     healthCheckUrl: '/api/health',
  *     healthCheckInterval: 60000
  * });
  */
 export const useOnlineStatus = ({
-    healthCheckUrl = null,
+    healthCheckUrl: healthCheckUrlOption,
     healthCheckInterval = ONLINE_STATUS_DEFAULTS.HEALTH_CHECK_INTERVAL,
     stabilityDelay = ONLINE_STATUS_DEFAULTS.STABILITY_DELAY,
     timeout = ONLINE_STATUS_DEFAULTS.TIMEOUT
 } = {}) => {
+    const libConfig = useContext(LibConfigContext);
+    const healthCheckUrl = healthCheckUrlOption === undefined
+        ? defaultHealthCheckUrl(libConfig?.api?.prefixUrl)
+        : healthCheckUrlOption;
+
     const getInitialOnline = () => {
         if (typeof navigator === 'undefined') return true;
         return navigator.onLine;
@@ -68,7 +168,9 @@ export const useOnlineStatus = ({
     // Promise chain rather than async/await: the state writes it feeds are then
     // unambiguously deferred to the response, which is what allows calling it
     // straight from the mount effect below.
-    const checkServer = useCallback(() => {
+    // `shared`: periodic checks may reuse an answer younger than half the
+    // interval; explicit checks (back online, checkNow) always ask again.
+    const checkServer = useCallback((shared = false) => {
         if (!healthCheckUrl) {
             return Promise.resolve(null);
         }
@@ -77,20 +179,9 @@ export const useOnlineStatus = ({
             return Promise.resolve(false);
         }
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-        return fetch(healthCheckUrl, {
-            method: 'HEAD',
-            cache: 'no-store',
-            signal: controller.signal
-        })
-            .then((response) => response.ok)
-            .catch(() => false)
-            // Cleared on both paths: an aborted or failed request used to leave
-            // its timer running.
-            .finally(() => clearTimeout(timeoutId));
-    }, [healthCheckUrl, timeout]);
+        const maxAgeMs = shared && healthCheckInterval > 0 ? healthCheckInterval / 2 : 0;
+        return probeServer(healthCheckUrl, timeout, maxAgeMs);
+    }, [healthCheckUrl, timeout, healthCheckInterval]);
 
     const updateOnlineStatus = useCallback((isOnline) => {
         if (stabilityTimeoutRef.current) {
@@ -155,7 +246,7 @@ export const useOnlineStatus = ({
             const isCurrentlyOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
             if (!isCurrentlyOnline) return;
 
-            checkServer().then((serverReachable) => {
+            checkServer(true).then((serverReachable) => {
                 if (!mountedRef.current) return;
 
                 setStatus(s => ({

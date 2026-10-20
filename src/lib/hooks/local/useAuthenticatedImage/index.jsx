@@ -72,7 +72,8 @@ export const useAuthenticatedImage = ({
     staleTime = AUTHENTICATED_IMAGE_DEFAULTS.STALE_TIME,
     placeholder = null
 } = {}) => {
-    const { isOnline } = useOnlineStatus();
+    // Network state only: this hook never reads server reachability.
+    const { isOnline } = useOnlineStatus({ healthCheckUrl: null });
     const mountedRef = useRef(true);
     const objectUrlRef = useRef(null);
 

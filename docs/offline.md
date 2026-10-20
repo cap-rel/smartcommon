@@ -79,7 +79,7 @@ du module.
 const {
     // État connexion
     isOnline,
-    isServerReachable,  // null sans healthCheckUrl
+    isServerReachable,  // null si la sonde est désactivée
 
     // État sync
     isInitialized,
@@ -117,7 +117,7 @@ const {
 } = useSyncClient({
     scope: ['thirdparty', 'contact'],
     appVersion: '1.4.0',     // envoyé à sync/register
-    healthCheckUrl: null,    // sonde de joignabilité, null = état réseau du navigateur
+    healthCheckUrl: undefined, // défaut : route health de smartauth, null = état réseau seul
     autoSync: true,
     syncInterval: null,
     onConflict: null,
@@ -257,10 +257,22 @@ return (
 
 ## Hook useOnlineStatus
 
-Détecte la connectivité réseau avec un délai de stabilité et un health check serveur optionnel.
-`healthCheckUrl` doit répondre sans token à une requête `HEAD` : une route
-protégée comme `sync/status` répond toujours 401 ou 403 et le serveur paraît
-injoignable.
+Détecte la connectivité réseau avec un délai de stabilité et vérifie que le
+serveur répond.
+
+- Par défaut, le hook sonde la route publique `health` de smartauth sous
+  `api.prefixUrl` de la configuration (`<Provider config>`), par exemple
+  `/mymodule/pwa/api.php/health`. Sans `prefixUrl`, aucune sonde.
+- `healthCheckUrl: null` désactive la sonde (`isServerReachable` reste `null`),
+  une chaîne la remplace.
+- La sonde est une requête `HEAD` sans token. Le serveur est joignable dès qu'il
+  répond avec un statut inférieur à 500 : un smartauth plus ancien, sans route
+  `health`, compte donc comme joignable ; une erreur 5xx (smartauth désactivé,
+  proxy en erreur) ou l'absence de réponse non.
+- Une seule requête par URL pour toute l'application : les instances montées
+  partagent la requête en cours et, pour les vérifications périodiques, une
+  réponse de moins d'une demi-période. `checkNow()` et le retour en ligne
+  interrogent toujours le serveur.
 
 ### Usage
 
@@ -273,7 +285,7 @@ const {
     lastCheck,          // timestamp | null
     checkNow            // () => Promise
 } = useOnlineStatus({
-    healthCheckUrl: null,
+    healthCheckUrl: undefined, // défaut : <prefixUrl>/health, null = pas de sonde
     healthCheckInterval: 30000,
     stabilityDelay: 2000,
     timeout: 5000
@@ -283,7 +295,8 @@ const {
 ### Exemple
 
 ```javascript
-const { isOnline, isOffline } = useOnlineStatus();
+// État réseau seul, sans requête au serveur
+const { isOnline, isOffline } = useOnlineStatus({ healthCheckUrl: null });
 
 if (isOffline) {
     return <OfflineBanner />;
