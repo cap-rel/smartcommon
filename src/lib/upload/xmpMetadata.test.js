@@ -100,7 +100,11 @@ describe("buildXmpPacket", () => {
     });
 
     it("drops characters XML 1.0 forbids", () => {
-        expect(buildXmpPacket({ title: "a\u0001b\u0008c" })).toContain(">abc<");
+        expect(buildXmpPacket({ title: "a\u0001b\u0008c\uFFFEd" })).toContain(">abcd<");
+    });
+
+    it("keeps tab, line breaks and characters outside the BMP", () => {
+        expect(buildXmpPacket({ description: "a\tb\nc\r\nd \u{1F4F7}" })).toContain(">a\tb\nc\r\nd \u{1F4F7}<");
     });
 });
 

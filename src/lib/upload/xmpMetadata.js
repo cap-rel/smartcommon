@@ -36,12 +36,20 @@ const WEBP_FLAG_ALPHA = 0x10;
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
 
-// Characters XML 1.0 forbids, even escaped.
-const INVALID_XML_CHARS = /[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g;
+// Characters XML 1.0 forbids, even escaped: C0 controls except tab, LF and
+// CR, plus U+FFFE and U+FFFF.
+const isValidXmlChar = (char) => {
+    const code = char.charCodeAt(0);
+    if (code < 0x20) {
+        return code === 0x09 || code === 0x0a || code === 0x0d;
+    }
+    return code !== 0xfffe && code !== 0xffff;
+};
 
 const escapeXml = (value) =>
-    value
-        .replace(INVALID_XML_CHARS, "")
+    Array.from(value)
+        .filter(isValidXmlChar)
+        .join("")
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
