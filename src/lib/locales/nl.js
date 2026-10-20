@@ -350,7 +350,6 @@ export const nl = {
         message: "Er is een nieuwe versie beschikbaar.",
         messageWithVersion: (version) => `Versie ${version} is beschikbaar.`,
         reloadButton: "Vernieuwen",
-        dismissButton: "Later",
     },
     // TODO native review for nl
     ViewportProvider: {

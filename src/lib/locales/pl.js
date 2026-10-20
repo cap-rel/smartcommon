@@ -359,7 +359,6 @@ export const pl = {
         message: "Nowa wersja jest dostępna.",
         messageWithVersion: (version) => `Wersja ${version} jest dostępna.`,
         reloadButton: "Odśwież",
-        dismissButton: "Później",
     },
     // TODO native review for pl
     ViewportProvider: {

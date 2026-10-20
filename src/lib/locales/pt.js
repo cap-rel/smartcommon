@@ -353,7 +353,6 @@ export const pt = {
         message: "Está disponível uma nova versão.",
         messageWithVersion: (version) => `Está disponível a versão ${version}.`,
         reloadButton: "Atualizar",
-        dismissButton: "Mais tarde",
     },
     // TODO native review for pt
     ViewportProvider: {

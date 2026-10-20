@@ -351,7 +351,6 @@ export const de = {
         message: "Eine neue Version ist verfügbar.",
         messageWithVersion: (version) => `Version ${version} ist verfügbar.`,
         reloadButton: "Aktualisieren",
-        dismissButton: "Später",
     },
     // TODO native review for de
     ViewportProvider: {

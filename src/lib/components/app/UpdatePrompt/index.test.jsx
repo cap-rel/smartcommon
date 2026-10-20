@@ -97,22 +97,28 @@ describe("UpdatePrompt", () => {
             expect(toastCalls.count).toBe(1);
         });
 
-        it("keeps the toast closed after Later until the next detection", () => {
+        it("offers the update as the only choice", () => {
+            mockHookState.updateAvailable = true;
+            render(<UpdatePrompt labels={{ dismissButton: "Later" }} />);
+            const body = renderToastBody();
+
+            expect(body.getAllByRole("button")).toHaveLength(1);
+            expect(body.queryByRole("button", { name: "Later" })).toBeNull();
+
+            act(() => {
+                fireEvent.click(body.getByRole("button", { name: "Refresh" }));
+            });
+            expect(mockHookState.applyUpdate).toHaveBeenCalledTimes(1);
+        });
+
+        it("stays on screen until the update is applied", () => {
             mockHookState.updateAvailable = true;
             const { rerender } = render(<UpdatePrompt />);
             detectUpdate();
-            const body = renderToastBody();
-
-            act(() => {
-                fireEvent.click(body.getByRole("button", { name: "Later" }));
-            });
             rerender(<UpdatePrompt />);
 
-            expect(toastCalls.dismissed).toContain("toast-1");
-            expect(toastCalls.count).toBe(1);
-
-            detectUpdate();
-            expect(toastCalls.count).toBe(2);
+            expect(toastCalls.dismissed).toEqual([]);
+            expect(toastCalls.lastArgs[1].duration).toBe(Infinity);
         });
 
         it("forwards onUpdateAvailable to the consumer", () => {
@@ -192,17 +198,14 @@ describe("UpdatePrompt", () => {
             expect(button.disabled).toBe(true);
         });
 
-        it("shows a Later button that hides the prompt until the next detection", () => {
+        it("offers the update as the only choice, even with a legacy dismiss label", () => {
             mockHookState.updateAvailable = true;
-            const { container } = render(<UpdatePrompt variant="banner" />);
+            render(<UpdatePrompt variant="banner" labels={{ dismissButton: "Later" }} />);
             detectUpdate();
 
-            fireEvent.click(screen.getByRole("button", { name: "Later" }));
-            expect(container.firstChild).toBeNull();
-            expect(mockHookState.applyUpdate).not.toHaveBeenCalled();
-
-            detectUpdate();
-            expect(screen.getByText("Update available")).toBeDefined();
+            expect(screen.getAllByRole("button")).toHaveLength(1);
+            expect(screen.queryByRole("button", { name: "Later" })).toBeNull();
+            expect(screen.getByRole("button", { name: /Refresh/ })).toBeDefined();
         });
     });
 
@@ -239,17 +242,14 @@ describe("UpdatePrompt", () => {
             expect(button.disabled).toBe(true);
         });
 
-        it("shows a Later button that hides the prompt until the next detection", () => {
+        it("offers the update as the only choice, even with a legacy dismiss label", () => {
             mockHookState.updateAvailable = true;
-            const { container } = render(<UpdatePrompt variant="modal" />);
+            render(<UpdatePrompt variant="modal" labels={{ dismissButton: "Later" }} />);
             detectUpdate();
 
-            fireEvent.click(screen.getByRole("button", { name: "Later" }));
-            expect(container.firstChild).toBeNull();
-            expect(mockHookState.applyUpdate).not.toHaveBeenCalled();
-
-            detectUpdate();
-            expect(screen.getByText("Update available")).toBeDefined();
+            expect(screen.getAllByRole("button")).toHaveLength(1);
+            expect(screen.queryByRole("button", { name: "Later" })).toBeNull();
+            expect(screen.getByRole("button", { name: /Refresh/ })).toBeDefined();
         });
     });
 

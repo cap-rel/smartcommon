@@ -11,7 +11,6 @@ export const propTypes = {
         message: PropTypes.string,
         messageWithVersion: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
         reloadButton: PropTypes.string,
-        dismissButton: PropTypes.string,
     }),
     onUpdateAvailable: PropTypes.func,
     onUpdateActivated: PropTypes.func,
@@ -22,5 +21,4 @@ export const DEFAULT_LABELS = {
     message: "A new version is available.",
     messageWithVersion: (version) => `Version ${version} is available.`,
     reloadButton: "Refresh",
-    dismissButton: "Later",
 };

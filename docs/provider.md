@@ -162,7 +162,6 @@ UI intégrée via `<Provider pwaUpdate={{ ... }}>` :
             message: "Une nouvelle version est disponible.",
             messageWithVersion: (version) => `La version ${version} est disponible.`,
             reloadButton: "Rafraîchir",
-            dismissButton: "Plus tard",
         },
         onUpdateAvailable: () => {},
         onUpdateActivated: () => {},
@@ -170,9 +169,11 @@ UI intégrée via `<Provider pwaUpdate={{ ... }}>` :
 >
 ```
 
-Les trois modes (`toast`, `banner`, `modal`) affichent "Rafraîchir" et
-"Plus tard". "Plus tard" masque l'invite jusqu'à la prochaine mise à
-jour détectée par le service worker.
+Les trois modes (`toast`, `banner`, `modal`) n'affichent qu'un bouton,
+"Rafraîchir" : une mise à jour n'est pas facultative, l'invite reste à
+l'écran tant qu'elle n'est pas appliquée. Le libellé `dismissButton`
+n'existe plus ; un projet qui le passe encore n'affiche rien de plus.
+Pour bloquer l'application jusqu'à la mise à jour, choisir `modal`.
 
 ### Numéro de la nouvelle version
 

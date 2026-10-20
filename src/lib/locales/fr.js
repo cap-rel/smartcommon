@@ -347,7 +347,6 @@ export const fr = {
         message: "Une nouvelle version est disponible.",
         messageWithVersion: (version) => `La version ${version} est disponible.`,
         reloadButton: "Rafraîchir",
-        dismissButton: "Plus tard",
     },
     ViewportProvider: {
         confirmReloadMessage: "Changer la vue va recharger l'application. Continuer ?",

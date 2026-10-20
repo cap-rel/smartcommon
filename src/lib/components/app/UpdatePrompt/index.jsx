@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
@@ -15,7 +15,8 @@ const Spinner = () => (
 
 /**
  * PWA Update Prompt component.
- * Displays a notification when a new version is available.
+ * Displays a notification when a new version is available. Updating is not
+ * optional: the prompt offers a single button and stays until it is used.
  *
  * @param {Object} props
  * @param {boolean} props.autoReload - Auto-reload when update activates (default: false)
@@ -41,26 +42,18 @@ export const UpdatePrompt = (props) => {
 
     const mergedLabels = { ...DEFAULT_LABELS, ...labels };
 
-    // Each detection bumps the counter; "Later" remembers the detection it
-    // dismissed, so the prompt stays hidden until the next one.
-    const [detectionCount, setDetectionCount] = useState(0);
-    const [dismissedAt, setDismissedAt] = useState(null);
-
     const onUpdateAvailableRef = useRef(onUpdateAvailable);
     const labelsRef = useRef(mergedLabels);
     const toastIdRef = useRef(null);
-    const detectionRef = useRef(detectionCount);
 
     useLayoutEffect(() => {
         onUpdateAvailableRef.current = onUpdateAvailable;
         labelsRef.current = mergedLabels;
-        detectionRef.current = detectionCount;
     });
 
     // Stable identity: usePWAUpdate re-subscribes to the Service Worker
     // whenever this callback changes.
     const handleUpdateAvailable = useCallback(() => {
-        setDetectionCount((c) => c + 1);
         onUpdateAvailableRef.current?.();
     }, []);
 
@@ -78,7 +71,7 @@ export const UpdatePrompt = (props) => {
         onUpdateActivated,
     });
 
-    const visible = updateAvailable && dismissedAt !== detectionCount;
+    const visible = updateAvailable;
 
     const messageFor = (l) => {
         if (!newVersion) {
@@ -90,16 +83,9 @@ export const UpdatePrompt = (props) => {
     };
     const message = messageFor(mergedLabels);
 
-    // Reads the ref so the toast, rendered once, still dismisses the latest
-    // detection rather than the one current when it was created.
-    const dismiss = useCallback(() => {
-        setDismissedAt(detectionRef.current);
-    }, []);
-
     // Toast variant. Created once per visible prompt, then updated in place
     // (same id) when the version info arrives: re-running on every render
-    // (labels are a fresh object each time) used to stack a new toast,
-    // bringing it back right after "Later".
+    // (labels are a fresh object each time) used to stack a new toast.
     useEffect(() => {
         if (variant !== "toast") {
             return;
@@ -131,12 +117,6 @@ export const UpdatePrompt = (props) => {
                         >
                             {toastLabels.reloadButton}
                         </button>
-                        <button
-                            onClick={dismiss}
-                            className="px-3 py-1 text-sm font-medium text-gray-600 bg-gray-200 rounded hover:bg-gray-300"
-                        >
-                            {toastLabels.dismissButton}
-                        </button>
                     </div>
                 </div>
             ),
@@ -146,7 +126,7 @@ export const UpdatePrompt = (props) => {
                 position: "bottom-center",
             }
         );
-    }, [visible, variant, applyUpdate, dismiss, newVersion, releaseNotes]);
+    }, [visible, variant, applyUpdate, newVersion, releaseNotes]);
 
     // Unmount: a toast lives outside this component and would outlast it.
     useEffect(() => () => {
@@ -177,13 +157,6 @@ export const UpdatePrompt = (props) => {
                             )}
                         </div>
                         <div className="flex gap-2 shrink-0">
-                            <button
-                                onClick={dismiss}
-                                disabled={isApplying}
-                                className="px-4 py-2 text-sm font-medium text-white border border-white/60 rounded hover:bg-white/10 disabled:opacity-70"
-                            >
-                                {mergedLabels.dismissButton}
-                            </button>
                             <button
                                 onClick={applyUpdate}
                                 disabled={isApplying}
@@ -221,13 +194,6 @@ export const UpdatePrompt = (props) => {
                             <p className="text-sm text-gray-500 mb-4 whitespace-pre-line max-h-48 overflow-y-auto">{releaseNotes}</p>
                         )}
                         <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={dismiss}
-                                disabled={isApplying}
-                                className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-200 rounded hover:bg-gray-300 disabled:opacity-70"
-                            >
-                                {mergedLabels.dismissButton}
-                            </button>
                             <button
                                 onClick={applyUpdate}
                                 disabled={isApplying}
