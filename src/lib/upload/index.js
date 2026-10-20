@@ -17,3 +17,8 @@ export {
     toMegabytes,
     uploadFailureDetail,
 } from "./uploadErrors";
+export {
+    buildXmpPacket,
+    embedXmp,
+    writeImageMetadata,
+} from "./xmpMetadata";

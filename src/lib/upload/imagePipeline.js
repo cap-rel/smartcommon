@@ -36,12 +36,16 @@
 //   maxBytes     : server size limit per file, default 10 MB
 //   targetBytes  : weight above which an accepted original is shrunk anyway,
 //                  default 2 MB
+//   metadata     : { title?, description?, keywords? } written as XMP into the
+//                  returned file (JPEG/WebP/PNG), see xmpMetadata.js; skipped
+//                  when the tagged file would exceed maxBytes
 //
 //   downscaleImage(file, options?)     -> Promise<{ file, width, height, mime, resized } | null>
 //     - bounds the pixels of any decodable image (documents, scanner input)
 //     - null when the browser cannot decode the file (HEIC on Chrome)
 
 import { createLogger } from "lib/utils";
+import { writeImageMetadata } from "./xmpMetadata";
 
 const log = createLogger("imagePipeline");
 
@@ -361,14 +365,28 @@ const EXTENSION_BY_MIME = { "image/webp": "webp", "image/jpeg": "jpg" };
  *
  * @param {File} file
  * @param {{maxSide?: number, quality?: number, webp?: boolean, serverWebp?: boolean,
- *          acceptedMimes?: string[], maxBytes?: number}} [options]
+ *          acceptedMimes?: string[], maxBytes?: number,
+ *          metadata?: {title?: string, description?: string, keywords?: string[]}}} [options]
  * @returns {Promise<{file: File, width: number, height: number, mime: string, dateTaken: string|null}>}
  */
 export const convertImageForUpload = async (file, options = {}) => {
     if (!file) {
         throw new Error("convertImageForUpload: file is required");
     }
+    const result = await encodeForUpload(file, options);
+    if (!options.metadata) {
+        return result;
+    }
+    const maxBytes = options.maxBytes ?? DEFAULT_MAX_UPLOAD_BYTES;
+    const tagged = await writeImageMetadata(result.file, options.metadata);
+    if (tagged.size > maxBytes) {
+        log.warning("convertImageForUpload: metadata would exceed maxBytes, file sent without it", file.name, tagged.size, maxBytes);
+        return result;
+    }
+    return { ...result, file: tagged };
+};
 
+const encodeForUpload = async (file, options) => {
     const maxSide = options.maxSide ?? DEFAULT_MAX_SIDE;
     const quality = options.quality ?? DEFAULT_QUALITY;
     const acceptedMimes = options.acceptedMimes ?? DEFAULT_ACCEPTED_IMAGE_MIMES;
