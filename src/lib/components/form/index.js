@@ -1,4 +1,5 @@
 export * from "./AddressInput";
+export * from "./AnnotatedPhotosUploader";
 export * from "./Array";
 export * from "./AudiosUploader";
 export * from "./Boolean";

@@ -54,6 +54,11 @@ export const es = {
         saveButton: "Guardar",
         emptyState: "Ninguna foto guardada",
     },
+    AnnotatedPhotosUploader: {
+        annotate: "Anotar",
+        viewAnnotations: "Ver anotaciones",
+        annotationsTitle: (index) => `Anotaciones - foto ${index + 1}`,
+    },
     VideosUploader: {
         requiredError: "Debe grabar al menos 1 vídeo.",
         minError: (min) => `Debe grabar ${min} vídeos como mínimo.`,

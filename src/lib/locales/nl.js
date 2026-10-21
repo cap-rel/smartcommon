@@ -53,6 +53,11 @@ export const nl = {
         saveButton: "Opslaan",
         emptyState: "Geen foto opgeslagen",
     },
+    AnnotatedPhotosUploader: {
+        annotate: "Annoteren",
+        viewAnnotations: "Annotaties bekijken",
+        annotationsTitle: (index) => `Annotaties - foto ${index + 1}`,
+    },
     VideosUploader: {
         requiredError: "U moet ten minste 1 video opnemen.",
         minError: (min) => `U moet minimaal ${min} video's opnemen.`,

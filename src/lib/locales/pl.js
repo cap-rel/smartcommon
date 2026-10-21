@@ -61,6 +61,11 @@ export const pl = {
         saveButton: "Zapisz",
         emptyState: "Brak zapisanych zdjęć",
     },
+    AnnotatedPhotosUploader: {
+        annotate: "Dodaj adnotację",
+        viewAnnotations: "Pokaż adnotacje",
+        annotationsTitle: (index) => `Adnotacje - zdjęcie ${index + 1}`,
+    },
     VideosUploader: {
         requiredError: "Musisz nagrać co najmniej 1 film.",
         minError: (min) => `Musisz nagrać minimum ${min} filmów.`,

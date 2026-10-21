@@ -50,6 +50,11 @@ export const fr = {
         saveButton: "Enregistrer",
         emptyState: "Aucune photo enregistrée",
     },
+    AnnotatedPhotosUploader: {
+        annotate: "Annoter",
+        viewAnnotations: "Voir les annotations",
+        annotationsTitle: (index) => `Annotations - photo ${index + 1}`,
+    },
     VideosUploader: {
         requiredError: "Vous devez enregistrer au moins 1 vidéo.",
         minError: (min) => `Vous devez prendre ${min} vidéos minimum.`,
