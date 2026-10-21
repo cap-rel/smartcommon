@@ -13,10 +13,12 @@ import { DEFAULT_LABELS, propTypes } from "./props";
 // Identity of a photo inside the field. Positions shift when a photo is
 // deleted, so neither the index nor the uploadId (null while the upload is
 // queued offline) can key the annotations: a uid is minted at capture time.
+// Alphanumeric only, so that a server can put it in a file name and split it
+// from the field name on a separator ('-' or '_').
 const newPhotoUid = () => (
     typeof crypto !== "undefined" && crypto.randomUUID
-        ? crypto.randomUUID()
-        : `photo-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`
+        ? crypto.randomUUID().replace(/-/g, "")
+        : `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`
 );
 
 /**

@@ -136,8 +136,7 @@ describe("AnnotatedPhotosUploader - adding photos", () => {
 
         const [photo] = onChange.mock.calls.at(-1)[0];
         expect(photo.uploadId).toBe("U1");
-        expect(typeof photo.uid).toBe("string");
-        expect(photo.uid.length).toBeGreaterThan(0);
+        expect(photo.uid).toMatch(/^[A-Za-z0-9]{6,64}$/);
         expect(photo.annotations).toEqual([]);
     });
 

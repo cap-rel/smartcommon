@@ -54,7 +54,7 @@ complétée de deux clés :
 ```js
 [
   {
-    uid: "4f7c…",            // identité stable de la photo dans le champ
+    uid: "4f7c…",            // identité stable de la photo, alphanumérique
     uploadId: "…",           // (outputFormat="upload") ou pendingId hors ligne
     previewUrl: "blob:…",    // ou src
     title: "…", description: "", gpsPoints: [lat, lng], capture: true,
