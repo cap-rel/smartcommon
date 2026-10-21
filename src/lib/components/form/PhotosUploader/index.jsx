@@ -61,6 +61,13 @@ export const PhotosUploader = (props) => {
         // and the badge disappears.
         queue: queueMode = false,
 
+        // Optional render function (photo, index) => node, painted at the
+        // bottom of each thumbnail. Lets a wrapper attach per-photo actions
+        // (e.g. AnnotatedPhotosUploader's annotate button) without
+        // re-implementing the grid. A click inside it does NOT open the
+        // photo popup.
+        renderPhotoExtra,
+
         labels: userLabels = {},
     } = variantProps;
 
@@ -98,6 +105,11 @@ export const PhotosUploader = (props) => {
     const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isPhotoLoading, isPhotoSelected, selectedPhotoIndex } = states;
+
+    // In multiple mode, `max` used to be a submit-time error only: the user
+    // could keep shooting and was then asked to delete photos. Once the limit
+    // is reached, capture and import are disabled instead.
+    const isMaxReached = multiple && !isNil(max) && (currentValue?.length ?? 0) >= max;
 
     // const selectedPhoto = multiple ? currentValue[selectedPhotoIndex] : currentValue;
 
@@ -342,10 +354,12 @@ export const PhotosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...(currentValue ?? [])];
-                if (newValue[selectedPhotoIndex]) {
-                    newValue[selectedPhotoIndex][prop] = value;
-                }
+                // Copy the photo instead of assigning in place: mutating the
+                // object also changed currentValue, so useField saw two equal
+                // values and dropped the edit in controlled mode.
+                newValue = (currentValue ?? []).map((photo, index) => (
+                    index === selectedPhotoIndex && photo ? { ...photo, [prop]: value } : photo
+                ));
             } else {
                 newValue = { ...currentValue, [prop]: value };
             }
@@ -429,6 +443,18 @@ export const PhotosUploader = (props) => {
                     }))}>
                         {photo?.title}
                     </div>
+
+                    {renderPhotoExtra && (
+                        <div
+                            { ...mergeProps("photoExtra", props => ({
+                                ...props,
+                                className: "flex justify-center"
+                            }))}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            {renderPhotoExtra(photo, index)}
+                        </div>
+                    )}
                 </div>
             </>
         );
@@ -622,7 +648,7 @@ export const PhotosUploader = (props) => {
                         icon: FaCamera,
                         loading: isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: disabled || isPhotoLoading,
+                        disabled: disabled || isPhotoLoading || isMaxReached,
                         onClick: e => {
                             e.preventDefault();
                             capturePhoto();
@@ -637,7 +663,7 @@ export const PhotosUploader = (props) => {
                         icon: FaFileImport,
                         loading: !isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: disabled || isPhotoLoading,
+                        disabled: disabled || isPhotoLoading || isMaxReached,
                         onClick: e => {
                             e.preventDefault();
                             importPhoto();

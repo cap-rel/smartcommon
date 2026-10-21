@@ -414,3 +414,83 @@ describe("PhotosUploader - deletePhoto", () => {
         expect(uploadMock.cancelUpload).not.toHaveBeenCalled();
     });
 });
+
+// ---------------------------------------------------------------------------
+// max, renderPhotoExtra, photo info edit
+// ---------------------------------------------------------------------------
+
+describe("PhotosUploader - max reached (multiple)", () => {
+    const photos = (n) => Array.from({ length: n }, (_, i) => ({ uploadId: `U${i}`, previewUrl: `blob:${i}`, title: `p${i}` }));
+
+    const captureButtons = (container) => [...container.querySelectorAll('[data-testid="photos-capture-controls"] button')];
+
+    it("disables capture and import once the limit is reached", () => {
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple max={2} value={photos(2)} onChange={() => {}} />
+        );
+        const buttons = captureButtons(container);
+        expect(buttons).toHaveLength(2);
+        buttons.forEach((button) => expect(button.disabled).toBe(true));
+    });
+
+    it("keeps them enabled under the limit, and without max", () => {
+        const { container: under } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple max={3} value={photos(2)} onChange={() => {}} />
+        );
+        captureButtons(under).forEach((button) => expect(button.disabled).toBe(false));
+
+        const { container: noMax } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={photos(5)} onChange={() => {}} />
+        );
+        captureButtons(noMax).forEach((button) => expect(button.disabled).toBe(false));
+    });
+});
+
+describe("PhotosUploader - renderPhotoExtra", () => {
+    it("paints the extra content under each thumbnail, with photo and index", () => {
+        const renderPhotoExtra = vi.fn((photo, index) => <span data-testid={`extra-${index}`}>{photo.title}</span>);
+        const { getByTestId } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                value={[{ uploadId: "U1", previewUrl: "blob:a", title: "a" }, { uploadId: "U2", previewUrl: "blob:b", title: "b" }]}
+                onChange={() => {}}
+                renderPhotoExtra={renderPhotoExtra}
+            />
+        );
+        expect(getByTestId("extra-0").textContent).toBe("a");
+        expect(getByTestId("extra-1").textContent).toBe("b");
+    });
+
+    it("does not open the photo popup when the extra content is clicked", () => {
+        const { getByTestId, queryByTestId } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                value={[{ uploadId: "U1", previewUrl: "blob:a", title: "a" }]}
+                onChange={() => {}}
+                renderPhotoExtra={() => <button type="button" data-testid="extra">x</button>}
+            />
+        );
+        fireEvent.click(getByTestId("extra"));
+        expect(queryByTestId("popup")).toBeNull();
+    });
+});
+
+describe("PhotosUploader - photo info edit (multiple)", () => {
+    it("emits a new photo object and leaves the caller's value untouched", () => {
+        const value = [{ uploadId: "U1", previewUrl: "blob:a", title: "a" }];
+        const onChange = vi.fn();
+        const { container, getByDisplayValue } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={value} onChange={onChange} />
+        );
+        fireEvent.click(container.querySelector("img").parentElement);
+        fireEvent.change(getByDisplayValue("a"), { target: { value: "renamed" } });
+
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0][0].title).toBe("renamed");
+        expect(value[0].title).toBe("a");
+    });
+});
