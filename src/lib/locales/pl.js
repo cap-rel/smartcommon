@@ -52,6 +52,7 @@ export const pl = {
         exactError: (exact) => `Musisz zrobić dokładnie ${exact} zdjęć.`,
         geolocationError: "Błąd geolokalizacji ujęcia.",
         uploadError: "Błąd wysyłania zdjęcia.",
+        selectionTruncated: (kept, max) => `Dodano tylko ${kept} zdjęć: maksymalnie ${max} zdjęć.`,
         clickToShow: "Kliknij, aby wyświetlić obraz",
         pendingBadge: "Oczekuje na wysłanie...",
         photoPopupTitle: (index) => `Zdjęcie ${index + 1}`,

@@ -102,6 +102,7 @@ export const DEFAULT_LABELS = {
     exactError: (exact) => `You must take exactly ${exact} photos.`,
     geolocationError: "Failed to get capture location.",
     uploadError: "Photo upload failed.",
+    selectionTruncated: (kept, max) => `Only ${kept} photo(s) added: ${max} photos maximum.`,
     clickToShow: "Click to view the image",
     pendingBadge: "Sending...",
     photoPopupTitle: (index) => `Photo ${index + 1}`,

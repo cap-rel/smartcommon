@@ -494,3 +494,84 @@ describe("PhotosUploader - photo info edit (multiple)", () => {
         expect(value[0].title).toBe("a");
     });
 });
+
+// ---------------------------------------------------------------------------
+// Several photos picked at once from the gallery
+// ---------------------------------------------------------------------------
+
+describe("PhotosUploader - several files at once (multiple)", () => {
+    const pick = (container, files) => {
+        const input = container.querySelector('input[type="file"]');
+        Object.defineProperty(input, "files", { value: files, configurable: true });
+        fireEvent.change(input);
+    };
+    const png = (name) => new File(["d"], name, { type: "image/png" });
+
+    it("lets the gallery pick several files in multiple mode only", () => {
+        const { container: multi } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={() => {}} />
+        );
+        expect(multi.querySelector('input[type="file"]').multiple).toBe(true);
+
+        const { container: single } = render(
+            <PhotosUploader name="photo" outputFormat="upload" value={null} onChange={() => {}} />
+        );
+        expect(single.querySelector('input[type="file"]').multiple).toBe(false);
+    });
+
+    it("adds every picked file in a single change", async () => {
+        let n = 0;
+        uploadMock.uploadFile = vi.fn(() => Promise.resolve({ upload_id: `U${++n}` }));
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={onChange} />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0].map((p) => p.uploadId)).toEqual(["U1", "U2", "U3"]);
+        expect(onChange.mock.calls[0][0].map((p) => p.title)).toEqual(["a", "b", "c"]);
+    });
+
+    it("keeps only what fits under max, and says so", async () => {
+        const toast = (await import("react-hot-toast")).default;
+        toast.error.mockClear();
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                max={3}
+                value={[{ uploadId: "U0", previewUrl: "blob:0", title: "first" }]}
+                onChange={onChange}
+            />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png"), png("d.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(uploadMock.uploadFile).toHaveBeenCalledTimes(2);
+        expect(onChange.mock.calls.at(-1)[0].map((p) => p.title)).toEqual(["first", "a", "b"]);
+        expect(toast.error).toHaveBeenCalledWith("Only 2 photo(s) added: 3 photos maximum.");
+    });
+
+    it("still adds the other files when one upload fails", async () => {
+        uploadMock.uploadFile = vi.fn((file) => (file.name === "b.png"
+            ? Promise.reject(new Error("HTTP 422"))
+            : Promise.resolve({ upload_id: `U-${file.name}` })));
+        const onUploadError = vi.fn();
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={onChange} onUploadError={onUploadError} />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(onUploadError).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls.at(-1)[0].map((p) => p.uploadId)).toEqual(["U-a.png", "U-c.png"]);
+    });
+});

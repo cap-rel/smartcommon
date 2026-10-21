@@ -44,6 +44,7 @@ export const nl = {
         exactError: (exact) => `U moet precies ${exact} foto's maken.`,
         geolocationError: "Geolocalisatie van de opname mislukt.",
         uploadError: "Verzenden van de foto mislukt.",
+        selectionTruncated: (kept, max) => `Slechts ${kept} foto('s) toegevoegd: maximaal ${max} foto's.`,
         clickToShow: "Klik om de afbeelding weer te geven",
         pendingBadge: "Verzending in afwachting...",
         photoPopupTitle: (index) => `Foto ${index + 1}`,

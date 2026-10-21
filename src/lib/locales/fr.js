@@ -41,6 +41,7 @@ export const fr = {
         exactError: (exact) => `Vous devez prendre exactement ${exact} photos.`,
         geolocationError: "Echec de géolocalisation de la capture.",
         uploadError: "Echec de l'envoi de la photo.",
+        selectionTruncated: (kept, max) => `Seulement ${kept} photo(s) ajoutée(s) : ${max} photos maximum.`,
         clickToShow: "Cliquez pour afficher l'image",
         pendingBadge: "Envoi en attente...",
         photoPopupTitle: (index) => `Photo ${index + 1}`,

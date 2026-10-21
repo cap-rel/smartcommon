@@ -13,7 +13,10 @@ photo (titre, description, suppression) sont les siens. Le composant ajoute :
   marqueurs) qui ouvre le `PhotoAnnotator` dans une `Modal`.
 
 La prise de vue et l'import sont **désactivés une fois `max` photos
-atteint**.
+atteint**. Depuis la galerie, on peut **choisir plusieurs photos d'un coup** :
+elles sont toutes ajoutées, dans la limite des places restantes. Au-delà, seules
+les premières sont gardées, avec un message (`selectionTruncated` des libellés
+de `PhotosUploader`).
 
 ## Import
 
