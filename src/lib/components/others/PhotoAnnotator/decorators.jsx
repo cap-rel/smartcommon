@@ -150,6 +150,10 @@ const PhotoEditor = ({ onSave, onCancel }) => (
     </div>
 );
 
+// The editors below are components (they hold state): renderEditor is
+// called as a plain function by EditorWrapper, so they are mounted through
+// JSX here. Passed directly, NoteEditor received the annotation as its props
+// object and crashed on `annotation.payload`.
 export const sampleNoteType = {
     label: "Note",
     icon: <FaCommentDots />,
@@ -158,7 +162,7 @@ export const sampleNoteType = {
     renderMarker: (a, { num }) => (
         <Circle color={a.payload?.color || "#F59E0B"}>{num}</Circle>
     ),
-    renderEditor: NoteEditor,
+    renderEditor: (annotation, ctx) => <NoteEditor annotation={annotation} {...ctx} />,
     renderListItem: (a, { num }) => (
         <div className="flex items-center gap-3 min-w-0">
             <Circle color={a.payload?.color || "#F59E0B"}>{num}</Circle>
@@ -175,7 +179,7 @@ export const sampleProductType = {
     color: "#3B82F6",
     newPayload: () => ({ qty: 1 }),
     renderMarker: (a, { num }) => <Circle color="#3B82F6">{num}</Circle>,
-    renderEditor: ProductEditor,
+    renderEditor: (annotation, ctx) => <ProductEditor annotation={annotation} {...ctx} />,
     renderListItem: (a, { num }) => (
         <div className="flex items-center gap-3 min-w-0">
             <Circle color="#3B82F6">{num}</Circle>
@@ -192,7 +196,7 @@ export const samplePhotoType = {
     color: "#10B981",
     newPayload: () => ({}),
     renderMarker: (a, { num }) => <Circle color="#10B981">{num}</Circle>,
-    renderEditor: PhotoEditor,
+    renderEditor: (annotation, ctx) => <PhotoEditor annotation={annotation} {...ctx} />,
     renderListItem: (a, { num }) => (
         <div className="flex items-center gap-3 min-w-0">
             <Circle color="#10B981">{num}</Circle>
@@ -209,7 +213,7 @@ export const sampleAlertType = {
     color: "#DC2626",
     newPayload: () => ({ description: "", severity: "medium" }),
     renderMarker: (a, { num }) => <Circle color="#DC2626">{num}</Circle>,
-    renderEditor: NoteEditor,
+    renderEditor: (annotation, ctx) => <NoteEditor annotation={annotation} {...ctx} />,
 };
 
 // Stories run inside Storybook's iframe and need a fixed-height container so
