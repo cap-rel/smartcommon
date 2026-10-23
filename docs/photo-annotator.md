@@ -58,6 +58,13 @@ Chaque entrée définit comment un type est rendu et édité :
 forme habituelle est `{ payload: { ... } }` puisque le type possède
 intégralement son payload.
 
+L'éditeur est rendu hors du `<Form>` de la page, même quand
+l'annotateur est placé dedans : ses champs ne se rattachent jamais au
+formulaire hôte, quel que soit leur `name`. Sans cette isolation, une
+note nommée `description` écrivait sa saisie dans la `description` de
+la fiche hôte et l'éditeur ne recevait rien. Un éditeur garde donc son
+propre état, de préférence en champs contrôlés (`value` + `onChange`).
+
 ## Deux modes
 
 ### Mode `controlled` (état en mémoire, simple)

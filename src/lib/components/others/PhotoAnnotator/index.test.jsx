@@ -17,6 +17,9 @@ beforeEach(() => {
 });
 
 import { PhotoAnnotator } from "./index";
+import { Form } from "lib/components/form/Form";
+import { Textarea } from "lib/components/form/Textarea";
+import { useForm } from "lib/hooks/local/useForm";
 
 // Wrapper that mirrors a real consumer: it owns the annotations state and
 // updates it from onChange so the component re-renders with fresh props
@@ -452,5 +455,57 @@ describe("PhotoAnnotator - labels override", () => {
         });
         expect(screen.getByLabelText("Add marker")).toBeDefined();
         expect(screen.getByText("Nothing here")).toBeDefined();
+    });
+});
+
+describe("PhotoAnnotator - inside a host <Form>", () => {
+    // Mirrors the smartInterventions note editor that lost its text: an
+    // uncontrolled Textarea named like a field of the host form, reading its
+    // input from onChange.
+    const NamedFieldEditor = ({ onSave }) => {
+        const text = useRef("");
+        return (
+            <div data-testid="named-editor">
+                <Textarea label="Note text" name="description" onChange={(v) => { text.current = v; }} />
+                <button type="button" onClick={() => onSave({ payload: { description: text.current } })}>
+                    save-named
+                </button>
+            </div>
+        );
+    };
+    const namedNoteType = {
+        ...noteType,
+        renderEditor: (a, { onSave }) => <NamedFieldEditor onSave={onSave} />,
+    };
+
+    it("keeps editor fields out of the host form and gives them their input", () => {
+        const onChange = vi.fn();
+        const formRef = { current: null };
+        const Host = () => {
+            const form = useForm();
+            useEffect(() => { formRef.current = form; });
+            return (
+                <Form form={form}>
+                    <Textarea label="Host description" name="description" defaultValue="Host text" />
+                    <StatefulPhotoAnnotator
+                        src="https://example.com/photo.jpg"
+                        onChange={onChange}
+                        annotationTypes={{ note: namedNoteType }}
+                    />
+                </Form>
+            );
+        };
+        render(<Host />);
+        expect(formRef.current.values.description).toBe("Host text");
+
+        fireEvent.click(screen.getByLabelText(/Add an annotation/i));
+        const editorField = screen.getByTestId("named-editor").querySelector("textarea");
+        fireEvent.change(editorField, { target: { value: "Cracked seal" } });
+        fireEvent.click(screen.getByText("save-named"));
+
+        const final = onChange.mock.calls[onChange.mock.calls.length - 1][0];
+        expect(final[0].payload).toEqual({ description: "Cracked seal" });
+        expect(formRef.current.values.description).toBe("Host text");
+        expect(screen.getByDisplayValue("Host text").tagName).toBe("TEXTAREA");
     });
 });
