@@ -81,13 +81,14 @@ export const useField = (props) => {
 
       if (isControlledByForm) {
         setField({ name, value: newValue, errors: newErrors });
-      } else {
-        if (isUncontrolled) {
-          setLocalValue(newValue);
-        }
-        if (onChange) {
-          onChange(newValue, newErrors);
-        }
+      } else if (isUncontrolled) {
+        setLocalValue(newValue);
+      }
+      // In every mode: a form-bound field used to drop the onChange its
+      // caller passed, so a component reading its own input from onChange
+      // silently got nothing once rendered inside a <Form>.
+      if (onChange) {
+        onChange(newValue, newErrors);
       }
     }
   };

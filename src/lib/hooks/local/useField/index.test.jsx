@@ -1,7 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
+import { useEffect } from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 
 import { Input } from "lib/components/form/Input";
+import { Form } from "lib/components/form/Form";
+import { useForm } from "lib/hooks/local/useForm";
 
 describe("useField modes outside <Form>", () => {
     it("renders a named field without value instead of crashing", () => {
@@ -41,5 +44,28 @@ describe("useField modes outside <Form>", () => {
         fireEvent.change(input, { target: { value: "typed" } });
         expect(onChange).toHaveBeenCalledWith("typed", expect.anything());
         expect(input.value).toBe("fixed");
+    });
+});
+
+describe("useField inside <Form>", () => {
+    it("writes a named field into the form and still reports onChange", () => {
+        const onChange = vi.fn();
+        const formRef = { current: null };
+        const Harness = () => {
+            const form = useForm();
+            useEffect(() => { formRef.current = form; });
+            return (
+                <Form form={form}>
+                    <Input label="City" name="city" defaultValue="Lyon" onChange={onChange} />
+                </Form>
+            );
+        };
+        render(<Harness />);
+        const input = screen.getByLabelText("City");
+
+        fireEvent.change(input, { target: { value: "Paris" } });
+        expect(input.value).toBe("Paris");
+        expect(formRef.current.values.city).toBe("Paris");
+        expect(onChange).toHaveBeenCalledWith("Paris", expect.anything());
     });
 });

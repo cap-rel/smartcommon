@@ -131,7 +131,7 @@ defaultValue, errors })` en interne. Comportement :
 - Sinon, dans un `<Form>` monté et avec un `name` -> le champ se branche
   sur le `FormContext`, register son `name` + `defaultValue`, met à jour
   `values[name]` à chaque saisie, recalcule ses `errors[name]` à chaque
-  changement.
+  changement, et appelle aussi `onChange` s'il est fourni.
 - Sinon -> mode non contrôlé, comme un `<input>` natif : le champ garde
   sa propre valeur, initialisée par `defaultValue` (même si elle arrive
   après le montage), et appelle `onChange` s'il est fourni.
