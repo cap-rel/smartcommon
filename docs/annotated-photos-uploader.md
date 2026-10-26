@@ -16,7 +16,9 @@ La prise de vue et l'import sont **désactivés une fois `max` photos
 atteint**. Depuis la galerie, on peut **choisir plusieurs photos d'un coup** :
 elles sont toutes ajoutées, dans la limite des places restantes. Au-delà, seules
 les premières sont gardées, avec un message (`selectionTruncated` des libellés
-de `PhotosUploader`).
+de `PhotosUploader`). Une photo que le navigateur ne peut pas lire ou
+compresser est ignorée avec un message (`processingError`), et les autres sont
+quand même ajoutées.
 
 ## Import
 

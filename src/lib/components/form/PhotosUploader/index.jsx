@@ -369,9 +369,16 @@ export const PhotosUploader = (props) => {
 
             const newPhotos = [];
             for (const file of files) {
-                const photo = await buildPhoto(file, gpsPoints);
-                if (photo) {
-                    newPhotos.push(photo);
+                // A file the browser cannot decode or compress is skipped,
+                // so that it does not cost the user the rest of the batch.
+                try {
+                    const photo = await buildPhoto(file, gpsPoints);
+                    if (photo) {
+                        newPhotos.push(photo);
+                    }
+                } catch (err) {
+                    console.error("PhotosUploader could not process a photo:", file?.name, err);
+                    toast.error(labels.processingError(file?.name ?? ""));
                 }
             }
             if (newPhotos.length > 0) {

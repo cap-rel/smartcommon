@@ -46,6 +46,7 @@ export const es = {
         geolocationError: "Error al geolocalizar la captura.",
         uploadError: "Error al enviar la foto.",
         selectionTruncated: (kept, max) => `Solo se añadieron ${kept} foto(s): máximo ${max} fotos.`,
+        processingError: (name) => `No se pudo leer la foto ${name}, se ha omitido.`,
         clickToShow: "Haga clic para mostrar la imagen",
         pendingBadge: "Envío pendiente...",
         photoPopupTitle: (index) => `Foto ${index + 1}`,

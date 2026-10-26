@@ -574,4 +574,26 @@ describe("PhotosUploader - several files at once (multiple)", () => {
         expect(onUploadError).toHaveBeenCalledTimes(1);
         expect(onChange.mock.calls.at(-1)[0].map((p) => p.uploadId)).toEqual(["U-a.png", "U-c.png"]);
     });
+
+    it("still adds the other files when one cannot be compressed, and says which", async () => {
+        const toast = (await import("react-hot-toast")).default;
+        toast.error.mockClear();
+        const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+        fileMock.resizeImage = vi.fn((file) => (file.name === "b.png"
+            ? Promise.reject(new Error("decode failed"))
+            : file));
+        uploadMock.uploadFile = vi.fn((file) => Promise.resolve({ upload_id: `U-${file.name}` }));
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={onChange} />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(onChange.mock.calls.at(-1)[0].map((p) => p.uploadId)).toEqual(["U-a.png", "U-c.png"]);
+        expect(toast.error).toHaveBeenCalledWith("Could not read the photo b.png, it was skipped.");
+        expect(consoleError).toHaveBeenCalled();
+        consoleError.mockRestore();
+    });
 });

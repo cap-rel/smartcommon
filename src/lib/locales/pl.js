@@ -53,6 +53,7 @@ export const pl = {
         geolocationError: "Błąd geolokalizacji ujęcia.",
         uploadError: "Błąd wysyłania zdjęcia.",
         selectionTruncated: (kept, max) => `Dodano tylko ${kept} zdjęć: maksymalnie ${max} zdjęć.`,
+        processingError: (name) => `Nie można odczytać zdjęcia ${name}, zostało pominięte.`,
         clickToShow: "Kliknij, aby wyświetlić obraz",
         pendingBadge: "Oczekuje na wysłanie...",
         photoPopupTitle: (index) => `Zdjęcie ${index + 1}`,

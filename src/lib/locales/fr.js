@@ -42,6 +42,7 @@ export const fr = {
         geolocationError: "Echec de géolocalisation de la capture.",
         uploadError: "Echec de l'envoi de la photo.",
         selectionTruncated: (kept, max) => `Seulement ${kept} photo(s) ajoutée(s) : ${max} photos maximum.`,
+        processingError: (name) => `Impossible de lire la photo ${name}, elle a été ignorée.`,
         clickToShow: "Cliquez pour afficher l'image",
         pendingBadge: "Envoi en attente...",
         photoPopupTitle: (index) => `Photo ${index + 1}`,

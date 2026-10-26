@@ -103,6 +103,7 @@ export const DEFAULT_LABELS = {
     geolocationError: "Failed to get capture location.",
     uploadError: "Photo upload failed.",
     selectionTruncated: (kept, max) => `Only ${kept} photo(s) added: ${max} photos maximum.`,
+    processingError: (name) => `Could not read the photo ${name}, it was skipped.`,
     clickToShow: "Click to view the image",
     pendingBadge: "Sending...",
     photoPopupTitle: (index) => `Photo ${index + 1}`,

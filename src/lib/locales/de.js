@@ -46,6 +46,7 @@ export const de = {
         geolocationError: "Geolokalisierung der Aufnahme fehlgeschlagen.",
         uploadError: "Senden des Fotos fehlgeschlagen.",
         selectionTruncated: (kept, max) => `Nur ${kept} Foto(s) hinzugefügt: maximal ${max} Fotos.`,
+        processingError: (name) => `Das Foto ${name} konnte nicht gelesen werden und wurde übersprungen.`,
         clickToShow: "Klicken, um das Bild anzuzeigen",
         pendingBadge: "Senden ausstehend...",
         photoPopupTitle: (index) => `Foto ${index + 1}`,
