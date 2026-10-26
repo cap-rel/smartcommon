@@ -57,13 +57,13 @@ complétée de deux clés :
 ```js
 [
   {
-    uid: "4f7c…",            // identité stable de la photo, alphanumérique
-    uploadId: "…",           // (outputFormat="upload") ou pendingId hors ligne
-    previewUrl: "blob:…",    // ou src
-    title: "…", description: "", gpsPoints: [lat, lng], capture: true,
-    annotations: [{ id, type, x, y, payload }, …],
+    uid: "4f7c...",            // identité stable de la photo, alphanumérique
+    uploadId: "...",           // (outputFormat="upload") ou pendingId hors ligne
+    previewUrl: "blob:...",    // ou src
+    title: "...", description: "", gpsPoints: [lat, lng], capture: true,
+    annotations: [{ id, type, x, y, payload }, ...],
   },
-  …
+  ...
 ]
 ```
 
@@ -85,7 +85,7 @@ complétée de deux clés :
 | `readOnly`, `disabled` | consultation : pas de prise de vue ; le bouton n'apparaît que sur les photos annotées, et l'annotateur s'ouvre en lecture seule |
 | `outputFormat`, `queue`, `uploadEndpoint`, `onUploadError`, `compressOptions`, `accept`, `label`, `help` | transmis à `PhotosUploader` |
 | `labels` | `annotate`, `viewAnnotations`, `annotationsTitle(index)` |
-| `PhotosUploader`, `PhotoAnnotator`, `Modal` | props des sous-composants (libellés, styles…), fusionnées sur les valeurs par défaut |
+| `PhotosUploader`, `PhotoAnnotator`, `Modal` | props des sous-composants (libellés, styles...), fusionnées sur les valeurs par défaut |
 | `annotateButtonProps`, `annotateCountProps` | props du bouton d'annotation et de son compteur |
 
 ## Tests E2E
