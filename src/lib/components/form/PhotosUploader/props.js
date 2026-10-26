@@ -36,6 +36,11 @@ export const propTypes = {
     // is later swapped for uploadId via the queue's onResolved stream.
     queue: PropTypes.bool,
 
+    // (photo, index) => node, painted at the bottom of each thumbnail
+    // (per-photo actions of a wrapper). Clicks inside it do not open the
+    // photo popup.
+    renderPhotoExtra: PropTypes.func,
+
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,
@@ -78,6 +83,7 @@ export const propTypes = {
     imgProps: PropTypes.object,
     pendingBadgeProps: PropTypes.object,
     titleProps: PropTypes.object,
+    photoExtraProps: PropTypes.object,
     Popup: PropTypes.object,
     popupImgProps: PropTypes.object,
     TitleInput: PropTypes.object,
@@ -96,6 +102,7 @@ export const DEFAULT_LABELS = {
     exactError: (exact) => `You must take exactly ${exact} photos.`,
     geolocationError: "Failed to get capture location.",
     uploadError: "Photo upload failed.",
+    selectionTruncated: (kept, max) => `Only ${kept} photo(s) added: ${max} photos maximum.`,
     clickToShow: "Click to view the image",
     pendingBadge: "Sending...",
     photoPopupTitle: (index) => `Photo ${index + 1}`,

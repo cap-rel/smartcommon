@@ -414,3 +414,164 @@ describe("PhotosUploader - deletePhoto", () => {
         expect(uploadMock.cancelUpload).not.toHaveBeenCalled();
     });
 });
+
+// ---------------------------------------------------------------------------
+// max, renderPhotoExtra, photo info edit
+// ---------------------------------------------------------------------------
+
+describe("PhotosUploader - max reached (multiple)", () => {
+    const photos = (n) => Array.from({ length: n }, (_, i) => ({ uploadId: `U${i}`, previewUrl: `blob:${i}`, title: `p${i}` }));
+
+    const captureButtons = (container) => [...container.querySelectorAll('[data-testid="photos-capture-controls"] button')];
+
+    it("disables capture and import once the limit is reached", () => {
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple max={2} value={photos(2)} onChange={() => {}} />
+        );
+        const buttons = captureButtons(container);
+        expect(buttons).toHaveLength(2);
+        buttons.forEach((button) => expect(button.disabled).toBe(true));
+    });
+
+    it("keeps them enabled under the limit, and without max", () => {
+        const { container: under } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple max={3} value={photos(2)} onChange={() => {}} />
+        );
+        captureButtons(under).forEach((button) => expect(button.disabled).toBe(false));
+
+        const { container: noMax } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={photos(5)} onChange={() => {}} />
+        );
+        captureButtons(noMax).forEach((button) => expect(button.disabled).toBe(false));
+    });
+});
+
+describe("PhotosUploader - renderPhotoExtra", () => {
+    it("paints the extra content under each thumbnail, with photo and index", () => {
+        const renderPhotoExtra = vi.fn((photo, index) => <span data-testid={`extra-${index}`}>{photo.title}</span>);
+        const { getByTestId } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                value={[{ uploadId: "U1", previewUrl: "blob:a", title: "a" }, { uploadId: "U2", previewUrl: "blob:b", title: "b" }]}
+                onChange={() => {}}
+                renderPhotoExtra={renderPhotoExtra}
+            />
+        );
+        expect(getByTestId("extra-0").textContent).toBe("a");
+        expect(getByTestId("extra-1").textContent).toBe("b");
+    });
+
+    it("does not open the photo popup when the extra content is clicked", () => {
+        const { getByTestId, queryByTestId } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                value={[{ uploadId: "U1", previewUrl: "blob:a", title: "a" }]}
+                onChange={() => {}}
+                renderPhotoExtra={() => <button type="button" data-testid="extra">x</button>}
+            />
+        );
+        fireEvent.click(getByTestId("extra"));
+        expect(queryByTestId("popup")).toBeNull();
+    });
+});
+
+describe("PhotosUploader - photo info edit (multiple)", () => {
+    it("emits a new photo object and leaves the caller's value untouched", () => {
+        const value = [{ uploadId: "U1", previewUrl: "blob:a", title: "a" }];
+        const onChange = vi.fn();
+        const { container, getByDisplayValue } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={value} onChange={onChange} />
+        );
+        fireEvent.click(container.querySelector("img").parentElement);
+        fireEvent.change(getByDisplayValue("a"), { target: { value: "renamed" } });
+
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0][0].title).toBe("renamed");
+        expect(value[0].title).toBe("a");
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Several photos picked at once from the gallery
+// ---------------------------------------------------------------------------
+
+describe("PhotosUploader - several files at once (multiple)", () => {
+    const pick = (container, files) => {
+        const input = container.querySelector('input[type="file"]');
+        Object.defineProperty(input, "files", { value: files, configurable: true });
+        fireEvent.change(input);
+    };
+    const png = (name) => new File(["d"], name, { type: "image/png" });
+
+    it("lets the gallery pick several files in multiple mode only", () => {
+        const { container: multi } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={() => {}} />
+        );
+        expect(multi.querySelector('input[type="file"]').multiple).toBe(true);
+
+        const { container: single } = render(
+            <PhotosUploader name="photo" outputFormat="upload" value={null} onChange={() => {}} />
+        );
+        expect(single.querySelector('input[type="file"]').multiple).toBe(false);
+    });
+
+    it("adds every picked file in a single change", async () => {
+        let n = 0;
+        uploadMock.uploadFile = vi.fn(() => Promise.resolve({ upload_id: `U${++n}` }));
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={onChange} />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0].map((p) => p.uploadId)).toEqual(["U1", "U2", "U3"]);
+        expect(onChange.mock.calls[0][0].map((p) => p.title)).toEqual(["a", "b", "c"]);
+    });
+
+    it("keeps only what fits under max, and says so", async () => {
+        const toast = (await import("react-hot-toast")).default;
+        toast.error.mockClear();
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader
+                name="photos"
+                outputFormat="upload"
+                multiple
+                max={3}
+                value={[{ uploadId: "U0", previewUrl: "blob:0", title: "first" }]}
+                onChange={onChange}
+            />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png"), png("d.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(uploadMock.uploadFile).toHaveBeenCalledTimes(2);
+        expect(onChange.mock.calls.at(-1)[0].map((p) => p.title)).toEqual(["first", "a", "b"]);
+        expect(toast.error).toHaveBeenCalledWith("Only 2 photo(s) added: 3 photos maximum.");
+    });
+
+    it("still adds the other files when one upload fails", async () => {
+        uploadMock.uploadFile = vi.fn((file) => (file.name === "b.png"
+            ? Promise.reject(new Error("HTTP 422"))
+            : Promise.resolve({ upload_id: `U-${file.name}` })));
+        const onUploadError = vi.fn();
+        const onChange = vi.fn();
+        const { container } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={[]} onChange={onChange} onUploadError={onUploadError} />
+        );
+
+        await act(async () => { pick(container, [png("a.png"), png("b.png"), png("c.png")]); });
+        await waitFor(() => expect(onChange).toHaveBeenCalled());
+
+        expect(onUploadError).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls.at(-1)[0].map((p) => p.uploadId)).toEqual(["U-a.png", "U-c.png"]);
+    });
+});

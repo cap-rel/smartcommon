@@ -61,6 +61,13 @@ export const PhotosUploader = (props) => {
         // and the badge disappears.
         queue: queueMode = false,
 
+        // Optional render function (photo, index) => node, painted at the
+        // bottom of each thumbnail. Lets a wrapper attach per-photo actions
+        // (e.g. AnnotatedPhotosUploader's annotate button) without
+        // re-implementing the grid. A click inside it does NOT open the
+        // photo popup.
+        renderPhotoExtra,
+
         labels: userLabels = {},
     } = variantProps;
 
@@ -98,6 +105,11 @@ export const PhotosUploader = (props) => {
     const { states, set } = useStates({ initialStates, debug: false });
 
     const { isPanelOpen, isInputInCaptureMode, isPhotoLoading, isPhotoSelected, selectedPhotoIndex } = states;
+
+    // In multiple mode, `max` used to be a submit-time error only: the user
+    // could keep shooting and was then asked to delete photos. Once the limit
+    // is reached, capture and import are disabled instead.
+    const isMaxReached = multiple && !isNil(max) && (currentValue?.length ?? 0) >= max;
 
     // const selectedPhoto = multiple ? currentValue[selectedPhotoIndex] : currentValue;
 
@@ -222,10 +234,125 @@ export const PhotosUploader = (props) => {
         });
     }, [queueMode, uploadQueue, multiple, setValue]);
 
-    const addPhoto = async file => {
-        if (!disabled && !readOnly && !isFormSubmitting) {
-            set("isPhotoLoading", true);
+    // Build one photo value from a picked file: compress, then upload /
+    // keep the blob / inline base64 depending on outputFormat. Returns null
+    // when the upload failed (already reported).
+    const buildPhoto = async (file, gpsPoints) => {
+        const title = splitFileExtension(file.name)[0];
+        let newPhoto;
 
+        // Resize/compress the file before upload to avoid hitting
+        // server upload limits. EXIF (orientation, GPS, etc.) is
+        // preserved by browser-image-compression for JPEG output.
+        // Pass compressOptions={ skip: true } to opt out.
+        const shouldCompress = file?.type?.startsWith("image/")
+            && compressOptions?.skip !== true;
+
+        if (outputFormat === "upload") {
+            // Upload mode: POST the binary to smartauth /upload,
+            // keep an upload_id for the form payload and a local
+            // previewUrl for rendering. The business module then
+            // references newPhoto.uploadId from its own JSON
+            // payload. Server-side, it consumes the staged file
+            // via SmartAuth\Api\UploadHelper::consumeUpload().
+            const fileToSend = shouldCompress
+                ? await resizeImage(file, { ...compressOptions, outputType: "file" })
+                : file;
+            const previewUrl = URL.createObjectURL(fileToSend);
+            let uploadResult;
+            try {
+                uploadResult = await uploadFile(fileToSend);
+            } catch (err) {
+                URL.revokeObjectURL(previewUrl);
+                // Always log: silent failures hide regressions.
+                console.error("PhotosUploader upload failed:", err);
+                if (onUploadError) {
+                    onUploadError(err);
+                } else {
+                    toast.error(labels.uploadError);
+                }
+                return null;
+            }
+            newPhoto = {
+                uploadId: uploadResult?.upload_id ?? null,
+                // When queueMode is on and the POST was offline /
+                // network-failed / 5xx, the result carries a
+                // pendingId instead. The useUploadQueue.onResolved
+                // subscription above will swap it for the real
+                // uploadId once the server acknowledges.
+                pendingId: uploadResult?.pending_id ?? null,
+                previewUrl,
+                gpsPoints,
+                title,
+                description: "",
+                capture: isInputInCaptureMode,
+                mimeType: uploadResult?.mime ?? fileToSend.type,
+                filename: uploadResult?.filename ?? fileToSend.name,
+                size: uploadResult?.size,
+                sha256: uploadResult?.sha256,
+            };
+        } else if (outputFormat === "blob") {
+            // Blob mode: store compressed file/blob with preview URL.
+            const fileToStore = shouldCompress
+                ? await resizeImage(file, { ...compressOptions, outputType: "file" })
+                : file;
+            const previewUrl = URL.createObjectURL(fileToStore);
+            newPhoto = {
+                blob: fileToStore,
+                previewUrl,
+                gpsPoints,
+                title,
+                description: "",
+                capture: isInputInCaptureMode,
+                mimeType: fileToStore.type,
+                filename: fileToStore.name
+            };
+        } else {
+            // Base64 mode: legacy behavior
+            const base64 = shouldCompress
+                ? await resizeImage(file, compressOptions)
+                : await new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = () => resolve(reader.result);
+                    reader.onerror = () => reject(reader.error);
+                    reader.readAsDataURL(file);
+                });
+            newPhoto = {
+                src: base64,
+                gpsPoints,
+                title,
+                description: "",
+                capture: isInputInCaptureMode
+            };
+        }
+
+        return newPhoto;
+    };
+
+    // Add the picked files. The gallery may hand several at once (input
+    // `multiple`): in multiple mode they are all added, up to `max`, with a
+    // single value update at the end. Built from currentValueRef, as the
+    // awaits above let the value move (queue resolution).
+    const addPhotos = async fileList => {
+        if (disabled || readOnly || isFormSubmitting) {
+            return;
+        }
+        let files = Array.from(fileList ?? []).filter(Boolean);
+        if (!multiple) {
+            files = files.slice(0, 1);
+        } else if (!isNil(max)) {
+            const room = Math.max(0, max - (currentValueRef.current?.length ?? 0));
+            if (files.length > room) {
+                toast.error(labels.selectionTruncated(room, max));
+                files = files.slice(0, room);
+            }
+        }
+        if (files.length === 0) {
+            return;
+        }
+
+        set("isPhotoLoading", true);
+        try {
             let gpsPoints = [null, null];
 
             if (isInputInCaptureMode) {
@@ -240,100 +367,18 @@ export const PhotosUploader = (props) => {
                 });
             }
 
-            const title = splitFileExtension(file.name)[0];
-            let newPhoto;
-
-            try {
-                // Resize/compress the file before upload to avoid hitting
-                // server upload limits. EXIF (orientation, GPS, etc.) is
-                // preserved by browser-image-compression for JPEG output.
-                // Pass compressOptions={ skip: true } to opt out.
-                const shouldCompress = file?.type?.startsWith("image/")
-                    && compressOptions?.skip !== true;
-
-                if (outputFormat === "upload") {
-                    // Upload mode: POST the binary to smartauth /upload,
-                    // keep an upload_id for the form payload and a local
-                    // previewUrl for rendering. The business module then
-                    // references newPhoto.uploadId from its own JSON
-                    // payload. Server-side, it consumes the staged file
-                    // via SmartAuth\Api\UploadHelper::consumeUpload().
-                    const fileToSend = shouldCompress
-                        ? await resizeImage(file, { ...compressOptions, outputType: "file" })
-                        : file;
-                    const previewUrl = URL.createObjectURL(fileToSend);
-                    let uploadResult;
-                    try {
-                        uploadResult = await uploadFile(fileToSend);
-                    } catch (err) {
-                        URL.revokeObjectURL(previewUrl);
-                        // Always log: silent failures hide regressions.
-                        console.error("PhotosUploader upload failed:", err);
-                        if (onUploadError) {
-                            onUploadError(err);
-                        } else {
-                            toast.error(labels.uploadError);
-                        }
-                        return;
-                    }
-                    newPhoto = {
-                        uploadId: uploadResult?.upload_id ?? null,
-                        // When queueMode is on and the POST was offline /
-                        // network-failed / 5xx, the result carries a
-                        // pendingId instead. The useUploadQueue.onResolved
-                        // subscription above will swap it for the real
-                        // uploadId once the server acknowledges.
-                        pendingId: uploadResult?.pending_id ?? null,
-                        previewUrl,
-                        gpsPoints,
-                        title,
-                        description: "",
-                        capture: isInputInCaptureMode,
-                        mimeType: uploadResult?.mime ?? fileToSend.type,
-                        filename: uploadResult?.filename ?? fileToSend.name,
-                        size: uploadResult?.size,
-                        sha256: uploadResult?.sha256,
-                    };
-                } else if (outputFormat === "blob") {
-                    // Blob mode: store compressed file/blob with preview URL.
-                    const fileToStore = shouldCompress
-                        ? await resizeImage(file, { ...compressOptions, outputType: "file" })
-                        : file;
-                    const previewUrl = URL.createObjectURL(fileToStore);
-                    newPhoto = {
-                        blob: fileToStore,
-                        previewUrl,
-                        gpsPoints,
-                        title,
-                        description: "",
-                        capture: isInputInCaptureMode,
-                        mimeType: fileToStore.type,
-                        filename: fileToStore.name
-                    };
-                } else {
-                    // Base64 mode: legacy behavior
-                    const base64 = shouldCompress
-                        ? await resizeImage(file, compressOptions)
-                        : await new Promise((resolve, reject) => {
-                            const reader = new FileReader();
-                            reader.onload = () => resolve(reader.result);
-                            reader.onerror = () => reject(reader.error);
-                            reader.readAsDataURL(file);
-                        });
-                    newPhoto = {
-                        src: base64,
-                        gpsPoints,
-                        title,
-                        description: "",
-                        capture: isInputInCaptureMode
-                    };
+            const newPhotos = [];
+            for (const file of files) {
+                const photo = await buildPhoto(file, gpsPoints);
+                if (photo) {
+                    newPhotos.push(photo);
                 }
-
-                const newValue = multiple ? [...(currentValue ?? []), newPhoto] : newPhoto;
-                setValue(newValue);
-            } finally {
-                set("isPhotoLoading", false);
             }
+            if (newPhotos.length > 0) {
+                setValue(multiple ? [...(currentValueRef.current ?? []), ...newPhotos] : newPhotos[0]);
+            }
+        } finally {
+            set("isPhotoLoading", false);
         }
     };
 
@@ -342,10 +387,12 @@ export const PhotosUploader = (props) => {
             let newValue;
 
             if (multiple) {
-                newValue = [...(currentValue ?? [])];
-                if (newValue[selectedPhotoIndex]) {
-                    newValue[selectedPhotoIndex][prop] = value;
-                }
+                // Copy the photo instead of assigning in place: mutating the
+                // object also changed currentValue, so useField saw two equal
+                // values and dropped the edit in controlled mode.
+                newValue = (currentValue ?? []).map((photo, index) => (
+                    index === selectedPhotoIndex && photo ? { ...photo, [prop]: value } : photo
+                ));
             } else {
                 newValue = { ...currentValue, [prop]: value };
             }
@@ -429,6 +476,18 @@ export const PhotosUploader = (props) => {
                     }))}>
                         {photo?.title}
                     </div>
+
+                    {renderPhotoExtra && (
+                        <div
+                            { ...mergeProps("photoExtra", props => ({
+                                ...props,
+                                className: "flex justify-center"
+                            }))}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            {renderPhotoExtra(photo, index)}
+                        </div>
+                    )}
                 </div>
             </>
         );
@@ -547,7 +606,15 @@ export const PhotosUploader = (props) => {
                 ref={inputRef}
                 type={`file`}
                 capture={isInputInCaptureMode}
-                onChange={e => addPhoto(e.target.files[0])}
+                // The gallery may pick several photos at once in multiple
+                // mode; the camera always returns one.
+                multiple={!!multiple && !isInputInCaptureMode}
+                onChange={e => {
+                    const files = Array.from(e.target.files ?? []);
+                    // Cleared so that picking the same file again fires change.
+                    e.target.value = "";
+                    addPhotos(files);
+                }}
                 // Stable E2E hook so tests can call setInputFiles on this
                 // specific input regardless of the surrounding DOM. Scoped
                 // by the consumer via a parent wrapper (e.g. formfield-X).
@@ -622,7 +689,7 @@ export const PhotosUploader = (props) => {
                         icon: FaCamera,
                         loading: isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: disabled || isPhotoLoading,
+                        disabled: disabled || isPhotoLoading || isMaxReached,
                         onClick: e => {
                             e.preventDefault();
                             capturePhoto();
@@ -637,7 +704,7 @@ export const PhotosUploader = (props) => {
                         icon: FaFileImport,
                         loading: !isInputInCaptureMode && isPhotoLoading,
                         ...props,
-                        disabled: disabled || isPhotoLoading,
+                        disabled: disabled || isPhotoLoading || isMaxReached,
                         onClick: e => {
                             e.preventDefault();
                             importPhoto();

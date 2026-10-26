@@ -11,6 +11,7 @@
 //   <PhotosUploader labels={en.PhotosUploader} />
 
 import { DEFAULT_LABELS as PhotosUploader } from "lib/components/form/PhotosUploader/props";
+import { DEFAULT_LABELS as AnnotatedPhotosUploader } from "lib/components/form/AnnotatedPhotosUploader/props";
 import { DEFAULT_LABELS as VideosUploader } from "lib/components/form/VideosUploader/props";
 import { DEFAULT_LABELS as AudiosUploader } from "lib/components/form/AudiosUploader/props";
 import { DEFAULT_LABELS as SignaturePad } from "lib/components/form/SignaturePad/props";
@@ -51,6 +52,7 @@ import { DEFAULT_LABELS as Print } from "lib/print/labels";
 
 export const en = {
     PhotosUploader,
+    AnnotatedPhotosUploader,
     VideosUploader,
     AudiosUploader,
     SignaturePad,

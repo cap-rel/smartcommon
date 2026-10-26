@@ -45,6 +45,7 @@ export const it = {
         exactError: (exact) => `Devi scattare esattamente ${exact} foto.`,
         geolocationError: "Geolocalizzazione dell'acquisizione non riuscita.",
         uploadError: "Invio della foto non riuscito.",
+        selectionTruncated: (kept, max) => `Aggiunte solo ${kept} foto: massimo ${max} foto.`,
         clickToShow: "Clicca per visualizzare l'immagine",
         pendingBadge: "Invio in attesa...",
         photoPopupTitle: (index) => `Foto ${index + 1}`,
@@ -53,6 +54,11 @@ export const it = {
         descriptionField: "Descrizione",
         saveButton: "Salva",
         emptyState: "Nessuna foto salvata",
+    },
+    AnnotatedPhotosUploader: {
+        annotate: "Annota",
+        viewAnnotations: "Vedi annotazioni",
+        annotationsTitle: (index) => `Annotazioni - foto ${index + 1}`,
     },
     VideosUploader: {
         requiredError: "Devi registrare almeno 1 video.",
