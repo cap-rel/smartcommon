@@ -73,8 +73,8 @@ complétée de deux clés :
   Il est conservé à travers l'envoi et la résolution de la file.
 - **Photos déjà enregistrées** : le consommateur les fournit avec leur `uid`
   (renvoyé par son serveur) et un `src` affichable (URL, ou URL `blob:` d'un
-  fichier téléchargé avec le JWT). Une photo sans `uid` est acceptée telle
-  quelle.
+  fichier téléchargé avec le JWT). Une photo sans `uid` est acceptée, et en
+  reçoit un dès que le champ écrit sa valeur (ajout, suppression, annotation).
 
 ## Props
 

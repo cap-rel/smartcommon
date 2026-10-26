@@ -100,22 +100,25 @@ export const AnnotatedPhotosUploader = (props) => {
     const [openIndex, setOpenIndex] = useState(null);
     const openPhoto = isNil(openIndex) ? null : (photos[openIndex] ?? null);
 
+    // Every value this field writes goes through here: a photo without uid
+    // (new capture, or loaded from a server without one) gets one, with an
+    // empty annotation list; existing uids and annotations are kept.
+    const normalizePhotos = (nextPhotos) => (Array.isArray(nextPhotos) ? nextPhotos : []).map((photo) => ({
+        ...photo,
+        uid: photo?.uid ?? newPhotoUid(),
+        annotations: Array.isArray(photo?.annotations) ? photo.annotations : [],
+    }));
+
     // Every change of the uploader (capture, delete, title edit, queue
-    // resolution) goes through here: give new photos their uid and an empty
-    // annotation list, keep both on existing ones.
+    // resolution) goes through here.
     const onPhotosChange = (nextPhotos) => {
-        const normalized = (Array.isArray(nextPhotos) ? nextPhotos : []).map((photo) => ({
-            ...photo,
-            uid: photo?.uid ?? newPhotoUid(),
-            annotations: Array.isArray(photo?.annotations) ? photo.annotations : [],
-        }));
-        setValue(normalized);
+        setValue(normalizePhotos(nextPhotos));
     };
 
     const setAnnotations = (index, nextAnnotations) => {
-        setValue(photos.map((photo, i) => (
+        setValue(normalizePhotos(photos.map((photo, i) => (
             i === index ? { ...photo, annotations: Array.isArray(nextAnnotations) ? nextAnnotations : [] } : photo
-        )));
+        ))));
     };
 
     const renderAnnotateButton = (photo, index) => {

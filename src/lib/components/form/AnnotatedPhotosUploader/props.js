@@ -12,7 +12,8 @@ export const propTypes = {
     //     kept across uploads / queue resolution. A server keys the photo
     //     and its annotations on it.
     //   - annotations: PhotoAnnotator entries [{ id, type, x, y, payload }].
-    // Photos coming from a server without `uid` are accepted as-is.
+    // Photos coming from a server without `uid` are accepted, and get one
+    // the first time the field writes its value (add, delete, annotate).
     name: PropTypes.string,
     value: PropTypes.array,
     defaultValue: PropTypes.array,

@@ -210,6 +210,21 @@ describe("AnnotatedPhotosUploader - annotations", () => {
         expect(next[0].uid).toBe("a");
     });
 
+    it("gives a uid to a server photo annotated without any other change", () => {
+        const onChange = vi.fn();
+        const serverPhoto = { src: "https://example.test/p.jpg", title: "s" };
+        const { getByTestId } = render(
+            <AnnotatedPhotosUploader name="photos" annotationTypes={NOTE} value={[serverPhoto]} onChange={onChange} />
+        );
+        fireEvent.click(getByTestId("annotated-photos-annotate-0"));
+        act(() => { annotatorMock.props.onChange([{ id: "n1", type: "note", x: 1, y: 1 }]); });
+
+        const [photo] = onChange.mock.calls.at(-1)[0];
+        expect(photo.uid).toMatch(/^[A-Za-z0-9]{6,64}$/);
+        expect(photo.annotations).toHaveLength(1);
+        expect(photo.src).toBe(serverPhoto.src);
+    });
+
     it("closes the annotator", () => {
         const { getByTestId, queryByTestId } = render(
             <AnnotatedPhotosUploader name="photos" annotationTypes={NOTE} value={photos()} onChange={() => {}} />
