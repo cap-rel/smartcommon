@@ -32,6 +32,7 @@ vi.mock("./feedbackPayload", () => ({
 }));
 
 import { enqueueReport, flushQueue, setQueueApiProvider, countPending } from "./offlineQueue";
+import { buildFormData } from "./feedbackPayload";
 
 describe("offline feedback queue", () => {
     beforeEach(() => {
@@ -40,7 +41,13 @@ describe("offline feedback queue", () => {
         mockStore.count.mockResolvedValue(0);
     });
 
-    it("enqueues a report with its idempotency key", async () => {
+    it("enqueues a report with its idempotency key and its submit-time context", async () => {
+        const context = {
+            channel: "pwa",
+            occurred_at: "2020-01-01T00:00:00.000Z",
+            log_excerpt: ["line"],
+            network_errors: [],
+        };
         const payload = {
             type: "bug",
             title: "Broken",
@@ -49,6 +56,7 @@ describe("offline feedback queue", () => {
             consent: false,
             appVersion: "1.0.0",
             relayPath: "feedback/report",
+            context,
         };
 
         await enqueueReport(payload, "key-123");
@@ -59,11 +67,13 @@ describe("offline feedback queue", () => {
                 type: "bug",
                 body: "It does not work",
                 relayPath: "feedback/report",
+                context,
             }),
         }));
     });
 
     it("flush sends queued reports and deletes them on success", async () => {
+        const context = { channel: "pwa", occurred_at: "2020-01-01T00:00:00.000Z" };
         const row = {
             idempotency_key: "key-abc",
             payload: {
@@ -74,6 +84,7 @@ describe("offline feedback queue", () => {
                 appVersion: "1.0.0",
                 relayPath: "feedback/report",
                 screenshot: null,
+                context,
             },
             created_at: Date.now(),
         };
@@ -88,6 +99,36 @@ describe("offline feedback queue", () => {
             headers: { "Idempotency-Key": "key-abc" },
         }));
         expect(mockStore.delete).toHaveBeenCalledWith("key-abc");
+    });
+
+    it("flush reuses the stored submit-time context, not a fresh one", async () => {
+        const context = { channel: "pwa", occurred_at: "2020-01-01T00:00:00.000Z" };
+        const row = {
+            idempotency_key: "key-ctx",
+            payload: {
+                type: "bug",
+                title: null,
+                body: "Test",
+                consent: false,
+                appVersion: "1.0.0",
+                relayPath: "feedback/report",
+                screenshot: null,
+                context,
+            },
+            created_at: Date.now(),
+        };
+        mockStore.toArray.mockResolvedValue([row]);
+
+        const postMock = vi.fn().mockResolvedValue({ ok: true, ref: "CSPN-1" });
+        setQueueApiProvider({ post: postMock });
+
+        await flushQueue();
+
+        // The context stored at submit time is forwarded to buildFormData;
+        // the flush must not recompute one describing the retry moment.
+        expect(buildFormData).toHaveBeenCalledWith(expect.objectContaining({
+            context,
+        }));
     });
 
     it("flush keeps the report when the send fails (network still down)", async () => {

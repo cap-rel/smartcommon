@@ -103,6 +103,11 @@ describe("FeedbackModal fields", () => {
         expect(mocks.post).not.toHaveBeenCalled();
     });
 
+    it("flushes the offline queue on mount (reports queued in a previous session)", async () => {
+        renderModal();
+        await waitFor(() => expect(mocks.flushQueue).toHaveBeenCalled());
+    });
+
     it("requires consent at the form level when a screenshot is attached", async () => {
         const { container } = renderModal();
         await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
@@ -188,6 +193,12 @@ describe("FeedbackModal relay errors", () => {
         const [payload, key] = mocks.enqueueReport.mock.calls[0];
         expect(key).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
         expect(payload.body).toBe("Offline submit.");
+
+        // The queued row carries the context captured at submit time, so
+        // the flush describes the moment of the problem.
+        expect(payload.context).toMatchObject({ channel: "pwa" });
+        expect(payload.context.occurred_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+        expect(payload.context.page_url).toBeTruthy();
 
         // Deferred send: the offline message, not the success reference.
         expect(await screen.findByText(/No connection/)).toBeTruthy();

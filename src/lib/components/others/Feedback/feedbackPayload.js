@@ -59,9 +59,13 @@ export const buildContext = (appVersion, locationHref) => {
 // present; consent is "1" or "0". The context object is flattened into
 // bracket-notation fields so the PHP relay can validate them with
 // Laravel's native dot-notation rules.
-export const buildFormData = ({ type, title, body, screenshot, consent, appVersion, locationHref }) => {
+//
+// `context` may be passed precomputed: a report queued while offline keeps
+// the context captured at SUBMIT time, so the flush describes the moment
+// of the problem, not the moment the network came back.
+export const buildFormData = ({ type, title, body, screenshot, consent, appVersion, locationHref, context: providedContext }) => {
     const formData = new FormData();
-    const context = buildContext(appVersion, locationHref);
+    const context = providedContext ?? buildContext(appVersion, locationHref);
 
     formData.append("type", type);
     if (title) formData.append("title", title);

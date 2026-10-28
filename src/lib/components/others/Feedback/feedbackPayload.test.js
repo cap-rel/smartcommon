@@ -232,6 +232,36 @@ describe("buildFormData", () => {
         }
     });
 
+    it("reuses a provided context instead of rebuilding it", () => {
+        // A report queued offline carries the context captured at submit
+        // time: the flush must describe the moment of the problem.
+        const fixedContext = {
+            channel: "pwa",
+            app_version: "9.9.9",
+            page_url: "https://app.example.com/problem",
+            route: "/problem",
+            viewport: "390x844",
+            locale: "fr-FR",
+            occurred_at: "2020-01-01T00:00:00.000Z",
+            log_excerpt: ["2020-01-01T00:00:00.000Z ERROR [x] boom"],
+            network_errors: [
+                { method: "GET", url: "https://api.example.com/x", status: 500, at: "2020-01-01T00:00:00.000Z" },
+            ],
+        };
+        const fd = buildFormData({
+            type: "bug",
+            body: "Queued while offline",
+            context: fixedContext,
+        });
+        const obj = formDataToObject(fd);
+
+        expect(obj["context[occurred_at]"]).toBe("2020-01-01T00:00:00.000Z");
+        expect(obj["context[page_url]"]).toBe("https://app.example.com/problem");
+        expect(obj["context[log_excerpt][0]"]).toBe("2020-01-01T00:00:00.000Z ERROR [x] boom");
+        expect(obj["context[network_errors][0][method]"]).toBe("GET");
+        expect(obj["context[network_errors][0][status]"]).toBe("500");
+    });
+
     it("appends network_errors entries with method, url, status, at", () => {
         const fd = buildFormData({
             type: "bug",

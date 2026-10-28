@@ -7,7 +7,7 @@ import { useApi } from "lib/hooks";
 import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
-import { buildFormData, prepareScreenshot, RETRYABLE_RELAY_STATUS } from "./feedbackPayload";
+import { buildContext, buildFormData, prepareScreenshot, RETRYABLE_RELAY_STATUS } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
 import { ScreenshotRedactor } from "./ScreenshotRedactor";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
@@ -34,10 +34,16 @@ export const FeedbackModal = (props) => {
     const api = useApi();
 
     // Register the api with the offline queue singleton and install the
-    // 'online' flush listener once per mount.
+    // 'online' flush listener once per mount. The queue is also flushed
+    // right away: a report queued in a PREVIOUS session (app closed while
+    // offline) must go out on reopen, and no 'online' event will fire for
+    // it.
     useEffect(() => {
         setQueueApiProvider(api);
         installOnlineFlush();
+        if (navigatorInfo.isOnLine !== false) {
+            flushQueue().catch(err => log.error("mount flush failed", err));
+        }
     }, [api]);
 
     const [type, setType] = useState("bug");
@@ -185,6 +191,11 @@ export const FeedbackModal = (props) => {
         setStatus("submitting");
         setErrorMessage("");
 
+        // The context describes the moment of the problem. It is captured
+        // NOW so a report queued offline keeps this context when the flush
+        // resends it later (the retry must not describe the flush moment).
+        const context = buildContext(appVersion);
+
         const payload = {
             type,
             title: title.trim() || undefined,
@@ -193,6 +204,7 @@ export const FeedbackModal = (props) => {
             consent,
             appVersion,
             relayPath,
+            context,
         };
 
         // Offline at submit time: queue the report, it will be flushed

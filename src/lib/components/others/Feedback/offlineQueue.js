@@ -47,7 +47,8 @@ export const setQueueApiProvider = (api) => {
 
 // Store a report for later sending. `payload` is the plain object of
 // fields (type, title, body, screenshot File, consent, appVersion,
-// relayPath); `idempotencyKey` is the UUID generated at submit time.
+// relayPath) plus the context captured at submit time; `idempotencyKey`
+// is the UUID generated at submit time.
 export const enqueueReport = async (payload, idempotencyKey) => {
     const db = await ensureDb();
     const row = {
@@ -60,6 +61,7 @@ export const enqueueReport = async (payload, idempotencyKey) => {
             appVersion: payload.appVersion ?? null,
             relayPath: payload.relayPath,
             screenshot: payload.screenshot ?? null,
+            context: payload.context ?? null,
         },
         created_at: Date.now(),
     };
@@ -68,7 +70,9 @@ export const enqueueReport = async (payload, idempotencyKey) => {
     return row;
 };
 
-// Send one queued report. Rebuilds the FormData from the stored fields.
+// Send one queued report. Rebuilds the FormData from the stored fields;
+// the stored context (captured at submit time) is reused as-is so the
+// report describes the moment of the problem, not the moment of the retry.
 const sendQueuedReport = async (row) => {
     const api = state.apiProvider;
     if (!api?.post) {
@@ -83,6 +87,7 @@ const sendQueuedReport = async (row) => {
         screenshot: row.payload.screenshot,
         consent: row.payload.consent,
         appVersion: row.payload.appVersion ?? undefined,
+        context: row.payload.context ?? undefined,
     });
 
     const response = await api.post(row.payload.relayPath, {
