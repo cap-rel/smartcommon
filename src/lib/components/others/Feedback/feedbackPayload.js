@@ -93,6 +93,12 @@ export const buildFormData = ({ type, title, body, screenshot, consent, appVersi
     return formData;
 };
 
+// Relay statuses worth a deferred retry: the refusal is transient (rate
+// limit, upstream outage), so the report is queued and resent later with
+// the same idempotency key. Any other HTTP error is a definitive refusal
+// of THIS content: queueing it would resend it forever.
+export const RETRYABLE_RELAY_STATUS = [429, 502, 503];
+
 // List of identity-related keys that must NEVER appear in the payload.
 // The relay fills them from the smartauth token server-side.
 export const IDENTITY_KEYS = [

@@ -25,8 +25,10 @@ vi.mock("dexie", () => {
 });
 
 // Mock feedbackPayload so sendQueuedReport doesn't need the real one.
+// RETRYABLE_RELAY_STATUS must be mirrored: the flush reads it from here.
 vi.mock("./feedbackPayload", () => ({
     buildFormData: vi.fn(() => new FormData()),
+    RETRYABLE_RELAY_STATUS: [429, 502, 503],
 }));
 
 import { enqueueReport, flushQueue, setQueueApiProvider, countPending } from "./offlineQueue";
@@ -112,9 +114,40 @@ describe("offline feedback queue", () => {
         expect(mockStore.delete).not.toHaveBeenCalled();
     });
 
-    it("flush drops the report when the relay refuses it (4xx)", async () => {
+    it("flush drops the report when the relay refuses it (4xx rejection)", async () => {
         const row = {
             idempotency_key: "key-drop",
+            payload: {
+                type: "bug",
+                title: null,
+                body: "Test",
+                consent: false,
+                appVersion: null,
+                relayPath: "feedback/report",
+                screenshot: null,
+            },
+            created_at: Date.now(),
+        };
+        mockStore.toArray.mockResolvedValue([row]);
+
+        // Like the real api.post (ky throwHttpErrors): a non-2xx answer
+        // REJECTS with the response attached, it does not resolve.
+        const postMock = vi.fn().mockRejectedValue(
+            Object.assign(new Error("Request failed with status code 413"), {
+                name: "HTTPError",
+                response: { status: 413 },
+            })
+        );
+        setQueueApiProvider({ post: postMock });
+
+        await flushQueue();
+
+        expect(mockStore.delete).toHaveBeenCalledWith("key-drop");
+    });
+
+    it("flush drops the report when a 2xx body refuses it", async () => {
+        const row = {
+            idempotency_key: "key-drop-2xx",
             payload: {
                 type: "bug",
                 title: null,
@@ -133,7 +166,37 @@ describe("offline feedback queue", () => {
 
         await flushQueue();
 
-        expect(mockStore.delete).toHaveBeenCalledWith("key-drop");
+        expect(mockStore.delete).toHaveBeenCalledWith("key-drop-2xx");
+    });
+
+    it("flush keeps the report on a transient relay refusal (429)", async () => {
+        const row = {
+            idempotency_key: "key-429",
+            payload: {
+                type: "bug",
+                title: null,
+                body: "Test",
+                consent: false,
+                appVersion: null,
+                relayPath: "feedback/report",
+                screenshot: null,
+            },
+            created_at: Date.now(),
+        };
+        mockStore.toArray.mockResolvedValue([row]);
+
+        const postMock = vi.fn().mockRejectedValue(
+            Object.assign(new Error("Request failed with status code 429"), {
+                name: "HTTPError",
+                response: { status: 429 },
+            })
+        );
+        setQueueApiProvider({ post: postMock });
+
+        await flushQueue();
+
+        // Rate limited: the report stays queued for the next flush.
+        expect(mockStore.delete).not.toHaveBeenCalled();
     });
 
     it("countPending returns the number of queued reports", async () => {

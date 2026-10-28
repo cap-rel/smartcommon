@@ -7,7 +7,7 @@ import { useApi } from "lib/hooks";
 import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
-import { buildFormData, prepareScreenshot } from "./feedbackPayload";
+import { buildFormData, prepareScreenshot, RETRYABLE_RELAY_STATUS } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
 import { ScreenshotRedactor } from "./ScreenshotRedactor";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
@@ -240,8 +240,23 @@ export const FeedbackModal = (props) => {
                 log.error("report rejected", response?.code ?? "unknown");
             }
         } catch (error) {
-            // Network failure mid-submit: queue for retry. The same
-            // idempotency key guarantees no duplicate on flush.
+            // api.post throws on any non-2xx (ky throwHttpErrors), so the
+            // relay's refusal arrives here as an error carrying the response.
+            // A definitive refusal (400, 403, 413, ...) is shown as an error
+            // and NEVER queued: resending the same content can only fail
+            // again. Only a transient refusal (429, 502, 503) is worth a
+            // deferred retry, like a network failure.
+            const status = error?.response?.status;
+            if (typeof status === "number" && !RETRYABLE_RELAY_STATUS.includes(status)) {
+                log.error("report rejected by the relay", status, error?.apiMessage);
+                setErrorMessage(error?.apiMessage || labels.errorMessage);
+                setStatus("error");
+                return;
+            }
+
+            // No response (network cut, timeout) or a transient refusal:
+            // queue for retry. The same idempotency key guarantees no
+            // duplicate on flush.
             log.error("report send failed, queueing for retry", error?.message);
             try {
                 await enqueueReport(payload, idempotencyKeyRef.current);

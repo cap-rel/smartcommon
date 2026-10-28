@@ -103,6 +103,9 @@ export const flushQueue = async () => {
     try {
         const db = await ensureDb();
         const rows = await db[STORE].toArray();
+        // Imported lazily like buildFormData below: keeps the image pipeline
+        // out of the static graph of this module.
+        const { RETRYABLE_RELAY_STATUS } = await import("./feedbackPayload");
 
         for (const row of rows) {
             try {
@@ -111,15 +114,24 @@ export const flushQueue = async () => {
                     await db[STORE].delete(row.idempotency_key);
                     log.info("queued report sent", row.idempotency_key, response.ref);
                 } else {
-                    // Relay refused (4xx): drop the report, it will never
-                    // succeed on retry with the same content.
+                    // 2xx but the body refuses: drop the report, it will
+                    // never succeed on retry with the same content.
                     log.error("queued report rejected", row.idempotency_key, response?.code);
                     await db[STORE].delete(row.idempotency_key);
                 }
             } catch (err) {
-                // Network still flaky or server down: keep the row for the
-                // next flush.
-                log.error("queued report send failed, kept for retry", row.idempotency_key, err?.message);
+                // api.post throws on any non-2xx, so a relay refusal arrives
+                // here as an error carrying the response. A definitive
+                // refusal (4xx) drops the row instead of resending it
+                // forever; transient statuses (429/502/503) and network
+                // failures keep the row for the next flush.
+                const status = err?.response?.status;
+                if (typeof status === "number" && !RETRYABLE_RELAY_STATUS.includes(status)) {
+                    log.error("queued report rejected, dropping", row.idempotency_key, status);
+                    await db[STORE].delete(row.idempotency_key);
+                } else {
+                    log.error("queued report send failed, kept for retry", row.idempotency_key, err?.message);
+                }
             }
         }
     } finally {
