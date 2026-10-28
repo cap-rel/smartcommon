@@ -41,4 +41,3 @@ import { Default as Def } from "./stories";
 
 export const Default = { tags: ["!dev"], ...Def };
 
-export { PhotoEditor } from "./";

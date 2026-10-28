@@ -57,4 +57,3 @@ export const MultipleTypes = { tags: ["!dev"], ...Mt };
 export const ReadOnly = { tags: ["!dev"], ...Ro };
 export const RightSidebar = { tags: ["!dev"], ...Rs };
 
-export { PhotoAnnotator } from "./";
