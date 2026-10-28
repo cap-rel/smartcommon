@@ -32,16 +32,15 @@ export const stripQuery = (url) => {
     return q === -1 ? url : url.slice(0, q);
 };
 
-// Build the context block sent with every report. Identity fields
-// (reporter, rights, installed_version) are NEVER set here: the relay
-// fills them from the smartauth token server-side.
+// Build the context object sent with every report. Identity fields
+// (reporter, rights, installed_version) and channel are NEVER set here:
+// the relay fills them from the smartauth token and its own config.
 export const buildContext = (appVersion, locationHref) => {
     const pageUrl = typeof locationHref === "string"
         ? stripQuery(locationHref)
         : (typeof window !== "undefined" ? stripQuery(window.location.href) : "");
 
     return {
-        channel: "pwa",
         app_version: appVersion || undefined,
         page_url: pageUrl || undefined,
         route: pageUrl ? new URL(pageUrl).pathname : undefined,
@@ -56,9 +55,14 @@ export const buildContext = (appVersion, locationHref) => {
 };
 
 // Build the multipart form. The screenshot is appended as a File when
-// present; consent is "1" or "0". The context object is flattened into
-// bracket-notation fields so the PHP relay can validate them with
-// Laravel's native dot-notation rules.
+// present; consent is "1" or "0".
+//
+// The context fields are sent FLAT, with the exact names the PHP relay
+// reads (Relay.php buildPayload: stringField('page_url') and friends,
+// the widget of the Dolibarr pages sends the same): page_url, route,
+// app_version, viewport, locale, occurred_at, repeated log_excerpt[]
+// parts, and network_errors[i][method|url|status|at]. channel is never
+// sent: the relay sets it from its own configuration.
 //
 // `context` may be passed precomputed: a report queued while offline keeps
 // the context captured at SUBMIT time, so the flush describes the moment
@@ -71,22 +75,21 @@ export const buildFormData = ({ type, title, body, screenshot, consent, appVersi
     if (title) formData.append("title", title);
     formData.append("body", body);
 
-    formData.append("context[channel]", context.channel);
-    if (context.app_version) formData.append("context[app_version]", context.app_version);
-    if (context.page_url) formData.append("context[page_url]", context.page_url);
-    if (context.route) formData.append("context[route]", context.route);
-    if (context.viewport) formData.append("context[viewport]", context.viewport);
-    if (context.locale) formData.append("context[locale]", context.locale);
-    formData.append("context[occurred_at]", context.occurred_at);
+    if (context.app_version) formData.append("app_version", context.app_version);
+    if (context.page_url) formData.append("page_url", context.page_url);
+    if (context.route) formData.append("route", context.route);
+    if (context.viewport) formData.append("viewport", context.viewport);
+    if (context.locale) formData.append("locale", context.locale);
+    formData.append("occurred_at", context.occurred_at);
 
-    (context.log_excerpt ?? []).forEach((line, i) => {
-        formData.append(`context[log_excerpt][${i}]`, line);
+    (context.log_excerpt ?? []).forEach((line) => {
+        formData.append("log_excerpt[]", line);
     });
     (context.network_errors ?? []).forEach((err, i) => {
-        formData.append(`context[network_errors][${i}][method]`, err.method);
-        formData.append(`context[network_errors][${i}][url]`, err.url);
-        formData.append(`context[network_errors][${i}][status]`, String(err.status));
-        formData.append(`context[network_errors][${i}][at]`, err.at);
+        formData.append(`network_errors[${i}][method]`, err.method);
+        formData.append(`network_errors[${i}][url]`, err.url);
+        formData.append(`network_errors[${i}][status]`, String(err.status));
+        formData.append(`network_errors[${i}][at]`, err.at);
     });
 
     if (screenshot) {
@@ -103,8 +106,9 @@ export const buildFormData = ({ type, title, body, screenshot, consent, appVersi
 // of THIS content: queueing it would resend it forever.
 export const RETRYABLE_RELAY_STATUS = [429, 502, 503];
 
-// List of identity-related keys that must NEVER appear in the payload.
-// The relay fills them from the smartauth token server-side.
+// List of keys that must NEVER appear in the payload. The relay fills
+// the identity fields from the smartauth token server-side, and channel
+// from its own configuration: the browser sends neither.
 export const IDENTITY_KEYS = [
     "reporter",
     "reporter[email]",
@@ -112,5 +116,5 @@ export const IDENTITY_KEYS = [
     "reporter[external_ref]",
     "reporter[is_referent]",
     "installed_version",
-    "context[rights]",
+    "channel",
 ];

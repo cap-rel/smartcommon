@@ -93,6 +93,16 @@ describe("FeedbackModal fields", () => {
         expect(options.body.get("title")).toBe("Add a dark theme");
         expect(options.body.get("body")).toBe("It would help at night.");
 
+        // Flat relay contract (Relay.php buildPayload reads these names):
+        // no context[...] wrapper, and no channel (the relay config sets it).
+        expect(options.body.get("app_version")).toBe("1.0.0");
+        expect(options.body.get("page_url")).toBeTruthy();
+        expect(options.body.get("route")).toBeTruthy();
+        expect(options.body.get("occurred_at")).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+        const keys = [...options.body.keys()];
+        expect(keys.some(k => k.startsWith("context["))).toBe(false);
+        expect(keys).not.toContain("channel");
+
         expect(await screen.findByText(/CSPN-1/)).toBeTruthy();
     });
 
@@ -208,8 +218,9 @@ describe("FeedbackModal relay errors", () => {
         expect(payload.body).toBe("Offline submit.");
 
         // The queued row carries the context captured at submit time, so
-        // the flush describes the moment of the problem.
-        expect(payload.context).toMatchObject({ channel: "pwa" });
+        // the flush describes the moment of the problem. No channel: the
+        // relay sets it from its own configuration, never from the PWA.
+        expect(payload.context).not.toHaveProperty("channel");
         expect(payload.context.occurred_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
         expect(payload.context.page_url).toBeTruthy();
 

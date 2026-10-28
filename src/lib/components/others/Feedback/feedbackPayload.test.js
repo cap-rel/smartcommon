@@ -41,9 +41,9 @@ describe("stripQuery", () => {
 });
 
 describe("buildContext", () => {
-    it("sets channel to pwa", () => {
+    it("never sets channel: the relay fills it from its own config", () => {
         const ctx = buildContext("1.0.0", "https://app.example.com/home");
-        expect(ctx.channel).toBe("pwa");
+        expect(ctx).not.toHaveProperty("channel");
     });
 
     it("strips the query string from page_url", () => {
@@ -125,7 +125,9 @@ describe("buildFormData", () => {
         expect(formDataToObject(withoutTitle).title).toBeUndefined();
     });
 
-    it("flattens context into bracket-notation fields", () => {
+    it("sends the context fields flat, as the relay reads them", () => {
+        // Flat contract (todo.md, confirmed against Relay.php buildPayload):
+        // stringField('page_url') and friends, no context[...] wrapper.
         const fd = buildFormData({
             type: "bug",
             body: "Test",
@@ -134,22 +136,27 @@ describe("buildFormData", () => {
         });
         const obj = formDataToObject(fd);
 
-        expect(obj["context[channel]"]).toBe("pwa");
-        expect(obj["context[app_version]"]).toBe("1.2.3");
-        expect(obj["context[page_url]"]).toBe("https://app.example.com/dashboard");
-        expect(obj["context[route]"]).toBe("/dashboard");
-        expect(obj["context[occurred_at]"]).toBeTruthy();
+        expect(obj.app_version).toBe("1.2.3");
+        expect(obj.page_url).toBe("https://app.example.com/dashboard");
+        expect(obj.route).toBe("/dashboard");
+        expect(obj.occurred_at).toBeTruthy();
+
+        // No nested context block and no channel: the relay sets the
+        // channel from its own configuration, never from the browser.
+        const keys = formDataKeys(fd);
+        expect(keys.some(k => k.startsWith("context["))).toBe(false);
+        expect(keys).not.toContain("channel");
     });
 
-    it("strips query string from context page_url", () => {
+    it("strips query string from page_url", () => {
         const fd = buildFormData({
             type: "bug",
             body: "Test",
             locationHref: "https://app.example.com/x?dolapikey=abc123",
         });
         const obj = formDataToObject(fd);
-        expect(obj["context[page_url]"]).toBe("https://app.example.com/x");
-        expect(obj["context[page_url]"]).not.toContain("dolapikey");
+        expect(obj.page_url).toBe("https://app.example.com/x");
+        expect(obj.page_url).not.toContain("dolapikey");
     });
 
     it("appends screenshot and consent when an image is attached", () => {
@@ -207,36 +214,34 @@ describe("buildFormData", () => {
             expect(keys, `must not contain identity key "${identityKey}"`).not.toContain(identityKey);
         }
 
-        // Also check no key starts with "reporter" or "context[rights"
+        // Also check no key starts with "reporter" or "context["
         const suspicious = keys.filter(k =>
             k.startsWith("reporter") ||
-            k.startsWith("context[rights") ||
+            k.startsWith("context[") ||
             k === "installed_version"
         );
         expect(suspicious).toEqual([]);
     });
 
-    it("appends log_excerpt entries as indexed fields", () => {
-        // The log buffer is populated by createLogger; we just verify the
-        // flattening shape when entries exist.
+    it("appends log_excerpt entries as repeated log_excerpt[] parts", () => {
         const fd = buildFormData({
             type: "bug",
             body: "Test",
             locationHref: "https://app.example.com/",
+            context: {
+                occurred_at: "2020-01-01T00:00:00.000Z",
+                log_excerpt: ["first line", "second line"],
+                network_errors: [],
+            },
         });
-        const keys = formDataKeys(fd);
-        // log_excerpt keys follow the pattern context[log_excerpt][N]
-        const logKeys = keys.filter(k => k.startsWith("context[log_excerpt]["));
-        for (const k of logKeys) {
-            expect(k).toMatch(/^context\[log_excerpt\]\[\d+\]$/);
-        }
+        // PHP parses repeated log_excerpt[] parts into an array.
+        expect(fd.getAll("log_excerpt[]")).toEqual(["first line", "second line"]);
     });
 
     it("reuses a provided context instead of rebuilding it", () => {
         // A report queued offline carries the context captured at submit
         // time: the flush must describe the moment of the problem.
         const fixedContext = {
-            channel: "pwa",
             app_version: "9.9.9",
             page_url: "https://app.example.com/problem",
             route: "/problem",
@@ -255,11 +260,11 @@ describe("buildFormData", () => {
         });
         const obj = formDataToObject(fd);
 
-        expect(obj["context[occurred_at]"]).toBe("2020-01-01T00:00:00.000Z");
-        expect(obj["context[page_url]"]).toBe("https://app.example.com/problem");
-        expect(obj["context[log_excerpt][0]"]).toBe("2020-01-01T00:00:00.000Z ERROR [x] boom");
-        expect(obj["context[network_errors][0][method]"]).toBe("GET");
-        expect(obj["context[network_errors][0][status]"]).toBe("500");
+        expect(obj.occurred_at).toBe("2020-01-01T00:00:00.000Z");
+        expect(obj.page_url).toBe("https://app.example.com/problem");
+        expect(fd.getAll("log_excerpt[]")).toEqual(["2020-01-01T00:00:00.000Z ERROR [x] boom"]);
+        expect(obj["network_errors[0][method]"]).toBe("GET");
+        expect(obj["network_errors[0][status]"]).toBe("500");
     });
 
     it("appends network_errors entries with method, url, status, at", () => {
@@ -267,12 +272,22 @@ describe("buildFormData", () => {
             type: "bug",
             body: "Test",
             locationHref: "https://app.example.com/",
+            context: {
+                occurred_at: "2020-01-01T00:00:00.000Z",
+                log_excerpt: [],
+                network_errors: [
+                    { method: "POST", url: "https://api.example.com/y", status: 0, at: "2020-01-01T00:00:00.000Z" },
+                ],
+            },
         });
         const keys = formDataKeys(fd);
-        const netKeys = keys.filter(k => k.startsWith("context[network_errors]["));
-        for (const k of netKeys) {
-            expect(k).toMatch(/^context\[network_errors\]\[\d+\]\[(method|url|status|at)\]$/);
-        }
+        const netKeys = keys.filter(k => k.startsWith("network_errors["));
+        expect(netKeys.sort()).toEqual([
+            "network_errors[0][at]",
+            "network_errors[0][method]",
+            "network_errors[0][status]",
+            "network_errors[0][url]",
+        ]);
     });
 });
 

@@ -43,7 +43,6 @@ describe("offline feedback queue", () => {
 
     it("enqueues a report with its idempotency key and its submit-time context", async () => {
         const context = {
-            channel: "pwa",
             occurred_at: "2020-01-01T00:00:00.000Z",
             log_excerpt: ["line"],
             network_errors: [],
@@ -73,7 +72,7 @@ describe("offline feedback queue", () => {
     });
 
     it("flush sends queued reports and deletes them on success", async () => {
-        const context = { channel: "pwa", occurred_at: "2020-01-01T00:00:00.000Z" };
+        const context = { occurred_at: "2020-01-01T00:00:00.000Z" };
         const row = {
             idempotency_key: "key-abc",
             payload: {
@@ -102,7 +101,7 @@ describe("offline feedback queue", () => {
     });
 
     it("flush reuses the stored submit-time context, not a fresh one", async () => {
-        const context = { channel: "pwa", occurred_at: "2020-01-01T00:00:00.000Z" };
+        const context = { occurred_at: "2020-01-01T00:00:00.000Z" };
         const row = {
             idempotency_key: "key-ctx",
             payload: {
