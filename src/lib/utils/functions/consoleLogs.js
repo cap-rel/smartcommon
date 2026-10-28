@@ -1,6 +1,89 @@
 // Log levels ordered by severity
 const LEVELS = { debug: 0, info: 1, warn: 2, error: 3, none: 4 };
 
+// --- Ring buffer for feedback log excerpt ---
+// Bounded circular buffer: 200 entries max, 32 KB total. Each entry is a
+// single pre-serialised string so the byte budget is exact. Activated by
+// libConfig.feedback.logBuffer (default true: the cost is negligible and
+// the buffer is what makes a client report actionable).
+const LOG_BUFFER_MAX_ENTRIES = 200;
+const LOG_BUFFER_MAX_BYTES = 32 * 1024;
+
+const logBuffer = [];
+let logBufferBytes = 0;
+let logBufferEnabled = true;
+
+export const setLogBufferEnabled = (enabled) => {
+    logBufferEnabled = !!enabled;
+    if (!logBufferEnabled) {
+        logBuffer.length = 0;
+        logBufferBytes = 0;
+    }
+};
+
+// Secret patterns from capTests spec section 14.2, all case-insensitive.
+// Applied to log lines before they leave the device; replacement is the
+// fixed marker "[filtre]" (French, the primary audience) so the team can
+// see that something was redacted without seeing what.
+const SECRET_PATTERNS = [
+    /Bearer\s+\S+/gi,
+    /Authorization\s*:.*$/gim,
+    /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*/g,
+    /(password|passwd|pwd|token|secret|api_?key|DOLAPIKEY)\s*[=:]\s*\S+/gi,
+];
+
+export const filterSecrets = (text) => {
+    let out = String(text);
+    for (const pattern of SECRET_PATTERNS) {
+        out = out.replace(pattern, "[filtre]");
+    }
+    return out;
+};
+
+const serializeMessages = (messages) => {
+    const parts = [];
+    for (const m of messages) {
+        if (m instanceof Error) {
+            parts.push(`${m.name}: ${m.message}`);
+        } else if (typeof m === "object" && m !== null) {
+            try {
+                parts.push(JSON.stringify(m));
+            } catch (_) {
+                parts.push(String(m));
+            }
+        } else {
+            parts.push(String(m));
+        }
+    }
+    return parts.join(" ");
+};
+
+const pushToLogBuffer = (level, namespace, label, messages) => {
+    if (!logBufferEnabled) return;
+
+    const ts = new Date().toISOString();
+    const ns = namespace ? `[${namespace}]` : "";
+    const lb = label ? ` ${label}` : "";
+    const line = filterSecrets(`${ts} ${level.toUpperCase()}${ns}${lb} ${serializeMessages(messages)}`);
+
+    logBuffer.push(line);
+    logBufferBytes += line.length + 1;
+
+    while (logBuffer.length > LOG_BUFFER_MAX_ENTRIES
+        || (logBuffer.length > 0 && logBufferBytes > LOG_BUFFER_MAX_BYTES)) {
+        const removed = logBuffer.shift();
+        logBufferBytes -= (removed.length + 1);
+    }
+};
+
+/**
+ * Returns the buffered log lines, oldest first, secrets already filtered.
+ * Used by the feedback report to attach a diagnostic excerpt.
+ *
+ * @returns {string[]}
+ */
+export const getRecentLogs = () => [...logBuffer];
+
 // Badge color palette for namespaces (auto-assigned)
 const NAMESPACE_COLORS = [
     "#e91e63", "#9c27b0", "#673ab7", "#3f51b5", "#2196f3",
@@ -155,6 +238,10 @@ const logCore = (label, color, level, namespace, ...messages) => {
     styles.push(getResetCSS());
 
     consoleFn(parts.join(""), ...styles, ...messages);
+
+    // Feed the ring buffer (always, regardless of console level filtering,
+    // so a report captures errors even when LOG_LEVEL hides them on screen)
+    pushToLogBuffer(level, namespace, label, messages);
 
     // Notify subscribers (always, regardless of console level filtering)
     notifySubscribers({
