@@ -34,6 +34,7 @@ export const it = {
         redactUndo: "Annulla",
         redactClear: "Cancella tutto",
         redactCleared: "Le maschere sono state cancellate: la geometria dell'immagine è cambiata.",
+        redactKeyboard: "Tastiera: le frecce spostano il cursore, Invio inizia e termina un rettangolo, Esc annulla.",
         ratioFree: "Libero",
         ratioOriginal: "Originale",
         reset: "Reimposta",

@@ -41,6 +41,7 @@ export const pl = {
         redactUndo: "Cofnij",
         redactClear: "Wyczyść wszystko",
         redactCleared: "Maski zostały usunięte: geometria obrazu uległa zmianie.",
+        redactKeyboard: "Klawiatura: strzałki przesuwają kursor, Enter rozpoczyna i kończy prostokąt, Escape anuluje.",
         ratioFree: "Dowolny",
         ratioOriginal: "Oryginalny",
         reset: "Resetuj",

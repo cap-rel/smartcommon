@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { FaBug } from "react-icons/fa6";
 
 import { propTypes, defaultProps, DEFAULT_LABELS } from "./props";
@@ -28,15 +28,27 @@ export const FeedbackButton = (props) => {
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const [isOpen, setIsOpen] = useState(false);
+    const buttonRef = useRef(null);
+    const wasOpenRef = useRef(false);
 
     const openModal = useCallback(() => setIsOpen(true), []);
     const closeModal = useCallback(() => setIsOpen(false), []);
+
+    // Modal does not restore focus on close: hand it back to the trigger
+    // button so keyboard and screen reader users land where they started.
+    useEffect(() => {
+        if (wasOpenRef.current && !isOpen) {
+            buttonRef.current?.focus();
+        }
+        wasOpenRef.current = isOpen;
+    }, [isOpen]);
 
     if (!visible) return null;
 
     return (
         <>
             <button
+                ref={buttonRef}
                 type="button"
                 onClick={openModal}
                 className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"

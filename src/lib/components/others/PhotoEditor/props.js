@@ -26,6 +26,7 @@ export const DEFAULT_LABELS = {
     redactUndo: "Undo",
     redactClear: "Clear",
     redactCleared: "Masks were cleared: the image geometry changed.",
+    redactKeyboard: "Keyboard: arrow keys move the cursor, Enter starts and ends a rectangle, Escape cancels.",
     ratioFree: "Free",
     ratioOriginal: "Original",
     reset: "Reset",

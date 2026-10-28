@@ -33,6 +33,7 @@ export const nl = {
         redactUndo: "Ongedaan maken",
         redactClear: "Alles wissen",
         redactCleared: "Masks zijn gewist: de geometrie van de afbeelding is gewijzigd.",
+        redactKeyboard: "Toetsenbord: pijltjestoetsen verplaatsen de cursor, Enter start en eindigt een rechthoek, Escape annuleert.",
         ratioFree: "Vrij",
         ratioOriginal: "Origineel",
         reset: "Resetten",

@@ -428,6 +428,8 @@ const PhotoEditorContent = (props) => {
                     {activeTool === "redact" && (
                         <RedactOverlay
                             onAdd={(rect) => setField({ redact: [...state.redact, rect] })}
+                            label={labels.redact}
+                            keyboardHelp={labels.redactKeyboard}
                         />
                     )}
                 </div>

@@ -34,6 +34,7 @@ export const es = {
         redactUndo: "Deshacer",
         redactClear: "Borrar todo",
         redactCleared: "Las máscaras se borraron: la geometría de la imagen cambió.",
+        redactKeyboard: "Teclado: las flechas mueven el cursor, Intro inicia y termina un rectángulo, Escape cancela.",
         ratioFree: "Libre",
         ratioOriginal: "Original",
         reset: "Restablecer",

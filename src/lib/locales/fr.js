@@ -30,6 +30,7 @@ export const fr = {
         redactUndo: "Annuler",
         redactClear: "Tout effacer",
         redactCleared: "Les masques ont été effacés : la géométrie de l'image a changé.",
+        redactKeyboard: "Clavier : les flèches déplacent le curseur, Entrée commence et termine un rectangle, Échap annule.",
         ratioFree: "Libre",
         ratioOriginal: "Original",
         reset: "Réinitialiser",

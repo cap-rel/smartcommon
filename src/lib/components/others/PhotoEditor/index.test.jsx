@@ -373,4 +373,49 @@ describe("PhotoEditor", () => {
             HTMLElement.prototype.getBoundingClientRect = proto;
         }
     });
+
+    it("supports drawing a rectangle with the keyboard", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" tools={["redact"]} onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Redact"));
+
+        const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+        expect(overlay.getAttribute("tabindex")).toBe("0");
+
+        // Enter starts a rectangle at the cursor (centered by default).
+        fireEvent.keyDown(overlay, { key: "Enter" });
+        // Shift+arrows grow it by 0.1 per press: 5 right, 2 down.
+        for (let i = 0; i < 5; i++) fireEvent.keyDown(overlay, { key: "ArrowRight", shiftKey: true });
+        for (let i = 0; i < 2; i++) fireEvent.keyDown(overlay, { key: "ArrowDown", shiftKey: true });
+        // Enter commits.
+        fireEvent.keyDown(overlay, { key: "Enter" });
+
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        const ops = applyImageEdits.mock.calls[0][1];
+        expect(ops).toHaveLength(1);
+        expect(ops[0].type).toBe("redact");
+        const rect = ops[0].rects[0];
+        expect(rect.x).toBeCloseTo(0.5, 5);
+        expect(rect.y).toBeCloseTo(0.5, 5);
+        expect(rect.w).toBeCloseTo(0.5, 5);
+        expect(rect.h).toBeCloseTo(0.2, 5);
+    });
+
+    it("Escape cancels the rectangle being drawn (keyboard)", async () => {
+        const onSave = vi.fn();
+        render(<PhotoEditor open src="blob:x" tools={["redact"]} onSave={onSave} />);
+        await ready();
+        fireEvent.click(screen.getByLabelText("Redact"));
+
+        const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+        fireEvent.keyDown(overlay, { key: "Enter" });
+        fireEvent.keyDown(overlay, { key: "ArrowRight", shiftKey: true });
+        fireEvent.keyDown(overlay, { key: "Escape" });
+
+        fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+        await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+        expect(applyImageEdits.mock.calls[0][1]).toEqual([]);
+    });
 });

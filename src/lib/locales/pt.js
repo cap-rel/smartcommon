@@ -36,6 +36,7 @@ export const pt = {
         redactUndo: "Desfazer",
         redactClear: "Limpar tudo",
         redactCleared: "As máscaras foram apagadas: a geometria da imagem mudou.",
+        redactKeyboard: "Teclado: as setas movem o cursor, Enter inicia e termina um retângulo, Escape cancela.",
         ratioFree: "Livre",
         ratioOriginal: "Original",
         reset: "Repor",

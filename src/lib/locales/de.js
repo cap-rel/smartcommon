@@ -34,6 +34,7 @@ export const de = {
         redactUndo: "Rückgängig",
         redactClear: "Alles löschen",
         redactCleared: "Masken wurden gelöscht: die Bildgeometrie hat sich geändert.",
+        redactKeyboard: "Tastatur: Pfeiltasten bewegen den Cursor, Eingabe beginnt und beendet ein Rechteck, Escape bricht ab.",
         ratioFree: "Frei",
         ratioOriginal: "Original",
         reset: "Zurücksetzen",
