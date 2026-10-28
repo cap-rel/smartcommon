@@ -51,6 +51,21 @@ export const FeedbackModal = (props) => {
 
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
+    const formContainerRef = useRef(null);
+
+    // Move focus into the dialog when it opens, so screen reader users
+    // land on the form instead of the page behind the modal.
+    useEffect(() => {
+        if (isOpen && status === "idle" && formContainerRef.current) {
+            const timer = setTimeout(() => {
+                const firstFocusable = formContainerRef.current?.querySelector(
+                    "button, [href], input, select, textarea, [tabindex]:not([tabindex='-1'])"
+                );
+                firstFocusable?.focus();
+            }, 50);
+            return () => clearTimeout(timer);
+        }
+    }, [isOpen, status]);
 
     const resetForm = useCallback(() => {
         setType("bug");
@@ -215,7 +230,12 @@ export const FeedbackModal = (props) => {
             size="md"
             position="bottom"
         >
-            <div className="p-4 flex flex-col gap-4" data-component="FeedbackModal">
+            <div
+                ref={formContainerRef}
+                className="p-4 flex flex-col gap-4"
+                data-component="FeedbackModal"
+                aria-live="polite"
+            >
                 {status === "success" ? (
                     <div className="flex flex-col gap-4">
                         <div className="text-green-600 font-medium">
@@ -272,9 +292,16 @@ export const FeedbackModal = (props) => {
                             placeholder={labels.bodyPlaceholder}
                             error={validationErrors.body}
                             rows={5}
+                            aria-invalid={validationErrors.body ? "true" : undefined}
+                            aria-describedby={validationErrors.body ? "feedback-body-error" : undefined}
                         />
+                        {validationErrors.body && (
+                            <span id="feedback-body-error" className="text-xs text-red-600" role="alert">
+                                {validationErrors.body}
+                            </span>
+                        )}
                         {body.length > 0 && (
-                            <div className="text-xs text-gray-400 text-right">
+                            <div className="text-xs text-gray-400 text-right" aria-hidden="true">
                                 {body.length}/{BODY_MAX_LENGTH}
                             </div>
                         )}
@@ -333,12 +360,14 @@ export const FeedbackModal = (props) => {
                                     checked={consent}
                                     onChange={(e) => setConsent(e.target.checked)}
                                     className="mt-0.5"
+                                    aria-describedby={validationErrors.consent ? "feedback-consent-error" : undefined}
+                                    aria-invalid={validationErrors.consent ? "true" : undefined}
                                 />
                                 <span>{labels.screenshotConsentLabel}</span>
                             </label>
                         )}
                         {validationErrors.consent && (
-                            <span className="text-xs text-red-600" role="alert">
+                            <span id="feedback-consent-error" className="text-xs text-red-600" role="alert">
                                 {validationErrors.consent}
                             </span>
                         )}
@@ -366,6 +395,7 @@ export const FeedbackModal = (props) => {
                                 disabled={status === "submitting"}
                                 icon={<FaPaperPlane />}
                                 className="flex-1"
+                                aria-busy={status === "submitting" ? "true" : undefined}
                             />
                         </div>
                     </>
