@@ -1,15 +1,16 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { FaPaperPlane, FaImage, FaXmark, FaDesktop } from "react-icons/fa6";
+import { FaPaperPlane, FaImage, FaXmark, FaDesktop, FaMicrophone } from "react-icons/fa6";
 import { v4 as uuidv4 } from "uuid";
 
 import { Modal, Button, Input, Textarea, Select } from "lib/components";
 import { useApi } from "lib/hooks";
-import { createLogger, navigatorInfo } from "lib/utils";
+import { createLogger, navigatorInfo, twMerge } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
 import { buildFormData, prepareScreenshot } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
 import { ScreenshotRedactor } from "./ScreenshotRedactor";
+import { isDictationSupported, startDictation } from "./speechDictation";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
 
 const log = createLogger("Feedback");
@@ -52,10 +53,17 @@ export const FeedbackModal = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const [isCapturing, setIsCapturing] = useState(false);
     const [isRedacting, setIsRedacting] = useState(false);
+    const [isListening, setIsListening] = useState(false);
 
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
     const formContainerRef = useRef(null);
+    const recognitionRef = useRef(null);
+
+    const dictationSupported = isDictationSupported();
+
+    // Stop any dictation session when the modal unmounts.
+    useEffect(() => () => recognitionRef.current?.stop(), []);
 
     // Move focus into the dialog when it opens, so screen reader users
     // land on the form instead of the page behind the modal.
@@ -72,6 +80,9 @@ export const FeedbackModal = (props) => {
     }, [isOpen, status]);
 
     const resetForm = useCallback(() => {
+        recognitionRef.current?.stop();
+        recognitionRef.current = null;
+        setIsListening(false);
         setType("bug");
         setTitle("");
         setBody("");
@@ -90,6 +101,30 @@ export const FeedbackModal = (props) => {
         resetForm();
         onClose?.();
     }, [resetForm, onClose]);
+
+    // Web Speech dictation (fr-FR): the transcript is appended to the
+    // description. The mic button is hidden when the browser provides no
+    // SpeechRecognition implementation.
+    const handleDictateToggle = useCallback(() => {
+        if (isListening) {
+            recognitionRef.current?.stop();
+            return;
+        }
+        const recognition = startDictation({
+            onResult: (transcript) => {
+                setBody(prev => (prev ? `${prev.replace(/\s+$/, "")} ${transcript}` : transcript));
+            },
+            onEnd: () => {
+                recognitionRef.current = null;
+                setIsListening(false);
+            },
+            onError: () => setIsListening(false),
+        });
+        if (recognition) {
+            recognitionRef.current = recognition;
+            setIsListening(true);
+        }
+    }, [isListening]);
 
     const handleScreenshotChange = useCallback(async (e) => {
         const file = e.target.files?.[0];
@@ -339,11 +374,30 @@ export const FeedbackModal = (props) => {
                                 {validationErrors.body}
                             </span>
                         )}
-                        {body.length > 0 && (
-                            <div className="text-xs text-gray-400 text-right" aria-hidden="true">
-                                {body.length}/{BODY_MAX_LENGTH}
-                            </div>
-                        )}
+                        <div className="flex items-center justify-end gap-2">
+                            {dictationSupported && (
+                                <button
+                                    type="button"
+                                    onClick={handleDictateToggle}
+                                    aria-label={isListening ? labels.dictateStopLabel : labels.dictateLabel}
+                                    aria-pressed={isListening ? "true" : undefined}
+                                    className={twMerge(
+                                        "flex items-center gap-1 text-xs px-2 py-1 rounded-lg border cursor-pointer",
+                                        isListening
+                                            ? "border-red-400 text-red-600 bg-red-50"
+                                            : "border-gray-300 text-gray-600 hover:bg-gray-50"
+                                    )}
+                                >
+                                    <FaMicrophone />
+                                    {isListening ? labels.dictateStopLabel : labels.dictateLabel}
+                                </button>
+                            )}
+                            {body.length > 0 && (
+                                <span className="text-xs text-gray-400" aria-hidden="true">
+                                    {body.length}/{BODY_MAX_LENGTH}
+                                </span>
+                            )}
+                        </div>
 
                         {/* Screenshot: file input (mobile) + screen capture (desktop) + redaction */}
                         <div className="flex flex-col gap-2">
