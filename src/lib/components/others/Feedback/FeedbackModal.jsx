@@ -27,6 +27,7 @@ export const FeedbackModal = (props) => {
         relayPath,
         appVersion = "",
         labels: userLabels = {},
+        photoEditorLabels = {},
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
@@ -404,6 +405,7 @@ export const FeedbackModal = (props) => {
                                     open
                                     src={screenshotPreview}
                                     tools={["redact"]}
+                                    labels={photoEditorLabels}
                                     onSave={handleRedactDone}
                                     onCancel={handleRedactCancel}
                                 />

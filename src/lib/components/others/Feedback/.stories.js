@@ -1,3 +1,5 @@
+import { fr } from "lib/locales";
+
 import { FeedbackButton } from "./";
 
 export default {
@@ -24,6 +26,7 @@ export default {
         visible: { control: "boolean", table: { category: "Main" } },
         appVersion: { control: "text", table: { category: "Main" } },
         labels: { control: "object", table: { category: "Main" } },
+        photoEditorLabels: { control: "object", table: { category: "Main" } },
     },
     args: {},
 };
@@ -31,4 +34,28 @@ export default {
 import { Default as Def } from "./stories";
 
 export const Default = { tags: ["!dev"], ...Def };
+
+// Same button in a French application: the form texts come from
+// locales.fr.Feedback and the redaction editor texts (PhotoEditor) from
+// locales.fr.PhotoEditor, through the photoEditorLabels prop.
+export const French = {
+    tags: ["!dev"],
+    args: {
+        relayPath: "feedback/report",
+        visible: true,
+        appVersion: "1.0.0",
+        labels: fr.Feedback,
+        photoEditorLabels: fr.PhotoEditor,
+    },
+    parameters: {
+        docs: {
+            description: {
+                story:
+                    "Localized usage: `labels` feeds the report form, " +
+                    "`photoEditorLabels` feeds the redaction editor opened " +
+                    "on the screenshot.",
+            },
+        },
+    },
+};
 

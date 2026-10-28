@@ -14,12 +14,18 @@ export const propTypes = {
 
     // i18n: merged shallowly over DEFAULT_LABELS.
     labels: PropTypes.object,
+
+    // i18n for the redaction editor (PhotoEditor), merged shallowly over
+    // its own DEFAULT_LABELS. Without it the editor shows its English
+    // defaults even in a localized application.
+    photoEditorLabels: PropTypes.object,
 };
 
 export const defaultProps = {
     visible: true,
     appVersion: "",
     labels: {},
+    photoEditorLabels: {},
 };
 
 export const DEFAULT_LABELS = {

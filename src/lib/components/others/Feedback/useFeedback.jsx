@@ -10,6 +10,8 @@ import { FeedbackModal } from "./FeedbackModal";
  * @param {string} options.relayPath - Relay endpoint path (required)
  * @param {string} options.appVersion - PWA version, sent as context
  * @param {Object} options.labels - Text overrides
+ * @param {Object} options.photoEditorLabels - Text overrides for the
+ *   redaction editor (merged over PhotoEditor's DEFAULT_LABELS)
  * @returns {{ isOpen: boolean, open: function, close: function, modal: React.ReactNode }}
  *
  * @example
@@ -19,7 +21,7 @@ import { FeedbackModal } from "./FeedbackModal";
  * {modal}
  */
 export const useFeedback = (options = {}) => {
-    const { relayPath, appVersion, labels } = options;
+    const { relayPath, appVersion, labels, photoEditorLabels } = options;
 
     const [isOpen, setIsOpen] = useState(false);
 
@@ -33,8 +35,9 @@ export const useFeedback = (options = {}) => {
             relayPath={relayPath}
             appVersion={appVersion}
             labels={labels}
+            photoEditorLabels={photoEditorLabels}
         />
-    ), [isOpen, close, relayPath, appVersion, labels]);
+    ), [isOpen, close, relayPath, appVersion, labels, photoEditorLabels]);
 
     return { isOpen, open, close, modal };
 };

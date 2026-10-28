@@ -16,6 +16,8 @@ import { FeedbackModal } from "./FeedbackModal";
  * @param {boolean} props.visible - Show the button (module decides by right)
  * @param {string} props.appVersion - PWA version, sent as context
  * @param {Object} props.labels - Text overrides (merged over DEFAULT_LABELS)
+ * @param {Object} props.photoEditorLabels - Text overrides for the
+ *   redaction editor (merged over PhotoEditor's DEFAULT_LABELS)
  */
 export const FeedbackButton = (props) => {
     const {
@@ -23,6 +25,7 @@ export const FeedbackButton = (props) => {
         visible = true,
         appVersion = "",
         labels: userLabels = {},
+        photoEditorLabels = {},
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
@@ -64,6 +67,7 @@ export const FeedbackButton = (props) => {
                 relayPath={relayPath}
                 appVersion={appVersion}
                 labels={userLabels}
+                photoEditorLabels={photoEditorLabels}
             />
         </>
     );

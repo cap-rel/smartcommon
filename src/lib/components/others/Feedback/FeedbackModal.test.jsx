@@ -131,6 +131,26 @@ describe("FeedbackModal fields", () => {
         expect(await screen.findByText("Could not load the image")).toBeTruthy();
     });
 
+    it("passes photoEditorLabels to the redaction editor", async () => {
+        const { container } = render(
+            <FeedbackModal
+                isOpen
+                onClose={() => {}}
+                relayPath="feedback/report"
+                appVersion="1.0.0"
+                photoEditorLabels={{ redact: "Masquer une zone" }}
+            />
+        );
+        await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
+
+        fireEvent.click(screen.getByRole("button", { name: "Redact an area" }));
+
+        // The editor toolbar shows the overridden label, not the
+        // English default.
+        expect(screen.getByLabelText("Masquer une zone")).toBeTruthy();
+        expect(screen.queryByLabelText("Redact")).toBeNull();
+    });
+
     it("requires consent at the form level when a screenshot is attached", async () => {
         const { container } = renderModal();
         await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
