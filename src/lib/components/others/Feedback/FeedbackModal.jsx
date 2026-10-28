@@ -2,14 +2,13 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { FaPaperPlane, FaImage, FaXmark, FaDesktop } from "react-icons/fa6";
 import { v4 as uuidv4 } from "uuid";
 
-import { Modal, Button, Input, Textarea, Select } from "lib/components";
+import { Modal, Button, Input, Textarea, Select, PhotoEditor } from "lib/components";
 import { useApi } from "lib/hooks";
 import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
 import { buildContext, buildFormData, prepareScreenshot, RETRYABLE_RELAY_STATUS } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
-import { ScreenshotRedactor } from "./ScreenshotRedactor";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
 
 const log = createLogger("Feedback");
@@ -62,6 +61,21 @@ export const FeedbackModal = (props) => {
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
     const formContainerRef = useRef(null);
+    const previewUrlRef = useRef(null);
+
+    // Single entry point for the screenshot state: revokes the previous
+    // object URL so previews never leak across edits.
+    const updateScreenshot = useCallback((file) => {
+        if (previewUrlRef.current) {
+            URL.revokeObjectURL(previewUrlRef.current);
+            previewUrlRef.current = null;
+        }
+        if (file) {
+            previewUrlRef.current = URL.createObjectURL(file);
+        }
+        setScreenshot(file);
+        setScreenshotPreview(previewUrlRef.current);
+    }, []);
 
     // Move focus into the dialog when it opens, so screen reader users
     // land on the form instead of the page behind the modal.
@@ -78,11 +92,10 @@ export const FeedbackModal = (props) => {
     }, [isOpen, status]);
 
     const resetForm = useCallback(() => {
+        updateScreenshot(null);
         setType("bug");
         setTitle("");
         setBody("");
-        setScreenshot(null);
-        setScreenshotPreview(null);
         setConsent(false);
         setStatus("idle");
         setResult(null);
@@ -90,7 +103,7 @@ export const FeedbackModal = (props) => {
         setValidationErrors({});
         idempotencyKeyRef.current = null;
         if (fileInputRef.current) fileInputRef.current.value = "";
-    }, []);
+    }, [updateScreenshot]);
 
     const handleClose = useCallback(() => {
         resetForm();
@@ -111,31 +124,36 @@ export const FeedbackModal = (props) => {
         // fast on a mobile uplink.
         const prepared = await prepareScreenshot(file);
 
-        setScreenshot(prepared);
-        setScreenshotPreview(URL.createObjectURL(prepared));
+        updateScreenshot(prepared);
         setValidationErrors(prev => {
             const { screenshot: _removed, ...rest } = prev;
             return rest;
         });
-    }, [labels]);
+    }, [labels, updateScreenshot]);
 
     const removeScreenshot = useCallback(() => {
-        setScreenshot(null);
-        if (screenshotPreview) URL.revokeObjectURL(screenshotPreview);
-        setScreenshotPreview(null);
+        updateScreenshot(null);
         setConsent(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
-    }, [screenshotPreview]);
+    }, [updateScreenshot]);
 
-    // Redaction: replace the current screenshot with a redacted version.
-    const handleRedactDone = useCallback((redactedFile) => {
-        if (screenshotPreview) URL.revokeObjectURL(screenshotPreview);
-        setScreenshot(redactedFile);
-        setScreenshotPreview(URL.createObjectURL(redactedFile));
-        setIsRedacting(false);
-        // A redacted image still requires explicit consent.
-        setConsent(false);
-    }, [screenshotPreview]);
+    // Redaction runs in PhotoEditor (redact tool only) on the full
+    // resolution image; the edited blob is reduced again before storage.
+    const handleRedactDone = useCallback(async (blob) => {
+        try {
+            const file = blob instanceof File
+                ? blob
+                : new File([blob], `redacted-${Date.now()}.png`, { type: blob?.type || "image/png" });
+            const prepared = await prepareScreenshot(file);
+            updateScreenshot(prepared);
+            // A redacted image still requires explicit consent.
+            setConsent(false);
+        } catch (err) {
+            log.error("redaction failed", err?.message);
+        } finally {
+            setIsRedacting(false);
+        }
+    }, [updateScreenshot]);
 
     const handleRedactCancel = useCallback(() => {
         setIsRedacting(false);
@@ -151,15 +169,14 @@ export const FeedbackModal = (props) => {
                 showModal: () => setIsCapturing(false),
             });
             if (file) {
-                setScreenshot(file);
-                setScreenshotPreview(URL.createObjectURL(file));
+                updateScreenshot(file);
             }
         } catch (err) {
             log.error("screen capture failed", err?.message);
         } finally {
             setIsCapturing(false);
         }
-    }, []);
+    }, [updateScreenshot]);
 
     const validate = useCallback(() => {
         const errors = {};
@@ -378,17 +395,12 @@ export const FeedbackModal = (props) => {
                                 {labels.screenshotLabel}
                             </span>
                             {isRedacting && screenshotPreview ? (
-                                <ScreenshotRedactor
-                                    imageUrl={screenshotPreview}
-                                    onDone={handleRedactDone}
+                                <PhotoEditor
+                                    open
+                                    src={screenshotPreview}
+                                    tools={["redact"]}
+                                    onSave={handleRedactDone}
                                     onCancel={handleRedactCancel}
-                                    labels={{
-                                        redactLabel: labels.redactLabel,
-                                        redactHelp: labels.redactHelp,
-                                        undoLabel: labels.undoLabel,
-                                        cancelLabel: labels.cancelLabel,
-                                        applyLabel: labels.applyLabel,
-                                    }}
                                 />
                             ) : screenshotPreview ? (
                                 <div className="flex flex-col gap-2">

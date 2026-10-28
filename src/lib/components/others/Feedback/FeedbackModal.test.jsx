@@ -108,6 +108,19 @@ describe("FeedbackModal fields", () => {
         await waitFor(() => expect(mocks.flushQueue).toHaveBeenCalled());
     });
 
+    it("opens PhotoEditor on the screenshot when redacting", async () => {
+        const { container } = renderModal();
+        await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
+
+        fireEvent.click(screen.getByRole("button", { name: "Redact an area" }));
+
+        // The redaction UI is PhotoEditor (redact tool only), mounted on
+        // the screenshot preview. happy-dom cannot decode the blob URL, so
+        // the editor shows its load error instead of the image.
+        expect(document.querySelector('[data-component="PhotoEditor"]')).toBeTruthy();
+        expect(await screen.findByText("Could not load the image")).toBeTruthy();
+    });
+
     it("requires consent at the form level when a screenshot is attached", async () => {
         const { container } = renderModal();
         await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
