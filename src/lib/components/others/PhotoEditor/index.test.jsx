@@ -212,4 +212,88 @@ describe("PhotoEditor", () => {
         const scanOps = applyImageEdits.mock.calls[0][1].filter((o) => o.type === "scan");
         expect(scanOps).toEqual([{ type: "scan", binarize: true }]);
     });
+
+    it("shows the redact panel when the redact tool is active", async () => {
+        render(<PhotoEditor open src="blob:x" tools={["redact"]} />);
+        await ready();
+        expect(screen.queryByLabelText("Redact")).toBeTruthy();
+        fireEvent.click(screen.getByLabelText("Redact"));
+        expect(screen.getByText("Draw over sensitive areas")).toBeTruthy();
+        expect(screen.getByLabelText("Undo")).toBeTruthy();
+        expect(screen.getByLabelText("Clear")).toBeTruthy();
+    });
+
+    it("hides the redact tool when it is not in the tools prop", async () => {
+        render(<PhotoEditor open src="blob:x" tools={["rotate"]} />);
+        await ready();
+        expect(screen.queryByLabelText("Redact")).toBeNull();
+    });
+
+    it("exports a redact op after drawing a rectangle", async () => {
+        const onSave = vi.fn();
+        // happy-dom reports zero-sized boxes; give the overlay a fixed one so
+        // pointer positions convert to normalized coordinates.
+        const proto = HTMLElement.prototype.getBoundingClientRect;
+        HTMLElement.prototype.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 100,
+            right: 200,
+            bottom: 100,
+        });
+        try {
+            render(<PhotoEditor open src="blob:x" tools={["redact"]} onSave={onSave} />);
+            await ready();
+            fireEvent.click(screen.getByLabelText("Redact"));
+
+            const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+            fireEvent.pointerDown(overlay, { clientX: 50, clientY: 50 });
+            fireEvent.pointerMove(overlay, { clientX: 150, clientY: 75 });
+            fireEvent.pointerUp(overlay, { clientX: 150, clientY: 75 });
+
+            fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+            await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+            expect(applyImageEdits.mock.calls[0][1]).toEqual([
+                { type: "redact", rects: [{ x: 0.25, y: 0.5, w: 0.5, h: 0.25 }] },
+            ]);
+        } finally {
+            HTMLElement.prototype.getBoundingClientRect = proto;
+        }
+    });
+
+    it("undo removes the last redact rectangle before export", async () => {
+        const onSave = vi.fn();
+        const proto = HTMLElement.prototype.getBoundingClientRect;
+        HTMLElement.prototype.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 100,
+            right: 200,
+            bottom: 100,
+        });
+        try {
+            render(<PhotoEditor open src="blob:x" tools={["redact"]} onSave={onSave} />);
+            await ready();
+            fireEvent.click(screen.getByLabelText("Redact"));
+
+            const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+            fireEvent.pointerDown(overlay, { clientX: 10, clientY: 10 });
+            fireEvent.pointerMove(overlay, { clientX: 60, clientY: 60 });
+            fireEvent.pointerUp(overlay, { clientX: 60, clientY: 60 });
+            fireEvent.pointerDown(overlay, { clientX: 100, clientY: 10 });
+            fireEvent.pointerMove(overlay, { clientX: 150, clientY: 60 });
+            fireEvent.pointerUp(overlay, { clientX: 150, clientY: 60 });
+
+            fireEvent.click(screen.getByLabelText("Undo"));
+            fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+            await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+            expect(applyImageEdits.mock.calls[0][1]).toEqual([
+                { type: "redact", rects: [{ x: 0.05, y: 0.1, w: 0.25, h: 0.5 }] },
+            ]);
+        } finally {
+            HTMLElement.prototype.getBoundingClientRect = proto;
+        }
+    });
 });

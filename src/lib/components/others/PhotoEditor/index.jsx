@@ -8,6 +8,7 @@ import {
     FaVectorSquare,
     FaRulerHorizontal,
     FaSliders,
+    FaEyeSlash,
     FaXmark,
     FaCheck,
 } from "react-icons/fa6";
@@ -28,6 +29,7 @@ import { FULL_RECT, rectForAspect } from "./cropGeometry";
 import { DEFAULT_CORNERS } from "./perspectiveGeometry";
 import { CropOverlay } from "./CropOverlay";
 import { PerspectiveTool } from "./PerspectiveTool";
+import { RedactOverlay } from "./RedactOverlay";
 
 const log = createLogger("PhotoEditor");
 
@@ -41,6 +43,7 @@ const initialState = {
     autoEnhance: false,
     adjust: { brightness: 0, contrast: 0, saturation: 0, temperature: 0 },
     colorMode: "none", // "none" | "grayscale" | "scan"
+    redact: [], // normalized rects painted opaque at export
 };
 
 const ADJUST_SLIDERS = ["brightness", "contrast", "saturation", "temperature"];
@@ -181,10 +184,11 @@ const PhotoEditorContent = (props) => {
         };
     }, [src, previewMaxDimension]);
 
-    // Repaint when a baked geometry tool changes, or when switching the active
-    // overlay tool (which moves an op between "baked" and "overlay"). The crop
-    // and perspective VALUES only change while their tool is active, i.e. shown
-    // as an overlay, so they never need to trigger a repaint here.
+    // Repaint when a baked tool changes, or when switching the active overlay
+    // tool (which moves an op between "baked" and "overlay"). The crop and
+    // perspective VALUES only change while their tool is active, i.e. shown
+    // as an overlay, so they never need to trigger a repaint here. Redaction
+    // is always baked (committed rects live in the preview canvas).
     useEffect(() => {
         renderPreview(state, activeTool);
     }, [
@@ -195,6 +199,7 @@ const PhotoEditorContent = (props) => {
         state.autoEnhance,
         state.adjust,
         state.colorMode,
+        state.redact,
         activeTool,
     ]);
 
@@ -272,6 +277,7 @@ const PhotoEditorContent = (props) => {
         perspective: <FaVectorSquare />,
         straighten: <FaRulerHorizontal />,
         adjust: <FaSliders />,
+        redact: <FaEyeSlash />,
     };
 
     const setAdjust = (key, value) =>
@@ -390,6 +396,11 @@ const PhotoEditorContent = (props) => {
                             onChange={(corners) => setField({ perspective: { corners } })}
                         />
                     )}
+                    {activeTool === "redact" && (
+                        <RedactOverlay
+                            onAdd={(rect) => setField({ redact: [...state.redact, rect] })}
+                        />
+                    )}
                 </div>
             </div>
 
@@ -502,6 +513,31 @@ const PhotoEditorContent = (props) => {
                 </div>
             )}
 
+            {/* redact panel: undo / clear the opaque rectangles */}
+            {activeTool === "redact" && (
+                <div className="px-app-base py-app-sm bg-black/80 flex items-center gap-app-xs">
+                    <span className="text-app-xs text-white/70">{labels.redactHelp}</span>
+                    <button
+                        type="button"
+                        aria-label={labels.redactUndo}
+                        disabled={state.redact.length === 0}
+                        onClick={() => setField({ redact: state.redact.slice(0, -1) })}
+                        className="px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer disabled:brightness-soft"
+                    >
+                        {labels.redactUndo}
+                    </button>
+                    <button
+                        type="button"
+                        aria-label={labels.redactClear}
+                        disabled={state.redact.length === 0}
+                        onClick={() => setField({ redact: [] })}
+                        className="px-app-sm py-app-xxs rounded-app-md border border-white/30 text-app-sm cursor-pointer disabled:brightness-soft"
+                    >
+                        {labels.redactClear}
+                    </button>
+                </div>
+            )}
+
             {/* toolbar */}
             <div
                 {...toolbarProps}
@@ -555,6 +591,14 @@ const PhotoEditorContent = (props) => {
                         labels.adjust,
                         () => toggleTool("adjust"),
                         activeTool === "adjust"
+                    )}
+                {tools.includes("redact") &&
+                    toolButton(
+                        "redact",
+                        Icon.redact,
+                        labels.redact,
+                        () => toggleTool("redact"),
+                        activeTool === "redact"
                     )}
             </div>
 

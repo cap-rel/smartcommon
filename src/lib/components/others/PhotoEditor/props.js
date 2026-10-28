@@ -21,6 +21,10 @@ export const DEFAULT_LABELS = {
     autoEnhance: "Auto",
     grayscale: "B&W",
     scan: "Scan",
+    redact: "Redact",
+    redactHelp: "Draw over sensitive areas",
+    redactUndo: "Undo",
+    redactClear: "Clear",
     ratioFree: "Free",
     ratioOriginal: "Original",
     reset: "Reset",
@@ -52,9 +56,10 @@ export const propTypes = {
     onCancel: PropTypes.func,
     onError: PropTypes.func,
 
-    // Which tools to show, in order. v1 geometry set by default.
+    // Which tools to show, in order. v1 geometry set by default; add "redact"
+    // to let the user paint opaque rectangles over sensitive areas.
     tools: PropTypes.arrayOf(
-        PropTypes.oneOf(["crop", "perspective", "rotate", "flip", "straighten", "adjust"])
+        PropTypes.oneOf(["crop", "perspective", "rotate", "flip", "straighten", "adjust", "redact"])
     ),
     aspectRatios: PropTypes.array,
 
