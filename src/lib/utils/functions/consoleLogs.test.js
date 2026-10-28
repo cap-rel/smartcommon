@@ -9,28 +9,44 @@ import {
 
 describe("filterSecrets", () => {
     it("masks Bearer tokens", () => {
-        expect(filterSecrets("using Bearer abc.def.ghi token")).toBe("using [filtre] token");
+        expect(filterSecrets("using Bearer abc.def.ghi token")).toBe("using [filtré] token");
     });
 
     it("masks Authorization header lines", () => {
-        expect(filterSecrets("Authorization: Basic dXNlcjpwYXNz")).toBe("[filtre]");
+        expect(filterSecrets("Authorization: Basic dXNlcjpwYXNz")).toBe("[filtré]");
     });
 
     it("masks JWTs", () => {
         const jwt = "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxMjM0In0.abc123signature";
-        expect(filterSecrets(`token is ${jwt} here`)).toBe("token is [filtre] here");
+        expect(filterSecrets(`token is ${jwt} here`)).toBe("token is [filtré] here");
     });
 
     it("masks password-like key=value pairs, case-insensitive", () => {
-        expect(filterSecrets("password=hunter2")).toBe("[filtre]");
-        expect(filterSecrets("PWD: secret123")).toBe("[filtre]");
-        expect(filterSecrets("api_key=abcdef")).toBe("[filtre]");
-        expect(filterSecrets("dolapikey=XYZ789")).toBe("[filtre]");
-        expect(filterSecrets("DOLAPIKEY: abc")).toBe("[filtre]");
+        expect(filterSecrets("password=hunter2")).toBe("[filtré]");
+        expect(filterSecrets("PWD: secret123")).toBe("[filtré]");
+        expect(filterSecrets("api_key=abcdef")).toBe("[filtré]");
+        expect(filterSecrets("dolapikey=XYZ789")).toBe("[filtré]");
+        expect(filterSecrets("DOLAPIKEY: abc")).toBe("[filtré]");
     });
 
     it("masks token in query string", () => {
-        expect(filterSecrets("GET /api?token=abc123")).toBe("GET /api?[filtre]");
+        expect(filterSecrets("GET /api?token=abc123")).toBe("GET /api?[filtré]");
+    });
+
+    it("masks secrets inside JSON-serialized objects", () => {
+        // Objects passed to log.info("login", credentials) are serialized
+        // with JSON.stringify: the separator is ":" with a quote between
+        // the key and the colon, and the value is quoted.
+        const out = filterSecrets('{"password":"hunter2","refresh_token":"abc123def","apikey":"K"}');
+        expect(out).not.toContain("hunter2");
+        expect(out).not.toContain("abc123def");
+        expect(out).toContain("[filtré]");
+    });
+
+    it("masks access_token and spaced or quoted separator variants", () => {
+        expect(filterSecrets('{"access_token": "abc.def"}')).not.toContain("abc.def");
+        expect(filterSecrets("password: 'hunter2'")).not.toContain("hunter2");
+        expect(filterSecrets("Secret = topsecret")).not.toContain("topsecret");
     });
 
     it("leaves ordinary text untouched", () => {
@@ -66,7 +82,18 @@ describe("log ring buffer", () => {
         const entries = getRecentLogs();
         const last = entries[entries.length - 1];
         expect(last).not.toContain("abc.def.ghi");
-        expect(last).toContain("[filtre]");
+        expect(last).toContain("[filtré]");
+    });
+
+    it("filters secrets from logged objects, not only from strings", () => {
+        const log = createLogger("test-ns");
+        log.info("login attempt", { password: "hunter2", refresh_token: "abc123def", apikey: "K" });
+
+        const entries = getRecentLogs();
+        const last = entries[entries.length - 1];
+        expect(last).not.toContain("hunter2");
+        expect(last).not.toContain("abc123def");
+        expect(last).toContain("[filtré]");
     });
 
     it("respects the 200-entry cap", () => {
@@ -93,6 +120,26 @@ describe("log ring buffer", () => {
         const entries = getRecentLogs();
         const totalBytes = entries.reduce((sum, e) => sum + e.length + 1, 0);
         expect(totalBytes).toBeLessThanOrEqual(32 * 1024);
+    });
+
+    it("counts the byte budget in UTF-8 octets, not in characters", () => {
+        const log = createLogger("utf8");
+        // Each é is 2 octets in UTF-8: a character-based budget would let
+        // the buffer hold twice as much text as the 32 KB the server
+        // accepts (it answers 422 without truncating).
+        const accented = "é".repeat(600);
+        for (let i = 0; i < 100; i++) {
+            log.debug(accented);
+        }
+
+        const entries = getRecentLogs();
+        const totalBytes = entries.reduce(
+            (sum, e) => sum + new TextEncoder().encode(e).length + 1,
+            0
+        );
+        expect(totalBytes).toBeLessThanOrEqual(32 * 1024);
+        // A character-based budget would hold about 51 of these lines.
+        expect(entries.length).toBeLessThan(40);
     });
 
     it("stops capturing when disabled", () => {

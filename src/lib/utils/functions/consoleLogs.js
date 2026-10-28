@@ -2,12 +2,16 @@
 const LEVELS = { debug: 0, info: 1, warn: 2, error: 3, none: 4 };
 
 // --- Ring buffer for feedback log excerpt ---
-// Bounded circular buffer: 200 entries max, 32 KB total. Each entry is a
-// single pre-serialised string so the byte budget is exact. Activated by
-// libConfig.feedback.logBuffer (default true: the cost is negligible and
-// the buffer is what makes a client report actionable).
+// Bounded circular buffer: 200 entries max, 32 KB total in UTF-8 octets
+// (counted with TextEncoder: accented log text is 2 octets per character,
+// and the server refuses an excerpt over the budget). Each entry is a
+// single pre-serialised string. Activated by libConfig.feedback.logBuffer
+// (default true: the cost is negligible and the buffer is what makes a
+// client report actionable).
 const LOG_BUFFER_MAX_ENTRIES = 200;
 const LOG_BUFFER_MAX_BYTES = 32 * 1024;
+
+const textEncoder = new TextEncoder();
 
 const logBuffer = [];
 let logBufferBytes = 0;
@@ -23,19 +27,22 @@ export const setLogBufferEnabled = (enabled) => {
 
 // Secret patterns from capTests spec section 14.2, all case-insensitive.
 // Applied to log lines before they leave the device; replacement is the
-// fixed marker "[filtre]" (French, the primary audience) so the team can
-// see that something was redacted without seeing what.
+// fixed marker "[filtré]" (the marker the spec mandates) so the team can
+// see that something was redacted without seeing what. The key/value
+// pattern also matches JSON-serialized objects, where a quote sits between
+// the key and the separator and around the value ("password":"hunter2"),
+// and covers the refresh_token / access_token variants.
 const SECRET_PATTERNS = [
     /Bearer\s+\S+/gi,
     /Authorization\s*:.*$/gim,
     /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*/g,
-    /(password|passwd|pwd|token|secret|api_?key|DOLAPIKEY)\s*[=:]\s*\S+/gi,
+    /(password|passwd|pwd|(?:refresh_|access_)?token|secret|api_?key|DOLAPIKEY)"?\s*[=:]\s*"?[^\s",}\]]+/gi,
 ];
 
 export const filterSecrets = (text) => {
     let out = String(text);
     for (const pattern of SECRET_PATTERNS) {
-        out = out.replace(pattern, "[filtre]");
+        out = out.replace(pattern, "[filtré]");
     }
     return out;
 };
@@ -67,12 +74,12 @@ const pushToLogBuffer = (level, namespace, label, messages) => {
     const line = filterSecrets(`${ts} ${level.toUpperCase()}${ns}${lb} ${serializeMessages(messages)}`);
 
     logBuffer.push(line);
-    logBufferBytes += line.length + 1;
+    logBufferBytes += textEncoder.encode(line).length + 1;
 
     while (logBuffer.length > LOG_BUFFER_MAX_ENTRIES
         || (logBuffer.length > 0 && logBufferBytes > LOG_BUFFER_MAX_BYTES)) {
         const removed = logBuffer.shift();
-        logBufferBytes -= (removed.length + 1);
+        logBufferBytes -= (textEncoder.encode(removed).length + 1);
     }
 };
 
