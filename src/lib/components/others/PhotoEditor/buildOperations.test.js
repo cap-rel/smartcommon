@@ -79,6 +79,12 @@ describe("buildOperations", () => {
         expect(buildOperations({ colorMode: "none" })).toEqual([]);
     });
 
+    it("emits a redact op only when rectangles are present", () => {
+        expect(buildOperations({ redact: [] })).toEqual([]);
+        const rects = [{ x: 0.1, y: 0.1, w: 0.2, h: 0.2 }];
+        expect(buildOperations({ redact: rects })).toEqual([{ type: "redact", rects }]);
+    });
+
     it("combines several tools in canonical order", () => {
         const ops = buildOperations({
             rotateSteps: 1,
@@ -96,6 +102,7 @@ describe("buildOperations", () => {
             autoEnhance: true,
             adjust: { contrast: 0.3 },
             colorMode: "scan",
+            redact: [{ x: 0.1, y: 0.1, w: 0.2, h: 0.2 }],
         });
         expect(ops.map((o) => o.type)).toEqual([
             "rotate90",
@@ -106,6 +113,7 @@ describe("buildOperations", () => {
             "autoEnhance",
             "adjust",
             "scan",
+            "redact",
         ]);
     });
 });

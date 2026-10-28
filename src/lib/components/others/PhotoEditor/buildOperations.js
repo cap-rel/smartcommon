@@ -14,6 +14,7 @@ export const buildOperations = ({
     autoEnhance = false,
     adjust = null,
     colorMode = "none",
+    redact = [],
 } = {}) => {
     const ops = [];
 
@@ -51,6 +52,11 @@ export const buildOperations = ({
         ops.push({ type: "scan", binarize: false });
     } else if (colorMode === "scan") {
         ops.push({ type: "scan", binarize: true });
+    }
+    // Redaction is emitted last: the engine also applies it last (stage 70),
+    // so the emitted order matches the execution order.
+    if (redact.length > 0) {
+        ops.push({ type: "redact", rects: redact });
     }
 
     return ops;
