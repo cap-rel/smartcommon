@@ -31,12 +31,14 @@ export const setLogBufferEnabled = (enabled) => {
 // see that something was redacted without seeing what. The key/value
 // pattern also matches JSON-serialized objects, where a quote sits between
 // the key and the separator and around the value ("password":"hunter2"),
-// and covers the refresh_token / access_token variants.
+// covers the refresh_token / access_token variants, tolerates a key
+// suffix (password_confirmation, secret_key), and consumes a quoted value
+// in full - spaces and escaped quotes included - so no fragment leaks.
 const SECRET_PATTERNS = [
     /Bearer\s+\S+/gi,
     /Authorization\s*:.*$/gim,
     /eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*/g,
-    /(password|passwd|pwd|(?:refresh_|access_)?token|secret|api_?key|DOLAPIKEY)"?\s*[=:]\s*"?[^\s",}\]]+/gi,
+    /"?(password|passwd|pwd|(?:refresh_|access_)?token|secret|api_?key|DOLAPIKEY)[\w-]*"?\s*[=:]\s*("(?:[^"\\]|\\.)*"|[^\s",}\]]+)/gi,
 ];
 
 export const filterSecrets = (text) => {

@@ -49,6 +49,22 @@ describe("filterSecrets", () => {
         expect(filterSecrets("Secret = topsecret")).not.toContain("topsecret");
     });
 
+    it("masks key suffixes (password_confirmation, secret_key)", () => {
+        // Standard Laravel form fields: the suffix must not let the
+        // whole pair through.
+        expect(filterSecrets('{"password_confirmation":"hunter2"}')).toBe("{[filtré]}");
+        expect(filterSecrets('{"secret_key":"abc"}')).toBe("{[filtré]}");
+        expect(filterSecrets("password_confirmation=hunter2")).toBe("[filtré]");
+    });
+
+    it("masks quoted values containing spaces or escaped quotes", () => {
+        // A passphrase with spaces, and a value whose quote is escaped:
+        // the value must be consumed in full, no fragment may leak.
+        expect(filterSecrets('{"password":"my secret pass"}')).toBe("{[filtré]}");
+        expect(filterSecrets('{"token":"a\\"b"}')).toBe("{[filtré]}");
+        expect(filterSecrets('{"password":"my secret pass"}')).not.toContain("secret pass");
+    });
+
     it("leaves ordinary text untouched", () => {
         expect(filterSecrets("GET /users 200 OK")).toBe("GET /users 200 OK");
     });
