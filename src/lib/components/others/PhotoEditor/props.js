@@ -25,6 +25,7 @@ export const DEFAULT_LABELS = {
     redactHelp: "Draw over sensitive areas",
     redactUndo: "Undo",
     redactClear: "Clear",
+    redactCleared: "Masks were cleared: the image geometry changed.",
     ratioFree: "Free",
     ratioOriginal: "Original",
     reset: "Reset",

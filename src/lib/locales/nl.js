@@ -32,6 +32,7 @@ export const nl = {
         redactHelp: "Teken over gevoelige gebieden",
         redactUndo: "Ongedaan maken",
         redactClear: "Alles wissen",
+        redactCleared: "Masks zijn gewist: de geometrie van de afbeelding is gewijzigd.",
         ratioFree: "Vrij",
         ratioOriginal: "Origineel",
         reset: "Resetten",

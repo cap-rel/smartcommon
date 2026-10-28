@@ -33,6 +33,7 @@ export const es = {
         redactHelp: "Dibuje sobre las zonas sensibles",
         redactUndo: "Deshacer",
         redactClear: "Borrar todo",
+        redactCleared: "Las máscaras se borraron: la geometría de la imagen cambió.",
         ratioFree: "Libre",
         ratioOriginal: "Original",
         reset: "Restablecer",

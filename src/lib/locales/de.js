@@ -33,6 +33,7 @@ export const de = {
         redactHelp: "Ziehen Sie über sensible Bereiche",
         redactUndo: "Rückgängig",
         redactClear: "Alles löschen",
+        redactCleared: "Masken wurden gelöscht: die Bildgeometrie hat sich geändert.",
         ratioFree: "Frei",
         ratioOriginal: "Original",
         reset: "Zurücksetzen",

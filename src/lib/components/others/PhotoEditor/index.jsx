@@ -48,6 +48,17 @@ const initialState = {
 
 const ADJUST_SLIDERS = ["brightness", "contrast", "saturation", "temperature"];
 
+// State fields that move the pixels: redact masks are stored in normalized
+// coordinates of the CURRENT frame and painted after the geometry ops, so
+// a mask kept across one of these changes would silently uncover the
+// sensitive area. Any geometry change therefore clears the masks.
+const GEOMETRY_KEYS = ["rotateSteps", "straightenAngle", "flipH", "flipV", "perspective", "crop"];
+
+// Tools whose activation can lead to a geometry change. Activating one
+// clears the masks even when its value is already set (re-activation does
+// not go through setField).
+const GEOMETRY_TOOLS = ["crop", "perspective", "straighten"];
+
 // A source can be a Blob or a File, neither of which can serve as a React key.
 // Hand out a stable id per object instead, so swapping the edited photo while
 // the editor is open remounts it (dropping the previous photo's edit recipe)
@@ -119,7 +130,18 @@ const PhotoEditorContent = (props) => {
     const workingRef = useRef(null);
     const displayCanvasRef = useRef(null);
 
-    const setField = (patch) => setState((prev) => ({ ...prev, ...patch }));
+    const setField = (patch) => {
+        // A geometry patch with masks present clears them (with a notice):
+        // the rects are normalized against the current frame and painted
+        // after the geometry, so they would land on the wrong pixels.
+        const touchesGeometry = GEOMETRY_KEYS.some((key) => key in patch);
+        if (touchesGeometry && state.redact.length > 0) {
+            setNotice(labels.redactCleared);
+            setState((prev) => ({ ...prev, ...patch, redact: [] }));
+            return;
+        }
+        setState((prev) => ({ ...prev, ...patch }));
+    };
 
     // Render the preview = every operation baked EXCEPT the overlay tool the
     // user is currently editing (crop / perspective), which is drawn as a live
@@ -226,6 +248,13 @@ const PhotoEditorContent = (props) => {
         if (tool === "crop" && !state.crop) setField({ crop: { ...FULL_RECT } });
         if (tool === "perspective" && !state.perspective) {
             setField({ perspective: { corners: DEFAULT_CORNERS.map((c) => ({ ...c })) } });
+        }
+        // Activating a geometry tool invalidates the masks even when the
+        // geometry value is unchanged (re-activation sets nothing above):
+        // the tool exists to change that geometry.
+        if (tool !== activeTool && GEOMETRY_TOOLS.includes(tool) && state.redact.length > 0) {
+            setNotice(labels.redactCleared);
+            setField({ redact: [] });
         }
     };
 

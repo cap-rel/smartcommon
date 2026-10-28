@@ -29,6 +29,7 @@ export const fr = {
         redactHelp: "Dessinez sur les zones sensibles",
         redactUndo: "Annuler",
         redactClear: "Tout effacer",
+        redactCleared: "Les masques ont été effacés : la géométrie de l'image a changé.",
         ratioFree: "Libre",
         ratioOriginal: "Original",
         reset: "Réinitialiser",

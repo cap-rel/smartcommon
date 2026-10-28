@@ -35,6 +35,7 @@ export const pt = {
         redactHelp: "Desenhe sobre as áreas sensíveis",
         redactUndo: "Desfazer",
         redactClear: "Limpar tudo",
+        redactCleared: "As máscaras foram apagadas: a geometria da imagem mudou.",
         ratioFree: "Livre",
         ratioOriginal: "Original",
         reset: "Repor",

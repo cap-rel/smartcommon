@@ -296,4 +296,81 @@ describe("PhotoEditor", () => {
             HTMLElement.prototype.getBoundingClientRect = proto;
         }
     });
+
+    // Masks are normalized against the current frame and painted after the
+    // geometry ops: keeping them across a geometry change would uncover the
+    // sensitive area (e.g. mask a certificate, then rotate the image).
+    it("clears the masks with a notice when the geometry changes", async () => {
+        const onSave = vi.fn();
+        const proto = HTMLElement.prototype.getBoundingClientRect;
+        HTMLElement.prototype.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 100,
+            right: 200,
+            bottom: 100,
+        });
+        try {
+            render(<PhotoEditor open src="blob:x" tools={["redact", "rotate"]} onSave={onSave} />);
+            await ready();
+            fireEvent.click(screen.getByLabelText("Redact"));
+
+            const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+            fireEvent.pointerDown(overlay, { clientX: 50, clientY: 50 });
+            fireEvent.pointerMove(overlay, { clientX: 150, clientY: 75 });
+            fireEvent.pointerUp(overlay, { clientX: 150, clientY: 75 });
+
+            fireEvent.click(screen.getByLabelText("Rotate right"));
+
+            expect(screen.getByText("Masks were cleared: the image geometry changed.")).toBeTruthy();
+
+            fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+            await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+            // No redact op survives: saving the rotated image must not
+            // paint masks at the coordinates of the previous frame.
+            expect(applyImageEdits.mock.calls[0][1]).toEqual([{ type: "rotate90", steps: 1 }]);
+        } finally {
+            HTMLElement.prototype.getBoundingClientRect = proto;
+        }
+    });
+
+    it("clears the masks when a geometry tool is re-activated", async () => {
+        const onSave = vi.fn();
+        const proto = HTMLElement.prototype.getBoundingClientRect;
+        HTMLElement.prototype.getBoundingClientRect = () => ({
+            left: 0,
+            top: 0,
+            width: 200,
+            height: 100,
+            right: 200,
+            bottom: 100,
+        });
+        try {
+            render(<PhotoEditor open src="blob:x" tools={["redact", "crop"]} onSave={onSave} />);
+            await ready();
+
+            // Prime the crop value: re-activating the tool later then sets
+            // nothing, so only the activation itself can clear the masks.
+            fireEvent.click(screen.getByLabelText("Crop"));
+            fireEvent.click(screen.getByLabelText("Crop"));
+
+            fireEvent.click(screen.getByLabelText("Redact"));
+            const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+            fireEvent.pointerDown(overlay, { clientX: 50, clientY: 50 });
+            fireEvent.pointerMove(overlay, { clientX: 150, clientY: 75 });
+            fireEvent.pointerUp(overlay, { clientX: 150, clientY: 75 });
+
+            fireEvent.click(screen.getByLabelText("Crop"));
+            expect(screen.getByText("Masks were cleared: the image geometry changed.")).toBeTruthy();
+
+            fireEvent.click(screen.getAllByRole("button", { name: "Save" })[0]);
+            await waitFor(() => expect(applyImageEdits).toHaveBeenCalled());
+            // Crop is still the full rect (no crop op) and the masks are
+            // gone: the export must be empty.
+            expect(applyImageEdits.mock.calls[0][1]).toEqual([]);
+        } finally {
+            HTMLElement.prototype.getBoundingClientRect = proto;
+        }
+    });
 });

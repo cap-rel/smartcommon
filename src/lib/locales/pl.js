@@ -40,6 +40,7 @@ export const pl = {
         redactHelp: "Przeciągnij po wrażliwych obszarach",
         redactUndo: "Cofnij",
         redactClear: "Wyczyść wszystko",
+        redactCleared: "Maski zostały usunięte: geometria obrazu uległa zmianie.",
         ratioFree: "Dowolny",
         ratioOriginal: "Oryginalny",
         reset: "Resetuj",
