@@ -251,3 +251,32 @@ registerOperation("scan", {
         return out;
     },
 });
+
+// Redaction: paint opaque rectangles over normalized rects ({ x, y, w, h } as
+// fractions of the current canvas). Runs last, after geometry and color, so
+// the rectangles land where the user drew them on the final image. Rects are
+// clamped to the frame; degenerate ones are skipped.
+registerOperation("redact", {
+    stage: 70,
+    apply: (canvas, { rects, color = "#000000" } = {}) => {
+        if (!rects || rects.length === 0) return canvas;
+        const out = createCanvas(canvas.width, canvas.height);
+        const ctx = out.getContext("2d");
+        ctx.drawImage(canvas, 0, 0);
+        ctx.fillStyle = color;
+        for (const r of rects) {
+            const x1 = Math.min(Math.max(r.x, 0), 1);
+            const y1 = Math.min(Math.max(r.y, 0), 1);
+            const x2 = Math.min(Math.max(r.x + r.w, 0), 1);
+            const y2 = Math.min(Math.max(r.y + r.h, 0), 1);
+            if (x2 <= x1 || y2 <= y1) continue;
+            ctx.fillRect(
+                Math.round(x1 * canvas.width),
+                Math.round(y1 * canvas.height),
+                Math.round((x2 - x1) * canvas.width),
+                Math.round((y2 - y1) * canvas.height)
+            );
+        }
+        return out;
+    },
+});
