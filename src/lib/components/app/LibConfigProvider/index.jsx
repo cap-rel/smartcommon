@@ -86,7 +86,7 @@ const config = {
 
   },
   // Tampon circulaire des logs pour le signalement client (FeedbackButton).
-  // logBuffer: false le desactive (opt-out, active par defaut).
+  // logBuffer: false le désactive (opt-out, activé par défaut).
   feedback: {
     logBuffer: true
   },
