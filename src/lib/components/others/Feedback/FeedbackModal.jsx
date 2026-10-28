@@ -321,7 +321,7 @@ export const FeedbackModal = (props) => {
                 {status === "success" ? (
                     <div className="flex flex-col gap-4">
                         <div className="text-green-600 font-medium">
-                            {labels.successTitle}
+                            {result?.deferred ? labels.deferredTitle : labels.successTitle}
                         </div>
                         {result?.deferred ? (
                             <p className="text-gray-700" role="status" aria-live="polite">

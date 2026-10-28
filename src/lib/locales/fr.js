@@ -394,6 +394,7 @@ export const fr = {
         submittingLabel: "Envoi en cours...",
         cancelLabel: "Annuler",
         successTitle: "Signalement envoyé",
+        deferredTitle: "Signalement en attente",
         successMessage: (ref) => `Votre signalement a été enregistré (référence : ${ref}).`,
         successTracking: "Suivre mon signalement",
         errorTitle: "Erreur",

@@ -45,6 +45,7 @@ export const DEFAULT_LABELS = {
     submittingLabel: "Sending...",
     cancelLabel: "Cancel",
     successTitle: "Report sent",
+    deferredTitle: "Report pending",
     successMessage: (ref) => `Your report has been recorded (reference: ${ref}).`,
     successTracking: "Track my report",
     errorTitle: "Error",

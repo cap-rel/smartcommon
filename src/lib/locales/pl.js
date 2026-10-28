@@ -407,6 +407,7 @@ export const pl = {
         submittingLabel: "Wysyłanie...",
         cancelLabel: "Anuluj",
         successTitle: "Zgłoszenie wysłane",
+        deferredTitle: "Zgłoszenie oczekuje",
         successMessage: (ref) => `Twoje zgłoszenie zostało zapisane (numer: ${ref}).`,
         successTracking: "Śledź moje zgłoszenie",
         errorTitle: "Błąd",

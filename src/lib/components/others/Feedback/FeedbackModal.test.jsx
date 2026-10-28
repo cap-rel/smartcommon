@@ -213,8 +213,11 @@ describe("FeedbackModal relay errors", () => {
         expect(payload.context.occurred_at).toMatch(/^\d{4}-\d{2}-\d{2}T/);
         expect(payload.context.page_url).toBeTruthy();
 
-        // Deferred send: the offline message, not the success reference.
+        // Deferred send: its own title plus the offline message, not the
+        // success reference.
+        expect(await screen.findByText("Report pending")).toBeTruthy();
         expect(await screen.findByText(/No connection/)).toBeTruthy();
+        expect(screen.queryByText(/has been recorded/)).toBeNull();
     });
 
     it("queues the report on a transient relay refusal (503)", async () => {

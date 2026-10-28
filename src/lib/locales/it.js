@@ -399,6 +399,7 @@ export const it = {
         submittingLabel: "Invio in corso...",
         cancelLabel: "Annulla",
         successTitle: "Segnalazione inviata",
+        deferredTitle: "Segnalazione in sospeso",
         successMessage: (ref) => `La tua segnalazione è stata registrata (riferimento: ${ref}).`,
         successTracking: "Segui la mia segnalazione",
         errorTitle: "Errore",

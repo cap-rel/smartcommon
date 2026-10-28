@@ -399,6 +399,7 @@ export const de = {
         submittingLabel: "Wird gesendet...",
         cancelLabel: "Abbrechen",
         successTitle: "Meldung gesendet",
+        deferredTitle: "Meldung ausstehend",
         successMessage: (ref) => `Ihre Meldung wurde erfasst (Referenz: ${ref}).`,
         successTracking: "Meine Meldung verfolgen",
         errorTitle: "Fehler",

@@ -399,6 +399,7 @@ export const es = {
         submittingLabel: "Enviando...",
         cancelLabel: "Cancelar",
         successTitle: "Reporte enviado",
+        deferredTitle: "Reporte pendiente",
         successMessage: (ref) => `Su reporte ha sido registrado (referencia: ${ref}).`,
         successTracking: "Seguir mi reporte",
         errorTitle: "Error",

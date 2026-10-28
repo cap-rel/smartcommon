@@ -401,6 +401,7 @@ export const pt = {
         submittingLabel: "Enviando...",
         cancelLabel: "Cancelar",
         successTitle: "Relato enviado",
+        deferredTitle: "Relato pendente",
         successMessage: (ref) => `O seu relato foi registado (referência: ${ref}).`,
         successTracking: "Acompanhar o meu relato",
         errorTitle: "Erro",

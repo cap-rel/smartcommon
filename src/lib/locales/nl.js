@@ -398,6 +398,7 @@ export const nl = {
         submittingLabel: "Verzenden...",
         cancelLabel: "Annuleren",
         successTitle: "Melding verzonden",
+        deferredTitle: "Melding in afwachting",
         successMessage: (ref) => `Uw melding is geregistreerd (referentie: ${ref}).`,
         successTracking: "Mijn melding volgen",
         errorTitle: "Fout",
