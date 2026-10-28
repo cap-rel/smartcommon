@@ -405,8 +405,6 @@ export const es = {
         errorTitle: "Error",
         errorMessage: "No se pudo enviar el reporte. Inténtelo de nuevo más tarde.",
         offlineMessage: "Sin conexión. El reporte se enviará automáticamente cuando vuelva la red.",
-        dictateLabel: "Dictar",
-        dictateStopLabel: "Detener el dictado",
         closeLabel: "Cerrar",
     },
 };

@@ -413,8 +413,6 @@ export const pl = {
         errorTitle: "Błąd",
         errorMessage: "Nie udało się wysłać zgłoszenia. Spróbuj ponownie później.",
         offlineMessage: "Brak połączenia. Zgłoszenie zostanie wysłane automatycznie po powrocie sieci.",
-        dictateLabel: "Dyktować",
-        dictateStopLabel: "Zatrzymaj dyktowanie",
         closeLabel: "Zamknij",
     },
 };

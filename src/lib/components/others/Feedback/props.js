@@ -53,7 +53,5 @@ export const DEFAULT_LABELS = {
     errorTitle: "Error",
     errorMessage: "The report could not be sent. Please try again later.",
     offlineMessage: "No connection. The report will be sent automatically when the network returns.",
-    dictateLabel: "Dictate",
-    dictateStopLabel: "Stop dictation",
     closeLabel: "Close",
 };

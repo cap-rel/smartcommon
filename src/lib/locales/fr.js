@@ -400,8 +400,6 @@ export const fr = {
         errorTitle: "Erreur",
         errorMessage: "Le signalement n'a pas pu être envoyé. Veuillez réessayer plus tard.",
         offlineMessage: "Pas de connexion. Le signalement sera envoyé automatiquement au retour du réseau.",
-        dictateLabel: "Dicter",
-        dictateStopLabel: "Arrêter la dictée",
         closeLabel: "Fermer",
     },
 };

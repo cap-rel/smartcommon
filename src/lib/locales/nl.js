@@ -404,8 +404,6 @@ export const nl = {
         errorTitle: "Fout",
         errorMessage: "De melding kon niet worden verzonden. Probeer het later opnieuw.",
         offlineMessage: "Geen verbinding. De melding wordt automatisch verzonden wanneer het netwerk terug is.",
-        dictateLabel: "Dicteren",
-        dictateStopLabel: "Dictatie stoppen",
         closeLabel: "Sluiten",
     },
 };

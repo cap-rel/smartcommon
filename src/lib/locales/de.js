@@ -405,8 +405,6 @@ export const de = {
         errorTitle: "Fehler",
         errorMessage: "Die Meldung konnte nicht gesendet werden. Bitte versuchen Sie es später erneut.",
         offlineMessage: "Keine Verbindung. Die Meldung wird automatisch gesendet, sobald das Netzwerk zurück ist.",
-        dictateLabel: "Diktieren",
-        dictateStopLabel: "Diktat stoppen",
         closeLabel: "Schließen",
     },
 };

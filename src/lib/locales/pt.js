@@ -407,8 +407,6 @@ export const pt = {
         errorTitle: "Erro",
         errorMessage: "Não foi possível enviar o relato. Tente novamente mais tarde.",
         offlineMessage: "Sem ligação. O relato será enviado automaticamente quando a rede voltar.",
-        dictateLabel: "Ditar",
-        dictateStopLabel: "Parar a ditação",
         closeLabel: "Fechar",
     },
 };

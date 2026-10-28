@@ -405,8 +405,6 @@ export const it = {
         errorTitle: "Errore",
         errorMessage: "Impossibile inviare la segnalazione. Riprova più tardi.",
         offlineMessage: "Nessuna connessione. La segnalazione verrà inviata automaticamente al ritorno della rete.",
-        dictateLabel: "Dettare",
-        dictateStopLabel: "Interrompi dettatura",
         closeLabel: "Chiudi",
     },
 };
