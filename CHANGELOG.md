@@ -8,6 +8,63 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.394] - 2026-10-28
+
+Take several photos in one field and annotate each one, with the new AnnotatedPhotosUploader
+Stop taking photos once a field holds its maximum, and pick several at once from the gallery
+Keep a photo title edited in a controlled PhotosUploader instead of dropping it
+Add the other gallery photos when one cannot be read, and name the skipped one
+Give an id to a saved photo as soon as it is annotated, so its notes stay attached to it
+Add FeedbackButton and useFeedback to report a problem from a PWA, with offline queue
+Attach a screenshot, the app context, logs and network errors to a feedback report
+Filter secrets out of the log excerpt attached to a feedback report
+Turn the feedback log buffer off with the libConfig feedback.logBuffer option
+Send queued feedback reports as soon as the app reopens online
+Keep a queued feedback report when the relay answers 401, 408, 429, 502 or 503
+Localize the redaction editor of the feedback form with the photoEditorLabels prop
+Return focus to the menu item that opened the feedback form when it closes
+Add a redact tool to PhotoEditor, backed by a new redact operation in the image editor pipeline
+Clear the redact masks when the image geometry changes, so nothing stays unmasked
+Draw redact rectangles with the keyboard in PhotoEditor
+Let an inner component handle Escape without closing the Modal underneath it
+
+## [1.0.393] - 2026-10-23
+
+Keep photo annotation editors out of the page form, so a note no longer loses its text
+Report every edit through onChange, including fields bound to a Form
+
+## [1.0.392] - 2026-10-21
+
+Make every app update mandatory: the update prompt drops its Later button
+
+## [1.0.391] - 2026-10-20
+
+Check that the server answers through the SmartAuth health route, by default
+
+## [1.0.390] - 2026-10-20
+
+Let users postpone an app update with a Later button in banner and modal prompts
+Show the new version number and release notes in the app update prompt
+Sync offline edits again with smartauth: useSyncClient follows the current sync API
+
+## [1.0.388] - 2026-10-20
+
+Write a photo's title, caption and tags into the file itself (XMP, JPEG/WebP/PNG)
+
+## [1.0.387] - 2026-10-20
+
+Guide users of every browser through installing the app, and open the guide on demand
+
+## [1.0.386] - 2026-10-20
+
+Keep the server error status on requests the circuit breaker blocks right after it
+
+## [1.0.385] - 2026-10-19
+
+Let a photo upload survive a slow mobile network: 120 s timeout and one retry
+Shrink phone photos under the server limit before sending them, even on Safari
+Tell users why an upload failed: too large, too slow, HTTP status or network
+
 ## [1.0.383] - 2026-10-19
 
 Stop a named field rendered outside a Form from crashing the page
