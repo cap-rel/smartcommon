@@ -337,7 +337,10 @@ export const useApiContext = () => {
                     // Extract API error message + code from response body before
                     // ky throws. Applies to ALL extended apis (public + private)
                     // so that consumers like the QR pair flow can read
-                    // error.apiMessage and error.apiCode.
+                    // error.apiMessage and error.apiCode. ky only runs this
+                    // hook for HTTPError, which always carries a response;
+                    // network-level failures (no response) never pass through
+                    // here, they are recorded in the createApiMethod catch.
                     if (error.response) {
                         try {
                             const body = await error.response.clone().json();
@@ -349,12 +352,6 @@ export const useApiContext = () => {
                         } catch {
                             // Response may not be JSON, leave the fields undefined.
                         }
-                    } else if (error.request) {
-                        // Network-level failure (no HTTP response): record it
-                        // with status 0. HTTP errors are already recorded by
-                        // afterResponse above, so we only handle the
-                        // response-less case here to avoid duplicates.
-                        recordNetworkError(error.request.method, error.request.url, 0);
                     }
                     return error;
                 }
@@ -1043,6 +1040,16 @@ export const useApiContext = () => {
             // Enrich error with context
             error.url = url;
             error.method = method.toUpperCase();
+
+            // ky runs its beforeError hooks only for HTTPError, which always
+            // carries a response: network-level failures (connection cut,
+            // timeout, CORS, the offline/circuit rejections from
+            // beforeRequest) reach this catch with no response at all.
+            // Record them for the feedback report; HTTP errors are already
+            // recorded by the afterResponse hook, hence the guard.
+            if (!error.response) {
+                recordNetworkError(method, url, 0);
+            }
 
             // Detect a dead session and eject to login on the FIRST failure,
             // before the flood of parallel in-flight requests each surface
