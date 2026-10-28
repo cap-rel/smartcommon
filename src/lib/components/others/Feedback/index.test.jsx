@@ -29,6 +29,7 @@ vi.mock("lib/upload", () => ({
 }));
 
 import { FeedbackButton } from "./index";
+import { useFeedback } from "./useFeedback";
 
 describe("FeedbackButton", () => {
     beforeEach(() => {
@@ -53,6 +54,41 @@ describe("FeedbackButton", () => {
 
         // Modal does not restore focus itself: the button must hand it
         // back to its trigger.
+        await waitFor(() => expect(document.activeElement).toBe(trigger));
+    });
+});
+
+describe("useFeedback", () => {
+    beforeEach(() => {
+        mocks.post.mockClear();
+    });
+
+    const HookHarness = () => {
+        const { open, modal } = useFeedback({ relayPath: "feedback/report", appVersion: "1.0.0" });
+        return (
+            <>
+                <button onClick={open}>Open the form</button>
+                {modal}
+            </>
+        );
+    };
+
+    it("returns focus to the element that opened the modal", async () => {
+        render(<HookHarness />);
+
+        // In a browser, clicking a menu item focuses it; happy-dom does
+        // not, so focus it explicitly before the click.
+        const trigger = screen.getByRole("button", { name: "Open the form" });
+        trigger.focus();
+        fireEvent.click(trigger);
+
+        // The modal opens and moves the focus into the form.
+        await screen.findByText("Description");
+
+        fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+        // The hook hands the focus back to the menu item it was opened
+        // from, like FeedbackButton does with its own button.
         await waitFor(() => expect(document.activeElement).toBe(trigger));
     });
 });

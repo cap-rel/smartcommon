@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo, useRef, useEffect } from "react";
 
 import { FeedbackModal } from "./FeedbackModal";
 
@@ -24,9 +24,29 @@ export const useFeedback = (options = {}) => {
     const { relayPath, appVersion, labels, photoEditorLabels } = options;
 
     const [isOpen, setIsOpen] = useState(false);
+    const triggerRef = useRef(null);
+    const wasOpenRef = useRef(false);
 
-    const open = useCallback(() => setIsOpen(true), []);
+    const open = useCallback(() => {
+        // Remember what had the focus so close() can hand it back: the
+        // hook is meant to be opened from an existing menu item.
+        triggerRef.current = document.activeElement instanceof HTMLElement
+            ? document.activeElement
+            : null;
+        setIsOpen(true);
+    }, []);
+
     const close = useCallback(() => setIsOpen(false), []);
+
+    // Modal does not restore focus on close: hand it back to the element
+    // that opened the window (same contract as FeedbackButton).
+    useEffect(() => {
+        if (wasOpenRef.current && !isOpen) {
+            triggerRef.current?.focus();
+            triggerRef.current = null;
+        }
+        wasOpenRef.current = isOpen;
+    }, [isOpen]);
 
     const modal = useMemo(() => (
         <FeedbackModal
