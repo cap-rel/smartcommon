@@ -7,12 +7,11 @@ import { useApi } from "lib/hooks";
 import { createLogger } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
-import { buildFormData } from "./feedbackPayload";
+import { buildFormData, prepareScreenshot, SCREENSHOT_MAX_BYTES } from "./feedbackPayload";
 
 const log = createLogger("Feedback");
 
 const BODY_MAX_LENGTH = 20000;
-const SCREENSHOT_MAX_BYTES = 5120 * 1024; // 5120 KB
 
 /**
  * FeedbackModal - The report form in a modal. Controlled by `isOpen` /
@@ -65,7 +64,7 @@ export const FeedbackModal = (props) => {
         onClose?.();
     }, [resetForm, onClose]);
 
-    const handleScreenshotChange = useCallback((e) => {
+    const handleScreenshotChange = useCallback(async (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -74,16 +73,13 @@ export const FeedbackModal = (props) => {
             return;
         }
 
-        if (file.size > SCREENSHOT_MAX_BYTES) {
-            setValidationErrors(prev => ({
-                ...prev,
-                screenshot: labels.bodyTooLongError(Math.round(SCREENSHOT_MAX_BYTES / 1024)),
-            }));
-            return;
-        }
+        // Reduce before storing: the capTests limit is 5120 KB on the
+        // wire; we target 2 MB and 1920 px so the multipart upload stays
+        // fast on a mobile uplink.
+        const prepared = await prepareScreenshot(file);
 
-        setScreenshot(file);
-        setScreenshotPreview(URL.createObjectURL(file));
+        setScreenshot(prepared);
+        setScreenshotPreview(URL.createObjectURL(prepared));
         setValidationErrors(prev => {
             const { screenshot: _removed, ...rest } = prev;
             return rest;

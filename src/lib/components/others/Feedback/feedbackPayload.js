@@ -1,4 +1,30 @@
 import { getRecentLogs, getRecentNetworkErrors, navigatorInfo } from "lib/utils";
+import { convertImageForUpload } from "lib/upload";
+
+// Screenshot limits from the capTests spec (section 8.2):
+// max 5120 KB on the wire, resized to 1920 px wide at most, targeting
+// 2 MB so the multipart upload stays fast on a mobile uplink.
+export const SCREENSHOT_MAX_SIDE = 1920;
+export const SCREENSHOT_MAX_BYTES = 5120 * 1024;
+export const SCREENSHOT_TARGET_BYTES = 2 * 1024 * 1024;
+export const SCREENSHOT_ACCEPTED_MIMES = ["image/jpeg", "image/png", "image/webp"];
+
+// Reduce a screenshot File before it leaves the device. Always resolves
+// (never rejects): on decode/encode failure the original file is kept,
+// the server-side limit is the final guard.
+export const prepareScreenshot = async (file) => {
+    try {
+        const result = await convertImageForUpload(file, {
+            maxSide: SCREENSHOT_MAX_SIDE,
+            maxBytes: SCREENSHOT_MAX_BYTES,
+            targetBytes: SCREENSHOT_TARGET_BYTES,
+            acceptedMimes: SCREENSHOT_ACCEPTED_MIMES,
+        });
+        return result.file;
+    } catch (_) {
+        return file;
+    }
+};
 
 // Strip the query string from a URL: it can carry tokens.
 export const stripQuery = (url) => {

@@ -1,7 +1,13 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
-import { buildContext, buildFormData, stripQuery, IDENTITY_KEYS } from "./feedbackPayload";
+import { buildContext, buildFormData, stripQuery, IDENTITY_KEYS, prepareScreenshot } from "./feedbackPayload";
 import { setLogBufferEnabled, setNetworkErrorBufferEnabled } from "lib/utils";
+
+// Mock the image pipeline: the real one needs canvas/createImageBitmap
+// which are not available in the Node test environment.
+vi.mock("lib/upload", () => ({
+    convertImageForUpload: vi.fn(async (file) => ({ file, width: 100, height: 100, mime: file.type })),
+}));
 
 // Helper: read all keys from a FormData as an array.
 const formDataKeys = (formData) => {
@@ -237,5 +243,31 @@ describe("buildFormData", () => {
         for (const k of netKeys) {
             expect(k).toMatch(/^context\[network_errors\]\[\d+\]\[(method|url|status|at)\]$/);
         }
+    });
+});
+
+describe("prepareScreenshot", () => {
+    it("returns the file from convertImageForUpload", async () => {
+        const { convertImageForUpload } = await import("lib/upload");
+        const original = new File(["data"], "photo.jpg", { type: "image/jpeg" });
+        const converted = new File(["smaller"], "photo.jpg", { type: "image/webp" });
+        convertImageForUpload.mockResolvedValueOnce({ file: converted, width: 1920, height: 1080, mime: "image/webp" });
+
+        const result = await prepareScreenshot(original);
+        expect(result).toBe(converted);
+        expect(convertImageForUpload).toHaveBeenCalledWith(original, expect.objectContaining({
+            maxSide: 1920,
+            maxBytes: 5120 * 1024,
+            targetBytes: 2 * 1024 * 1024,
+        }));
+    });
+
+    it("falls back to the original file when conversion fails", async () => {
+        const { convertImageForUpload } = await import("lib/upload");
+        const original = new File(["data"], "photo.jpg", { type: "image/jpeg" });
+        convertImageForUpload.mockRejectedValueOnce(new Error("decode failed"));
+
+        const result = await prepareScreenshot(original);
+        expect(result).toBe(original);
     });
 });
