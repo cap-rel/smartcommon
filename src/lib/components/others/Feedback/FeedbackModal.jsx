@@ -311,14 +311,14 @@ export const FeedbackModal = (props) => {
                         <Select
                             label={labels.typeLabel}
                             value={type}
-                            onChange={(e) => setType(e.target.value)}
+                            onChange={(value) => setType(value)}
                             options={typeOptions}
                         />
 
                         <Input
                             label={labels.titleLabel}
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(value) => setTitle(value)}
                             placeholder={labels.titlePlaceholder}
                             maxLength={255}
                         />
@@ -326,12 +326,13 @@ export const FeedbackModal = (props) => {
                         <Textarea
                             label={labels.bodyLabel}
                             value={body}
-                            onChange={(e) => setBody(e.target.value)}
+                            onChange={(value) => setBody(value)}
                             placeholder={labels.bodyPlaceholder}
-                            error={validationErrors.body}
                             rows={5}
-                            aria-invalid={validationErrors.body ? "true" : undefined}
-                            aria-describedby={validationErrors.body ? "feedback-body-error" : undefined}
+                            textareaProps={{
+                                "aria-invalid": validationErrors.body ? "true" : undefined,
+                                "aria-describedby": validationErrors.body ? "feedback-body-error" : undefined,
+                            }}
                         />
                         {validationErrors.body && (
                             <span id="feedback-body-error" className="text-xs text-red-600" role="alert">
