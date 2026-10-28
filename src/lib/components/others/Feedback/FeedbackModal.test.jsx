@@ -242,3 +242,55 @@ describe("FeedbackModal relay errors", () => {
         expect(await screen.findByText(/No connection/)).toBeTruthy();
     });
 });
+
+describe("FeedbackModal redaction keyboard", () => {
+    beforeEach(() => {
+        mocks.post.mockReset();
+        mocks.post.mockImplementation(async () => ({ ok: true, ref: "CSPN-1", tracking_url: "https://captests.example/t/CSPN-1" }));
+        mocks.enqueueReport.mockClear();
+        mocks.flushQueue.mockClear();
+        mocks.convertImageForUpload.mockClear();
+        mocks.convertImageForUpload.mockImplementation(async (file) => ({ file }));
+    });
+
+    // Open the redaction editor on an attached screenshot and activate
+    // the redact tool, so the keyboard overlay is in the DOM.
+    const openRedaction = async (onClose) => {
+        const { container } = render(
+            <FeedbackModal isOpen onClose={onClose} relayPath="feedback/report" appVersion="1.0.0" />
+        );
+        await attachScreenshot(container, new File(["img"], "shot.png", { type: "image/png" }));
+        fireEvent.click(screen.getByRole("button", { name: "Redact an area" }));
+        fireEvent.click(screen.getByLabelText("Redact"));
+        const overlay = document.querySelector('[data-component="PhotoEditorRedactOverlay"]');
+        expect(overlay).toBeTruthy();
+        return overlay;
+    };
+
+    it("keeps the form and the typed text when Escape cancels a rectangle being drawn", async () => {
+        const onClose = vi.fn();
+        const overlay = await openRedaction(onClose);
+        fillBody("My precious description.");
+
+        // Enter starts a rectangle, Escape cancels it. The overlay marks
+        // the event prevented; Modal must not close the form over it.
+        fireEvent.keyDown(overlay, { key: "Enter" });
+        fireEvent.keyDown(overlay, { key: "Escape" });
+
+        expect(onClose).not.toHaveBeenCalled();
+        expect(screen.getByPlaceholderText(BODY_PLACEHOLDER).value).toBe("My precious description.");
+    });
+
+    it("keeps the form when Escape is pressed in the redaction editor without a draft", async () => {
+        const onClose = vi.fn();
+        const overlay = await openRedaction(onClose);
+        fillBody("Still typing.");
+
+        // No draft: the overlay does not prevent the event, the editor
+        // being open is what keeps every close path inert.
+        fireEvent.keyDown(overlay, { key: "Escape" });
+
+        expect(onClose).not.toHaveBeenCalled();
+        expect(screen.getByPlaceholderText(BODY_PLACEHOLDER).value).toBe("Still typing.");
+    });
+});

@@ -74,7 +74,10 @@ export const Modal = (props) => {
     // Handle escape key to close modal
     useEffect(() => {
         const handleEscape = (e) => {
-            if (e.key === "Escape" && isOpen) {
+            // An inner component (a photo editor tool, a nested dialog)
+            // may handle Escape itself and mark it prevented: never
+            // close over its head.
+            if (e.key === "Escape" && isOpen && !e.defaultPrevented) {
                 applyFunctionIfNotNil(onClose);
             }
         };

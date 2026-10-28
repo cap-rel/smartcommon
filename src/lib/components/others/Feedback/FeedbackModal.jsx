@@ -106,9 +106,14 @@ export const FeedbackModal = (props) => {
     }, [updateScreenshot]);
 
     const handleClose = useCallback(() => {
+        // While the redaction editor is open, every close path (Escape,
+        // the X button, an overlay click) must stay inert: closing would
+        // reset the form and lose the report being typed. The editor has
+        // its own Cancel / Save.
+        if (isRedacting) return;
         resetForm();
         onClose?.();
-    }, [resetForm, onClose]);
+    }, [isRedacting, resetForm, onClose]);
 
     const handleScreenshotChange = useCallback(async (e) => {
         const file = e.target.files?.[0];
