@@ -1047,7 +1047,11 @@ export const useApiContext = () => {
             // beforeRequest) reach this catch with no response at all.
             // Record them for the feedback report; HTTP errors are already
             // recorded by the afterResponse hook, hence the guard.
-            if (!error.response) {
+            // A SyntaxError is NOT a network failure: it means a 2xx answer
+            // arrived with a non-JSON body (an HTML page on an expired
+            // session) - recording it with status 0 would mislabel it as a
+            // connection cut, and the eject logic below handles it.
+            if (!error.response && !(error instanceof SyntaxError)) {
                 recordNetworkError(method, url, 0);
             }
 

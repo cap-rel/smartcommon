@@ -172,4 +172,23 @@ describe("network error recording for the feedback report", () => {
 
         expect(getRecentNetworkErrors()).toHaveLength(0);
     });
+
+    it("does not record a 2xx answer with a non-JSON body as a network cut", async () => {
+        // An expired session served as an HTML page: ok=true, but
+        // response.json() throws a SyntaxError. The server DID answer:
+        // recording it with status 0 would mislabel it as a connection
+        // cut at triage.
+        kyCtrl.responder = () => ({
+            ok: true,
+            status: 200,
+            json: async () => {
+                throw new SyntaxError("Unexpected token '<', \"<html>...\" is not valid JSON");
+            },
+        });
+
+        const { result } = renderHook(() => useApiContext());
+        await expect(result.current.get("x")).rejects.toThrow(SyntaxError);
+
+        expect(getRecentNetworkErrors()).toHaveLength(0);
+    });
 });
