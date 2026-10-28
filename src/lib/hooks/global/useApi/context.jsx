@@ -3,7 +3,7 @@ import { floor, isEmpty, isUndefined } from "lodash";
 import { v4 } from "uuid";
 import { useMemo, useRef, useEffect, useLayoutEffect } from "react";
 
-import { log, navigatorInfo, throwTypeError } from "lib/utils";
+import { log, navigatorInfo, throwTypeError, recordNetworkError } from "lib/utils";
 import { useGlobalStates, useLibConfig } from "lib/hooks";
 import { loginMap } from "lib/hooks/useApiTest2/useLogin";
 import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessToken";
@@ -319,6 +319,9 @@ export const useApiContext = () => {
                     const { debug: currentDebug } = valuesRef.current;
 
                     if (!ok) {
+                        // Record HTTP errors for the feedback report (query
+                        // string stripped inside recordNetworkError).
+                        recordNetworkError(method, url, status);
                         if (currentDebug) {
                             log.apiError(`${method} - ${status}`, url);
                         }
@@ -346,6 +349,12 @@ export const useApiContext = () => {
                         } catch {
                             // Response may not be JSON, leave the fields undefined.
                         }
+                    } else if (error.request) {
+                        // Network-level failure (no HTTP response): record it
+                        // with status 0. HTTP errors are already recorded by
+                        // afterResponse above, so we only handle the
+                        // response-less case here to avoid duplicates.
+                        recordNetworkError(error.request.method, error.request.url, 0);
                     }
                     return error;
                 }

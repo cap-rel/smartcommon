@@ -9,6 +9,7 @@ export * from "./variant";
 export * from "./tailwindMerge";
 export * from "./intl";
 export * from "./consoleLogs";
+export * from "./networkErrors";
 export * from "./typeErrors";
 export * from "./lodashComplement";
 export * from "./zipBundle";
