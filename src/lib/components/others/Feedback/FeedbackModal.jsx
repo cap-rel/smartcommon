@@ -1,13 +1,14 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { FaPaperPlane, FaImage, FaXmark } from "react-icons/fa6";
 import { v4 as uuidv4 } from "uuid";
 
 import { Modal, Button, Input, Textarea, Select } from "lib/components";
 import { useApi } from "lib/hooks";
-import { createLogger } from "lib/utils";
+import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
-import { buildFormData, prepareScreenshot, SCREENSHOT_MAX_BYTES } from "./feedbackPayload";
+import { buildFormData, prepareScreenshot } from "./feedbackPayload";
+import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
 
 const log = createLogger("Feedback");
 
@@ -29,6 +30,13 @@ export const FeedbackModal = (props) => {
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
     const api = useApi();
+
+    // Register the api with the offline queue singleton and install the
+    // 'online' flush listener once per mount.
+    useEffect(() => {
+        setQueueApiProvider(api);
+        installOnlineFlush();
+    }, [api]);
 
     const [type, setType] = useState("bug");
     const [title, setTitle] = useState("");
@@ -124,14 +132,35 @@ export const FeedbackModal = (props) => {
         setStatus("submitting");
         setErrorMessage("");
 
-        const formData = buildFormData({
+        const payload = {
             type,
             title: title.trim() || undefined,
             body: body.trim(),
             screenshot,
             consent,
             appVersion,
-        });
+            relayPath,
+        };
+
+        // Offline at submit time: queue the report, it will be flushed
+        // automatically on the next 'online' event. The idempotency key
+        // is preserved so the flush never creates a duplicate.
+        if (navigatorInfo.isOnLine === false) {
+            try {
+                await enqueueReport(payload, idempotencyKeyRef.current);
+                setResult({ ref: null, trackingUrl: null, deferred: true });
+                setStatus("success");
+                log.info("report queued (offline)", idempotencyKeyRef.current);
+                return;
+            } catch (err) {
+                log.error("failed to queue report", err);
+                setErrorMessage(labels.errorMessage);
+                setStatus("error");
+                return;
+            }
+        }
+
+        const formData = buildFormData(payload);
 
         try {
             const response = await api.post(relayPath, {
@@ -150,17 +179,26 @@ export const FeedbackModal = (props) => {
                 });
                 setStatus("success");
                 log.info("report sent", response.ref);
+                // A successful send also flushes any earlier queued reports.
+                flushQueue().catch(err => log.error("post-submit flush failed", err));
             } else {
                 setErrorMessage(response?.error || labels.errorMessage);
                 setStatus("error");
                 log.error("report rejected", response?.code ?? "unknown");
             }
         } catch (error) {
-            // Network failure or non-JSON response: keep the idempotency
-            // key so a retry does not duplicate.
-            log.error("report send failed", error?.message);
-            setErrorMessage(labels.errorMessage);
-            setStatus("error");
+            // Network failure mid-submit: queue for retry. The same
+            // idempotency key guarantees no duplicate on flush.
+            log.error("report send failed, queueing for retry", error?.message);
+            try {
+                await enqueueReport(payload, idempotencyKeyRef.current);
+                setResult({ ref: null, trackingUrl: null, deferred: true });
+                setStatus("success");
+            } catch (queueErr) {
+                log.error("failed to queue report after network error", queueErr);
+                setErrorMessage(labels.errorMessage);
+                setStatus("error");
+            }
         }
     }, [api, relayPath, type, title, body, screenshot, consent, appVersion, validate, labels]);
 
@@ -183,18 +221,26 @@ export const FeedbackModal = (props) => {
                         <div className="text-green-600 font-medium">
                             {labels.successTitle}
                         </div>
-                        <p className="text-gray-700">
-                            {labels.successMessage(result?.ref)}
-                        </p>
-                        {result?.trackingUrl && (
-                            <a
-                                href={result.trackingUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-primary underline"
-                            >
-                                {labels.successTracking}
-                            </a>
+                        {result?.deferred ? (
+                            <p className="text-gray-700" role="status" aria-live="polite">
+                                {labels.offlineMessage}
+                            </p>
+                        ) : (
+                            <>
+                                <p className="text-gray-700">
+                                    {labels.successMessage(result?.ref)}
+                                </p>
+                                {result?.trackingUrl && (
+                                    <a
+                                        href={result.trackingUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-primary underline"
+                                    >
+                                        {labels.successTracking}
+                                    </a>
+                                )}
+                            </>
                         )}
                         <Button
                             label={labels.closeLabel}
