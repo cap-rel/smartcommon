@@ -9,6 +9,7 @@ import { createLogger, navigatorInfo } from "lib/utils";
 import { DEFAULT_LABELS } from "./props";
 import { buildFormData, prepareScreenshot } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
+import { ScreenshotRedactor } from "./ScreenshotRedactor";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
 
 const log = createLogger("Feedback");
@@ -50,6 +51,7 @@ export const FeedbackModal = (props) => {
     const [errorMessage, setErrorMessage] = useState("");
     const [validationErrors, setValidationErrors] = useState({});
     const [isCapturing, setIsCapturing] = useState(false);
+    const [isRedacting, setIsRedacting] = useState(false);
 
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
@@ -118,6 +120,20 @@ export const FeedbackModal = (props) => {
         setConsent(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
     }, [screenshotPreview]);
+
+    // Redaction: replace the current screenshot with a redacted version.
+    const handleRedactDone = useCallback((redactedFile) => {
+        if (screenshotPreview) URL.revokeObjectURL(screenshotPreview);
+        setScreenshot(redactedFile);
+        setScreenshotPreview(URL.createObjectURL(redactedFile));
+        setIsRedacting(false);
+        // A redacted image still requires explicit consent.
+        setConsent(false);
+    }, [screenshotPreview]);
+
+    const handleRedactCancel = useCallback(() => {
+        setIsRedacting(false);
+    }, []);
 
     // Desktop screen capture via getDisplayMedia. The modal hides itself
     // during the capture so the screenshot does not show the form.
@@ -328,26 +344,49 @@ export const FeedbackModal = (props) => {
                             </div>
                         )}
 
-                        {/* Screenshot: file input (mobile + desktop fallback) */}
+                        {/* Screenshot: file input (mobile) + screen capture (desktop) + redaction */}
                         <div className="flex flex-col gap-2">
                             <span className="text-sm font-medium text-gray-700">
                                 {labels.screenshotLabel}
                             </span>
-                            {screenshotPreview ? (
+                            {isRedacting && screenshotPreview ? (
+                                <ScreenshotRedactor
+                                    imageUrl={screenshotPreview}
+                                    onDone={handleRedactDone}
+                                    onCancel={handleRedactCancel}
+                                    labels={{
+                                        redactLabel: labels.redactLabel,
+                                        redactHelp: labels.redactHelp,
+                                        undoLabel: labels.undoLabel,
+                                        cancelLabel: labels.cancelLabel,
+                                        applyLabel: labels.applyLabel,
+                                    }}
+                                />
+                            ) : screenshotPreview ? (
                                 <div className="flex flex-col gap-2">
                                     <img
                                         src={screenshotPreview}
                                         alt={labels.screenshotLabel}
                                         className="max-h-48 object-contain rounded-lg border border-gray-200"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={removeScreenshot}
-                                        className="self-start text-sm text-red-600 hover:underline flex items-center gap-1"
-                                    >
-                                        <FaXmark />
-                                        {labels.screenshotRemove}
-                                    </button>
+                                    <div className="flex flex-wrap gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsRedacting(true)}
+                                            className="text-sm text-gray-600 hover:underline flex items-center gap-1"
+                                        >
+                                            <FaImage />
+                                            {labels.redactLabel}
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={removeScreenshot}
+                                            className="text-sm text-red-600 hover:underline flex items-center gap-1"
+                                        >
+                                            <FaXmark />
+                                            {labels.screenshotRemove}
+                                        </button>
+                                    </div>
                                 </div>
                             ) : (
                                 <div className="flex flex-col gap-2">
