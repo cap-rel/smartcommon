@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { FaPaperPlane, FaImage, FaXmark } from "react-icons/fa6";
+import { FaPaperPlane, FaImage, FaXmark, FaDesktop } from "react-icons/fa6";
 import { v4 as uuidv4 } from "uuid";
 
 import { Modal, Button, Input, Textarea, Select } from "lib/components";
@@ -8,6 +8,7 @@ import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
 import { buildFormData, prepareScreenshot } from "./feedbackPayload";
+import { captureScreen, canCaptureScreen } from "./screenshotCapture";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
 
 const log = createLogger("Feedback");
@@ -48,6 +49,7 @@ export const FeedbackModal = (props) => {
     const [result, setResult] = useState(null); // { ref, tracking_url }
     const [errorMessage, setErrorMessage] = useState("");
     const [validationErrors, setValidationErrors] = useState({});
+    const [isCapturing, setIsCapturing] = useState(false);
 
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
@@ -116,6 +118,26 @@ export const FeedbackModal = (props) => {
         setConsent(false);
         if (fileInputRef.current) fileInputRef.current.value = "";
     }, [screenshotPreview]);
+
+    // Desktop screen capture via getDisplayMedia. The modal hides itself
+    // during the capture so the screenshot does not show the form.
+    const handleCaptureScreen = useCallback(async () => {
+        setIsCapturing(true);
+        try {
+            const file = await captureScreen({
+                hideModal: () => setIsCapturing(true),
+                showModal: () => setIsCapturing(false),
+            });
+            if (file) {
+                setScreenshot(file);
+                setScreenshotPreview(URL.createObjectURL(file));
+            }
+        } catch (err) {
+            log.error("screen capture failed", err?.message);
+        } finally {
+            setIsCapturing(false);
+        }
+    }, []);
 
     const validate = useCallback(() => {
         const errors = {};
@@ -224,7 +246,7 @@ export const FeedbackModal = (props) => {
 
     return (
         <Modal
-            isOpen={isOpen}
+            isOpen={isOpen && !isCapturing}
             onClose={handleClose}
             title={labels.title}
             size="md"
@@ -328,14 +350,27 @@ export const FeedbackModal = (props) => {
                                     </button>
                                 </div>
                             ) : (
-                                <button
-                                    type="button"
-                                    onClick={() => fileInputRef.current?.click()}
-                                    className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
-                                >
-                                    <FaImage />
-                                    {labels.screenshotChoose}
-                                </button>
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        type="button"
+                                        onClick={() => fileInputRef.current?.click()}
+                                        className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50"
+                                    >
+                                        <FaImage />
+                                        {labels.screenshotChoose}
+                                    </button>
+                                    {canCaptureScreen() && (
+                                        <button
+                                            type="button"
+                                            onClick={handleCaptureScreen}
+                                            disabled={isCapturing}
+                                            className="flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 disabled:opacity-50"
+                                        >
+                                            <FaDesktop />
+                                            {labels.screenshotCapture}
+                                        </button>
+                                    )}
+                                </div>
                             )}
                             <input
                                 ref={fileInputRef}
