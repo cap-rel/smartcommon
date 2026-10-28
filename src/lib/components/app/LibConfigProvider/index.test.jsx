@@ -1,8 +1,9 @@
-import { describe, it, expect } from "vitest";
-import { render, renderHook, screen } from "@testing-library/react";
+import { describe, it, expect, afterEach } from "vitest";
+import { render, renderHook, screen, waitFor } from "@testing-library/react";
 
 import { LibConfigProvider } from "./index";
 import { useLibConfig } from "lib/hooks";
+import { createLogger, getRecentLogs, setLogBufferEnabled } from "lib/utils/functions/consoleLogs";
 
 describe("LibConfigProvider", () => {
     it("renders its children", () => {
@@ -66,5 +67,68 @@ describe("LibConfigProvider", () => {
         );
 
         expect(screen.getByText("mode: b")).toBeDefined();
+    });
+});
+
+describe("LibConfigProvider - feedback log buffer", () => {
+    afterEach(() => {
+        // Leave the buffer enabled and empty for the other test files.
+        setLogBufferEnabled(false);
+        setLogBufferEnabled(true);
+    });
+
+    it("keeps the log buffer enabled by default", async () => {
+        setLogBufferEnabled(false);
+        setLogBufferEnabled(true);
+
+        render(
+            <LibConfigProvider value={{}}>
+                <p>child</p>
+            </LibConfigProvider>
+        );
+
+        const log = createLogger("cfg-default");
+        log.error("buffered by default");
+        await waitFor(() => expect(getRecentLogs().some((l) => l.includes("buffered by default"))).toBe(true));
+    });
+
+    it("disables and drains the log buffer when feedback.logBuffer is false", async () => {
+        const log = createLogger("cfg-off");
+        log.error("before disabling");
+        expect(getRecentLogs().some((l) => l.includes("before disabling"))).toBe(true);
+
+        render(
+            <LibConfigProvider value={{ feedback: { logBuffer: false } }}>
+                <p>child</p>
+            </LibConfigProvider>
+        );
+
+        await waitFor(() => expect(getRecentLogs().length).toBe(0));
+
+        log.error("not buffered while disabled");
+        expect(getRecentLogs().some((l) => l.includes("not buffered while disabled"))).toBe(false);
+    });
+
+    it("re-enables the log buffer when the config flips back", async () => {
+        const { rerender } = render(
+            <LibConfigProvider value={{ feedback: { logBuffer: false } }}>
+                <p>child</p>
+            </LibConfigProvider>
+        );
+        await waitFor(() => {
+            const log = createLogger("cfg-flip");
+            log.error("while off");
+            expect(getRecentLogs().some((l) => l.includes("while off"))).toBe(false);
+        });
+
+        rerender(
+            <LibConfigProvider value={{ feedback: { logBuffer: true } }}>
+                <p>child</p>
+            </LibConfigProvider>
+        );
+
+        const log = createLogger("cfg-flip");
+        log.error("after flip");
+        await waitFor(() => expect(getRecentLogs().some((l) => l.includes("after flip"))).toBe(true));
     });
 });

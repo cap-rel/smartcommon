@@ -1,10 +1,20 @@
+import { useEffect } from "react";
+
 import { I18nextProvider } from "lib/components";
+import { setLogBufferEnabled } from "lib/utils/functions/consoleLogs";
 
 import { LibConfigContext } from "./context";
 
 export const LibConfigProvider = (props) => {
   const { children, value } = props;
-  
+
+  // The feedback log ring buffer is opt-out: libConfig.feedback.logBuffer
+  // set to false disables it (and drains it). Default: enabled.
+  const logBuffer = value?.feedback?.logBuffer;
+  useEffect(() => {
+    setLogBufferEnabled(logBuffer !== false);
+  }, [logBuffer]);
+
   return (
     <LibConfigContext.Provider value={value}>
       {children}
@@ -74,6 +84,11 @@ const config = {
   // Pour le hook compression (useCompression ? useFile)
   compression: {
 
+  },
+  // Tampon circulaire des logs pour le signalement client (FeedbackButton).
+  // logBuffer: false le desactive (opt-out, active par defaut).
+  feedback: {
+    logBuffer: true
   },
 
 };
