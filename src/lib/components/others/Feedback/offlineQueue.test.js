@@ -25,10 +25,10 @@ vi.mock("dexie", () => {
 });
 
 // Mock feedbackPayload so sendQueuedReport doesn't need the real one.
-// RETRYABLE_RELAY_STATUS must be mirrored: the flush reads it from here.
+// FLUSH_KEEP_STATUS must be mirrored: the flush reads it from here.
 vi.mock("./feedbackPayload", () => ({
     buildFormData: vi.fn(() => new FormData()),
-    RETRYABLE_RELAY_STATUS: [429, 502, 503],
+    FLUSH_KEEP_STATUS: [401, 408, 429, 502, 503],
 }));
 
 import { enqueueReport, flushQueue, setQueueApiProvider, countPending } from "./offlineQueue";
@@ -238,6 +238,41 @@ describe("offline feedback queue", () => {
         // Rate limited: the report stays queued for the next flush.
         expect(mockStore.delete).not.toHaveBeenCalled();
     });
+
+    it.each([401, 408])(
+        "flush keeps the report on a %i: the refusal says nothing about the content",
+        async (status) => {
+            // Expired session at network return (401) or request timeout
+            // (408): the report would pass after a reconnection, dropping
+            // the row would lose it.
+            const row = {
+                idempotency_key: `key-${status}`,
+                payload: {
+                    type: "bug",
+                    title: null,
+                    body: "Test",
+                    consent: false,
+                    appVersion: null,
+                    relayPath: "feedback/report",
+                    screenshot: null,
+                },
+                created_at: Date.now(),
+            };
+            mockStore.toArray.mockResolvedValue([row]);
+
+            const postMock = vi.fn().mockRejectedValue(
+                Object.assign(new Error(`Request failed with status code ${status}`), {
+                    name: "HTTPError",
+                    response: { status },
+                })
+            );
+            setQueueApiProvider({ post: postMock });
+
+            await flushQueue();
+
+            expect(mockStore.delete).not.toHaveBeenCalled();
+        }
+    );
 
     it("countPending returns the number of queued reports", async () => {
         mockStore.count.mockResolvedValue(3);

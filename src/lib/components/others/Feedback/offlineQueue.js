@@ -110,7 +110,7 @@ export const flushQueue = async () => {
         const rows = await db[STORE].toArray();
         // Imported lazily like buildFormData below: keeps the image pipeline
         // out of the static graph of this module.
-        const { RETRYABLE_RELAY_STATUS } = await import("./feedbackPayload");
+        const { FLUSH_KEEP_STATUS } = await import("./feedbackPayload");
 
         for (const row of rows) {
             try {
@@ -128,10 +128,11 @@ export const flushQueue = async () => {
                 // api.post throws on any non-2xx, so a relay refusal arrives
                 // here as an error carrying the response. A definitive
                 // refusal (4xx) drops the row instead of resending it
-                // forever; transient statuses (429/502/503) and network
+                // forever; transient statuses (429/502/503), an expired
+                // session (401) or a request timeout (408), and network
                 // failures keep the row for the next flush.
                 const status = err?.response?.status;
-                if (typeof status === "number" && !RETRYABLE_RELAY_STATUS.includes(status)) {
+                if (typeof status === "number" && !FLUSH_KEEP_STATUS.includes(status)) {
                     log.error("queued report rejected, dropping", row.idempotency_key, status);
                     await db[STORE].delete(row.idempotency_key);
                 } else {

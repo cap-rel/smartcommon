@@ -106,6 +106,15 @@ export const buildFormData = ({ type, title, body, screenshot, consent, appVersi
 // of THIS content: queueing it would resend it forever.
 export const RETRYABLE_RELAY_STATUS = [429, 502, 503];
 
+// Statuses that keep an ALREADY QUEUED report in the offline queue when
+// a flush fails. 429/502/503 are transient, but so are 401 and 408: an
+// expired session at network return (or the app reopened on the login
+// screen) says nothing about the content - the report would pass after
+// a reconnection, so dropping the row would lose it. Any other HTTP
+// status is a definitive refusal of THIS content: the row is dropped
+// instead of being resent forever.
+export const FLUSH_KEEP_STATUS = [401, 408, 429, 502, 503];
+
 // List of keys that must NEVER appear in the payload. The relay fills
 // the identity fields from the smartauth token server-side, and channel
 // from its own configuration: the browser sends neither.
