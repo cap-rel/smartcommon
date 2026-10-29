@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/LibConfigProvider" />
+
+# LibConfigProvider
+
+Holds the library configuration and exposes it to every component and hook
+through `useLibConfig()`. `<Provider>` mounts it with its `config` prop: use it
+directly only to give part of a tree a different configuration (a test, a
+nested widget).
+
+```jsx
+import { LibConfigProvider, useLibConfig } from "@cap-rel/smartcommon";
+
+<LibConfigProvider value={{ components: { variants: { Button: { danger: { buttonProps: { className: "bg-warning" } } } } } }}>
+  <Toolbar />
+</LibConfigProvider>
+
+const { api } = useLibConfig();
+```
+
+It also applies `feedback.logBuffer`: `false` turns off the log ring buffer
+attached to FeedbackButton reports. The keys read by the library are listed on
+the Provider page.
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `value` | object | The configuration, returned as is by `useLibConfig()`. |
+| `children` | node | The subtree. |
+
+<UsedIn title="Components/App/LibConfigProvider" />

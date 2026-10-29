@@ -1,0 +1,36 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/I18nextProvider" />
+
+# I18nextProvider
+
+Provides the app's i18next instance to its tree and switches it to `language`
+whenever that prop changes. Not mounted by `<Provider>`: the instance belongs to
+the app (namespaces, backend, default language). Mount it near the top, under
+`<Provider>`.
+
+```jsx
+import { Provider, I18nextProvider } from "@cap-rel/smartcommon";
+import { i18n } from "./i18n";
+
+<Provider config={config}>
+  <I18nextProvider i18n={i18n} language={user.language}>
+    <App />
+  </I18nextProvider>
+</Provider>
+```
+
+The texts of the smartcommon components do not go through i18next: they are
+passed with their `labels` prop (see the locale bundles on the home page).
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `i18n` | i18next instance | The configured instance. |
+| `language` | string | Language to switch to (`"fr"`, `"en"`...). |
+| `children` | node | The subtree. |
+
+<UsedIn title="Components/App/I18nextProvider" />

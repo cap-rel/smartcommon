@@ -1,0 +1,33 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/NavigationProvider" />
+
+# NavigationProvider
+
+Shares the navigation helpers through `useNavigation()`: the current
+`location`, the `searchParams`, and a small builder to move between pages.
+Mounted by `<Provider>`, inside the router, since it relies on `useLocation()`
+and `useNavigate()`.
+
+```jsx
+import { useNavigation } from "@cap-rel/smartcommon";
+
+const nav = useNavigation();
+
+nav.to("/interventions/42");                         // push
+nav.replace().to("/login");                          // replace the entry
+nav.state({ prevPathname: "/list" }).to("/detail");  // with history state
+nav.to(-1);                                          // back
+```
+
+`config.navigation.debug` logs each location change.
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `children` | node | The subtree. |
+
+<UsedIn title="Components/App/NavigationProvider" />

@@ -1,0 +1,35 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/ApiProvider" />
+
+# ApiProvider
+
+Creates the API client of the app and shares it through `useApi()`: a `ky`
+instance on `config.api.prefixUrl`, with the smartAuth tokens, their refresh,
+the device id, the offline circuit breaker and the error handling (toast,
+expired session). Mounted by `<Provider>`; it needs `LibConfigProvider`,
+`ReduxProvider` and `GlobalStatesProvider` above it, so it is not meant to be
+mounted alone.
+
+```jsx
+import { useApi } from "@cap-rel/smartcommon";
+
+const api = useApi();
+const interventions = await api.get("interventions");   // parsed JSON
+await api.post("interventions", { json: draft });
+await api.login({ login, password, rememberMe });
+```
+
+URLs have no leading slash (`ky` prefix), bodies go through the `json` option,
+and every non-2xx answer throws an error carrying `response`, `apiMessage` and
+`apiCode`.
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `children` | node | The subtree that calls `useApi()`. |
+
+<UsedIn title="Components/App/ApiProvider" />

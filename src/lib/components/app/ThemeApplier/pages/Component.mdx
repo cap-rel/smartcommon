@@ -1,0 +1,26 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/ThemeApplier" />
+
+# ThemeApplier
+
+Puts the `dark` class on `<html>` (or on `target`) according to the theme mode,
+which switches every smartcommon color token to its dark value. With `"auto"`
+it follows the system setting and reacts when it changes. Mounted by
+`<Provider>` from `config.theme`; it renders nothing.
+
+```js
+// config passed to <Provider>
+const config = { theme: "auto" };   // "light" (default) | "dark" | "auto"
+```
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `mode` | `"light"`, `"dark"` or `"auto"` | Default `"light"`. |
+| `target` | element | Element receiving the class, default `<html>`. |
+
+<UsedIn title="Components/App/ThemeApplier" />

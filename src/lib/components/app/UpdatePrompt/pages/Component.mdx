@@ -1,0 +1,59 @@
+import { Meta, ArgTypes } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+import { UpdatePrompt } from "../";
+
+<Meta title="Components/App/UpdatePrompt" />
+
+# UpdatePrompt
+
+Tells the user that a new version of the PWA is installed and reloads it on
+demand. It appears only when a new service worker is waiting, which cannot be
+simulated here: no live demo on this page. Mount it through
+`<Provider pwaUpdate={{ ... }}>` rather than by hand.
+
+```jsx
+<Provider
+  config={config}
+  pwaUpdate={{
+    variant: "toast",            // "toast" | "banner" | "modal"
+    position: "bottom",          // banner only
+    versionUrl: "version.json",  // null: do not read the new version number
+    labels: locales.fr.UpdatePrompt,
+  }}
+>
+```
+
+An update is not optional: every variant shows a single "Refresh" button and
+stays on screen until the update is applied. Use `modal` to block the app
+until then.
+
+## Version number and release notes
+
+The service worker does not know the version. When an update is found, the
+prompt reads `versionUrl` (default `version.json`, produced by the app at each
+build) and shows `messageWithVersion(version)` and the notes:
+
+```json
+{ "version": "1.4.0", "notes": "Faster synchronisation." }
+```
+
+A missing or invalid file is logged, and the prompt keeps its generic message.
+For a custom UI, call `usePWAUpdate()` directly (`updateAvailable`,
+`newVersion`, `releaseNotes`, `applyUpdate`...).
+
+## Service worker setup
+
+```js
+VitePWA({
+  registerType: "autoUpdate",
+  workbox: { skipWaiting: true, clientsClaim: true },
+})
+```
+
+## Props
+
+<ArgTypes of={UpdatePrompt} />
+
+<UsedIn title="Components/App/UpdatePrompt" />

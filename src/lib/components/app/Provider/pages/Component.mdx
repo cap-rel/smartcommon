@@ -1,0 +1,78 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/Provider" />
+
+# Provider
+
+The root of every SmartMaker PWA: mount it once around `<App />`. It assembles,
+in a fixed order, the contexts every other smartcommon component needs; no
+component works without it. It renders nothing of its own, hence no live demo.
+
+```jsx
+import { createRoot } from "react-dom/client";
+import { Provider } from "@cap-rel/smartcommon";
+import "@cap-rel/smartcommon/dist/smartcommon-style.css";
+
+createRoot(document.getElementById("root")).render(
+  <Provider
+    config={{ api: { prefixUrl: "/api.php/" }, theme: "auto" }}
+    pwaUpdate={{ variant: "toast" }}
+    onError={(error) => console.error("[App] uncaught", error)}
+    debug={import.meta.env.DEV}
+  >
+    <App />
+  </Provider>
+);
+```
+
+## What it mounts
+
+From the outside in:
+
+```
+<ErrorBoundary>                 onError, errorFallback, ErrorFallbackComponent
+  <LibConfigProvider>           config, read with useLibConfig()
+    <ThemeApplier />            config.theme
+    <ReduxProvider>             store, plus config.globalState.reducers
+      <GlobalStatesProvider>    gst: local / session / values
+        <ApiProvider>           useApi(): ky client, auth, error handling
+          <Router>              config.router, config.basename
+            <NavigationProvider>
+              <AnimatePresence> page transitions
+                {children}
+          <Toaster />           next to the router: survives page changes
+          <UpdatePrompt />      only when pwaUpdate is set
+          <DebugConsole />, <DebugWarnings />   only when debug
+```
+
+`ConfirmProvider`, `I18nextProvider` and `ViewportProvider` are not mounted:
+wrap them yourself under `<Provider>` when the app needs them.
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `children` | node | The application. |
+| `config` | object | Library configuration, see below. |
+| `onError` | `(error, errorInfo) => void` | Called when the root ErrorBoundary catches an error. |
+| `errorFallback` | node | Element shown instead of the app after an uncaught error. |
+| `ErrorFallbackComponent` | component | `({ error, resetError })`, takes priority over `errorFallback`. |
+| `pwaUpdate` | object | When set, mounts `<UpdatePrompt {...pwaUpdate} />`. |
+| `debug` | bool | Mounts the on-page debug console and warnings. Keep it off in production. |
+
+## The `config` keys read by the library
+
+| Key | Read by | Effect |
+|---|---|---|
+| `api.prefixUrl`, `api.timeout` | ApiProvider (`useApi`) | Base URL and timeout of the API client. |
+| `api.onApiError`, `api.onSessionExpired`, `api.onLoginPersist` | ApiProvider | Error toast, expired session, user enrichment at login. |
+| `theme` | ThemeApplier | `"light"` (default), `"dark"` or `"auto"`. |
+| `router`, `basename` | Router | `"browser"` (default) or `"hash"`; base path of the browser router. |
+| `components.theme`, `components.themes`, `components.variants` | every component | Theme and variants per component. |
+| `globalState.reducers` | ReduxProvider | Reducers merged with the library ones. |
+| `feedback.logBuffer` | logger | `false` turns off the log excerpt of FeedbackButton. |
+| `debug`, `api.debug`, `navigation.debug`, `globalStates.debug` | hooks | Verbose logs, globally or per area. |
+
+<UsedIn title="Components/App/Provider" />

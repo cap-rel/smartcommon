@@ -1,0 +1,29 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/ReduxProvider" />
+
+# ReduxProvider
+
+Creates the Redux Toolkit store of the app: the library reducers (global
+states) merged with the ones of `config.globalState.reducers`, then provides it
+to `react-redux`. Mounted by `<Provider>`, under `LibConfigProvider`, which it
+reads.
+
+```js
+// config passed to <Provider>
+const config = {
+  globalState: {
+    reducers: { cart: cartSlice.reducer },
+  },
+};
+```
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `children` | node | The subtree. |
+
+<UsedIn title="Components/App/ReduxProvider" />

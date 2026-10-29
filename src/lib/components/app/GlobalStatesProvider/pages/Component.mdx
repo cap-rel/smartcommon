@@ -1,0 +1,32 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/GlobalStatesProvider" />
+
+# GlobalStatesProvider
+
+Shares the global states of the app through `useGlobalStates()` (often named
+`gst`): `local` (persisted on the device), `session` (until the tab closes) and
+plain values, with `get`, `set` and `unset` by path (`gst.local` and
+`gst.session` scope them). The API client keeps the
+user and the tokens there. Mounted by `<Provider>`, inside `ReduxProvider`.
+
+```jsx
+import { useGlobalStates } from "@cap-rel/smartcommon";
+
+const gst = useGlobalStates();
+const catalogVersion = gst.get("user.config.catalog_version");
+gst.session.set("lastSearch", query);   // until the tab closes
+gst.local.set("lastSite", siteId);      // persisted on the device
+```
+
+`config.globalStates.debug` logs every change.
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `children` | node | The subtree. |
+
+<UsedIn title="Components/App/GlobalStatesProvider" />

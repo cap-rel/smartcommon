@@ -1,0 +1,30 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { UsedIn } from "../../../../../storybook";
+
+<Meta title="Components/App/Router" />
+
+# Router
+
+The router of the app: a `BrowserRouter`, or a `HashRouter` for a PWA served
+where the server cannot send every path to `index.html`. Mounted by
+`<Provider>` from `config.router` and `config.basename`: set those keys rather
+than mounting it yourself.
+
+```js
+// config passed to <Provider>
+const config = {
+  router: "browser",                  // or "hash"
+  basename: "/custom/monmodule/pwa",  // browser router only
+};
+```
+
+## Props
+
+| Prop | Type | Role |
+|---|---|---|
+| `type` | `"browser"` or `"hash"` | Router kind, default `"browser"`. |
+| `basename` | string | Base path, browser router only. |
+| `children` | node | The routes. |
+
+<UsedIn title="Components/App/Router" />
