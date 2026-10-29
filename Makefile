@@ -1,7 +1,7 @@
 # smartcommon - convenience wrappers around npm scripts.
 # All real logic lives in package.json. This file is just a shortcut.
 
-.PHONY: help install dev build test test-build test-coverage test-stories lint lint-fix storybook storybook-build storybook-build-debug clean check
+.PHONY: help install dev build test test-build test-coverage test-stories lint lint-fix storybook storybook-build storybook-build-debug usage clean check
 
 help: ## Show this help.
 	@echo "smartcommon - available targets:"
@@ -44,6 +44,9 @@ storybook-build: ## Build Storybook static site.
 
 storybook-build-debug: ## Build Storybook static site unminified (readable error stacks).
 	npm run build-storybook:debug
+
+usage: ## Record in which consumer projects each component is used (Storybook pages).
+	npm run usage
 
 clean: ## Remove build artefacts.
 	rm -rf dist storybook-static

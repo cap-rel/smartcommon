@@ -194,3 +194,42 @@
     font-size: 15px;
     font-weight: 600;
 }
+
+/* "Utilisé dans" section of the component pages (utils/components/PropsPage) */
+.sc-usage {
+    margin: 32px 0 40px;
+}
+
+.sc-usage-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 8px 0 12px !important;
+    padding: 0 !important;
+    list-style: none !important;
+}
+
+.sc-usage-list li {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0 !important;
+    padding: 6px 12px;
+    border: 1px solid rgba(38, 85, 115, 0.15);
+    border-radius: 999px;
+    background: #fff;
+    font-size: 13px;
+    color: rgb(46, 52, 56);
+}
+
+.sc-usage-list li span {
+    color: rgb(92, 104, 112);
+    font-size: 12px;
+}
+
+.sc-usage-empty,
+.sc-usage-meta {
+    margin: 4px 0 !important;
+    font-size: 13px !important;
+    color: rgb(92, 104, 112) !important;
+}

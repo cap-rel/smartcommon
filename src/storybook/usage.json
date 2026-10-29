@@ -1,0 +1,801 @@
+{
+  "scannedAt": "2026-10-29",
+  "projects": [
+    "analyseDesrisques",
+    "capcompta",
+    "capfullpos",
+    "capTodo",
+    "clicknCollect",
+    "dolipocket",
+    "dsd",
+    "meganotes",
+    "offlinepropale",
+    "portailexpert",
+    "scanpdf",
+    "smartboot",
+    "smartInterventions",
+    "smartpos0"
+  ],
+  "components": {
+    "AboutModal": {
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "Address": {
+      "smartInterventions": 1
+    },
+    "AddressInput": {
+      "smartInterventions": 1
+    },
+    "Array": {
+      "smartInterventions": 1
+    },
+    "AudiosUploader": {
+      "smartInterventions": 1
+    },
+    "BarcodeScanner": {
+      "smartInterventions": 4,
+      "capfullpos": 1
+    },
+    "Block": {
+      "dsd": 61,
+      "dolipocket": 26,
+      "smartInterventions": 18,
+      "portailexpert": 10,
+      "smartpos0": 9,
+      "clicknCollect": 6,
+      "offlinepropale": 4,
+      "capfullpos": 3,
+      "smartboot": 1
+    },
+    "Boolean": {
+      "smartInterventions": 8,
+      "dolipocket": 2,
+      "offlinepropale": 2,
+      "smartpos0": 2,
+      "clicknCollect": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "scanpdf": 1,
+      "smartboot": 1
+    },
+    "Button": {
+      "dsd": 175,
+      "smartInterventions": 59,
+      "dolipocket": 33,
+      "offlinepropale": 18,
+      "portailexpert": 10,
+      "clicknCollect": 9,
+      "smartpos0": 9,
+      "meganotes": 6,
+      "scanpdf": 3,
+      "analyseDesrisques": 2,
+      "smartboot": 2,
+      "capcompta": 1,
+      "capfullpos": 1,
+      "capTodo": 1
+    },
+    "CACHE_STRATEGIES": {
+      "dsd": 2,
+      "smartInterventions": 1
+    },
+    "Calculator": {
+      "offlinepropale": 2
+    },
+    "Calendar": {
+      "smartboot": 1
+    },
+    "Checker": {
+      "smartInterventions": 4,
+      "offlinepropale": 2,
+      "clicknCollect": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "scanpdf": 1,
+      "smartpos0": 1
+    },
+    "Color": {
+      "smartInterventions": 1
+    },
+    "ColorPicker": {
+      "smartInterventions": 1
+    },
+    "ConfirmProvider": {
+      "capcompta": 1,
+      "capfullpos": 1,
+      "capTodo": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "smartpos0": 1
+    },
+    "convertImageForUpload": {
+      "dsd": 2
+    },
+    "Coordinates": {
+      "smartInterventions": 1
+    },
+    "createDexieProductCategoryAdapters": {
+      "offlinepropale": 2,
+      "smartInterventions": 2
+    },
+    "createLogger": {
+      "dsd": 127,
+      "scanpdf": 49,
+      "portailexpert": 14,
+      "analyseDesrisques": 13,
+      "smartboot": 3,
+      "smartInterventions": 3
+    },
+    "DataTable": {
+      "smartInterventions": 9
+    },
+    "Datetime": {
+      "smartInterventions": 2,
+      "smartboot": 1
+    },
+    "Db": {
+      "capcompta": 1,
+      "capfullpos": 1,
+      "capTodo": 1,
+      "clicknCollect": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "offlinepropale": 1,
+      "scanpdf": 1,
+      "smartboot": 1,
+      "smartInterventions": 1,
+      "smartpos0": 1
+    },
+    "DebugConsole": {
+      "capTodo": 1,
+      "scanpdf": 1
+    },
+    "DEFAULT_ACCEPTED_IMAGE_MIMES": {
+      "dsd": 1
+    },
+    "DEFAULT_MAX_UPLOAD_BYTES": {
+      "dsd": 1
+    },
+    "DeviceIdentificationComponent": {
+      "smartInterventions": 3,
+      "capcompta": 1,
+      "capTodo": 1,
+      "smartboot": 1
+    },
+    "downloadBundle": {
+      "offlinepropale": 4
+    },
+    "downscaleImage": {
+      "dsd": 1
+    },
+    "DualShell": {
+      "dsd": 84
+    },
+    "Duration": {
+      "smartInterventions": 3
+    },
+    "Editor": {
+      "dolipocket": 1,
+      "smartInterventions": 1
+    },
+    "Email": {
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "FAB": {
+      "smartInterventions": 2
+    },
+    "FilesUploader": {
+      "smartInterventions": 1
+    },
+    "filter": {
+      "smartInterventions": 1
+    },
+    "find": {
+      "smartInterventions": 2
+    },
+    "forEach": {
+      "smartInterventions": 2
+    },
+    "Form": {
+      "smartInterventions": 6,
+      "capfullpos": 1,
+      "dolipocket": 1
+    },
+    "FormContext": {
+      "smartInterventions": 1
+    },
+    "formDefaultValues": {
+      "smartInterventions": 1
+    },
+    "fromPairs": {
+      "smartInterventions": 3
+    },
+    "getLocal": {
+      "offlinepropale": 4,
+      "dsd": 3,
+      "scanpdf": 3,
+      "smartpos0": 3,
+      "analyseDesrisques": 2,
+      "capfullpos": 2,
+      "capTodo": 2,
+      "clicknCollect": 2,
+      "meganotes": 2,
+      "portailexpert": 2,
+      "capcompta": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "getLocalJSON": {
+      "smartInterventions": 1
+    },
+    "getSessionJSON": {
+      "smartInterventions": 1
+    },
+    "Gps": {
+      "smartInterventions": 1
+    },
+    "groupBy": {
+      "smartInterventions": 1
+    },
+    "Head": {
+      "smartInterventions": 1
+    },
+    "I18nextProvider": {
+      "capTodo": 1
+    },
+    "includes": {
+      "smartInterventions": 4
+    },
+    "Input": {
+      "dsd": 40,
+      "dolipocket": 32,
+      "smartInterventions": 18,
+      "smartpos0": 7,
+      "offlinepropale": 6,
+      "analyseDesrisques": 4,
+      "clicknCollect": 4,
+      "meganotes": 3,
+      "capTodo": 2,
+      "scanpdf": 2,
+      "smartboot": 2,
+      "capfullpos": 1
+    },
+    "InstallPrompt": {
+      "analyseDesrisques": 1,
+      "dsd": 1,
+      "smartboot": 1
+    },
+    "isAppKnownInstalled": {
+      "dsd": 1
+    },
+    "isArray": {
+      "smartInterventions": 11
+    },
+    "isDate": {
+      "smartInterventions": 8
+    },
+    "isEmpty": {
+      "smartInterventions": 42,
+      "dsd": 4,
+      "offlinepropale": 4,
+      "scanpdf": 4,
+      "clicknCollect": 2,
+      "dolipocket": 2,
+      "meganotes": 2,
+      "smartpos0": 2,
+      "capfullpos": 1
+    },
+    "isEqual": {
+      "smartInterventions": 3
+    },
+    "isLast": {
+      "smartInterventions": 3
+    },
+    "isNil": {
+      "smartInterventions": 15
+    },
+    "isNull": {
+      "smartInterventions": 1
+    },
+    "isNumber": {
+      "smartInterventions": 2
+    },
+    "isObject": {
+      "smartInterventions": 3
+    },
+    "ISOFormat": {
+      "smartInterventions": 3
+    },
+    "isString": {
+      "smartInterventions": 6
+    },
+    "isUndefined": {
+      "smartInterventions": 6,
+      "offlinepropale": 2,
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "capfullpos": 1,
+      "capTodo": 1,
+      "clicknCollect": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "portailexpert": 1,
+      "scanpdf": 1,
+      "smartboot": 1,
+      "smartpos0": 1
+    },
+    "isUploadSizeRefusal": {
+      "dsd": 2
+    },
+    "join": {
+      "smartInterventions": 1
+    },
+    "KeyboardStickyAction": {
+      "offlinepropale": 2
+    },
+    "locales": {
+      "capfullpos": 2,
+      "capTodo": 2,
+      "scanpdf": 2,
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "LoginComponent": {
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "capTodo": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "map": {
+      "smartInterventions": 10
+    },
+    "Mapping": {
+      "dolipocket": 24,
+      "capTodo": 4,
+      "smartInterventions": 4,
+      "smartboot": 1
+    },
+    "Modal": {
+      "dsd": 68,
+      "smartInterventions": 4,
+      "capTodo": 1
+    },
+    "Navbar": {
+      "smartInterventions": 16,
+      "analyseDesrisques": 1,
+      "smartpos0": 1
+    },
+    "Navigate": {
+      "smartInterventions": 1
+    },
+    "NotificationToggle": {
+      "smartInterventions": 3
+    },
+    "Number": {
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "NumericPad": {
+      "capfullpos": 7
+    },
+    "openInstallPrompt": {
+      "dsd": 1
+    },
+    "Outlet": {
+      "smartInterventions": 4,
+      "smartboot": 1
+    },
+    "Page": {
+      "dsd": 99,
+      "dolipocket": 62,
+      "smartInterventions": 18,
+      "smartpos0": 13,
+      "portailexpert": 10,
+      "clicknCollect": 9,
+      "capTodo": 8,
+      "meganotes": 7,
+      "offlinepropale": 6,
+      "smartboot": 4,
+      "capcompta": 3,
+      "scanpdf": 3,
+      "capfullpos": 2
+    },
+    "Panel": {
+      "capfullpos": 4,
+      "smartpos0": 4,
+      "smartInterventions": 2
+    },
+    "PhoneNumber": {
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "PhotoAnnotator": {
+      "offlinepropale": 2,
+      "smartInterventions": 1
+    },
+    "PhotosUploader": {
+      "smartInterventions": 8,
+      "offlinepropale": 4,
+      "clicknCollect": 1,
+      "smartboot": 1,
+      "smartpos0": 1
+    },
+    "PinPad": {
+      "capfullpos": 2
+    },
+    "PlainCalendar": {
+      "smartInterventions": 4,
+      "dsd": 1
+    },
+    "Popup": {
+      "smartInterventions": 26,
+      "capfullpos": 14,
+      "smartpos0": 10,
+      "analyseDesrisques": 1
+    },
+    "PrintService": {
+      "capfullpos": 1
+    },
+    "ProductCategoryBrowser": {
+      "offlinepropale": 2,
+      "smartInterventions": 2
+    },
+    "Provider": {
+      "offlinepropale": 2,
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "capfullpos": 1,
+      "capTodo": 1,
+      "clicknCollect": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "portailexpert": 1,
+      "scanpdf": 1,
+      "smartboot": 1,
+      "smartInterventions": 1,
+      "smartpos0": 1
+    },
+    "RadioBar": {
+      "clicknCollect": 1
+    },
+    "Range": {
+      "smartInterventions": 1
+    },
+    "Rater": {
+      "smartInterventions": 2
+    },
+    "readErrorBody": {
+      "dsd": 3
+    },
+    "removeLocal": {
+      "offlinepropale": 4,
+      "scanpdf": 3,
+      "capfullpos": 2,
+      "capTodo": 2,
+      "clicknCollect": 2,
+      "dolipocket": 2,
+      "meganotes": 2,
+      "portailexpert": 2,
+      "smartpos0": 2,
+      "analyseDesrisques": 1,
+      "dsd": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "Route": {
+      "analyseDesrisques": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "RouteGuard": {
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "Routes": {
+      "analyseDesrisques": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "RoutingAnimationLayout": {
+      "smartboot": 1
+    },
+    "SearchableSelect": {
+      "offlinepropale": 2
+    },
+    "Select": {
+      "dsd": 37,
+      "dolipocket": 9,
+      "offlinepropale": 6,
+      "smartInterventions": 6,
+      "analyseDesrisques": 2,
+      "clicknCollect": 2,
+      "smartpos0": 2,
+      "capfullpos": 1,
+      "meganotes": 1,
+      "scanpdf": 1,
+      "smartboot": 1
+    },
+    "setLocal": {
+      "dsd": 4,
+      "offlinepropale": 4,
+      "scanpdf": 3,
+      "capfullpos": 2,
+      "capTodo": 2,
+      "clicknCollect": 2,
+      "dolipocket": 2,
+      "meganotes": 2,
+      "portailexpert": 2,
+      "smartpos0": 2,
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    },
+    "setLocalJSON": {
+      "smartInterventions": 1
+    },
+    "setVariable": {
+      "offlinepropale": 2,
+      "analyseDesrisques": 1,
+      "capcompta": 1,
+      "capTodo": 1,
+      "clicknCollect": 1,
+      "dolipocket": 1,
+      "dsd": 1,
+      "meganotes": 1,
+      "portailexpert": 1,
+      "scanpdf": 1,
+      "smartboot": 1,
+      "smartInterventions": 1,
+      "smartpos0": 1
+    },
+    "SignaturePad": {
+      "smartInterventions": 3,
+      "offlinepropale": 2
+    },
+    "some": {
+      "smartInterventions": 3
+    },
+    "sortArrayByNumber": {
+      "smartInterventions": 3
+    },
+    "sortArrayByString": {
+      "smartInterventions": 3
+    },
+    "sortBy": {
+      "smartInterventions": 6
+    },
+    "sortObjectByNumber": {
+      "smartInterventions": 3
+    },
+    "Spinner": {
+      "dsd": 43,
+      "smartInterventions": 24,
+      "offlinepropale": 10,
+      "portailexpert": 8,
+      "clicknCollect": 5,
+      "smartpos0": 1
+    },
+    "split": {
+      "smartInterventions": 1
+    },
+    "Stepper": {
+      "smartInterventions": 1
+    },
+    "String": {
+      "smartInterventions": 2,
+      "smartboot": 1
+    },
+    "Tabbar": {
+      "smartInterventions": 1
+    },
+    "TabbarItem": {
+      "smartInterventions": 1
+    },
+    "Tag": {
+      "smartInterventions": 2
+    },
+    "Tags": {
+      "smartInterventions": 1
+    },
+    "Text": {
+      "smartInterventions": 2
+    },
+    "Textarea": {
+      "dsd": 12,
+      "smartInterventions": 5,
+      "dolipocket": 4,
+      "offlinepropale": 4,
+      "analyseDesrisques": 2,
+      "clicknCollect": 1,
+      "smartboot": 1
+    },
+    "TicketBuilder": {
+      "capfullpos": 1
+    },
+    "Timer": {
+      "clicknCollect": 1,
+      "smartboot": 1,
+      "smartInterventions": 1,
+      "smartpos0": 1
+    },
+    "toast": {
+      "smartInterventions": 26,
+      "smartboot": 3,
+      "analyseDesrisques": 2
+    },
+    "toLower": {
+      "smartInterventions": 2
+    },
+    "toMegabytes": {
+      "dsd": 2
+    },
+    "toMsTimestamp": {
+      "smartInterventions": 1
+    },
+    "toSTimestamp": {
+      "smartInterventions": 1
+    },
+    "toUpper": {
+      "smartInterventions": 3
+    },
+    "UpdatePrompt": {
+      "offlinepropale": 2
+    },
+    "UPLOAD_TIMEOUT": {
+      "dsd": 2
+    },
+    "uploadFailureDetail": {
+      "dsd": 2
+    },
+    "uploadRefusalReason": {
+      "dsd": 1
+    },
+    "upperFirst": {
+      "smartInterventions": 4
+    },
+    "Url": {
+      "smartInterventions": 1
+    },
+    "useApi": {
+      "dsd": 129,
+      "dolipocket": 44,
+      "smartInterventions": 40,
+      "capfullpos": 38,
+      "smartpos0": 31,
+      "capcompta": 20,
+      "offlinepropale": 18,
+      "capTodo": 14,
+      "meganotes": 11,
+      "clicknCollect": 10,
+      "scanpdf": 10,
+      "analyseDesrisques": 5,
+      "smartboot": 2
+    },
+    "useAuthenticatedImage": {
+      "capfullpos": 1
+    },
+    "useBarcodeScanner": {
+      "capfullpos": 1
+    },
+    "useCachedQuery": {
+      "capfullpos": 6,
+      "smartpos0": 4,
+      "dsd": 2,
+      "smartInterventions": 1
+    },
+    "useConfirm": {
+      "dolipocket": 34,
+      "dsd": 34,
+      "capfullpos": 13,
+      "smartpos0": 13,
+      "capTodo": 4,
+      "capcompta": 3
+    },
+    "useDb": {
+      "offlinepropale": 1
+    },
+    "useEffect": {
+      "smartInterventions": 22
+    },
+    "useForm": {
+      "smartpos0": 4,
+      "capfullpos": 2,
+      "smartInterventions": 2,
+      "dolipocket": 1
+    },
+    "useGlobalStates": {
+      "smartInterventions": 36,
+      "smartpos0": 19,
+      "dsd": 13,
+      "capfullpos": 8,
+      "smartboot": 4,
+      "capTodo": 3,
+      "analyseDesrisques": 1,
+      "clicknCollect": 1,
+      "dolipocket": 1,
+      "scanpdf": 1
+    },
+    "useNavigation": {
+      "smartInterventions": 25,
+      "smartboot": 3
+    },
+    "useOnlineStatus": {
+      "smartInterventions": 25,
+      "capfullpos": 12,
+      "smartpos0": 7,
+      "capTodo": 2,
+      "dsd": 2,
+      "offlinepropale": 2,
+      "analyseDesrisques": 1
+    },
+    "usePrintService": {
+      "capfullpos": 1
+    },
+    "usePWAUpdate": {
+      "analyseDesrisques": 1
+    },
+    "useReferenceSync": {
+      "capfullpos": 1
+    },
+    "useStates": {
+      "dsd": 75,
+      "dolipocket": 73,
+      "smartInterventions": 24,
+      "offlinepropale": 20,
+      "smartpos0": 13,
+      "capfullpos": 11,
+      "portailexpert": 11,
+      "meganotes": 7,
+      "capTodo": 5,
+      "clicknCollect": 3,
+      "scanpdf": 2,
+      "analyseDesrisques": 1,
+      "smartboot": 1
+    },
+    "useSyncClient": {
+      "smartpos0": 1
+    },
+    "useUpload": {
+      "dsd": 15,
+      "smartInterventions": 3,
+      "capTodo": 1,
+      "dolipocket": 1
+    },
+    "useUploadQueue": {
+      "smartInterventions": 2,
+      "dsd": 1
+    },
+    "useVariantMerger": {
+      "capfullpos": 53,
+      "smartpos0": 50
+    },
+    "useViewport": {
+      "smartInterventions": 22,
+      "capfullpos": 14,
+      "dsd": 9,
+      "smartboot": 2,
+      "dolipocket": 1
+    },
+    "VideosUploader": {
+      "smartInterventions": 1
+    },
+    "ViewportProvider": {
+      "capfullpos": 1,
+      "dsd": 1,
+      "smartboot": 1,
+      "smartInterventions": 1
+    }
+  }
+}

@@ -23,6 +23,7 @@
     "test:build": "npm run build && vitest run src/lib/tests/builtBundle.test.jsx",
     "test:stories": "npm run build-storybook && node scripts/test-stories.mjs",
     "test:stories:fast": "node scripts/test-stories.mjs",
+    "usage": "node scripts/component-usage.mjs",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
