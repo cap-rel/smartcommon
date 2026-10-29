@@ -51,3 +51,24 @@ describe("Sidebar - links", () => {
         expect(screen.getByRole("link", { name: "Other" }).getAttribute("aria-current")).toBeNull();
     });
 });
+
+describe("Sidebar - link badge", () => {
+    it("pins the count to the link icon", () => {
+        renderSidebar({ links: [{ label: "Inbox", icon: FaHouse, badge: 6 }] });
+        const badge = screen.getByTestId("badge");
+        expect(badge.textContent).toBe("6");
+        expect(badge.parentElement.querySelector("svg")).not.toBeNull();
+    });
+
+    it("shows the badge on a link without icon", () => {
+        renderSidebar({ links: [{ label: "Inbox", badge: "2" }] });
+        expect(screen.getByTestId("badge").textContent).toBe("2");
+    });
+
+    it("hides the badge at 0 and caps a large count", () => {
+        renderSidebar({ links: [{ label: "Read", icon: FaHouse, badge: 0 }, { label: "Busy", icon: FaGear, badge: 500 }] });
+        const badges = screen.getAllByTestId("badge");
+        expect(badges).toHaveLength(1);
+        expect(badges[0].textContent).toBe("99+");
+    });
+});

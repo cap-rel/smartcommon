@@ -3,11 +3,10 @@ import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
 import { Panel, Button, LazyLink } from "lib/components";
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 
 import { propTypes } from "./props";
 
-// TODO badge for link
 // TODO hideButtonOnScroll
 // TODO duration
 // TODO button position with app variables
@@ -46,10 +45,23 @@ export const Sidebar = (props) => {
       }))}>
 
         {(links ?? []).map((link, LI) => {
-          const { to, icon, activeIcon, disabled, label, active: activeManually, onClick } = link;
+          const { to, icon, activeIcon, disabled, label, badge, active: activeManually, onClick } = link;
 
           const active = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
           const currentIcon = active ? (!isNil(activeIcon) ? activeIcon : icon) : icon;
+
+          // Counter badge, pinned to the icon (or to the link when it has
+          // none): hidden for 0 / empty, capped at "99+".
+          const badgeText = formatBadgeCount(badge);
+          const badgeElement = badgeText !== null && (
+            <span { ...mergeProps("badge", props => ({
+              ...props,
+              "data-testid": "badge",
+              className: BADGE_CLASS_NAME
+            }))}>
+              {badgeText}
+            </span>
+          );
 
           return (
             <SidebarLink key={`link${LI}`} to={to} { ...mergeProps("link", props => ({
@@ -68,17 +80,20 @@ export const Sidebar = (props) => {
 
               <div { ...mergeProps("iconAndLabelContainer", props => ({
                 ...props,
-                className: `flex flex-col items-center gap-app-xxs`
+                className: `relative flex flex-col items-center gap-app-xxs`
               }))}>
 
                 {!isNil(icon) && 
                   <div { ...mergeProps("icon", props => ({
                     ...props,
-                    className: `bg-primary text-white text-app-2xl p-app-base rounded-app-md`
+                    className: `relative bg-primary text-white text-app-2xl p-app-base rounded-app-md`
                   }))}>
                     {typeof currentIcon === "function" ? currentIcon() : currentIcon}
+                    {badgeElement}
                   </div>
                 }
+
+                {isNil(icon) && badgeElement}
 
                 {!isNil(label) &&
                   <div { ...mergeProps("label", props => ({
