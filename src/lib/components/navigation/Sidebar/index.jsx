@@ -2,7 +2,8 @@ import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
 import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
-import { Panel, Button } from "lib/components";
+import { Panel, Button, LazyLink } from "lib/components";
+import { applyFunctionIfNotNil } from "lib/utils";
 
 import { propTypes } from "./props";
 
@@ -13,9 +14,13 @@ import { propTypes } from "./props";
 // TODO global variables
 // TODO id automatique dans le useVariantMerger
 
-const Link = () => {
-  return null;
-}
+// A link with `to` navigates through the router (LazyLink); without `to`
+// it is a plain button driven by its onClick.
+const SidebarLink = ({ to, children, ...elementProps }) => (
+  isNil(to)
+    ? <button type="button" { ...elementProps }>{children}</button>
+    : <LazyLink to={to} Link={elementProps}>{children}</LazyLink>
+);
 
 export const Sidebar = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("Sidebar", props);
@@ -41,22 +46,24 @@ export const Sidebar = (props) => {
       }))}>
 
         {(links ?? []).map((link, LI) => {
-          const { badge, icon, activeIcon, disabled, label, active: activeManually, onClick = () => {} } = link;
-        
-          const { to } = link;
-      
+          const { to, icon, activeIcon, disabled, label, active: activeManually, onClick } = link;
+
           const active = !isNil(activeManually) ? activeManually : `${location.pathname}${location.search}` === to;
           const currentIcon = active ? (!isNil(activeIcon) ? activeIcon : icon) : icon;
-  
+
           return (
-            <Link key={`link${LI}`} { ...mergeProps("link", props => ({
+            <SidebarLink key={`link${LI}`} to={to} { ...mergeProps("link", props => ({
               ...props,
-              ...link,
+              "aria-current": active ? "page" : undefined,
+              "aria-disabled": disabled ? "true" : undefined,
               onClick: e => {
-                onClick(e);
-                close();
+                applyFunctionIfNotNil(props.onClick, e);
+                applyFunctionIfNotNil(onClick, e);
+                // close comes from the Panel slot: absent when the Sidebar
+                // is not driven by a Panel state.
+                applyFunctionIfNotNil(close);
               },
-              className: `bg-soft-bg py-app-sm px-app-md ${disabled ? "pointer-events-none" : "active:brightness-soft"}`
+              className: `block w-full bg-soft-bg py-app-sm px-app-md ${disabled ? "pointer-events-none" : "active:brightness-soft cursor-pointer"}`
             }))}>
 
               <div { ...mergeProps("iconAndLabelContainer", props => ({
@@ -69,7 +76,7 @@ export const Sidebar = (props) => {
                     ...props,
                     className: `bg-primary text-white text-app-2xl p-app-base rounded-app-md`
                   }))}>
-                    {currentIcon}
+                    {typeof currentIcon === "function" ? currentIcon() : currentIcon}
                   </div>
                 }
 
@@ -83,7 +90,7 @@ export const Sidebar = (props) => {
                 }
                 
               </div>
-            </Link>
+            </SidebarLink>
           );
         })}
 
