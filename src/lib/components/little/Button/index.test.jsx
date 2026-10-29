@@ -65,3 +65,28 @@ describe("Button - native variants", () => {
         expect(classes).toContain("text-white");
     });
 });
+
+describe("Button - badge", () => {
+    it("renders a count in the badge", () => {
+        render(<Button label="Messages" badge={3} />);
+        expect(screen.getByTestId("badge").textContent).toBe("3");
+    });
+
+    it.each([[0], [null], [""]])("renders no badge for %p", (badge) => {
+        render(<Button label="Messages" badge={badge} />);
+        expect(screen.queryByTestId("badge")).toBeNull();
+    });
+
+    it("caps a large count", () => {
+        render(<Button label="Messages" badge={250} />);
+        expect(screen.getByTestId("badge").textContent).toBe("99+");
+    });
+
+    it("uses readable colors and lets badgeProps restyle the pill", () => {
+        render(<Button label="Messages" badge="new" badgeProps={{ className: "bg-success" }} />);
+        const classes = screen.getByTestId("badge").className.split(/\s+/);
+        expect(classes).toContain("text-white");
+        expect(classes).toContain("bg-success");
+        expect(classes).not.toContain("bg-error");
+    });
+});

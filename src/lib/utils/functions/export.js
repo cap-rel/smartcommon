@@ -7,5 +7,6 @@ export * from "./tailwindMerge";
 export * from "./intl";
 export * from "./consoleLogs";
 export * from "./networkErrors";
+export * from "./badge";
 export * from "./lodashComplement";
 export * from "./zipBundle";

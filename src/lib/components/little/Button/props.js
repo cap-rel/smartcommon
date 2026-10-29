@@ -24,8 +24,9 @@ export const propTypes = {
     children: PropTypes.node,
     /** UI button component for user interaction */
     loading: PropTypes.bool,
-    /** UI button component for user interaction */
-    badge: PropTypes.string,
+    /** Counter badge in the top-right corner: hidden for 0 or an empty
+     * value, "99+" above 99, a short text ("new") shown as given. */
+    badge: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     /** UI button component for user interaction */
     disabled: PropTypes.bool,
     /** UI button component for user interaction */
@@ -48,7 +49,7 @@ export const propTypes = {
     iconProps: PropTypes.object,
     /** UI button component for user interaction */
     labelProps: PropTypes.object,  
-    /** UI button component for user interaction */
+    /** Props of the badge element (className merged over the default pill). */
     badgeProps: PropTypes.object,
 };
 

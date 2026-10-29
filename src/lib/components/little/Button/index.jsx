@@ -2,11 +2,10 @@ import { useContext } from "react";
 import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
+import { formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 import { FormContext, Spinner } from "lib/components";
 
 import { propTypes, defaultProps } from "./props";
-
-// TODO badge
 
 /** UI button component for user interaction */
 export const Button = (props) => {
@@ -34,6 +33,9 @@ export const Button = (props) => {
 
     // Check if button is inside a Form provider (not just if FormContext type exists)
     const isInForm = !isNil(formContext);
+
+    // Counter badge: hidden for 0 / empty, capped at "99+".
+    const badgeText = formatBadgeCount(badge);
 
     const isLink = !isNil(href);
     const isSubmitType = !isLink && type === "submit";
@@ -133,15 +135,14 @@ export const Button = (props) => {
                 </div>
             }
 
-            {!isNil(badge) &&
-                <div { ...mergeProps("badge", props => ({
+            {!isNil(badgeText) &&
+                <span { ...mergeProps("badge", props => ({
                     ...props,
-                    className: `absolute -translate-y-1/2 translate-x-1/2 top-0 right-0 
-                    rounded-app-xl bg-secondary tex-white text-app-xs font-app-semibold 
-                    flex justify-center items-center min-h-6 min-w-6 px-app-xxs`
+                    "data-testid": "badge",
+                    className: BADGE_CLASS_NAME
                 }))}>
-                    {badge}
-                </div>
+                    {badgeText}
+                </span>
             }
 
             {!isNil(label) &&
