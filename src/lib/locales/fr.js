@@ -365,7 +365,7 @@ export const fr = {
         confirmReloadMessage: "Changer la vue va recharger l'application. Continuer ?",
     },
     Print: {
-        unknownJobType: (type) => `Aucun moteur de rendu enregistre pour le type de travail "${type}"`,
+        unknownJobType: (type) => `Aucun moteur de rendu enregistré pour le type de travail "${type}"`,
         noEscposRenderer: (type) => `Aucun moteur de rendu ESC/POS enregistré pour le type de travail "${type}"`,
         unsupportedProtocol: (protocol) => `Protocole "${protocol}" non supporté`,
         networkNotSupported: "L'impression réseau nécessite un proxy d'impression local. Veuillez utiliser USB ou l'impression navigateur.",
