@@ -8,6 +8,12 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.396] - 2026-10-29
+
+Animate a leaving page with its own content in RoutingAnimationLayout, not the incoming one
+Show the default error screen in English, or translated with locales.fr.ErrorBoundary
+Pass the texts of the root error screen to Provider with errorLabels
+
 ## [1.0.395] - 2026-10-29
 
 Show Buttons as outline, ghost, danger, primary or secondary when a module passes that variant
