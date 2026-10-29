@@ -43,14 +43,15 @@ export const Sidebar = (props) => {
   // element is not known in advance (a Page, the document...), so scroll
   // events are observed in the capture phase on the document: scroll does
   // not bubble, capture still sees it, and nothing global is modified.
-  const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const [scrolledAway, setScrolledAway] = useState(false);
   const lastScrollTops = useRef(new WeakMap());
+  const isScrollHidingActive = hideButtonOnScroll && toggleButton && !isOpen;
+  // Derived, not reset in the effect: the button is never hidden while the
+  // option is off or the Sidebar is open, whatever the last scroll said.
+  const isButtonHidden = isScrollHidingActive && scrolledAway;
 
   useEffect(() => {
-    if (!hideButtonOnScroll || !toggleButton || isOpen) {
-      setIsButtonHidden(false);
-      return undefined;
-    }
+    if (!isScrollHidingActive) return undefined;
 
     const handleScroll = (e) => {
       const target = e.target;
@@ -63,12 +64,12 @@ export const Sidebar = (props) => {
       if (Math.abs(delta) < SCROLL_THRESHOLD) return;
 
       lastScrollTops.current.set(key, current);
-      setIsButtonHidden(delta > 0 && current > 0);
+      setScrolledAway(delta > 0 && current > 0);
     };
 
     document.addEventListener("scroll", handleScroll, { capture: true, passive: true });
     return () => document.removeEventListener("scroll", handleScroll, { capture: true });
-  }, [hideButtonOnScroll, toggleButton, isOpen]);
+  }, [isScrollHidingActive]);
 
   const PanelId = !isNil(panelId) ? panelId : `${id}-Panel`;
   const ButtonId = !isNil(panelId) ? panelId : `${id}-Button`;
