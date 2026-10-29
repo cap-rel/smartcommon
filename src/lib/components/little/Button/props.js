@@ -4,7 +4,11 @@ export const propTypes = {
     /** Every component must have an id. It allows to use generated css variables (position, height, ...) and identify in some case (form errors, ...). Ex: "login-button" */
     id: PropTypes.string.isRequired,
     responsive: PropTypes.bool,
-    /** Variant */
+    /** Variant name(s) or inline variant object(s). Native names:
+     * "primary", "secondary", "outline", "ghost", "danger" (colors) and
+     * "outlined", "reverse", "uppercase", "floatingRight", "rounded"
+     * (layout). A module can redefine any of them in
+     * libConfig.components.variants.Button. */
     variant: PropTypes.oneOfType([PropTypes.arrayOf([PropTypes.string, PropTypes.object]), PropTypes.string, PropTypes.object]),
     /** Content og  */
     label: PropTypes.string,

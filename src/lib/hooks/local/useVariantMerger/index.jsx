@@ -126,6 +126,50 @@ export const useVariantMerger = (componentKey, props) => {
                 buttonProps: {
                     className: "p-app-base rounded-full"
                 }
+            },
+            // Intent variants: the names the consumer modules already pass
+            // (variant="outline" | "ghost" | "danger" | "primary" |
+            // "secondary"). A module redefining one of them in
+            // components.variants still wins, mergeObj applies it on top.
+            primary: {
+                buttonProps: {
+                    className: "bg-primary text-white"
+                }
+            },
+            secondary: {
+                buttonProps: {
+                    className: "bg-secondary text-strong-text"
+                },
+                Spinner: {
+                    spinnerProps: {
+                        className: "border-strong-text border-l-strong-text/30"
+                    }
+                }
+            },
+            outline: {
+                buttonProps: {
+                    className: "bg-transparent text-primary border border-primary"
+                },
+                Spinner: {
+                    spinnerProps: {
+                        className: "border-primary border-l-primary/30"
+                    }
+                }
+            },
+            ghost: {
+                buttonProps: {
+                    className: "bg-transparent text-primary not-disabled:hover:bg-medium-bg"
+                },
+                Spinner: {
+                    spinnerProps: {
+                        className: "border-primary border-l-primary/30"
+                    }
+                }
+            },
+            danger: {
+                buttonProps: {
+                    className: "bg-error text-white"
+                }
             }
         }
     };
