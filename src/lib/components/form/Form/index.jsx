@@ -1,6 +1,7 @@
 import { throwTypeError } from 'lib/utils';
 
 import { FormContext } from './context';
+import { propTypes } from './props';
 import { every, some } from 'lodash';
 import { useEffect, useState } from 'react';
 
@@ -50,3 +51,5 @@ export function Form(props) {
     </FormContext.Provider>
   );
 }
+
+Form.propTypes = propTypes;
