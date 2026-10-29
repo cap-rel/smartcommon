@@ -53,6 +53,10 @@ import { Default as Def } from "./stories";
 
 export const Default = { tags: ["!dev"], ...Def };
 
+import { CentralButton as Cb } from "./stories";
+
+export const CentralButton = { tags: ["!dev"], ...Cb };
+
 import { Tabbar as Tab } from "./stories";
 
 export { Tabbar } from "./stories";

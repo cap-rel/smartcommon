@@ -1,13 +1,17 @@
 import { animate, useMotionValue, motion } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { Children, Fragment, isValidElement, useEffect, useRef, useState } from "react";
+import { isNil } from "lodash";
 
 import { useStates, useVariantMerger } from "lib/hooks";
-import { setGlobalVariables, navigatorInfo } from "lib/utils";
+import { setGlobalVariables, navigatorInfo, applyFunctionIfNotNil, formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 
-// TODO centralButton
-// TODO badge for link
+// Tabs passed inside a fragment (<><TabbarItem/>...</>) count one by one,
+// so the central button lands between them and not after the fragment.
+const flattenChildren = (children) => Children.toArray(children).flatMap((child) => (
+  isValidElement(child) && child.type === Fragment ? flattenChildren(child.props.children) : [child]
+));
 // TODO Fix label truncate not working
 
 export const Tabbar = (props) => {
@@ -17,7 +21,8 @@ export const Tabbar = (props) => {
     id,
     children,
     responsive = true,
-    hideOnScroll = true
+    hideOnScroll = true,
+    centralButton
   } = variantProps;
 
   const tabbarRef = useRef();
@@ -120,6 +125,68 @@ export const Tabbar = (props) => {
     animate(y, tabbarPosition, { duration });
   }, [isOpen]);
 
+  // Central action button (raised round button in the middle of the bar on
+  // mobile, a full-width button in the desktop side menu). Its label is the
+  // accessible name: on mobile only the icon shows.
+  const renderCentralButton = () => {
+    const { icon: centralIcon, label: centralLabel, onClick: centralOnClick, badge: centralBadge, disabled: centralDisabled = false } = centralButton;
+    const centralBadgeText = formatBadgeCount(centralBadge);
+
+    return (
+      <div key="tabbar-central-button" { ...mergeProps("centralButtonContainer", props => ({
+        ...props,
+        className: `flex-1 flex justify-center ${responsive ? "lg:flex-0 lg:w-full" : ""}`
+      }))}>
+        <button { ...mergeProps("centralButton", props => ({
+          ...props,
+          type: "button",
+          "aria-label": centralLabel,
+          disabled: centralDisabled,
+          "data-tabbar-central": "true",
+          onClick: e => {
+            applyFunctionIfNotNil(props.onClick, e);
+            applyFunctionIfNotNil(centralOnClick, e);
+          },
+          className: `
+            relative -translate-y-1/3 w-14 h-14 rounded-full bg-primary text-white text-app-2xl
+            flex justify-center items-center gap-app-xs shadow-lg ring-4 ring-soft-bg
+            not-disabled:active:brightness-soft disabled:brightness-soft cursor-pointer disabled:cursor-default
+            ${responsive ? "lg:translate-y-0 lg:w-full lg:h-auto lg:rounded-app-md lg:py-app-xs lg:text-app-base lg:ring-0 lg:shadow-none" : ""}
+          `
+        }))}>
+          {typeof centralIcon === "function" ? centralIcon() : centralIcon}
+          {!isNil(centralLabel) && responsive &&
+            <span { ...mergeProps("centralButtonLabel", props => ({
+              ...props,
+              "aria-hidden": "true",
+              className: `hidden lg:inline font-app-semibold`
+            }))}>
+              {centralLabel}
+            </span>
+          }
+          {centralBadgeText !== null &&
+            <span { ...mergeProps("centralButtonBadge", props => ({
+              ...props,
+              "data-testid": "badge",
+              className: BADGE_CLASS_NAME
+            }))}>
+              {centralBadgeText}
+            </span>
+          }
+        </button>
+      </div>
+    );
+  };
+
+  const items = flattenChildren(children);
+  const content = isNil(centralButton)
+    ? children
+    : [
+      ...items.slice(0, Math.ceil(items.length / 2)),
+      renderCentralButton(),
+      ...items.slice(Math.ceil(items.length / 2)),
+    ];
+
   return (
     <motion.div { ...mergeProps("tabbar", props => ({
       ...props,
@@ -135,7 +202,7 @@ export const Tabbar = (props) => {
       `
       // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
     }))}>
-      {children}
+      {content}
     </motion.div>
   );
 };
