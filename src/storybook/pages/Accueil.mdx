@@ -1,0 +1,108 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import pkg from "../../../package.json";
+
+<Meta title="Accueil" />
+
+export const Family = ({ title, docId, children, examples }) => (
+  <a className="sc-home-card" href={`./?path=/docs/${docId}`} target="_top">
+    <span className="sc-home-card-title">{title}</span>
+    <span className="sc-home-card-text">{children}</span>
+    <span className="sc-home-card-examples">{examples}</span>
+  </a>
+);
+
+<div className="sc-home-hero">
+  <p className="sc-home-kicker">SmartMaker</p>
+  <h1 className="sc-home-title">smartcommon</h1>
+  <p className="sc-home-lead">
+    Les composants React des PWA SmartMaker : formulaires, navigation, mise en
+    page, connexion à Dolibarr par SmartAuth, travail hors ligne, photos et
+    impression. Chaque composant a sa page, avec ses props et des exemples
+    à manipuler.
+  </p>
+  <p className="sc-home-version">
+    Version <code>{pkg.version}</code>
+    <span> - paquet </span><code>{pkg.name}</code>
+  </p>
+</div>
+
+## Les familles de composants
+
+<div className="sc-home-grid">
+  <Family title="Application" docId="components-app-routeguard--component" examples="Provider, RouteGuard, ErrorBoundary, UpdatePrompt">
+    Le socle d'une PWA : contextes, routes protégées, erreurs, mises à jour.
+  </Family>
+  <Family title="Formulaires" docId="components-form-input--component" examples="Input, Select, Calendar, PhotosUploader, SignaturePad">
+    Les champs de saisie, avec validation et messages traduits.
+  </Family>
+  <Family title="Affichage des données" docId="components-formats-number--component" examples="Number, Email, Address, PhoneNumber, Files">
+    Présenter une valeur Dolibarr sans la mettre en forme à la main.
+  </Family>
+  <Family title="Mise en page" docId="components-main-page--component" examples="Page, Block, List, Popup, Panel">
+    Les pages, cartes, listes et fenêtres qui structurent l'écran.
+  </Family>
+  <Family title="Navigation" docId="components-navigation-tabbar--component" examples="Tabbar, Navbar, Sidebar, ChipBar">
+    Barres d'onglets et menus, avec badges et bouton d'action central.
+  </Family>
+  <Family title="Composants métier" docId="components-others-logincomponent--component" examples="Button, LoginComponent, PhotoEditor, BarcodeScanner, FeedbackButton">
+    Des écrans complets prêts à brancher : connexion, retouche photo, scan.
+  </Family>
+</div>
+
+## Installation
+
+Le paquet est publié sur le registre npm d'inligit. Déclarer le registre dans
+le `.npmrc` de l'application, puis installer :
+
+```ini
+@cap-rel:registry=https://inligit.fr/api/v4/projects/197/packages/npm/
+```
+
+```bash
+npm install @cap-rel/smartcommon
+```
+
+## Démarrage
+
+La feuille de style s'importe une fois, et `<Provider>` entoure toute
+l'application : aucun composant ne fonctionne sans lui.
+
+```jsx
+import { createRoot } from "react-dom/client";
+import { Provider } from "@cap-rel/smartcommon";
+import "@cap-rel/smartcommon/dist/smartcommon-style.css";
+
+import { App } from "./App";
+
+// prefixUrl : l'API du module, relative à la PWA qu'il héberge.
+const config = {
+  api: { prefixUrl: "/api.php/" },
+};
+
+createRoot(document.getElementById("root")).render(
+  <Provider config={config}>
+    <App />
+  </Provider>
+);
+```
+
+## Traductions
+
+Les textes des composants sont en anglais par défaut. Huit langues sont
+livrées (`en`, `fr`, `de`, `es`, `it`, `pl`, `nl`, `pt`) et se passent par la
+prop `labels` :
+
+```jsx
+import { LoginComponent, locales } from "@cap-rel/smartcommon";
+
+<LoginComponent labels={locales.fr.LoginComponent} onSuccess={goHome} />
+```
+
+## Pour aller plus loin
+
+<div className="sc-home-links">
+  <a href="./?path=/docs/smartmaker--documentation" target="_top">SmartMaker : la démarche et la pile technique</a>
+  <a href="https://inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon" target="_blank" rel="noopener noreferrer">Code source sur inligit</a>
+  <a href="https://inligit.fr/cap-rel/dolibarr/smartmaker/smartcommon/-/blob/1.0/CHANGELOG.md" target="_blank" rel="noopener noreferrer">Historique des versions (CHANGELOG)</a>
+</div>

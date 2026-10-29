@@ -66,3 +66,131 @@
   padding-top: 10px;
   padding-bottom: 10px;
 }
+/* Home page (pages/Accueil.mdx) */
+.sc-home-hero {
+    padding: 40px 32px;
+    margin-bottom: 48px !important;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f72d40 0%, #c81d3a 60%, #8e1530 100%);
+    color: #fff;
+}
+
+.sc-home-kicker {
+    margin: 0 0 8px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0.85;
+}
+
+.sc-home-title {
+    margin: 0 0 16px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    font-size: 44px !important;
+    line-height: 1.1 !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+}
+
+.sc-home-lead {
+    max-width: 640px;
+    margin: 0 0 20px !important;
+    font-size: 17px !important;
+    line-height: 1.55 !important;
+    color: #fff !important;
+}
+
+.sc-home-version {
+    margin: 0 !important;
+    font-size: 14px !important;
+    color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* MDX wraps the text of these blocks in its own paragraph, which the docs
+   theme colors dark grey: force the hero text white at every level, and drop
+   the margins of those inner paragraphs. */
+.sc-home-hero p,
+.sc-home-hero span {
+    color: #fff !important;
+}
+
+.sc-home-hero p p,
+.sc-home-card p {
+    margin: 0 !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+}
+
+.sc-home-version code {
+    padding: 2px 8px;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 13px;
+}
+
+.sc-home-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 16px 0 40px;
+}
+
+.sc-home-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 20px;
+    border: 1px solid rgba(38, 85, 115, 0.15);
+    border-radius: 12px;
+    background: #fff;
+    color: rgb(46, 52, 56) !important;
+    text-decoration: none !important;
+    transition: border-color 150ms, box-shadow 150ms, transform 150ms;
+}
+
+.sc-home-card:hover,
+.sc-home-card:focus-visible {
+    border-color: #f72d40;
+    box-shadow: 0 6px 20px rgba(247, 45, 64, 0.15);
+    transform: translateY(-2px);
+}
+
+.sc-home-card:focus-visible {
+    outline: 2px solid #f72d40;
+    outline-offset: 2px;
+}
+
+.sc-home-card-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: rgb(46, 52, 56);
+}
+
+.sc-home-card-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: rgb(92, 104, 112);
+}
+
+.sc-home-card-examples {
+    margin-top: auto;
+    padding-top: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    color: #c81d3a;
+}
+
+.sc-home-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 16px 0 40px;
+}
+
+.sc-home-links a {
+    font-size: 15px;
+    font-weight: 600;
+}

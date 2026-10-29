@@ -10,6 +10,13 @@ const preview = {
        date: /Date$/i,
       },
     },
+    options: {
+      // The home page opens first (it is the landing page of the published
+      // site), then the SmartMaker page, then the components.
+      storySort: {
+        order: ["Accueil", "SmartMaker", "Components"],
+      },
+    },
   },
 };
 
