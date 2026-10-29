@@ -375,6 +375,11 @@ export const nl = {
         networkNotSupported: "Netwerkprinten vereist een lokale print proxy. Gebruik USB of browserprinten.",
         webusbNotSupported: "WebUSB wordt niet ondersteund door deze browser",
     },
+    ErrorBoundary: {
+        title: "Er is een fout opgetreden",
+        unknownError: "Onbekende fout",
+        retry: "Opnieuw proberen",
+    },
     Sidebar: {
         openMenu: "Menu openen",
         closeMenu: "Menu sluiten",

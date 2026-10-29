@@ -38,6 +38,21 @@ describe("Provider", () => {
         expect(screen.getByTestId("provider-child").textContent).toBe("child rendered");
     });
 
+    it("passes errorLabels to the root ErrorBoundary", () => {
+        const spy = vi.spyOn(console, "error").mockImplementation(() => {});
+        const Boom = () => {
+            throw new Error("kaboom");
+        };
+        render(
+            <Provider config={{}} errorLabels={{ title: "Une erreur est survenue", retry: "Réessayer" }}>
+                <Boom />
+            </Provider>
+        );
+        expect(screen.getByText("Une erreur est survenue")).toBeDefined();
+        expect(screen.getByRole("button", { name: "Réessayer" })).toBeDefined();
+        spy.mockRestore();
+    });
+
     it("does not throw when mounted without children", () => {
         expect(() => render(<Provider config={{}} />)).not.toThrow();
     });

@@ -1,5 +1,6 @@
 import { Component } from "react";
-import PropTypes from "prop-types";
+
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 export class ErrorBoundary extends Component {
     constructor(props) {
@@ -37,7 +38,8 @@ export class ErrorBoundary extends Component {
 
     render() {
         const { hasError, error } = this.state;
-        const { children, fallback, FallbackComponent } = this.props;
+        const { children, fallback, FallbackComponent, labels: userLabels } = this.props;
+        const labels = { ...DEFAULT_LABELS, ...userLabels };
 
         if (hasError) {
             // Custom fallback component
@@ -61,10 +63,10 @@ export class ErrorBoundary extends Component {
                     color: "#991b1b"
                 }}>
                     <h2 style={{ margin: "0 0 10px 0", fontSize: "18px" }}>
-                        Une erreur est survenue
+                        {labels.title}
                     </h2>
                     <p style={{ margin: "0 0 15px 0", fontSize: "14px" }}>
-                        {error?.message || "Erreur inconnue"}
+                        {error?.message || labels.unknownError}
                     </p>
                     <button
                         onClick={this.handleReset}
@@ -78,7 +80,7 @@ export class ErrorBoundary extends Component {
                             fontSize: "14px"
                         }}
                     >
-                        Réessayer
+                        {labels.retry}
                     </button>
                 </div>
             );
@@ -88,9 +90,4 @@ export class ErrorBoundary extends Component {
     }
 }
 
-ErrorBoundary.propTypes = {
-    children: PropTypes.node.isRequired,
-    fallback: PropTypes.node,
-    FallbackComponent: PropTypes.elementType,
-    onError: PropTypes.func,
-};
+ErrorBoundary.propTypes = propTypes;

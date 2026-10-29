@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 
+import { fr } from "lib/locales";
+
 import { ErrorBoundary } from "./index";
 
 const Boom = ({ message = "boom" }) => {
@@ -35,9 +37,35 @@ describe("ErrorBoundary", () => {
             </ErrorBoundary>
         );
 
-        expect(screen.getByText("Une erreur est survenue")).toBeDefined();
+        expect(screen.getByText("Something went wrong")).toBeDefined();
         expect(screen.getByText("kaboom")).toBeDefined();
+        expect(screen.getByRole("button", { name: "Try again" })).toBeDefined();
+    });
+
+    it("translates the default fallback through labels", () => {
+        render(
+            <ErrorBoundary labels={fr.ErrorBoundary}>
+                <Boom message="kaboom" />
+            </ErrorBoundary>
+        );
+
+        expect(screen.getByText("Une erreur est survenue")).toBeDefined();
         expect(screen.getByRole("button", { name: "Réessayer" })).toBeDefined();
+    });
+
+    it("uses labels.unknownError for an error without message", () => {
+        const Silent = () => {
+            throw new Error("");
+        };
+        render(
+            <ErrorBoundary labels={{ unknownError: "Erreur inconnue" }}>
+                <Silent />
+            </ErrorBoundary>
+        );
+
+        expect(screen.getByText("Erreur inconnue")).toBeDefined();
+        // Missing keys keep their English default.
+        expect(screen.getByText("Something went wrong")).toBeDefined();
     });
 
     it("renders provided fallback node instead of default UI", () => {
@@ -48,7 +76,7 @@ describe("ErrorBoundary", () => {
         );
 
         expect(screen.getByText("custom fallback")).toBeDefined();
-        expect(screen.queryByText("Une erreur est survenue")).toBeNull();
+        expect(screen.queryByText("Something went wrong")).toBeNull();
     });
 
     it("renders FallbackComponent with error and resetError props", () => {
@@ -120,7 +148,7 @@ describe("ErrorBoundary", () => {
         expect(flat).toMatch(/Boom/);
     });
 
-    it("resets state when the default Réessayer button is clicked", () => {
+    it("resets state when the default retry button is clicked", () => {
         let shouldThrow = true;
         const Toggle = () => {
             if (shouldThrow) throw new Error("toggle");
@@ -133,13 +161,13 @@ describe("ErrorBoundary", () => {
             </ErrorBoundary>
         );
 
-        expect(screen.getByText("Une erreur est survenue")).toBeDefined();
+        expect(screen.getByText("Something went wrong")).toBeDefined();
 
         shouldThrow = false;
-        fireEvent.click(screen.getByRole("button", { name: "Réessayer" }));
+        fireEvent.click(screen.getByRole("button", { name: "Try again" }));
 
         expect(screen.getByText("recovered")).toBeDefined();
-        expect(screen.queryByText("Une erreur est survenue")).toBeNull();
+        expect(screen.queryByText("Something went wrong")).toBeNull();
     });
 
     it("resets state when FallbackComponent calls resetError", () => {

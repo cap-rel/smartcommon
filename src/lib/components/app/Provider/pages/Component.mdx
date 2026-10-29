@@ -59,6 +59,7 @@ wrap them yourself under `<Provider>` when the app needs them.
 | `onError` | `(error, errorInfo) => void` | Called when the root ErrorBoundary catches an error. |
 | `errorFallback` | node | Element shown instead of the app after an uncaught error. |
 | `ErrorFallbackComponent` | component | `({ error, resetError })`, takes priority over `errorFallback`. |
+| `errorLabels` | object | Texts of the default error screen, e.g. `locales.fr.ErrorBoundary`. |
 | `pwaUpdate` | object | When set, mounts `<UpdatePrompt {...pwaUpdate} />`. |
 | `debug` | bool | Mounts the on-page debug console and warnings. Keep it off in production. |
 

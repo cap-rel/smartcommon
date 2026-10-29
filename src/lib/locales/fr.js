@@ -371,6 +371,11 @@ export const fr = {
         networkNotSupported: "L'impression réseau nécessite un proxy d'impression local. Veuillez utiliser USB ou l'impression navigateur.",
         webusbNotSupported: "WebUSB n'est pas supporté par ce navigateur",
     },
+    ErrorBoundary: {
+        title: "Une erreur est survenue",
+        unknownError: "Erreur inconnue",
+        retry: "Réessayer",
+    },
     Sidebar: {
         openMenu: "Ouvrir le menu",
         closeMenu: "Fermer le menu",

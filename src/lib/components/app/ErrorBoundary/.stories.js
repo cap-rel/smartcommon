@@ -15,8 +15,10 @@ export default {
                     "keeps the rest of the page usable. Fallback, by priority: " +
                     "`FallbackComponent({ error, resetError })`, then the " +
                     "`fallback` element, then a default box with a retry " +
-                    "button. `onError(error, errorInfo)` is called after the " +
-                    "error is logged.",
+                    "button, whose texts come from `labels` (English by " +
+                    "default, `locales.fr.ErrorBoundary` for French). " +
+                    "`onError(error, errorInfo)` is called after the error is " +
+                    "logged.",
             },
         },
         layout: "centered",
@@ -27,6 +29,7 @@ export default {
         fallback: { control: false, table: { category: "Main" } },
         FallbackComponent: { control: false, table: { category: "Main" } },
         onError: { control: false, table: { category: "Events" } },
+        labels: { control: "object", table: { category: "Main" } },
     },
     args: {},
 };
