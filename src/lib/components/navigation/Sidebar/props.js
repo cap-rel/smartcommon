@@ -3,6 +3,9 @@ import PropTypes from "prop-types";
 export const propTypes = {
     id: PropTypes.string,
     toggleButton: PropTypes.bool,
+    /** Slide the toggle button away while the content scrolls down, bring it
+     * back on scroll up. Off by default; ignored while the Sidebar is open. */
+    hideButtonOnScroll: PropTypes.bool,
     open: PropTypes.func,
     /** Links: { label, icon, activeIcon, to, onClick, active, disabled,
      * badge }. With `to` a link navigates through the router, without it is

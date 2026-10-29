@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { IoCloseSharp, IoMenuSharp } from "react-icons/io5";
 import { isNil } from "lodash";
 
@@ -7,11 +8,20 @@ import { applyFunctionIfNotNil, formatBadgeCount, BADGE_CLASS_NAME } from "lib/u
 
 import { propTypes } from "./props";
 
-// TODO hideButtonOnScroll
 // TODO duration
 // TODO button position with app variables
 // TODO global variables
 // TODO id automatique dans le useVariantMerger
+
+// Scroll distance (px) a gesture must cover before the toggle button hides
+// or comes back: small jitters keep the current state.
+const SCROLL_THRESHOLD = 8;
+
+const scrollTopOf = (target) => (
+  target === document || target === document.documentElement
+    ? (document.scrollingElement?.scrollTop ?? window.scrollY)
+    : (target?.scrollTop ?? 0)
+);
 
 // A link with `to` navigates through the router (LazyLink); without `to`
 // it is a plain button driven by its onClick.
@@ -24,9 +34,41 @@ const SidebarLink = ({ to, children, ...elementProps }) => (
 export const Sidebar = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("Sidebar", props);
 
-  const { id, toggleButton, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
+  const { id, toggleButton, hideButtonOnScroll = false, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
 
   const { isOpen, close, id: panelId } = PanelProps;
+
+  // hideButtonOnScroll: the toggle button slides away while the content
+  // scrolls down and comes back as soon as it scrolls up. The scrolling
+  // element is not known in advance (a Page, the document...), so scroll
+  // events are observed in the capture phase on the document: scroll does
+  // not bubble, capture still sees it, and nothing global is modified.
+  const [isButtonHidden, setIsButtonHidden] = useState(false);
+  const lastScrollTops = useRef(new WeakMap());
+
+  useEffect(() => {
+    if (!hideButtonOnScroll || !toggleButton || isOpen) {
+      setIsButtonHidden(false);
+      return undefined;
+    }
+
+    const handleScroll = (e) => {
+      const target = e.target;
+      const key = target === document || target === document.documentElement ? document : target;
+      if (!key || typeof key !== "object") return;
+
+      const current = scrollTopOf(key);
+      const previous = lastScrollTops.current.get(key) ?? 0;
+      const delta = current - previous;
+      if (Math.abs(delta) < SCROLL_THRESHOLD) return;
+
+      lastScrollTops.current.set(key, current);
+      setIsButtonHidden(delta > 0 && current > 0);
+    };
+
+    document.addEventListener("scroll", handleScroll, { capture: true, passive: true });
+    return () => document.removeEventListener("scroll", handleScroll, { capture: true });
+  }, [hideButtonOnScroll, toggleButton, isOpen]);
 
   const PanelId = !isNil(panelId) ? panelId : `${id}-Panel`;
   const ButtonId = !isNil(panelId) ? panelId : `${id}-Button`;
@@ -116,17 +158,20 @@ export const Sidebar = (props) => {
             id: ButtonId,
             icon: isOpen ? IoCloseSharp : IoMenuSharp,
             ...props,
+            // Top-level onClick: Button replaces buttonProps.onClick with its
+            // own handler, which only calls this prop.
+            onClick: e => {
+              applyFunctionIfNotNil(props.onClick, e);
+              applyFunctionIfNotNil(isOpen ? close : open);
+            },
             buttonProps: {
               ...props.buttonProps,
-              onClick: e => {
-                props.buttonProps?.onClick(e);
-                if (isOpen) {
-                  close();
-                } else {
-                  open();
-                }
-              },
-              className: `px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17`
+              // A hidden button leaves the tab order and the accessibility tree.
+              "aria-hidden": isButtonHidden ? "true" : undefined,
+              tabIndex: isButtonHidden ? -1 : undefined,
+              "data-sidebar-toggle": "true",
+              "data-hidden": isButtonHidden ? "true" : undefined,
+              className: `px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17 transition-all duration-300 ${isButtonHidden ? "opacity-0 translate-y-4 pointer-events-none" : ""}`
             },
           }))} />
         }

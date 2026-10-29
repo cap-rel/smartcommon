@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { FaHouse, FaGear } from "react-icons/fa6";
 
@@ -70,5 +70,78 @@ describe("Sidebar - link badge", () => {
         const badges = screen.getAllByTestId("badge");
         expect(badges).toHaveLength(1);
         expect(badges[0].textContent).toBe("99+");
+    });
+});
+
+describe("Sidebar - hideButtonOnScroll", () => {
+    const scrollTo = (element, top) => {
+        element.scrollTop = top;
+        fireEvent.scroll(element);
+    };
+
+    const setup = (props = {}) => {
+        const scroller = document.createElement("div");
+        document.body.appendChild(scroller);
+        const utils = renderSidebar({ toggleButton: true, Panel: { isOpen: false }, ...props });
+        const toggle = () => document.querySelector("[data-sidebar-toggle]");
+        return { ...utils, scroller, toggle };
+    };
+
+    it("keeps the button visible on scroll by default", () => {
+        const { scroller, toggle } = setup();
+        act(() => scrollTo(scroller, 300));
+        expect(toggle().getAttribute("data-hidden")).toBeNull();
+    });
+
+    it("hides the button on scroll down and brings it back on scroll up", () => {
+        const { scroller, toggle } = setup({ hideButtonOnScroll: true });
+
+        act(() => scrollTo(scroller, 300));
+        expect(toggle().getAttribute("data-hidden")).toBe("true");
+        expect(toggle().getAttribute("aria-hidden")).toBe("true");
+        expect(toggle().getAttribute("tabindex")).toBe("-1");
+
+        act(() => scrollTo(scroller, 100));
+        expect(toggle().getAttribute("data-hidden")).toBeNull();
+        expect(toggle().getAttribute("tabindex")).toBeNull();
+    });
+
+    it("ignores a scroll jitter below the threshold", () => {
+        const { scroller, toggle } = setup({ hideButtonOnScroll: true });
+        act(() => scrollTo(scroller, 4));
+        expect(toggle().getAttribute("data-hidden")).toBeNull();
+    });
+
+    it("never hides the button while the Sidebar is open", () => {
+        const { scroller, toggle } = setup({ hideButtonOnScroll: true, Panel: { isOpen: true } });
+        act(() => scrollTo(scroller, 300));
+        expect(toggle().getAttribute("data-hidden")).toBeNull();
+    });
+
+    it("opens on click when closed and closes when open", () => {
+        const open = vi.fn();
+        const { toggle, unmount } = setup({ open, Button: { buttonProps: { className: "x" } } });
+        fireEvent.click(toggle());
+        expect(open).toHaveBeenCalledTimes(1);
+        unmount();
+
+        const close = vi.fn();
+        const second = setup({ Panel: { isOpen: true, close } });
+        fireEvent.click(second.toggle());
+        expect(close).toHaveBeenCalledTimes(1);
+    });
+
+    it("chains the onClick of the Button slot", () => {
+        const open = vi.fn();
+        const onClick = vi.fn();
+        const { toggle } = setup({ open, Button: { onClick } });
+        fireEvent.click(toggle());
+        expect(onClick).toHaveBeenCalledTimes(1);
+        expect(open).toHaveBeenCalledTimes(1);
+    });
+
+    it("toggles without crashing when open and close are absent", () => {
+        const { toggle } = setup();
+        expect(() => fireEvent.click(toggle())).not.toThrow();
     });
 });
