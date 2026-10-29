@@ -261,6 +261,32 @@ describe("FeedbackModal relay errors", () => {
         await waitFor(() => expect(mocks.enqueueReport).toHaveBeenCalled());
         expect(await screen.findByText(/No connection/)).toBeTruthy();
     });
+
+    it("queues the exact screenshot bytes that the interrupted send carried", async () => {
+        // The cut send may have reached capTests: the queued replay uses the
+        // same Idempotency-Key, so capTests compares the screenshot bytes.
+        // The file must be reduced once, when attached, and never again.
+        mocks.post.mockRejectedValueOnce(new TypeError("fetch failed"));
+        const reduced = new File(["reduced-screenshot-bytes"], "shot.jpg", { type: "image/jpeg" });
+        mocks.convertImageForUpload.mockResolvedValueOnce({ file: reduced });
+
+        const { container } = renderModal();
+        await attachScreenshot(container, new File(["original-bytes"], "shot.png", { type: "image/png" }));
+        fireEvent.click(screen.getByRole("checkbox"));
+        fillBody("Cut while sending.");
+        fireEvent.click(screen.getByRole("button", { name: "Send" }));
+
+        await waitFor(() => expect(mocks.enqueueReport).toHaveBeenCalled());
+
+        const [, options] = mocks.post.mock.calls[0];
+        const [payload, key] = mocks.enqueueReport.mock.calls[0];
+        expect(key).toBe(options.headers["Idempotency-Key"]);
+        expect(await payload.screenshot.text()).toBe(await options.body.get("screenshot").text());
+        expect(await payload.screenshot.text()).toBe("reduced-screenshot-bytes");
+        expect(payload.body).toBe(options.body.get("body"));
+        expect(payload.type).toBe(options.body.get("type"));
+        expect(mocks.convertImageForUpload).toHaveBeenCalledTimes(1);
+    });
 });
 
 describe("FeedbackModal redaction keyboard", () => {
