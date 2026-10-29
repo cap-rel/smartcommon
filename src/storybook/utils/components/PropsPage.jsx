@@ -7,6 +7,21 @@ const USAGE_ALIASES = {
     "Components/Formats/Array": "ArrayFormat",
 };
 
+// Stories of the page other than Default, the variants (Variants page) and
+// the props playground: the usage examples ("With QR pair", "Read only"...).
+// Without this section they were hidden everywhere, their "!dev" tag keeping
+// them out of the sidebar.
+const exampleStories = (of) => Object.entries(of ?? {}).filter(([key, story]) => (
+    key !== "default"
+    && key !== "Default"
+    && /^[A-Z]/.test(key)
+    && story !== null
+    && typeof story === "object"
+    && !["variant", "test"].includes(story.parameters?.storyKind)
+));
+
+const exampleTitle = (key, story) => story.name ?? key.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+
 const formatDate = (iso) => {
     const [year, month, day] = `${iso ?? ""}`.split("-");
     return year && month && day ? `${day}/${month}/${year}` : iso;
@@ -44,6 +59,24 @@ export const UsedIn = ({ title }) => {
     );
 };
 
+export const Examples = ({ of }) => {
+    const examples = exampleStories(of);
+    if (examples.length === 0) return null;
+
+    return (
+        <div className="sc-examples">
+            <div className="h2" style={{ fontSize: "13px" }}>Examples</div>
+            {examples.map(([key, story]) => (
+                <div key={key} className="sc-example">
+                    <h3 className="sc-example-title">{exampleTitle(key, story)}</h3>
+                    <Description of={story} />
+                    <Canvas of={story} />
+                </div>
+            ))}
+        </div>
+    );
+};
+
 export const PropsPage = (props) => {
     const { of } = props;
     return (
@@ -54,6 +87,8 @@ export const PropsPage = (props) => {
             {of?.Default && <Canvas sourceState="none" of={of.Default} />}
 
             {of?.Default && <Source of={of.Default} />}
+
+            <Examples of={of} />
 
             <UsedIn title={of?.default?.title} />
 

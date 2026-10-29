@@ -233,3 +233,19 @@
     font-size: 13px !important;
     color: rgb(92, 104, 112) !important;
 }
+
+/* "Examples" section of the component pages (utils/components/PropsPage) */
+.sc-examples {
+    margin: 32px 0 8px;
+}
+
+.sc-example {
+    margin-bottom: 24px;
+}
+
+.sc-example-title {
+    margin: 16px 0 4px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: rgb(46, 52, 56) !important;
+}

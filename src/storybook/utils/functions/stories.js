@@ -17,6 +17,9 @@ export const setVariantStory = (props = {}) => {
     return ({
         args,
         parameters: {
+            // Read by PropsPage: variant stories are shown on the Variants
+            // page, not among the examples.
+            storyKind: "variant",
             docs: {
                 description: {
                     story: description
@@ -38,6 +41,8 @@ export const setTestStory = (props = {}) => {
 
     return ({
         args,
-        argTypes
+        argTypes,
+        // Read by PropsPage: the props playground is not an example.
+        parameters: { storyKind: "test" }
     });
 };
