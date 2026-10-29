@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Outlet, useLocation } from "react-router-dom";
+import { useLocation, useOutlet } from "react-router-dom";
 
 import { twMerge } from "lib/utils";
 
@@ -10,6 +11,17 @@ const DEFAULT_FADE = {
     animate: { opacity: 1 },
     exit: { opacity: 0 },
     transition: { duration: 0.2 },
+};
+
+// The child route as it was when this page mounted. A plain <Outlet /> reads
+// the CURRENT route: inside the page that is animating out it already
+// renders the incoming page, so the exit showed the new content twice and
+// the old page never animated with its own content. Each page instance
+// (keyed by pathname) keeps the element it first rendered.
+const FrozenOutlet = () => {
+    const outlet = useOutlet();
+    const [frozen] = useState(outlet);
+    return frozen;
 };
 
 const resolveFromConfig = ({ pathname, prevPathname, animationsConfig, defaultAnimationKey }) => {
@@ -64,7 +76,7 @@ export const RoutingAnimationLayout = (props) => {
                 key={location.pathname}
                 className={twMerge("fixed inset-0", userClassName)}
             >
-                {children ?? <Outlet />}
+                {children ?? <FrozenOutlet />}
             </motion.div>
         </AnimatePresence>
     );

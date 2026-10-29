@@ -29,7 +29,9 @@ export const propTypes = {
     // Slot for the wrapping motion.div (className, style, data-attrs, ...).
     // Class names are merged via twMerge so consumer wins on conflicts.
     containerProps: PropTypes.object,
-    // Optional children. When omitted, renders <Outlet /> (route element pattern).
+    // Optional children. When omitted, renders the child route (route element
+    // pattern), kept as it was when the page mounted so a leaving page
+    // animates out with its own content.
     children: PropTypes.node,
 };
 
