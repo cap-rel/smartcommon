@@ -1,4 +1,5 @@
 import process from "node:process";
+import remarkGfm from "remark-gfm";
 
 /** @type { import('@storybook/react-vite').StorybookConfig } */
 const config = {
@@ -11,7 +12,18 @@ const config = {
   ],
   addons: [
     "@chromatic-com/storybook",
-    "@storybook/addon-docs",
+    {
+      // GitHub-flavoured Markdown in the MDX pages: without it the "| a | b |"
+      // tables of the documentation pages render as raw text.
+      name: "@storybook/addon-docs",
+      options: {
+        mdxPluginOptions: {
+          mdxCompileOptions: {
+            remarkPlugins: [remarkGfm],
+          },
+        },
+      },
+    },
     "@storybook/addon-a11y",
     "@storybook/addon-vitest"
   ],
