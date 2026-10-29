@@ -384,6 +384,10 @@ export const pl = {
         networkNotSupported: "Drukowanie sieciowe wymaga lokalnego proxy drukowania. Użyj USB lub drukowania przez przeglądarkę.",
         webusbNotSupported: "WebUSB nie jest obsługiwany przez tę przeglądarkę",
     },
+    Sidebar: {
+        openMenu: "Otwórz menu",
+        closeMenu: "Zamknij menu",
+    },
     Feedback: {
         buttonLabel: "Zgłoś problem",
         title: "Zgłoś problem",

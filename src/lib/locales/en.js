@@ -49,6 +49,7 @@ import { DEFAULT_LABELS as Page } from "lib/components/main/Page/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
 import { DEFAULT_LABELS as Print } from "lib/print/labels";
+import { DEFAULT_LABELS as Sidebar } from "lib/components/navigation/Sidebar/props";
 import { DEFAULT_LABELS as Feedback } from "lib/components/others/Feedback/props";
 
 export const en = {
@@ -91,6 +92,7 @@ export const en = {
     UpdatePrompt,
     ViewportProvider,
     Print,
+    Sidebar,
     Feedback,
 };
 

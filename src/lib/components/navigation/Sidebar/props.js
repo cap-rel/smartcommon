@@ -21,4 +21,11 @@ export const propTypes = {
     iconProps: PropTypes.object,
     labelProps: PropTypes.object,
     badgeProps: PropTypes.object,
+    /** i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles). */
+    labels: PropTypes.object,
+};
+
+export const DEFAULT_LABELS = {
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
 };

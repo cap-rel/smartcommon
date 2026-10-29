@@ -375,6 +375,10 @@ export const nl = {
         networkNotSupported: "Netwerkprinten vereist een lokale print proxy. Gebruik USB of browserprinten.",
         webusbNotSupported: "WebUSB wordt niet ondersteund door deze browser",
     },
+    Sidebar: {
+        openMenu: "Menu openen",
+        closeMenu: "Menu sluiten",
+    },
     Feedback: {
         buttonLabel: "Een probleem melden",
         title: "Een probleem melden",

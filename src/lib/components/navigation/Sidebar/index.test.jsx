@@ -145,3 +145,27 @@ describe("Sidebar - hideButtonOnScroll", () => {
         expect(() => fireEvent.click(toggle())).not.toThrow();
     });
 });
+
+describe("Sidebar - toggle button", () => {
+    const toggle = () => document.querySelector("[data-sidebar-toggle]");
+
+    it("stays outside the Panel, so a closed Sidebar can still be opened", () => {
+        renderSidebar({ toggleButton: true, Panel: { isOpen: false } });
+        expect(toggle()).not.toBeNull();
+        expect(toggle().closest("[data-component='Panel']")).toBeNull();
+    });
+
+    it("is named by its action and exposes the expanded state", () => {
+        const { unmount } = renderSidebar({ toggleButton: true, Panel: { isOpen: false } });
+        expect(screen.getByRole("button", { name: "Open menu" }).getAttribute("aria-expanded")).toBe("false");
+        unmount();
+
+        renderSidebar({ toggleButton: true, Panel: { isOpen: true } });
+        expect(screen.getByRole("button", { name: "Close menu" }).getAttribute("aria-expanded")).toBe("true");
+    });
+
+    it("takes its names from the labels prop", () => {
+        renderSidebar({ toggleButton: true, Panel: { isOpen: false }, labels: { openMenu: "Ouvrir le menu" } });
+        expect(screen.getByRole("button", { name: "Ouvrir le menu" })).toBeTruthy();
+    });
+});

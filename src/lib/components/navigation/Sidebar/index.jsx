@@ -6,7 +6,7 @@ import { useVariantMerger } from "lib/hooks";
 import { Panel, Button, LazyLink } from "lib/components";
 import { applyFunctionIfNotNil, formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
 
 // TODO duration
 // TODO button position with app variables
@@ -34,7 +34,9 @@ const SidebarLink = ({ to, children, ...elementProps }) => (
 export const Sidebar = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("Sidebar", props);
 
-  const { id, toggleButton, hideButtonOnScroll = false, links = [], open, duration = 300, children, Panel: PanelProps = {} } = variantProps;
+  const { id, toggleButton, hideButtonOnScroll = false, links = [], open, duration = 300, children, Panel: PanelProps = {}, labels: userLabels = {} } = variantProps;
+
+  const labels = { ...DEFAULT_LABELS, ...userLabels };
 
   const { isOpen, close, id: panelId } = PanelProps;
 
@@ -75,6 +77,7 @@ export const Sidebar = (props) => {
   const ButtonId = !isNil(panelId) ? panelId : `${id}-Button`;
 
   return (
+    <>
       <Panel { ...mergeProps("Panel", props => ({
         id: PanelId,
         ...props,
@@ -154,6 +157,10 @@ export const Sidebar = (props) => {
 
         {children}
 
+
+
+      </Panel>
+
         {toggleButton &&
           <Button { ...mergeProps("Button", props => ({
             id: ButtonId,
@@ -172,14 +179,16 @@ export const Sidebar = (props) => {
               tabIndex: isButtonHidden ? -1 : undefined,
               "data-sidebar-toggle": "true",
               "data-hidden": isButtonHidden ? "true" : undefined,
-              className: `px-app-base py-app-base text-app-lg absolute bottom-app-base shadow-md rounded-app-xl -right-17 transition-all duration-300 ${isButtonHidden ? "opacity-0 translate-y-4 pointer-events-none" : ""}`
+              // Outside the Panel: a closed Panel is transparent and off
+              // screen, the button must stay reachable to open it. Above the
+              // Panel (z-50) and its overlay so it also closes it.
+              "aria-label": isOpen ? labels.closeMenu : labels.openMenu,
+              "aria-expanded": isOpen ? "true" : "false",
+              className: `fixed z-60 bottom-app-base left-app-base px-app-base py-app-base text-app-lg shadow-md rounded-app-xl transition-all duration-300 ${isButtonHidden ? "opacity-0 translate-y-4 pointer-events-none" : ""}`
             },
           }))} />
         }
-
-
-      </Panel> 
-
+    </>
   );
 };
 
