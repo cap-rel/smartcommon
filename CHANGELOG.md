@@ -8,6 +8,17 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.395] - 2026-10-29
+
+Show Buttons as outline, ghost, danger, primary or secondary when a module passes that variant
+Show a counter badge on a Button, hidden at 0 and capped at 99+
+Show the same counter badge on top navbar items, tabbar tabs and Sidebar links
+Show the Sidebar links, which never rendered, as router links or buttons
+Open and close the Sidebar with its toggle button, which did nothing on click
+Hide the Sidebar toggle button while scrolling down with hideButtonOnScroll
+Add a raised central action button to the Tabbar with centralButton
+Keep the Sidebar menu button on screen when closed, named "Open menu" or "Close menu"
+
 ## [1.0.394] - 2026-10-28
 
 Take several photos in one field and annotate each one, with the new AnnotatedPhotosUploader
