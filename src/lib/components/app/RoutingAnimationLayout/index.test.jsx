@@ -1,8 +1,24 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { Link, MemoryRouter, Route, Routes, useSearchParams } from "react-router-dom";
 
 import { RoutingAnimationLayout } from "./";
+
+// Recent happy-dom versions implement element.animate(): framer-motion then
+// runs the opacity animations natively, and an animation still running when
+// a test unmounts is cancelled with an AbortError rejection nobody listens
+// to, which fails the run ("unhandled errors"). Without element.animate
+// framer-motion falls back to its JS engine, which has no such promise.
+// framer-motion reads this once, at the first animation of the file.
+const nativeAnimate = Object.getOwnPropertyDescriptor(Element.prototype, "animate");
+
+beforeAll(() => {
+    if (nativeAnimate) delete Element.prototype.animate;
+});
+
+afterAll(() => {
+    if (nativeAnimate) Object.defineProperty(Element.prototype, "animate", nativeAnimate);
+});
 
 // A slow exit keeps the leaving page on screen long enough to inspect it.
 const animationsConfig = {
