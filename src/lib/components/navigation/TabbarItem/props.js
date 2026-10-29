@@ -4,7 +4,8 @@ export const propTypes = {
     id: PropTypes.string.isRequired,
     responsive: PropTypes.bool,
     icon: PropTypes.func,
-    badge: PropTypes.string,
+    /** Counter badge on the icon: hidden for 0 or an empty value, "99+" above 99. */
+    badge: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     activeIcon: PropTypes.func,
     label: PropTypes.string,
     active: PropTypes.bool,
@@ -14,6 +15,7 @@ export const propTypes = {
     iconAndLabelContainerProps: PropTypes.object,
     iconProps: PropTypes.object,
     labelProps: PropTypes.object,
+    badgeProps: PropTypes.object,
 };
 
 export const defaultProps = {

@@ -26,3 +26,20 @@ describe("UpperNavbarItem - onClick", () => {
         expect(calls).toEqual(["link", "top"]);
     });
 });
+
+describe("UpperNavbarItem - badge", () => {
+    it("renders a count in the badge", () => {
+        render(<UpperNavbarItem label="Alerts" badge={4} />);
+        expect(screen.getByTestId("badge").textContent).toBe("4");
+    });
+
+    it("renders no badge for 0", () => {
+        render(<UpperNavbarItem label="Alerts" badge={0} />);
+        expect(screen.queryByTestId("badge")).toBeNull();
+    });
+
+    it("caps a large count", () => {
+        render(<UpperNavbarItem label="Alerts" badge="120" />);
+        expect(screen.getByTestId("badge").textContent).toBe("99+");
+    });
+});

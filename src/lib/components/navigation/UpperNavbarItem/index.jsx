@@ -1,11 +1,9 @@
 import { isNil } from "lodash";
 
 import { useVariantMerger } from "lib/hooks";
-import { applyFunctionIfNotNil } from "lib/utils";
+import { applyFunctionIfNotNil, formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 
 import { propTypes } from "./props";
-
-// TODO badge
 
 export const UpperNavbarItem = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("UpperNavbarItem", props);
@@ -20,6 +18,9 @@ export const UpperNavbarItem = (props) => {
         children
     } = variantProps;
 
+    // Counter badge: hidden for 0 / empty, capped at "99+".
+    const badgeText = formatBadgeCount(badge);
+
     return (
         <div { ...mergeProps("link", props => ({
             ...props,
@@ -31,7 +32,7 @@ export const UpperNavbarItem = (props) => {
                 }
                 applyFunctionIfNotNil(onClick, e);
             },
-            className: `flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled ? "pointer-events-none" : ""}`
+            className: `relative flex items-center gap-app-xs bg-primary text-white px-app-xs py-app-xs text-app-lg rounded-app-xl active:brightness-soft ${disabled ? "pointer-events-none" : ""}`
         }))}>
 
             {!isNil(icon) &&
@@ -47,6 +48,16 @@ export const UpperNavbarItem = (props) => {
             }
 
             {children}
+
+            {!isNil(badgeText) &&
+                <span { ...mergeProps("badge", props => ({
+                    ...props,
+                    "data-testid": "badge",
+                    className: BADGE_CLASS_NAME
+                }))}>
+                    {badgeText}
+                </span>
+            }
 
         </div>
     );
