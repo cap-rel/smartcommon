@@ -11,7 +11,6 @@ export * from "./FilesUploader";
 export * from "./Form";
 export * from "./Form/context";
 export * from "./Gps";
-export * from "./IconSelect";
 export * from "./Input";
 export * from "./NumericPad";
 export * from "./PhotosUploader";

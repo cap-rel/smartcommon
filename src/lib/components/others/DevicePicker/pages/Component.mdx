@@ -31,13 +31,13 @@ hors login (ex : page "Gérer mes appareils").
 - **`list`** (défaut si `existingDevices.length > 0`) : grille des
   appareils + bouton "Nouvel appareil".
 - **`form`** (défaut si liste vide, ou via le bouton "Nouvel
-  appareil") : champ label + `<IconSelect>` parmi
-  phone/tablet/laptop/desktop.
+  appareil") : champ label + choix de l'icône parmi
+  phone/tablet/laptop/desktop (slot `iconSelectProps`).
 
 ## Callbacks
 
-- `onPick(deviceId)` async → `api.linkUserDevice`.
-- `onCreate(label, icon)` async → `api.createUserDevice`.
+- `onPick(deviceId)` async -> `api.linkUserDevice`.
+- `onCreate(label, icon)` async -> `api.createUserDevice`.
 - `onCancel` optionnel (laisse `undefined` dans le flow login pour
   forcer le choix).
 

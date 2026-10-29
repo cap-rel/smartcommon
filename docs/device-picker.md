@@ -56,13 +56,13 @@ import { DevicePicker } from "@cap-rel/smartcommon";
 - **`list`** (par défaut si `existingDevices.length > 0`) : grille des
   appareils existants + bouton "Nouvel appareil" en bas.
 - **`form`** (par défaut si liste vide ; accessible aussi via le
-  bouton) : champ "Nom de l'appareil" + `<IconSelect>` parmi phone /
-  tablet / laptop / desktop + bouton "Créer cet appareil".
+  bouton) : champ "Nom de l'appareil" + choix de l'icône parmi phone /
+  tablet / laptop / desktop (slot `iconSelectProps`) + bouton "Créer cet appareil".
 
 ### Callbacks
 
 - `onPick(deviceId)` : numérique. Le composant attend le résolveur (le
-  bouton est désactivé pendant l'await). Pas de redirection auto —
+  bouton est désactivé pendant l'await). Pas de redirection auto -
   le caller décide.
 - `onCreate(label, icon)` : `icon ∈ ["phone", "tablet", "laptop",
   "desktop"]` (toute autre valeur fallback vers `"phone"`, normalisée
@@ -81,7 +81,7 @@ interne (qui couvre uniquement l'await du callback courant).
 ### Error externe
 
 `error="..."` affiche un bloc d'erreur en haut du formulaire. Reset à
-la charge du caller — le picker ne le clear jamais tout seul.
+la charge du caller - le picker ne le clear jamais tout seul.
 
 ## Validation du label
 
