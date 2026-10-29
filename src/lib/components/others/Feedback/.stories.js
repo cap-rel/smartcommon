@@ -1,6 +1,7 @@
 import { fr } from "lib/locales";
 
 import { FeedbackButton } from "./";
+import { fakeRelayDecorator } from "./decorators";
 
 export default {
     title: "Components/Others/FeedbackButton",
@@ -21,6 +22,7 @@ export default {
         },
     },
     tags: ["Others"],
+    decorators: [fakeRelayDecorator],
     argTypes: {
         relayPath: { control: "text", table: { category: "Main" } },
         visible: { control: "boolean", table: { category: "Main" } },
