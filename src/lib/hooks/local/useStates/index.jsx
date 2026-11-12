@@ -1,11 +1,38 @@
 import { useState, useCallback, useLayoutEffect, useRef } from "react";
 import { isNil, isUndefined, isArray, isEqual } from "lodash";
 
-import { log, throwTypeError } from "lib/utils";
+import { createLogger, log, throwTypeError } from "lib/utils";
 import { useLibConfig } from "lib/hooks";
+
+const logger = createLogger("useStates");
+
+const KNOWN_OPTIONS = ["initialStates", "debug"];
+
+// Sets of unknown option names already reported, so a component re-rendering
+// with the same mistake logs it once instead of on every render.
+const reportedUnknownOptions = new Set();
+
+// useStates({ isLoading: true }) reads like an initial state but is an
+// options object: without initialStates the state starts empty, silently.
+const warnUnknownOptions = (props) => {
+  const unknownKeys = Object.keys(props).filter((key) => !KNOWN_OPTIONS.includes(key)).sort();
+  if (unknownKeys.length === 0) {
+    return;
+  }
+  const signature = unknownKeys.join(",");
+  if (reportedUnknownOptions.has(signature)) {
+    return;
+  }
+  reportedUnknownOptions.add(signature);
+  logger.warning(
+    `Unknown option(s) ${unknownKeys.map((key) => `"${key}"`).join(", ")} ignored: initial values must be passed as useStates({ initialStates: {...} }).`
+  );
+};
 
 export const useStates = (props = {}) => {
   throwTypeError({ value: props, name: "useStates props", type: ["plain object"] })
+
+  warnUnknownOptions(props);
 
   const { initialStates = {} } = props;
 
