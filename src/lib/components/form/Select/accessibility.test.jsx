@@ -64,6 +64,33 @@ describe("Select - accessibility", () => {
         expect(first).not.toBe(second);
     });
 
+    it("is neither invalid nor described while no error shows", () => {
+        render(<Select label="Organisme" required options={OPTIONS} value="" onChange={() => {}} />);
+        const select = screen.getByLabelText("Organisme");
+        expect(select.getAttribute("aria-invalid")).toBeNull();
+        expect(select.getAttribute("aria-describedby")).toBeNull();
+    });
+
+    it("links the shown errors to the select and flags it invalid", () => {
+        render(
+            <Select
+                id="org"
+                label="Organisme"
+                required
+                options={OPTIONS}
+                value=""
+                formSubmitted
+                error="Pick your federation"
+                onChange={() => {}}
+            />
+        );
+        const select = screen.getByLabelText("Organisme");
+        expect(select.getAttribute("aria-invalid")).toBe("true");
+        expect(select.getAttribute("aria-describedby")).toBe("org-error org-error-0");
+        expect(document.getElementById("org-error").textContent).toBe("Pick your federation");
+        expect(document.getElementById("org-error-0").textContent).toBe("At least one item must be selected.");
+    });
+
     it("keeps working on a disabled select", () => {
         render(<Select label="Organisme" options={OPTIONS} value="" onChange={() => {}} disabled />);
         const select = screen.getByLabelText("Organisme");

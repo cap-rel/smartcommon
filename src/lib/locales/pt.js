@@ -324,6 +324,10 @@ export const pt = {
         lengthError: (n) => `Deve ter exatamente ${n} caracteres.`,
         maxLengthError: (n) => `Deve ter no máximo ${n} caracteres.`,
         patternError: "O valor não respeita o formato esperado.",
+        showPassword: "Mostrar a palavra-passe",
+        hidePassword: "Ocultar a palavra-passe",
+        decrease: "Diminuir",
+        increase: "Aumentar",
     },
     Textarea: {
         requiredError: "Este campo é obrigatório.",

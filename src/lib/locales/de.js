@@ -322,6 +322,10 @@ export const de = {
         lengthError: (n) => `Genau ${n} Zeichen erforderlich.`,
         maxLengthError: (n) => `Höchstens ${n} Zeichen erlaubt.`,
         patternError: "Der Wert entspricht nicht dem erwarteten Format.",
+        showPassword: "Passwort anzeigen",
+        hidePassword: "Passwort verbergen",
+        decrease: "Verringern",
+        increase: "Erhöhen",
     },
     Textarea: {
         requiredError: "Dieses Feld ist erforderlich.",

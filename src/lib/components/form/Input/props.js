@@ -92,4 +92,9 @@ export const DEFAULT_LABELS = {
     lengthError: (n) => `Must be exactly ${n} characters long.`,
     maxLengthError: (n) => `Must be at most ${n} characters long.`,
     patternError: "The value does not match the expected format.",
+    // Accessible names of the icon-only buttons.
+    showPassword: "Show password",
+    hidePassword: "Hide password",
+    decrease: "Decrease",
+    increase: "Increase",
 };

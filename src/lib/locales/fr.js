@@ -318,6 +318,10 @@ export const fr = {
         lengthError: (n) => `La longueur doit être de ${n} caractères exactement.`,
         maxLengthError: (n) => `La longueur doit être de ${n} caractères au maximum.`,
         patternError: "La valeur ne respecte pas le format attendu.",
+        showPassword: "Afficher le mot de passe",
+        hidePassword: "Masquer le mot de passe",
+        decrease: "Diminuer",
+        increase: "Augmenter",
     },
     Textarea: {
         requiredError: "Ce champ est requis.",

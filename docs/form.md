@@ -177,6 +177,19 @@ Un champ contrôlé (`value` + `onChange`) hors `<Form>` accepte :
 - `error` (node) : message fourni par l'appelant (erreur serveur par
   exemple), affiché en rouge sous le champ, sans attendre de submit.
 
+### Erreurs et lecteurs d'écran
+
+Dès qu'un message d'erreur s'affiche sous un `Input`, un `Textarea` ou un
+`Select`, le contrôle reçoit `aria-invalid="true"` et un
+`aria-describedby` qui pointe sur chaque message affiché : le lecteur
+d'écran lit l'erreur en arrivant sur le champ. Les messages portent les
+ids `<id>-error` (prop `error`) et `<id>-error-0`, `<id>-error-1`... (règles
+en échec). Un `aria-describedby` passé par l'appelant est conservé, placé
+avant les ids d'erreur ; un `aria-invalid` explicite reste prioritaire.
+
+Sans prop `id`, `Input`, `Textarea` et `Select` génèrent un id stable
+(`useId`) : le `<label>` visible pointe toujours sur le champ.
+
 ## Attributs `data-*` et `aria-*` (tests, accessibilité)
 
 Un attribut `data-*` ou `aria-*` posé directement sur le composant arrive
@@ -259,6 +272,17 @@ Accessibilité, quelle que soit l'apparence :
 Le groupe est nommé par le label visible (`aria-labelledby`), sinon par
 `aria-label`. `disabled` retire les options de la tabulation. Un
 `data-testid` passé par `optionProps` arrive sur chaque option.
+
+## `<Input>` : boutons icônes
+
+Le bouton afficher / masquer du mot de passe (`type="password"`) et les
+boutons - / + (prop `step`) n'ont pas de texte visible : leur nom
+accessible vient de `labels`. Clés : `showPassword`, `hidePassword`,
+`decrease`, `increase`, en anglais par défaut et traduites dans chaque
+bundle (`labels={locales.fr.Input}`). Un `aria-label` passé par
+`PasswordButton`, `MinusButton` ou `PlusButton`
+(`MinusButton={{ buttonProps: { "aria-label": "Moins" } }}`) reste
+prioritaire.
 
 ## `<Select>` : choix vide
 

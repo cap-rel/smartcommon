@@ -321,6 +321,10 @@ export const nl = {
         lengthError: (n) => `Precies ${n} tekens vereist.`,
         maxLengthError: (n) => `Maximaal ${n} tekens toegestaan.`,
         patternError: "De waarde heeft niet het verwachte formaat.",
+        showPassword: "Wachtwoord tonen",
+        hidePassword: "Wachtwoord verbergen",
+        decrease: "Verlagen",
+        increase: "Verhogen",
     },
     Textarea: {
         requiredError: "Dit veld is verplicht.",

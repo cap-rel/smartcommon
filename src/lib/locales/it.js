@@ -322,6 +322,10 @@ export const it = {
         lengthError: (n) => `Deve contenere esattamente ${n} caratteri.`,
         maxLengthError: (n) => `Deve contenere al massimo ${n} caratteri.`,
         patternError: "Il valore non rispetta il formato previsto.",
+        showPassword: "Mostra la password",
+        hidePassword: "Nascondi la password",
+        decrease: "Diminuisci",
+        increase: "Aumenta",
     },
     Textarea: {
         requiredError: "Questo campo è obbligatorio.",

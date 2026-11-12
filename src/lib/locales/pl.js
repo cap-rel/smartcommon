@@ -330,6 +330,10 @@ export const pl = {
         lengthError: (n) => `Wymagane dokładnie ${n} znaków.`,
         maxLengthError: (n) => `Dozwolone maksymalnie ${n} znaków.`,
         patternError: "Wartość nie ma oczekiwanego formatu.",
+        showPassword: "Pokaż hasło",
+        hidePassword: "Ukryj hasło",
+        decrease: "Zmniejsz",
+        increase: "Zwiększ",
     },
     Textarea: {
         requiredError: "To pole jest wymagane.",

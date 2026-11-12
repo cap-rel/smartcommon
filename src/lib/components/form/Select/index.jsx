@@ -2,6 +2,7 @@ import { useId } from "react";
 import { castArray, isNil, isObject, isEmpty } from "lodash";
 
 import { Label } from "lib/components";
+import { getFieldErrorAria } from "lib/components/form/tools/Label/fieldErrors";
 import { useField, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
@@ -33,6 +34,7 @@ export const Select = (props) => {
     options = [],
 
     labels: userLabels = {},
+    error,
   } = variantProps;
 
   const labels = { ...DEFAULT_LABELS, ...userLabels };
@@ -97,6 +99,8 @@ export const Select = (props) => {
           // thanks to the `...props` spread below. Mirrors Input.
           "aria-label": label ? undefined : placeholder,
           ...props,
+          // aria-invalid + aria-describedby pointing at the messages Label renders.
+          ...getFieldErrorAria({ id: selectId, showErrors: isFormSubmitted, errors: filteredErrors, error }, props),
           ...mergeQuickProps(props, ["name", "multiple", "disabled", "readOnly", "onBlur", "onFocus"]),
           id: selectId,
           value: currentValue ?? (multiple ? [] : ""),

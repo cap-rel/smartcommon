@@ -5,6 +5,7 @@ import { isNumber, isNil, includes } from "lodash";
 
 import { applyFunctionIfNotNil, datetimeFormat, ISOFormat, timeToMinutes, minutesToTime, isEmptyValue } from "lib/utils";
 import { Label } from "lib/components";
+import { getFieldErrorAria } from "lib/components/form/tools/Label/fieldErrors";
 import { useStates, useField, useVariantMerger } from "lib/hooks";
 
 import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
@@ -71,6 +72,7 @@ export const Input = (props) => {
     step,
     inputMode,
     labels: userLabels = {},
+    error,
   } = variantProps;
 
   const labels = { ...DEFAULT_LABELS, ...userLabels };
@@ -317,6 +319,8 @@ export const Input = (props) => {
           // inputProps) still wins thanks to the `...props` spread below.
           "aria-label": label ? undefined : placeholder,
           ...props,
+          // aria-invalid + aria-describedby pointing at the messages Label renders.
+          ...getFieldErrorAria({ id: inputId, showErrors: isFormSubmitted, errors: filteredErrors, error }, props),
           ...mergeQuickProps(props, ["disabled", "readOnly", "name", "size", "onBlur", "onFocus", "inputMode"]),
           min: props.min ?? toNativeBound(min),
           max: props.max ?? toNativeBound(max),
@@ -350,7 +354,7 @@ export const Input = (props) => {
                 applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
-                "aria-label": "Diminuer",
+                "aria-label": labels.decrease,
                 ...props.buttonProps,
                 className: `p-0 bg-transparent text-soft-text`
               }
@@ -365,7 +369,7 @@ export const Input = (props) => {
                 applyFunctionIfNotNil(props.onClick, e);
               },
               buttonProps: {
-                "aria-label": "Augmenter",
+                "aria-label": labels.increase,
                 ...props.buttonProps,
                 className: `p-0 bg-transparent text-soft-text`
               }
@@ -384,7 +388,7 @@ export const Input = (props) => {
               applyFunctionIfNotNil(props.onClick, e);
             },
             buttonProps: {
-              "aria-label": isPasswordVisible ? "Masquer le mot de passe" : "Afficher le mot de passe",
+              "aria-label": isPasswordVisible ? labels.hidePassword : labels.showPassword,
               ...props.buttonProps,
               className: `p-0 bg-transparent text-soft-text`
             }

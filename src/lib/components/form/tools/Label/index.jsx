@@ -1,7 +1,9 @@
 import { IoMdInformationCircleOutline } from "react-icons/io";
-import { isNil, isEmpty, filter, map } from "lodash";
+import { isNil, map } from "lodash";
 
 import { twMerge } from "lib/utils";
+
+import { getFieldErrors } from "./fieldErrors";
 
 // IDEA Mini-popup for help
 
@@ -28,8 +30,9 @@ export const Label = (props) => {
     // element's default classes plus the consumer's matching `${slot}Props`,
     // instead of crashing on `mergeProps is not a function`.
     // Only failing rules are displayed, once the form has been submitted.
-    const failingErrors = showErrors ? filter(errors, { condition: true }) : [];
-    const hasError = !isNil(error) || !isEmpty(failingErrors);
+    // Each message gets an id (when the field has one) that the control
+    // references through aria-describedby (see fieldErrors.js).
+    const { failingErrors, hasError, consumerErrorId, ruleErrorId } = getFieldErrors({ id, showErrors, errors, error });
 
     const mergeProps = props.mergeProps ?? ((slotKey, build) => {
         const slotProps = props[`${slotKey}Props`] ?? {};
@@ -118,12 +121,12 @@ export const Label = (props) => {
                     }))}>
                         <div { ...mergeProps("help", props => props)}>{help}</div>
                         {!isNil(error) &&
-                            <div { ...mergeProps("error", props => props)}>
+                            <div { ...mergeProps("error", props => ({ ...props, id: consumerErrorId }))}>
                                 {error}
                             </div>
                         }
                         {map(failingErrors, ({ message }, EI) => (
-                            <div key={`error${EI}`} { ...mergeProps("error", props => props)}>
+                            <div key={`error${EI}`} { ...mergeProps("error", props => ({ ...props, id: ruleErrorId(EI) }))}>
                                 {message}
                             </div>
                         ))}

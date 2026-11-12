@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useId } from "react";
 import { isNil } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
 import { Label } from "lib/components";
+import { getFieldErrorAria } from "lib/components/form/tools/Label/fieldErrors";
 import { applyFunctionIfNotNil, isEmptyValue } from "lib/utils";
 
 import { propTypes, DEFAULT_LABELS } from "./props";
@@ -33,9 +34,16 @@ export const Textarea = (props) => {
     cols,
     wrap,
     labels: userLabels = {},
+    error,
   } = variantProps;
 
   const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+  // Stable id to wire the <label htmlFor> to the <textarea id>, same as Input
+  // and Select: without it, clicking the label does not focus the field and
+  // the field has no accessible name.
+  const generatedId = useId();
+  const textareaId = id ?? generatedId;
 
   const errors = (currentValue) => ({
     required: { 
@@ -71,15 +79,17 @@ export const Textarea = (props) => {
   return (
     <Label 
       { ...variantProps}
+      id={textareaId}
       showErrors={isFormSubmitted}
       errors={filteredErrors}
       mergeProps={mergeProps}
     >
       <textarea { ...mergeProps("textarea", props => ({
         ...props,
-        // The Label points at this id (htmlFor): without it, clicking the label
-        // does not focus the field and the field has no accessible name.
-        id,
+        // aria-invalid + aria-describedby pointing at the messages Label renders.
+        ...getFieldErrorAria({ id: textareaId, showErrors: isFormSubmitted, errors: filteredErrors, error }, props),
+        // The Label points at this id (htmlFor).
+        id: textareaId,
         placeholder,
         disabled,
         readOnly,
