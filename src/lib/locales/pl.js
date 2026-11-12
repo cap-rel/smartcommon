@@ -468,6 +468,12 @@ export const pl = {
         openMenu: "Otwórz menu",
         closeMenu: "Zamknij menu",
     },
+    UserMenu: {
+        settings: "Ustawienia",
+        logout: "Wyloguj",
+        loggingOut: "Wylogowywanie...",
+        account: "Konto",
+    },
     Feedback: {
         buttonLabel: "Zgłoś problem",
         title: "Zgłoś problem",

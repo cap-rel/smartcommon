@@ -462,6 +462,12 @@ export const pt = {
         openMenu: "Abrir o menu",
         closeMenu: "Fechar o menu",
     },
+    UserMenu: {
+        settings: "Definições",
+        logout: "Terminar sessão",
+        loggingOut: "A terminar sessão...",
+        account: "Conta",
+    },
     Feedback: {
         buttonLabel: "Relatar um problema",
         title: "Relatar um problema",

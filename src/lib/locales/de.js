@@ -460,6 +460,12 @@ export const de = {
         openMenu: "Menü öffnen",
         closeMenu: "Menü schließen",
     },
+    UserMenu: {
+        settings: "Einstellungen",
+        logout: "Abmelden",
+        loggingOut: "Abmeldung...",
+        account: "Konto",
+    },
     Feedback: {
         buttonLabel: "Problem melden",
         title: "Problem melden",

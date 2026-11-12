@@ -455,6 +455,12 @@ export const fr = {
         openMenu: "Ouvrir le menu",
         closeMenu: "Fermer le menu",
     },
+    UserMenu: {
+        settings: "Réglages",
+        logout: "Déconnexion",
+        loggingOut: "Déconnexion...",
+        account: "Compte",
+    },
     Feedback: {
         buttonLabel: "Signaler un problème",
         title: "Signaler un problème",

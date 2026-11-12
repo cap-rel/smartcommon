@@ -18,7 +18,9 @@ Conventions communes :
 ## Import
 
 ```jsx
-import { Dropdown, ContextMenu, useContextMenu, useHotkeys } from "@cap-rel/smartcommon";
+import {
+    Dropdown, ContextMenu, useContextMenu, useHotkeys, UserMenu,
+} from "@cap-rel/smartcommon";
 ```
 
 ## `<Dropdown>`
@@ -157,3 +159,46 @@ annule le comportement du navigateur et appelle `handler(event)`.
   ligne ne réabonne pas l'écouteur à chaque rendu.
 - `enabled: false` détache l'écouteur (hors viewport desktop par
   exemple).
+
+## `<UserMenu>`
+
+Menu utilisateur épinglé en haut à droite (par `DesktopHeader`) : avatar
+(initiales) + nom, puis un `Dropdown` avec Réglages et Déconnexion.
+
+```jsx
+<UserMenu labels={locales.fr.UserMenu} />
+```
+
+Sans prop, dans le `<Provider>` racine :
+
+- l'utilisateur vient de l'état global (`gst.get("user")`, `username`
+  sinon `email`) ;
+- Réglages navigue vers `settingsPath` (`"/settings"`) par
+  `useNavigation().replace().to()` ;
+- Déconnexion appelle `useApi().logout()` avec un `AbortSignal` de
+  `logoutTimeoutMs` ms (15 s). L'entrée est désactivée pendant l'appel
+  (`labels.loggingOut`), une erreur est journalisée.
+
+Chaque comportement se remplace : `user`, `onSettings`, `onLogout`
+(peut renvoyer une promesse). `items` ajoute des entrées entre Réglages
+et Déconnexion ; `showSettings={false}` retire Réglages.
+
+Le nom visible est le nom accessible du bouton ; sans nom d'utilisateur,
+le bouton est nommé par `labels.account`. Les `data-testid` reprennent
+ceux de smartInterventions : `user-menu-trigger`, `user-menu-menu`,
+`user-menu-settings`, `user-menu-logout` (préfixe réglable par `testId`).
+
+| Prop | Type | Défaut | Notes |
+|------|------|--------|-------|
+| `user` | object | état global | `{ username?, email? }` |
+| `settingsPath` | string | `"/settings"` | route de Réglages |
+| `onSettings` | func | - | remplace la navigation |
+| `onLogout` | func | - | remplace `useApi().logout()` |
+| `logoutTimeoutMs` | number | `15000` | délai d'abandon du logout |
+| `showSettings` | bool | `true` | affiche Réglages |
+| `items` | array | `[]` | entrées ajoutées |
+| `align` | `"right"` \| `"left"` | `"right"` | alignement du menu |
+| `testId` | string | `"user-menu"` | préfixe des `data-testid` |
+| `labels` | object | anglais | `settings`, `logout`, `loggingOut`, `account` |
+
+Slots : `triggerProps`, `avatarProps`, `Dropdown` (props du `Dropdown`).

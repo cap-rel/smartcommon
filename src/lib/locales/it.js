@@ -460,6 +460,12 @@ export const it = {
         openMenu: "Apri il menu",
         closeMenu: "Chiudi il menu",
     },
+    UserMenu: {
+        settings: "Impostazioni",
+        logout: "Esci",
+        loggingOut: "Uscita in corso...",
+        account: "Account",
+    },
     Feedback: {
         buttonLabel: "Segnala un problema",
         title: "Segnala un problema",

@@ -459,6 +459,12 @@ export const nl = {
         openMenu: "Menu openen",
         closeMenu: "Menu sluiten",
     },
+    UserMenu: {
+        settings: "Instellingen",
+        logout: "Afmelden",
+        loggingOut: "Bezig met afmelden...",
+        account: "Account",
+    },
     Feedback: {
         buttonLabel: "Een probleem melden",
         title: "Een probleem melden",
