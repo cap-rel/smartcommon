@@ -189,8 +189,9 @@ sur son élément natif principal :
 
 Composants concernés : `Button`, `FAB`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
-saisie), `RadioBar` et `Checker` (le conteneur des options),
-`TabbarItem` et `LowerNavbarItem` (leur conteneur). Les autres props restent filtrées :
+saisie), `Boolean` (le contrôle dessiné), `RadioBar` et `Checker` (le
+conteneur des options), `TabbarItem` et `LowerNavbarItem` (leur
+conteneur). Les autres props restent filtrées :
 seuls les noms en `data-` et `aria-` passent.
 
 Pour viser un autre élément, ou pour un composant absent de cette liste,
@@ -228,6 +229,16 @@ retire toutes les options de la tabulation. Un test cible donc
 Cliquer sur l'option déjà cochée la décoche (valeur `""`), sauf si le
 champ est `required` : un champ obligatoire rempli ne peut plus être
 vidé.
+
+## `<Boolean>`
+
+Case ou interrupteur unique. Le contrôle dessiné est l'élément
+focalisable : `role="switch"` pour l'apparence par défaut (`switch`),
+`role="checkbox"` pour `checkbox`, `radio` et `icon`, avec
+`aria-checked`. Il est nommé par le label visible (`aria-labelledby`),
+sinon par `aria-label`, et reçoit `id`, `aria-required` et
+`aria-disabled`. Espace coche et décoche ; `disabled` le retire de la
+tabulation. Un test cible donc `getByRole("switch", { name: "Notifications" })`.
 
 ## `<Checker>`
 
