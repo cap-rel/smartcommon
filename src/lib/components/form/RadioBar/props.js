@@ -12,12 +12,14 @@ export const propTypes = {
     required: PropTypes.bool,
     disabled: PropTypes.bool,
     readOnly: PropTypes.bool,
+    // Plain values or { value, label } objects.
     options: PropTypes.array,
 
     name: PropTypes.string,
-    value: PropTypes.bool,
+    // Value of the checked option ("" when none is checked).
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     onChange: PropTypes.func,
-    defaultValue: PropTypes.bool,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,

@@ -189,7 +189,8 @@ sur son élément natif principal :
 
 Composants concernés : `Button`, `FAB`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
-saisie) et `TabbarItem` (son conteneur). Les autres props restent
+saisie), `RadioBar` (son `radiogroup`) et `TabbarItem` (son conteneur).
+Les autres props restent
 filtrées : seuls les noms en `data-` et `aria-` passent.
 
 Pour viser un autre élément, ou pour un composant absent de cette liste,
@@ -200,6 +201,33 @@ utiliser le slot `<élément>Props` (`buttonProps`, `inputProps`,
 Côté composant, l'élément qui reçoit ces attributs se déclare par
 `mergeProps("input", fn, { forwardAttributes: true })`, sur un seul
 élément par composant.
+
+## `<RadioBar>`
+
+Choix unique parmi quelques options affichées côte à côte. `options` :
+valeurs simples (chaînes ou nombres) ou objets `{ value, label }` ;
+`value` / `defaultValue` : la valeur de l'option cochée, `""` si aucune.
+
+```jsx
+<RadioBar
+    label="Priorité"
+    name="priority"
+    options={[{ value: "low", label: "Basse" }, { value: "high", label: "Haute" }]}
+/>
+```
+
+Accessibilité : le conteneur des options porte `role="radiogroup"`,
+nommé par le label visible (`aria-labelledby`) ; sans label, passer
+`aria-label`. Chaque option est un `role="radio"` avec `aria-checked`.
+Une seule option est dans l'ordre de tabulation : la cochée, sinon la
+première. Les flèches déplacent le focus et cochent l'option atteinte
+(en boucle), Espace et Entrée cochent l'option focalisée. `disabled`
+retire toutes les options de la tabulation. Un test cible donc
+`getByRole("radio", { name: "Haute" })`.
+
+Cliquer sur l'option déjà cochée la décoche (valeur `""`), sauf si le
+champ est `required` : un champ obligatoire rempli ne peut plus être
+vidé.
 
 ## Limites connues
 
