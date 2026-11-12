@@ -4,6 +4,9 @@ export const propTypes = {
     id: PropTypes.string.isRequired,
     children: PropTypes.node,
     title: PropTypes.string,
+    /** Element rendering the title (default "h2"): a heading, so screen
+     * readers list the sections. Pick the level that fits the page outline. */
+    titleAs: PropTypes.elementType,
     header: PropTypes.string,
     footer: PropTypes.string,
     /** "title-bar": renders the children as an horizontal action bar
@@ -21,5 +24,6 @@ export const propTypes = {
 };
 
 export const defaultProps = {
-    responsive: true
+    responsive: true,
+    titleAs: "h2",
 };

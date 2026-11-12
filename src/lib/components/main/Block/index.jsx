@@ -1,6 +1,8 @@
+import { useContext } from "react";
 import { isNil } from "lodash";
 import { useVariantMerger } from "lib/hooks";
 import { twMerge } from "lib/utils";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -12,6 +14,8 @@ export const Block = (props) => {
         responsive = true,
         type,
         title,
+        // Heading level of the title, so screen readers list the sections.
+        titleAs: TitleTag = "h2",
         header,
         footer,
         className,
@@ -24,16 +28,22 @@ export const Block = (props) => {
     // point works.
     const isTitleBar = type === "title-bar";
 
+    // Desktop UI conventions: borders, no card shadow. The session viewport
+    // decides (null-safe without a ViewportProvider, which keeps the
+    // historical shadows), not a CSS breakpoint.
+    const isDesktopSession = useContext(ViewportContext)?.isDesktop === true;
+
     return (
         <div { ...mergeProps("container", props => ({
             ...props,
             className: twMerge(`
                 flex flex-col gap-app-xs
-                ${!isTitleBar ? "my-app-base lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md lg:shadow-md" : ""}
+                ${!isTitleBar ? "my-app-base lg:my-0 lg:px-app-base lg:py-app-sm lg:bg-soft-bg lg:rounded-app-md" : ""}
+                ${!isTitleBar && !isDesktopSession ? "lg:shadow-md" : ""}
             `, className)
         }))}>
             {title && 
-                <div { ...mergeProps("title", props => ({
+                <TitleTag { ...mergeProps("title", props => ({
                     ...props,
                     className: `
                         font-app-semibold text-strong-text text-app-base mx-app-base
@@ -41,7 +51,7 @@ export const Block = (props) => {
                     `
                 }))}>
                     {title}
-                </div>
+                </TitleTag>
             }
             {header && 
                 <div { ...mergeProps("header", props => ({
@@ -57,8 +67,8 @@ export const Block = (props) => {
                     className: isTitleBar
                         ? `flex flex-row items-center justify-between gap-app-base`
                         : `
-                        flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text shadow-md text-app-sm
-                        lg:shadow-none lg:p-0
+                        flex flex-col gap-app-base bg-soft-bg px-app-base py-app-sm text-strong-text text-app-sm
+                        ${isDesktopSession ? "" : "shadow-md lg:shadow-none"} lg:p-0
                     `
                 }))}>
                     {children}
