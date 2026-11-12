@@ -11,6 +11,7 @@ import { render, screen } from "@testing-library/react";
 
 import { Button } from "lib/components/little/Button";
 import { FAB } from "lib/components/little/FAB";
+import { Tag } from "lib/components/little/Tag";
 import { Input } from "lib/components/form/Input";
 import { Select } from "lib/components/form/Select";
 import { Textarea } from "lib/components/form/Textarea";
@@ -27,6 +28,7 @@ describe("forwarded attributes - main element of each component", () => {
         ["Button", () => <Button label="Save" {...ATTRIBUTES} />, "BUTTON"],
         ["Button as a link", () => <Button label="Open" href="/x" {...ATTRIBUTES} />, "A"],
         ["FAB", () => <FAB label="Add" {...ATTRIBUTES} />, "BUTTON"],
+        ["Tag", () => <Tag {...ATTRIBUTES}>Done</Tag>, "DIV"],
         ["Input", () => <Input label="Name" value="" onChange={() => {}} {...ATTRIBUTES} />, "INPUT"],
         ["Select", () => <Select label="Kind" options={[{ value: "a", label: "A" }]} {...ATTRIBUTES} />, "SELECT"],
         ["Textarea", () => <Textarea label="Note" {...ATTRIBUTES} />, "TEXTAREA"],

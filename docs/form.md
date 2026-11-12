@@ -187,7 +187,7 @@ sur son élément natif principal :
 <Input label="Nom" data-testid="name" aria-describedby="name-help" />  // sur le <input>
 ```
 
-Composants concernés : `Button`, `FAB`, `Input`, `Select`,
+Composants concernés : `Button`, `FAB`, `Tag`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
 saisie), `Boolean` (le contrôle dessiné), `RadioBar` et `Checker` (le
 conteneur des options), `TabbarItem` et `LowerNavbarItem` (leur

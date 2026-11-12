@@ -145,6 +145,22 @@ Sur mobile, le link déclenche l'app native correspondante.
 // idem (accepte array OU CSV)
 ```
 
+Chaque pastille est un `<Tag>` ; `color` (sur `<Tags>`, sur une option,
+ou sur `<Tag>` directement, défaut `success` pour `<Tag>`, `primary`
+pour `<Tags>`) accepte :
+
+- `success`, `warning`, `primary`, `secondary`, `neutral`, `error` ;
+- `danger` (alias de `error`) et `info` (alias de `primary`) ;
+- les statuts `to-complete`, `in-progress`, `done`, `to-do`, `draft`,
+  `update`.
+
+La couleur vient de la palette de base du thème (`--color-success`,
+`--color-error`...), présente dans tous les thèmes et dans le CSS livré.
+Un thème qui définit `--color-<nom>-status` (et `--color-strong-<nom>-status`
+pour le texte) reste prioritaire. Un nom inconnu s'affiche en `neutral`,
+sauf si le thème définit sa variable `-status`. `data-*` et `aria-*` posés
+sur `<Tag>` arrivent sur la pastille.
+
 ## Convention de "valeur vide"
 
 Tous les formatters retournent `null` (ou un fallback minimal) quand
