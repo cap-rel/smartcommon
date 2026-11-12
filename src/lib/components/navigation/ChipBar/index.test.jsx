@@ -97,3 +97,32 @@ describe("ChipBar", () => {
         expect(bar.querySelectorAll("button").length).toBe(0);
     });
 });
+
+describe("ChipBar - accessibility", () => {
+    const chips = [
+        { key: "all", label: "All", count: 12, active: true },
+        { key: "mine", label: "Mine", count: 0, active: false, disabled: true },
+    ];
+
+    it("announces which chip is active with aria-pressed", () => {
+        render(<ChipBar chips={chips} />);
+        expect(screen.getByRole("button", { name: /All/ }).getAttribute("aria-pressed")).toBe("true");
+        expect(screen.getByRole("button", { name: /Mine/ }).getAttribute("aria-pressed")).toBe("false");
+    });
+
+    it("marks a disabled chip with aria-disabled and keeps it clickable", () => {
+        const onClick = vi.fn();
+        render(<ChipBar chips={[{ ...chips[1], onClick }]} />);
+        const mine = screen.getByRole("button", { name: /Mine/ });
+
+        expect(mine.getAttribute("aria-disabled")).toBe("true");
+        expect(mine.disabled).toBe(false);
+        fireEvent.click(mine);
+        expect(onClick).toHaveBeenCalledTimes(1);
+    });
+
+    it("leaves aria-disabled off an enabled chip", () => {
+        render(<ChipBar chips={chips} />);
+        expect(screen.getByRole("button", { name: /All/ }).hasAttribute("aria-disabled")).toBe(false);
+    });
+});

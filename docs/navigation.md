@@ -179,6 +179,15 @@ minimaliste (pas de props.js défini), juste un wrapper styling.
 > souvent directement `<Button icon=... onClick=...>` plutôt que
 > `<UpperNavbarItem>`.
 
+### `<ChipBar>`
+
+Rangée de filtres en pastilles (`chips` : `{ key, label, count, active,
+onClick, disabled?, hidden?, variant?, icon? }`), sur plusieurs lignes
+si besoin. Chaque pastille est un `<button>` avec `aria-pressed` qui
+annonce si le filtre est actif. Une pastille `disabled` (compteur à
+zéro) est atténuée et porte `aria-disabled="true"`, mais reste
+cliquable : pas d'attribut `disabled` natif.
+
 ## Pattern d'intégration complet
 
 ```jsx

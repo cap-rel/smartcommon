@@ -61,12 +61,17 @@ export const ChipBar = (props) => {
                 const shapeClass = isStatus ? "rounded-md" : "rounded-full";
                 const disabledClass = disabled ? "opacity-50" : "";
 
+                // A chip is a toggle filter: aria-pressed announces its state.
+                // No native `disabled`: a zero-count chip stays clickable.
+
                 return (
                     <button
                         key={key ?? `chip${idx}`}
                         type="button"
                         data-testid={`chip-${key}`}
                         data-active={active ? "true" : "false"}
+                        aria-pressed={active ? "true" : "false"}
+                        aria-disabled={disabled ? "true" : undefined}
                         onClick={onClick}
                         className={twMerge(
                             `flex items-center gap-app-xxs px-app-sm py-app-xxs
