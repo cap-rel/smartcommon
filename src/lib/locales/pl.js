@@ -477,6 +477,11 @@ export const pl = {
     DesktopHeader: {
         back: "Wstecz",
     },
+    DesktopSidebar: {
+        navigation: "Nawigacja główna",
+        collapse: "Zwiń menu",
+        expand: "Rozwiń menu",
+    },
     Feedback: {
         buttonLabel: "Zgłoś problem",
         title: "Zgłoś problem",

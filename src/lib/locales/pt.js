@@ -471,6 +471,11 @@ export const pt = {
     DesktopHeader: {
         back: "Voltar",
     },
+    DesktopSidebar: {
+        navigation: "Navegação principal",
+        collapse: "Recolher o menu",
+        expand: "Expandir o menu",
+    },
     Feedback: {
         buttonLabel: "Relatar um problema",
         title: "Relatar um problema",

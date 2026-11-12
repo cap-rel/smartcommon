@@ -469,6 +469,11 @@ export const de = {
     DesktopHeader: {
         back: "Zurück",
     },
+    DesktopSidebar: {
+        navigation: "Hauptnavigation",
+        collapse: "Menü einklappen",
+        expand: "Menü ausklappen",
+    },
     Feedback: {
         buttonLabel: "Problem melden",
         title: "Problem melden",

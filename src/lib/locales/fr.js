@@ -464,6 +464,11 @@ export const fr = {
     DesktopHeader: {
         back: "Retour",
     },
+    DesktopSidebar: {
+        navigation: "Navigation principale",
+        collapse: "Réduire le menu",
+        expand: "Déplier le menu",
+    },
     Feedback: {
         buttonLabel: "Signaler un problème",
         title: "Signaler un problème",

@@ -1,5 +1,6 @@
 export * from "./ChipBar";
 export * from "./DesktopHeader";
+export * from "./DesktopSidebar";
 export * from "./Navbar";
 export * from "./Sidebar";
 export * from "./Tabbar";

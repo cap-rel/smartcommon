@@ -20,7 +20,7 @@ Conventions communes :
 ```jsx
 import {
     Dropdown, ContextMenu, useContextMenu, useHotkeys, UserMenu, DesktopHeader,
-    DesktopSplit,
+    DesktopSplit, DesktopSidebar,
 } from "@cap-rel/smartcommon";
 ```
 
@@ -291,3 +291,104 @@ maître en pleine largeur sous 1024 px et écrasait le détail).
 Slots : `containerProps`, `masterProps`, `detailProps`. Les volets sont
 des `<section>` : un `aria-label` passé par `masterProps` / `detailProps`
 en fait des régions nommées pour les lecteurs d'écran.
+
+## `<DesktopSidebar>`
+
+Sidebar gauche persistante : navigation primaire (les mêmes entrées que
+la Tabbar mobile), repliable en rail d'icônes. L'état replié est gardé
+dans `localStorage` et survit à un rechargement.
+
+```jsx
+<DesktopSidebar
+    brand={({ collapsed }) => (collapsed ? <Logo small /> : <Logo />)}
+    links={[
+        { id: "home", label: "Accueil", icon: FaHouse, to: "/" },
+        { id: "ints", label: "Interventions", icon: FaRocket, to: "/interventions", badge: late },
+        { id: "clients", label: "Clients", icon: FaUsers, to: "/clients" },
+    ]}
+    labels={locales.fr.DesktopSidebar}
+/>
+```
+
+`links` : `{ id?, label, icon, to?, onClick?, active?, badge?, disabled? }`.
+Avec `to`, l'entrée est un lien du routeur ; sans `to`, un bouton qui
+appelle `onClick`. `icon` est un composant react-icons ou un élément.
+`badge` est un compteur (masqué à 0, "99+" au-delà de 99), accroché au
+coin de l'icône. `id` donne le `data-testid="sidebar-nav-<id>"` de
+smartInterventions.
+
+Entrée active : `active` si fourni, sinon `isActive(link, pathname)` si
+fourni, sinon la route : `"/"` est active sur `/` seulement, une autre
+route sur elle-même et ses sous-routes (`/clients` sur `/clients/42`).
+Le chemin vient de `useNavigation().location` (`<Provider>`), à défaut
+de `window.location`.
+
+Repli :
+
+- non contrôlé (défaut) : état initial lu dans
+  `localStorage[storageKey]` (`"1"` replié, `"0"` déplié), sinon
+  `defaultCollapsed` ; chaque bascule y est écrite. `storageKey={null}`
+  désactive la persistance. Un stockage inaccessible (navigation privée)
+  est journalisé et l'état par défaut s'applique ;
+- contrôlé : `collapsed` + `onCollapsedChange(next)`, le parent garde
+  (et persiste) l'état.
+
+Accessibilité : un landmark `<nav>` nommé par `labels.navigation`,
+contenant une liste ; l'entrée de la route courante porte
+`aria-current="page"`. Repliée, chaque entrée garde son nom
+(`aria-label` et infobulle). Le bouton de repli porte `aria-expanded` et
+`aria-controls` ; déplié il affiche `labels.collapse`, replié il est
+nommé par `labels.expand`.
+
+Conventions desktop : bordure droite, pas d'ombre, `transition-colors`
+sur les entrées, pas d'état `active:`. Le menu utilisateur n'est pas
+dans le pied de la sidebar mais en haut à droite (`UserMenu` dans
+`DesktopHeader`) ; `footer` reste disponible pour une information
+secondaire (version, statut de synchronisation).
+
+| Prop | Type | Défaut | Notes |
+|------|------|--------|-------|
+| `links` | array | `[]` | entrées de navigation |
+| `brand` | node \| func | - | haut de la sidebar, `({ collapsed }) => node` possible |
+| `footer` | node \| func | - | au-dessus du bouton de repli |
+| `collapsed` | bool | - | mode contrôlé |
+| `defaultCollapsed` | bool | `false` | état initial sans valeur stockée |
+| `onCollapsedChange` | func | - | `(next) => void` |
+| `storageKey` | string \| null | `"smartcommon.desktopSidebar.collapsed"` | clé `localStorage` |
+| `isActive` | func | - | `(link, pathname) => bool` |
+| `labels` | object | anglais | `navigation`, `collapse`, `expand` |
+
+Slots : `asideProps`, `brandProps`, `navProps`, `linkProps`,
+`iconGlyphProps`, `badgeProps`, `footerProps`, `toggleProps`.
+
+## Assembler la coquille desktop
+
+La coquille (choix de la chrome selon le viewport, rail tablette,
+`<Outlet>`) reste dans l'application : elle dépend de ses routes et de
+ses écrans tablette. Avec les briques ci-dessus elle tient en quelques
+lignes :
+
+```jsx
+const AppShell = () => {
+    const { isMobile, isTablet } = useViewport();
+    if (isMobile) return <Outlet />;
+    if (isTablet) return <TabletShell />; // propre à l'application
+
+    return (
+        <div className="flex h-screen overflow-hidden">
+            <DesktopSidebar links={links} labels={locales.fr.DesktopSidebar} />
+            <main className="flex-1 overflow-y-auto">
+                <Outlet />
+            </main>
+        </div>
+    );
+};
+
+// Une page desktop
+<div className="flex flex-col h-full">
+    <DesktopHeader title="Clients" UserMenu={{ labels: locales.fr.UserMenu }} />
+    <div className="flex-1 min-h-0">
+        <DesktopSplit master={...} detail={...} hasSelection={!!selected} />
+    </div>
+</div>
+```

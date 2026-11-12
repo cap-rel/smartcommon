@@ -468,6 +468,11 @@ export const nl = {
     DesktopHeader: {
         back: "Terug",
     },
+    DesktopSidebar: {
+        navigation: "Hoofdnavigatie",
+        collapse: "Menu inklappen",
+        expand: "Menu uitklappen",
+    },
     Feedback: {
         buttonLabel: "Een probleem melden",
         title: "Een probleem melden",
