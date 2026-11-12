@@ -365,6 +365,60 @@ export const de = {
         messageWithVersion: (version) => `Version ${version} ist verfügbar.`,
         reloadButton: "Aktualisieren",
     },
+    InstallPrompt: {
+        title: "App installieren",
+        message: "Fügen Sie sie zum Startbildschirm hinzu, für schnelleren Zugriff, auch offline.",
+        installButton: "Installieren",
+        dismissButton: "Nicht jetzt",
+        iosTitle: "Zum Home-Bildschirm hinzufügen",
+        iosStep1: "Tippen Sie in der Symbolleiste auf die Teilen-Taste",
+        iosStep2: "Wählen Sie \"Zum Home-Bildschirm\"",
+        iosStep3: "Bestätigen Sie mit \"Hinzufügen\"",
+        gotItButton: "Verstanden",
+        stepsTitle: "So installieren Sie die App",
+        guides: {
+            "in-app": [
+                "Diese Seite ist in einer anderen App geöffnet, die sie nicht installieren kann",
+                "Öffnen Sie das Menü dieser App und wählen Sie \"Im Browser öffnen\"",
+                "Folgen Sie dann den Anweisungen Ihres Browsers",
+            ],
+            android: [
+                "Öffnen Sie das Browsermenü (drei Punkte oben rechts)",
+                "Wählen Sie \"App installieren\" oder \"Zum Startbildschirm hinzufügen\"",
+                "Bestätigen Sie mit \"Installieren\"",
+            ],
+            "android-firefox": [
+                "Öffnen Sie das Browsermenü (drei Punkte)",
+                "Wählen Sie \"Installieren\" oder \"Zum Startbildschirm hinzufügen\"",
+                "Bestätigen Sie mit \"Hinzufügen\"",
+            ],
+            "android-samsung": [
+                "Tippen Sie auf das Installationssymbol in der Adressleiste oder öffnen Sie das Menü (drei Striche)",
+                "Wählen Sie \"Seite hinzufügen zu\" und dann \"Startbildschirm\"",
+                "Bestätigen Sie mit \"Hinzufügen\"",
+            ],
+            "desktop-chromium": [
+                "Klicken Sie auf das Installationssymbol rechts in der Adressleiste",
+                "Oder öffnen Sie das Browsermenü und wählen Sie \"Installieren\"",
+                "Bestätigen Sie mit \"Installieren\": Die App erhält ein eigenes Fenster und Symbol",
+            ],
+            "macos-safari": [
+                "Öffnen Sie in Safari das Menü \"Ablage\"",
+                "Wählen Sie \"Zum Dock hinzufügen\"",
+                "Bestätigen Sie mit \"Hinzufügen\"",
+            ],
+            "desktop-firefox": [
+                "Firefox kann auf einem Computer keine Web-Apps installieren",
+                "Öffnen Sie diese Seite in Chrome oder Edge, um sie zu installieren",
+                "Oder setzen Sie ein Lesezeichen (Strg+D), um sie schnell wiederzufinden",
+            ],
+            unknown: [
+                "Öffnen Sie das Menü Ihres Browsers",
+                "Wählen Sie \"Installieren\" oder \"Zum Startbildschirm hinzufügen\"",
+                "Bestätigen Sie die Installation",
+            ],
+        },
+    },
     // TODO native review for de
     ViewportProvider: {
         confirmReloadMessage: "Das Ändern der Ansicht lädt die Anwendung neu. Fortfahren?",

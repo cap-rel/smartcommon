@@ -224,6 +224,22 @@ Internes : le service worker met à jour en arrière-plan -> le hook
 écoute `controllerchange` -> set `updateActivated` -> rechargement
 automatique ou invite utilisateur.
 
+### Invite d'installation (`<InstallPrompt>`)
+
+`<InstallPrompt>` invite à installer la PWA (bouton natif sur Chromium,
+étapes propres au navigateur ailleurs). À monter une fois, à côté de
+l'invite de mise à jour. Ses textes, y compris les étapes de chaque
+navigateur (`guides`), existent dans tous les bundles :
+
+```jsx
+<InstallPrompt variant="banner" labels={locales.fr.InstallPrompt} />
+```
+
+`labels.guides` est fusionné avec les guides anglais, pas avec ceux du
+bundle : pour remplacer les étapes d'un seul navigateur en gardant le
+français ailleurs, repartir des guides du bundle
+(`guides: { ...locales.fr.InstallPrompt.guides, android: [...] }`).
+
 ## Providers NON auto-montés
 
 `smartcommon` expose trois providers qui ne sont PAS dans

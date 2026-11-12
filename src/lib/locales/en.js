@@ -47,6 +47,7 @@ import { DEFAULT_LABELS as ArrayLabels } from "lib/components/form/Array/props";
 import { DEFAULT_LABELS as List } from "lib/components/main/List/props";
 import { DEFAULT_LABELS as Page } from "lib/components/main/Page/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
+import { DEFAULT_LABELS as InstallPrompt } from "lib/components/app/InstallPrompt/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
 import { DEFAULT_LABELS as Print } from "lib/print/labels";
 import { DEFAULT_LABELS as ErrorBoundary } from "lib/components/app/ErrorBoundary/props";
@@ -91,6 +92,7 @@ export const en = {
     List,
     Page,
     UpdatePrompt,
+    InstallPrompt,
     ViewportProvider,
     Print,
     ErrorBoundary,

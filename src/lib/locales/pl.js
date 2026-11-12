@@ -373,6 +373,60 @@ export const pl = {
         messageWithVersion: (version) => `Wersja ${version} jest dostępna.`,
         reloadButton: "Odśwież",
     },
+    InstallPrompt: {
+        title: "Zainstaluj aplikację",
+        message: "Dodaj ją do ekranu głównego, aby mieć szybszy dostęp, także offline.",
+        installButton: "Zainstaluj",
+        dismissButton: "Nie teraz",
+        iosTitle: "Dodaj do ekranu głównego",
+        iosStep1: "Stuknij przycisk Udostępnij na pasku narzędzi",
+        iosStep2: "Wybierz \"Do ekranu początkowego\"",
+        iosStep3: "Potwierdź przyciskiem \"Dodaj\"",
+        gotItButton: "Rozumiem",
+        stepsTitle: "Jak ją zainstalować",
+        guides: {
+            "in-app": [
+                "Ta strona jest otwarta w innej aplikacji, która nie może jej zainstalować",
+                "Otwórz menu tej aplikacji i wybierz \"Otwórz w przeglądarce\"",
+                "Następnie postępuj zgodnie z instrukcjami przeglądarki",
+            ],
+            android: [
+                "Otwórz menu przeglądarki (trzy kropki w prawym górnym rogu)",
+                "Wybierz \"Zainstaluj aplikację\" lub \"Dodaj do ekranu głównego\"",
+                "Potwierdź przyciskiem \"Zainstaluj\"",
+            ],
+            "android-firefox": [
+                "Otwórz menu przeglądarki (trzy kropki)",
+                "Wybierz \"Zainstaluj\" lub \"Dodaj do ekranu głównego\"",
+                "Potwierdź przyciskiem \"Dodaj\"",
+            ],
+            "android-samsung": [
+                "Stuknij ikonę instalacji na pasku adresu albo otwórz menu (trzy kreski)",
+                "Wybierz \"Dodaj stronę do\", a potem \"Ekran startowy\"",
+                "Potwierdź przyciskiem \"Dodaj\"",
+            ],
+            "desktop-chromium": [
+                "Kliknij ikonę instalacji po prawej stronie paska adresu",
+                "Albo otwórz menu przeglądarki i wybierz \"Zainstaluj\"",
+                "Potwierdź przyciskiem \"Zainstaluj\": aplikacja dostanie własne okno i ikonę",
+            ],
+            "macos-safari": [
+                "Otwórz menu Plik w Safari",
+                "Wybierz \"Dodaj do Docka\"",
+                "Potwierdź przyciskiem \"Dodaj\"",
+            ],
+            "desktop-firefox": [
+                "Firefox nie może instalować aplikacji internetowych na komputerze",
+                "Otwórz tę stronę w Chrome lub Edge, aby ją zainstalować",
+                "Albo dodaj ją do zakładek (Ctrl+D), aby szybko ją odnaleźć",
+            ],
+            unknown: [
+                "Otwórz menu przeglądarki",
+                "Wybierz \"Zainstaluj\" lub \"Dodaj do ekranu głównego\"",
+                "Potwierdź instalację",
+            ],
+        },
+    },
     // TODO native review for pl
     ViewportProvider: {
         confirmReloadMessage: "Zmiana widoku przeładuje aplikację. Kontynuować?",

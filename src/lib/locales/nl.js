@@ -364,6 +364,60 @@ export const nl = {
         messageWithVersion: (version) => `Versie ${version} is beschikbaar.`,
         reloadButton: "Vernieuwen",
     },
+    InstallPrompt: {
+        title: "App installeren",
+        message: "Zet de app op je beginscherm voor snellere toegang, ook offline.",
+        installButton: "Installeren",
+        dismissButton: "Niet nu",
+        iosTitle: "Zet op beginscherm",
+        iosStep1: "Tik op de deelknop in de werkbalk",
+        iosStep2: "Kies \"Zet op beginscherm\"",
+        iosStep3: "Bevestig met \"Voeg toe\"",
+        gotItButton: "Begrepen",
+        stepsTitle: "Zo installeer je de app",
+        guides: {
+            "in-app": [
+                "Deze pagina is geopend in een andere app, die haar niet kan installeren",
+                "Open het menu van die app en kies \"Openen in browser\"",
+                "Volg daarna de instructies van je browser",
+            ],
+            android: [
+                "Open het browsermenu (drie puntjes, rechtsboven)",
+                "Kies \"App installeren\" of \"Toevoegen aan startscherm\"",
+                "Bevestig met \"Installeren\"",
+            ],
+            "android-firefox": [
+                "Open het browsermenu (drie puntjes)",
+                "Kies \"Installeren\" of \"Toevoegen aan startscherm\"",
+                "Bevestig met \"Toevoegen\"",
+            ],
+            "android-samsung": [
+                "Tik op het installatiepictogram in de adresbalk, of open het menu (drie streepjes)",
+                "Kies \"Pagina toevoegen aan\" en daarna \"Startscherm\"",
+                "Bevestig met \"Toevoegen\"",
+            ],
+            "desktop-chromium": [
+                "Klik op het installatiepictogram rechts in de adresbalk",
+                "Of open het browsermenu en kies \"Installeren\"",
+                "Bevestig met \"Installeren\": de app krijgt een eigen venster en pictogram",
+            ],
+            "macos-safari": [
+                "Open het menu Archief van Safari",
+                "Kies \"Voeg toe aan Dock\"",
+                "Bevestig met \"Voeg toe\"",
+            ],
+            "desktop-firefox": [
+                "Firefox kan op een computer geen webapps installeren",
+                "Open deze pagina in Chrome of Edge om de app te installeren",
+                "Of maak een bladwijzer (Ctrl+D) om de pagina snel terug te vinden",
+            ],
+            unknown: [
+                "Open het menu van je browser",
+                "Kies \"Installeren\" of \"Toevoegen aan startscherm\"",
+                "Bevestig de installatie",
+            ],
+        },
+    },
     // TODO native review for nl
     ViewportProvider: {
         confirmReloadMessage: "De weergave wijzigen zal de applicatie herladen. Doorgaan?",

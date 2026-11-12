@@ -361,6 +361,60 @@ export const fr = {
         messageWithVersion: (version) => `La version ${version} est disponible.`,
         reloadButton: "Rafraîchir",
     },
+    InstallPrompt: {
+        title: "Installer l'application",
+        message: "Ajoutez-la à votre écran d'accueil pour y accéder plus vite, même hors connexion.",
+        installButton: "Installer",
+        dismissButton: "Plus tard",
+        iosTitle: "Ajouter à l'écran d'accueil",
+        iosStep1: "Touchez le bouton Partager dans la barre d'outils",
+        iosStep2: "Choisissez \"Sur l'écran d'accueil\"",
+        iosStep3: "Confirmez avec \"Ajouter\"",
+        gotItButton: "J'ai compris",
+        stepsTitle: "Comment l'installer",
+        guides: {
+            "in-app": [
+                "Cette page est ouverte dans une autre application, qui ne peut pas l'installer",
+                "Ouvrez le menu de cette application et choisissez \"Ouvrir dans le navigateur\"",
+                "Suivez ensuite les instructions affichées par votre navigateur",
+            ],
+            android: [
+                "Ouvrez le menu du navigateur (trois points, en haut à droite)",
+                "Choisissez \"Installer l'application\" ou \"Ajouter à l'écran d'accueil\"",
+                "Confirmez avec \"Installer\"",
+            ],
+            "android-firefox": [
+                "Ouvrez le menu du navigateur (trois points)",
+                "Choisissez \"Installer\" ou \"Ajouter à l'écran d'accueil\"",
+                "Confirmez avec \"Ajouter\"",
+            ],
+            "android-samsung": [
+                "Touchez l'icône d'installation dans la barre d'adresse, ou ouvrez le menu (trois traits)",
+                "Choisissez \"Ajouter la page à\" puis \"Écran d'accueil\"",
+                "Confirmez avec \"Ajouter\"",
+            ],
+            "desktop-chromium": [
+                "Cliquez sur l'icône d'installation à droite de la barre d'adresse",
+                "Ou ouvrez le menu du navigateur et choisissez \"Installer\"",
+                "Confirmez avec \"Installer\" : l'application aura sa propre fenêtre et sa propre icône",
+            ],
+            "macos-safari": [
+                "Ouvrez le menu Fichier de Safari",
+                "Choisissez \"Ajouter au Dock\"",
+                "Confirmez avec \"Ajouter\"",
+            ],
+            "desktop-firefox": [
+                "Firefox ne peut pas installer d'application web sur un ordinateur",
+                "Ouvrez cette page dans Chrome ou Edge pour l'installer",
+                "Ou ajoutez-la aux favoris (Ctrl+D) pour la retrouver rapidement",
+            ],
+            unknown: [
+                "Ouvrez le menu de votre navigateur",
+                "Choisissez \"Installer\" ou \"Ajouter à l'écran d'accueil\"",
+                "Confirmez l'installation",
+            ],
+        },
+    },
     ViewportProvider: {
         confirmReloadMessage: "Changer la vue va recharger l'application. Continuer ?",
     },

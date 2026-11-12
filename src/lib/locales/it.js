@@ -365,6 +365,60 @@ export const it = {
         messageWithVersion: (version) => `È disponibile la versione ${version}.`,
         reloadButton: "Aggiorna",
     },
+    InstallPrompt: {
+        title: "Installa l'app",
+        message: "Aggiungila alla schermata Home per un accesso più rapido, anche offline.",
+        installButton: "Installa",
+        dismissButton: "Non ora",
+        iosTitle: "Aggiungi alla schermata Home",
+        iosStep1: "Tocca il pulsante Condividi nella barra degli strumenti",
+        iosStep2: "Scegli \"Aggiungi alla schermata Home\"",
+        iosStep3: "Conferma con \"Aggiungi\"",
+        gotItButton: "Ho capito",
+        stepsTitle: "Come installarla",
+        guides: {
+            "in-app": [
+                "Questa pagina è aperta all'interno di un'altra app, che non può installarla",
+                "Apri il menu di quell'app e scegli \"Apri nel browser\"",
+                "Poi segui le istruzioni mostrate dal browser",
+            ],
+            android: [
+                "Apri il menu del browser (tre puntini in alto a destra)",
+                "Scegli \"Installa app\" o \"Aggiungi a schermata Home\"",
+                "Conferma con \"Installa\"",
+            ],
+            "android-firefox": [
+                "Apri il menu del browser (tre puntini)",
+                "Scegli \"Installa\" o \"Aggiungi a schermata Home\"",
+                "Conferma con \"Aggiungi\"",
+            ],
+            "android-samsung": [
+                "Tocca l'icona di installazione nella barra degli indirizzi, oppure apri il menu (tre linee)",
+                "Scegli \"Aggiungi pagina a\" e poi \"Schermata Home\"",
+                "Conferma con \"Aggiungi\"",
+            ],
+            "desktop-chromium": [
+                "Fai clic sull'icona di installazione a destra della barra degli indirizzi",
+                "Oppure apri il menu del browser e scegli \"Installa\"",
+                "Conferma con \"Installa\": l'app avrà una finestra e un'icona proprie",
+            ],
+            "macos-safari": [
+                "Apri il menu File di Safari",
+                "Scegli \"Aggiungi al Dock\"",
+                "Conferma con \"Aggiungi\"",
+            ],
+            "desktop-firefox": [
+                "Firefox non può installare app web su un computer",
+                "Apri questa pagina in Chrome o Edge per installarla",
+                "Oppure aggiungila ai segnalibri (Ctrl+D) per ritrovarla subito",
+            ],
+            unknown: [
+                "Apri il menu del browser",
+                "Scegli \"Installa\" o \"Aggiungi a schermata Home\"",
+                "Conferma l'installazione",
+            ],
+        },
+    },
     // TODO native review for it
     ViewportProvider: {
         confirmReloadMessage: "Cambiare la vista ricaricherà l'applicazione. Continuare?",

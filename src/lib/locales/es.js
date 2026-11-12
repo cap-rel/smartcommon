@@ -365,6 +365,60 @@ export const es = {
         messageWithVersion: (version) => `La versión ${version} está disponible.`,
         reloadButton: "Actualizar",
     },
+    InstallPrompt: {
+        title: "Instalar la aplicación",
+        message: "Añádela a tu pantalla de inicio para acceder más rápido, incluso sin conexión.",
+        installButton: "Instalar",
+        dismissButton: "Ahora no",
+        iosTitle: "Añadir a la pantalla de inicio",
+        iosStep1: "Toca el botón Compartir en la barra de herramientas",
+        iosStep2: "Elige \"Añadir a pantalla de inicio\"",
+        iosStep3: "Confirma con \"Añadir\"",
+        gotItButton: "Entendido",
+        stepsTitle: "Cómo instalarla",
+        guides: {
+            "in-app": [
+                "Esta página está abierta dentro de otra aplicación, que no puede instalarla",
+                "Abre el menú de esa aplicación y elige \"Abrir en el navegador\"",
+                "Después sigue las instrucciones que muestre tu navegador",
+            ],
+            android: [
+                "Abre el menú del navegador (tres puntos, arriba a la derecha)",
+                "Elige \"Instalar aplicación\" o \"Añadir a pantalla de inicio\"",
+                "Confirma con \"Instalar\"",
+            ],
+            "android-firefox": [
+                "Abre el menú del navegador (tres puntos)",
+                "Elige \"Instalar\" o \"Añadir a pantalla de inicio\"",
+                "Confirma con \"Añadir\"",
+            ],
+            "android-samsung": [
+                "Toca el icono de instalación en la barra de direcciones, o abre el menú (tres líneas)",
+                "Elige \"Añadir página a\" y luego \"Pantalla de inicio\"",
+                "Confirma con \"Añadir\"",
+            ],
+            "desktop-chromium": [
+                "Haz clic en el icono de instalación a la derecha de la barra de direcciones",
+                "O abre el menú del navegador y elige \"Instalar\"",
+                "Confirma con \"Instalar\": la aplicación tendrá su propia ventana e icono",
+            ],
+            "macos-safari": [
+                "Abre el menú Archivo de Safari",
+                "Elige \"Añadir al Dock\"",
+                "Confirma con \"Añadir\"",
+            ],
+            "desktop-firefox": [
+                "Firefox no puede instalar aplicaciones web en un ordenador",
+                "Abre esta página en Chrome o Edge para instalarla",
+                "O guárdala en marcadores (Ctrl+D) para encontrarla rápido",
+            ],
+            unknown: [
+                "Abre el menú de tu navegador",
+                "Elige \"Instalar\" o \"Añadir a pantalla de inicio\"",
+                "Confirma la instalación",
+            ],
+        },
+    },
     // TODO native review for es
     ViewportProvider: {
         confirmReloadMessage: "Cambiar la vista recargará la aplicación. Continuar?",
