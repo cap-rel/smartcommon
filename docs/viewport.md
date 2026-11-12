@@ -24,19 +24,22 @@ Le système est composé de :
 
 ## Provider mount
 
-```jsx
-import { ViewportProvider } from "@cap-rel/smartcommon";
+Le `<Provider>` racine de smartcommon ne monte PAS `<ViewportProvider>`
+(cf [provider.md](provider.md), "Providers NON auto-montés") : il se
+monte à la main, sous `<Provider>`, au-dessus des pages qui appellent
+`useViewport()` ou rendent un `<DualShell>`.
 
-<ViewportProvider>
-    <App />
-</ViewportProvider>
+```jsx
+import { Provider, ViewportProvider, locales } from "@cap-rel/smartcommon";
+
+<Provider config={libConfig}>
+    <ViewportProvider labels={locales.fr.ViewportProvider}>
+        <App />
+    </ViewportProvider>
+</Provider>
 ```
 
-Le provider est inclus dans le `<Provider>` racine de smartcommon
-(cf [provider.md](provider.md)). Si tu utilises `<Provider>`, tu n'as
-rien à monter en plus.
-
-### Mount manuel sans `<Provider>` racine
+### Options du provider
 
 ```jsx
 <ViewportProvider
@@ -427,8 +430,8 @@ fallbacks).
 
 ## Voir aussi
 
-- [provider.md](provider.md) : le `<Provider>` racine qui mount
-  `ViewportProvider` automatiquement.
+- [provider.md](provider.md) : le `<Provider>` racine, sous lequel
+  monter `ViewportProvider` à la main.
 - [device-identification-component.md](device-identification-component.md) :
   le composant qui capture le mode UI à l'identification d'un appareil.
 - Backend smartAuth : `~/dev/smartauth/ChangeLog.md` (entrée 2.0.21
