@@ -17,6 +17,25 @@ describe("TabbarItem - badge", () => {
         expect(screen.getByTestId("badge").textContent).toBe("5");
     });
 
+    // happy-dom does no layout: the geometry is read from the classes. The
+    // badge is centred on the top-right corner of its positioned parent; when
+    // that parent was the icon pill (px-app-md, 66 px wide), the badge of the
+    // last of five tabs on a 412 px phone overflowed the screen edge.
+    it("anchors the badge on the icon glyph, not on the padded pill", () => {
+        render(<TabbarItem id="inbox" label="Inbox" icon={FaInbox} badge={150} />);
+        const anchor = screen.getByTestId("badge").parentElement;
+        expect(anchor.className).toMatch(/\brelative\b/);
+        expect(anchor.className).not.toMatch(/\bp[xlr]?-/);
+        expect(anchor.firstElementChild.tagName.toLowerCase()).toBe("svg");
+    });
+
+    it("keeps the badge of an icon-less tab inside the tab edge", () => {
+        render(<TabbarItem id="inbox" label="Inbox" badge={5} />);
+        const badge = screen.getByTestId("badge");
+        expect(badge.className).toContain("translate-x-0");
+        expect(badge.className).not.toContain("translate-x-1/2");
+    });
+
     it.each([[0], [undefined], [""]])("renders no badge for %p", (badge) => {
         render(<TabbarItem id="inbox" label="Inbox" icon={FaInbox} badge={badge} />);
         expect(screen.queryByTestId("badge")).toBeNull();

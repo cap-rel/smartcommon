@@ -4,7 +4,7 @@ export const propTypes = {
     id: PropTypes.string.isRequired,
     responsive: PropTypes.bool,
     icon: PropTypes.func,
-    /** Counter badge on the icon: hidden for 0 or an empty value, "99+" above 99. */
+    /** Counter badge on the icon glyph corner: hidden for 0 or an empty value, "99+" above 99. */
     badge: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     activeIcon: PropTypes.func,
     label: PropTypes.string,
@@ -14,6 +14,8 @@ export const propTypes = {
     containerProps: PropTypes.object,
     iconAndLabelContainerProps: PropTypes.object,
     iconProps: PropTypes.object,
+    /** Wrapper hugging the icon glyph, the badge's anchor. */
+    iconGlyphProps: PropTypes.object,
     labelProps: PropTypes.object,
     badgeProps: PropTypes.object,
 };

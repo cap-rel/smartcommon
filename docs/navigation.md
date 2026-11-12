@@ -150,6 +150,13 @@ Onglet de bottom-tabbar. Icône + label + badge optionnel + état
 Layout vertical (icône au-dessus, label en-dessous), responsive (sur
 desktop la tabbar bascule en sidebar).
 
+La pastille `badge` est accrochée au coin haut-droit du glyphe de
+l'icône (slot `iconGlyphProps`), pas au fond arrondi plus large qui
+l'entoure : avec cinq onglets sur un téléphone de 412 px, la pastille du
+dernier onglet reste dans l'onglet au lieu de déborder de l'écran. Sans
+icône, elle se place dans le coin haut-droit de l'onglet, sans en
+dépasser.
+
 Accessibilité : l'onglet est exposé comme un lien (`role="link"`),
 atteignable au clavier et activé par Entrée. `active` pose
 `aria-current="page"`, `disabled` le retire de l'ordre de tabulation et

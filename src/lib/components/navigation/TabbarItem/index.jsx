@@ -1,5 +1,5 @@
 import { useVariantMerger } from "lib/hooks";
-import { formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
+import { formatBadgeCount, BADGE_CLASS_NAME, twMerge } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
 
@@ -20,14 +20,19 @@ export const TabbarItem = (props) => {
           
     const currentIcon = active ? (activeIcon ? activeIcon : icon) : icon;
 
-    // Counter badge, pinned to the icon (or to the tab when it has none):
-    // hidden for 0 / empty, capped at "99+".
+    // Counter badge: hidden for 0 / empty, capped at "99+". It is pinned to
+    // the corner of the icon glyph, not of the padded pill around it: on a
+    // 412 px phone with five tabs (82 px each) the pill is 66 px wide, and a
+    // badge centred on its right edge overflowed the last tab, and the
+    // screen, by up to 6 px. On the glyph it stays some 18 px inside the tab.
+    // Without an icon it sits inside the tab's top-right corner instead of
+    // straddling the tab edge.
     const badgeText = formatBadgeCount(badge);
     const badgeElement = badgeText !== null && (
         <span { ...mergeProps("badge", props => ({
             ...props,
             "data-testid": "badge",
-            className: BADGE_CLASS_NAME
+            className: icon ? BADGE_CLASS_NAME : twMerge(BADGE_CLASS_NAME, "translate-x-0")
         }))}>
             {badgeText}
         </span>
@@ -81,8 +86,13 @@ export const TabbarItem = (props) => {
                             ${responsive ? "lg:p-0 lg:bg-transparent" : ""}
                         `
                     }))}>
-                        {typeof currentIcon === 'function' ? currentIcon() : currentIcon}
-                        {badgeElement}
+                        <span { ...mergeProps("iconGlyph", props => ({
+                            ...props,
+                            className: `relative inline-flex`
+                        }))}>
+                            {typeof currentIcon === 'function' ? currentIcon() : currentIcon}
+                            {badgeElement}
+                        </span>
                     </div>
                 }
 
