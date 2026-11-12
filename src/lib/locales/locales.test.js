@@ -52,11 +52,9 @@ describe("locale bundles - structural integrity", () => {
     // from every bundle too, and only ever speaks English.
     it("bundles the DEFAULT_LABELS of every component", () => {
         const labelSources = import.meta.glob(["../components/**/props.js", "../print/labels.js"], { eager: true });
-        // Known gap, reported rather than hidden: these consumers pass `labels`.
-        const unbundled = ["../components/form/PinPad/props.js"];
         const bundled = new Set(Object.values(en));
         const missing = Object.entries(labelSources)
-            .filter(([path, module]) => module.DEFAULT_LABELS && !bundled.has(module.DEFAULT_LABELS) && !unbundled.includes(path))
+            .filter(([path, module]) => module.DEFAULT_LABELS && !bundled.has(module.DEFAULT_LABELS))
             .map(([path]) => path);
         expect(missing).toEqual([]);
     });
@@ -69,6 +67,14 @@ describe("locale bundles - structural integrity", () => {
                     expect(step, `${name} ${guide}[${index}]`).not.toBe(en.InstallPrompt.guides[guide][index]);
                 });
             }
+        }
+    });
+
+    it("translates the PinPad key names in every locale", () => {
+        for (const [name, bundle] of Object.entries(bundles)) {
+            expect(bundle.PinPad, name).toBeDefined();
+            expect(bundle.PinPad.backspace, `${name} backspace`).not.toBe(en.PinPad.backspace);
+            expect(bundle.PinPad.validate, `${name} validate`).not.toBe(en.PinPad.validate);
         }
     });
 

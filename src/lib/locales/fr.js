@@ -137,6 +137,10 @@ export const fr = {
         decimalSeparator: "Séparateur décimal",
         digit: (key) => `Chiffre ${key}`,
     },
+    PinPad: {
+        backspace: "Effacer",
+        validate: "Valider",
+    },
     Map: {
         searchPlaceholder: "Rechercher un lieu...",
         noResults: "Aucun résultat trouvé.",

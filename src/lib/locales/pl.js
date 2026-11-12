@@ -148,6 +148,10 @@ export const pl = {
         decimalSeparator: "Separator dziesiętny",
         digit: (key) => `Cyfra ${key}`,
     },
+    PinPad: {
+        backspace: "Wymaż",
+        validate: "Zatwierdź",
+    },
     Map: {
         searchPlaceholder: "Wyszukaj miejsce...",
         noResults: "Brak wyników.",

@@ -143,6 +143,10 @@ export const pt = {
         decimalSeparator: "Separador decimal",
         digit: (key) => `Dígito ${key}`,
     },
+    PinPad: {
+        backspace: "Apagar",
+        validate: "Validar",
+    },
     Map: {
         searchPlaceholder: "Pesquisar um local...",
         noResults: "Nenhum resultado encontrado.",

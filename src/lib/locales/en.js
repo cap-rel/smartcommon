@@ -22,6 +22,7 @@ import { DEFAULT_LABELS as Select } from "lib/components/form/Select/props";
 import { DEFAULT_LABELS as Gps } from "lib/components/form/Gps/props";
 import { DEFAULT_LABELS as PlainCalendar } from "lib/components/form/PlainCalendar/props";
 import { DEFAULT_LABELS as NumericPad } from "lib/components/form/NumericPad/props";
+import { DEFAULT_LABELS as PinPad } from "lib/components/form/PinPad/props";
 import { DEFAULT_LABELS as MapLabels } from "lib/components/others/Map/props";
 import { DEFAULT_LABELS as Stepper } from "lib/components/others/Stepper/props";
 import { DEFAULT_LABELS as ProductCategoryBrowser } from "lib/components/others/ProductCategoryBrowser/props";
@@ -68,6 +69,7 @@ export const en = {
     Gps,
     PlainCalendar,
     NumericPad,
+    PinPad,
     Map: MapLabels,
     Stepper,
     ProductCategoryBrowser,

@@ -140,6 +140,10 @@ export const nl = {
         decimalSeparator: "Decimaalteken",
         digit: (key) => `Cijfer ${key}`,
     },
+    PinPad: {
+        backspace: "Wissen",
+        validate: "Bevestigen",
+    },
     Map: {
         searchPlaceholder: "Een locatie zoeken...",
         noResults: "Geen resultaten gevonden.",

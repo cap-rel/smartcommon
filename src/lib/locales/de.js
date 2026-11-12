@@ -141,6 +141,10 @@ export const de = {
         decimalSeparator: "Dezimaltrennzeichen",
         digit: (key) => `Ziffer ${key}`,
     },
+    PinPad: {
+        backspace: "Löschen",
+        validate: "Bestätigen",
+    },
     Map: {
         searchPlaceholder: "Ort suchen...",
         noResults: "Keine Ergebnisse gefunden.",
