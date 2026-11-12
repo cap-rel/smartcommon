@@ -465,6 +465,9 @@ export const nl = {
         loggingOut: "Bezig met afmelden...",
         account: "Account",
     },
+    DesktopHeader: {
+        back: "Terug",
+    },
     Feedback: {
         buttonLabel: "Een probleem melden",
         title: "Een probleem melden",

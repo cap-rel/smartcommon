@@ -474,6 +474,9 @@ export const pl = {
         loggingOut: "Wylogowywanie...",
         account: "Konto",
     },
+    DesktopHeader: {
+        back: "Wstecz",
+    },
     Feedback: {
         buttonLabel: "Zgłoś problem",
         title: "Zgłoś problem",

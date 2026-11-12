@@ -466,6 +466,9 @@ export const es = {
         loggingOut: "Cerrando sesión...",
         account: "Cuenta",
     },
+    DesktopHeader: {
+        back: "Volver",
+    },
     Feedback: {
         buttonLabel: "Reportar un problema",
         title: "Reportar un problema",

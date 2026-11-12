@@ -58,6 +58,7 @@ import { DEFAULT_LABELS as Print } from "lib/print/labels";
 import { DEFAULT_LABELS as ErrorBoundary } from "lib/components/app/ErrorBoundary/props";
 import { DEFAULT_LABELS as Sidebar } from "lib/components/navigation/Sidebar/props";
 import { DEFAULT_LABELS as UserMenu } from "lib/components/navigation/UserMenu/props";
+import { DEFAULT_LABELS as DesktopHeader } from "lib/components/navigation/DesktopHeader/props";
 import { DEFAULT_LABELS as Feedback } from "lib/components/others/Feedback/props";
 
 export const en = {
@@ -109,6 +110,7 @@ export const en = {
     ErrorBoundary,
     Sidebar,
     UserMenu,
+    DesktopHeader,
     Feedback,
 };
 

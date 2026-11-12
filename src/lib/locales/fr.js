@@ -461,6 +461,9 @@ export const fr = {
         loggingOut: "Déconnexion...",
         account: "Compte",
     },
+    DesktopHeader: {
+        back: "Retour",
+    },
     Feedback: {
         buttonLabel: "Signaler un problème",
         title: "Signaler un problème",

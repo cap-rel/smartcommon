@@ -466,6 +466,9 @@ export const it = {
         loggingOut: "Uscita in corso...",
         account: "Account",
     },
+    DesktopHeader: {
+        back: "Indietro",
+    },
     Feedback: {
         buttonLabel: "Segnala un problema",
         title: "Segnala un problema",

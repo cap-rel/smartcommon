@@ -19,7 +19,7 @@ Conventions communes :
 
 ```jsx
 import {
-    Dropdown, ContextMenu, useContextMenu, useHotkeys, UserMenu,
+    Dropdown, ContextMenu, useContextMenu, useHotkeys, UserMenu, DesktopHeader,
 } from "@cap-rel/smartcommon";
 ```
 
@@ -202,3 +202,45 @@ ceux de smartInterventions : `user-menu-trigger`, `user-menu-menu`,
 | `labels` | object | anglais | `settings`, `logout`, `loggingOut`, `account` |
 
 Slots : `triggerProps`, `avatarProps`, `Dropdown` (props du `Dropdown`).
+
+## `<DesktopHeader>`
+
+Barre du haut standard d'une page desktop : bouton retour éventuel,
+titre (`<h1>`) avec sous-titre et fil d'Ariane à gauche, recherche au
+centre, actions de la page puis `UserMenu` à droite.
+
+```jsx
+<div className="flex flex-col h-full">
+    <DesktopHeader
+        title="Interventions"
+        subtitle={`${count} en cours`}
+        onBack={() => navigate(-1)}
+        search={<Input type="search" placeholder="Rechercher" ... />}
+        actions={<Button label="Nouvelle" onClick={create} />}
+        labels={locales.fr.DesktopHeader}
+        UserMenu={{ labels: locales.fr.UserMenu }}
+    />
+    <div className="flex-1 min-h-0">...</div>
+</div>
+```
+
+Séparée du contenu par une bordure basse, sans ombre, `shrink-0` : la
+placer au-dessus d'un corps `flex-1 min-h-0`. Le bouton retour, sans
+texte visible, est nommé par `labels.back` (aussi en infobulle) et garde
+le `data-testid="desktop-header-back"` de smartInterventions.
+
+| Prop | Type | Défaut | Notes |
+|------|------|--------|-------|
+| `title` | node | - | titre de la page (`<h1>`) |
+| `subtitle` | node | - | à côté du titre (référence, compteur) |
+| `breadcrumb` | node | - | sous le titre |
+| `onBack` | func | - | affiche le bouton retour |
+| `search` | node | - | champ de recherche, centré |
+| `actions` | node | - | boutons de la page, à gauche du `UserMenu` |
+| `showUserMenu` | bool | `true` | `false` sur un écran sans chrome |
+| `labels` | object | anglais | `{ back }` |
+
+Slots : `headerProps`, `backButtonProps`, `titleProps`, `subtitleProps`,
+`searchProps`, `actionsProps`, `UserMenu` (props du `UserMenu`). Les
+attributs `data-*` / `aria-*` posés sur `<DesktopHeader>` arrivent sur le
+`<header>`.

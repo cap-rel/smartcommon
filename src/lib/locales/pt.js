@@ -468,6 +468,9 @@ export const pt = {
         loggingOut: "A terminar sessão...",
         account: "Conta",
     },
+    DesktopHeader: {
+        back: "Voltar",
+    },
     Feedback: {
         buttonLabel: "Relatar um problema",
         title: "Relatar um problema",

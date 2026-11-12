@@ -466,6 +466,9 @@ export const de = {
         loggingOut: "Abmeldung...",
         account: "Konto",
     },
+    DesktopHeader: {
+        back: "Zurück",
+    },
     Feedback: {
         buttonLabel: "Problem melden",
         title: "Problem melden",
