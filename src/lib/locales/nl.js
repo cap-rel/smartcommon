@@ -372,6 +372,9 @@ export const nl = {
     Modal: {
         close: "Sluiten",
     },
+    ContextMenu: {
+        menu: "Acties",
+    },
     UpdatePrompt: {
         title: "Update beschikbaar",
         message: "Er is een nieuwe versie beschikbaar.",

@@ -18,7 +18,7 @@ Conventions communes :
 ## Import
 
 ```jsx
-import { Dropdown } from "@cap-rel/smartcommon";
+import { Dropdown, ContextMenu, useContextMenu } from "@cap-rel/smartcommon";
 ```
 
 ## `<Dropdown>`
@@ -82,3 +82,47 @@ Dans un `DataTable`, envelopper le menu d'une ligne dans
 
 Slots : `triggerWrapperProps` (enveloppe du déclencheur), `menuProps`,
 `itemProps`, `dividerProps`.
+
+## `<ContextMenu>` + `useContextMenu()`
+
+Menu au clic droit, le réflexe "appli native" qui paie dans un outil de
+données dense (agir sur une ligne sans chercher son bouton kebab).
+
+```jsx
+const ctx = useContextMenu();
+
+<tr onContextMenu={(e) => ctx.open(e, [
+    { label: "Ouvrir", onClick: () => openInvoice(row) },
+    { divider: true },
+    { label: "Supprimer", danger: true, onClick: () => remove(row) },
+])}>
+    ...
+</tr>
+
+// une seule fois dans la page :
+<ContextMenu state={ctx} labels={locales.fr.ContextMenu} />
+```
+
+`ctx.open(event, items)` annule le menu du navigateur et ouvre celui-ci
+au pointeur, gardé dans la fenêtre. Ouvert au clavier (touche menu,
+Maj+F10 : pas de position de pointeur), il s'ouvre sous la cible. Les
+`items` ont la forme de ceux de `Dropdown`.
+
+`useContextMenu()` renvoie `{ isOpen, x, y, items, returnFocusTo, open,
+close }`. `open` est la fonction d'ouverture, comme dans la brique de
+smartInterventions ; l'état ouvert se lit dans `isOpen`.
+
+Même menu et même clavier que `Dropdown` (flèches, Début, Fin, Tab). Le
+menu prend le focus sur sa première entrée. Échap, ou une entrée
+choisie, le ferment et rendent le focus à l'élément qui l'avait à
+l'ouverture (la ligne, si elle est focalisable). Un clic extérieur, un
+scroll ou un redimensionnement le ferment aussi.
+
+| Prop | Type | Défaut | Notes |
+|------|------|--------|-------|
+| `state` | object | - | retour de `useContextMenu()` |
+| `labels` | object | anglais | `{ menu }` : nom accessible du menu ("Actions") |
+| `testId` | string | `"context-menu"` | `data-testid` du menu |
+| `zIndex` | number | `60` | z-index du menu |
+
+Slots : `menuProps`, `itemProps`, `dividerProps`.

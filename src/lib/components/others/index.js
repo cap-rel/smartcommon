@@ -2,6 +2,7 @@ export * from "./AboutModal";
 export * from "./BarcodeScanner";
 export * from "./Calculator";
 export * from "./Calculator/useCalculator";
+export * from "./ContextMenu";
 export * from "./DataTable";
 export * from "./DebugConsole";
 export * from "./DebugWarnings";

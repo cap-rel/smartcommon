@@ -375,6 +375,9 @@ export const pt = {
     Modal: {
         close: "Fechar",
     },
+    ContextMenu: {
+        menu: "Ações",
+    },
     UpdatePrompt: {
         title: "Atualização disponível",
         message: "Está disponível uma nova versão.",
