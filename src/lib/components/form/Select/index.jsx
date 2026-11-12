@@ -107,7 +107,12 @@ export const Select = (props) => {
           className: `py-2 pr-7 pl-2 w-full truncate whitespace-nowrap overflow-hidden rounded-app-md border border-border truncate
           outline-none ${disabled ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-strong-bg inset-shadow-sm`
         }), { forwardAttributes: true })}>
-          <option value="">{placeholder}</option>
+          {/* The blank choice lets an optional field be emptied, and shows the
+              placeholder while nothing is picked. A required field that holds
+              a value must not offer it. */}
+          {(!required || isEmptyValue(currentValue)) &&
+            <option value="">{placeholder}</option>
+          }
           {/* Use optionValue as key since it should be unique within options list.
               Avoids React reconciliation issues with index-based keys. */}
           {!isEmpty(options) &&

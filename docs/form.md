@@ -229,6 +229,14 @@ Cliquer sur l'option déjà cochée la décoche (valeur `""`), sauf si le
 champ est `required` : un champ obligatoire rempli ne peut plus être
 vidé.
 
+## `<Select>` : choix vide
+
+Le `<select>` commence par une option vide (`value=""`) qui affiche
+`placeholder` et permet de vider un champ facultatif. Sur un champ
+`required` qui a déjà une valeur, cette option n'est pas rendue : le
+champ obligatoire ne propose pas de choix qu'il refuserait. Elle
+réapparaît si la valeur redevient vide.
+
 ## Limites connues
 
 - `isFormSubmitted` **ne reset jamais**. C'est volontaire (les champs
