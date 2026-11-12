@@ -336,7 +336,7 @@ export const Input = (props) => {
           },
           value: getDisplayValue(),
           type: props.type || filteredType
-        }))} />
+        }), { forwardAttributes: true })} />
 
         {!isNil(step) &&
           <>

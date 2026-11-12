@@ -79,7 +79,7 @@ export const Range = (props) => {
                     },
                     value: currentValue ?? "",
                     className: `grow w-full bg-transparent appearance-none accent-primary cursor-ew-resize ${disabled ? "brightness-soft" : ""}`,
-                }))} />
+                }), { forwardAttributes: true })} />
                 <div { ...mergeProps("value", props => props)}>
                     {currentValue}
                 </div>

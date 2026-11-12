@@ -4,6 +4,8 @@ import { useCallback } from "react";
 import { mergeObj, twMerge } from "lib/utils";
 import { useLibConfig, useStates } from "lib/hooks";
 
+const FORWARDED_ATTRIBUTE = /^(data|aria)-/;
+
 function verifyFunction(func, params = {}){
     return isFunction(func) ? func(params) : func;
 }
@@ -225,16 +227,39 @@ export const useVariantMerger = (componentKey, props) => {
         return mergedProps;
       };
 
-    const mergeProps = (key, propsFunction) => {
+    // `data-*` and `aria-*` attributes written on the component itself
+    // (<Button data-testid="save" aria-label="Save">) are not element props:
+    // without this they never reach the DOM.
+    const pickForwardedAttributes = () => Object.fromEntries(
+        Object.entries(variantProps).filter(([name, value]) =>
+            FORWARDED_ATTRIBUTE.test(name) && !isUndefined(value)
+        )
+    );
+
+    /**
+     * Props of one element or sub-component of the rendered tree.
+     *
+     * @param {string}   key                       Element key (`button`) or sub-component key (`Spinner`)
+     * @param {Function} propsFunction             Receives the consumer props of that slot, returns the final props
+     * @param {object}   [options]
+     * @param {boolean}  [options.forwardAttributes=false] Element that receives the `data-*` / `aria-*`
+     *                                             attributes set on the component itself. One per component,
+     *                                             its main interactive element. `<key>Props` still wins.
+     * @returns {object} Props to spread on the element
+     */
+    const mergeProps = (key, propsFunction, { forwardAttributes = false } = {}) => {
         if (isComponent(key)) {
             const props = variantProps[key] || {};
             const mergedProps = { ...propsFunction(props)};
 
             return mergeDefaultComponent(mergedProps, props);
         } else {
-            const props = variantProps[`${key}Props`] || {};
+            const elementProps = variantProps[`${key}Props`] || {};
+            const props = forwardAttributes
+                ? { ...pickForwardedAttributes(), ...elementProps }
+                : elementProps;
             const mergedProps = { ...propsFunction(props)};
-    
+
             return mergeDefaultElementProps(mergedProps, props);
         }
     };

@@ -96,7 +96,7 @@ export const Textarea = (props) => {
         rounded-app-md border outline-none placeholder-soft-text
         border-border bg-soft-bg duration-(--instant) focus:ring-1 
         ring-primary focus:border-primary`,
-      }))}>
+      }), { forwardAttributes: true })}>
       </textarea>
     </Label>
   );

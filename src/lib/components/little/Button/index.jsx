@@ -83,7 +83,7 @@ export const Button = (props) => {
                 }
                 onClick(e);
             }
-        }))
+        }), { forwardAttributes: true })
         : mergeProps("button", props => ({
             ...props,
             // Forward `type` to the DOM button so that consumers passing
@@ -112,7 +112,7 @@ export const Button = (props) => {
                     onClick(e);
                 }
             }
-        }));
+        }), { forwardAttributes: true });
 
     return (
         <Tag { ...rootProps }>

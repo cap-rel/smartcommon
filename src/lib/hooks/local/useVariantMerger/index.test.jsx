@@ -198,3 +198,53 @@ describe("useVariantMerger - variant resolution", () => {
         expect(classNameFor({ variant: "does-not-exist" }, { wrapper: noThemeWrapper })).toBe("");
     });
 });
+
+/**
+ * `data-*` / `aria-*` written on the component itself only reach the element
+ * that opted in with `forwardAttributes`; the `<key>Props` slot keeps the last
+ * word, and no other element receives them.
+ */
+describe("useVariantMerger - forwarded attributes", () => {
+    const props = {
+        "data-testid": "save",
+        "aria-label": "Save the file",
+        "aria-describedby": undefined,
+        label: "Save",
+        onClick: () => {},
+    };
+
+    it("gives the data-* and aria-* attributes to the opted-in element", () => {
+        const { result } = renderHook(() => useVariantMerger("Button", props));
+        const merged = result.current.mergeProps("button", (p) => p, { forwardAttributes: true });
+
+        expect(merged["data-testid"]).toBe("save");
+        expect(merged["aria-label"]).toBe("Save the file");
+    });
+
+    it("forwards nothing else and drops undefined attributes", () => {
+        const { result } = renderHook(() => useVariantMerger("Button", props));
+        const merged = result.current.mergeProps("button", (p) => p, { forwardAttributes: true });
+
+        expect(merged).not.toHaveProperty("label");
+        expect(merged).not.toHaveProperty("onClick");
+        expect(merged).not.toHaveProperty("aria-describedby");
+    });
+
+    it("keeps the element without the option untouched", () => {
+        const { result } = renderHook(() => useVariantMerger("Button", props));
+        const merged = result.current.mergeProps("label", (p) => p);
+
+        expect(merged).not.toHaveProperty("data-testid");
+        expect(merged).not.toHaveProperty("aria-label");
+    });
+
+    it("lets the <key>Props slot win over the component attribute", () => {
+        const { result } = renderHook(() =>
+            useVariantMerger("Button", { ...props, buttonProps: { "data-testid": "from-slot" } })
+        );
+        const merged = result.current.mergeProps("button", (p) => p, { forwardAttributes: true });
+
+        expect(merged["data-testid"]).toBe("from-slot");
+        expect(merged["aria-label"]).toBe("Save the file");
+    });
+});

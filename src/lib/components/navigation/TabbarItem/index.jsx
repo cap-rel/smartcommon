@@ -41,7 +41,7 @@ export const TabbarItem = (props) => {
                 ${responsive ? `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}` : ""}
             `,
             onClick
-        }))}>
+        }), { forwardAttributes: true })}>
 
             <div { ...mergeProps("iconAndLabelContainer", props => ({
                 ...props,

@@ -106,7 +106,7 @@ export const Select = (props) => {
           },
           className: `py-2 pr-7 pl-2 w-full truncate whitespace-nowrap overflow-hidden rounded-app-md border border-border truncate
           outline-none ${disabled ? "brightness-soft" : "active:brightness-soft"} duration-(--really-quick) bg-strong-bg inset-shadow-sm`
-        }))}>
+        }), { forwardAttributes: true })}>
           <option value="">{placeholder}</option>
           {/* Use optionValue as key since it should be unique within options list.
               Avoids React reconciliation issues with index-based keys. */}

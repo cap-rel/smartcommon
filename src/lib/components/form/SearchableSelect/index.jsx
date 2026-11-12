@@ -120,7 +120,7 @@ export const SearchableSelect = (props) => {
                             placeholder-soft-text outline-none focus:border-primary
                             ${disabled ? "brightness-soft cursor-not-allowed" : "cursor-text"}
                             ${p?.className || ""}`
-                    }))}
+                    }), { forwardAttributes: true })}
                 />
 
                 {/* Clear button */}

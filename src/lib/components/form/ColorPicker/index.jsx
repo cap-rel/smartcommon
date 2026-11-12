@@ -60,7 +60,7 @@ export const ColorPicker = (props) => {
                 },
                 value: currentValue ?? "",
                 className: `size-6 border-border duration-(--really-quick) ${disabled ? "brightness-soft" : "active:brightness-soft"}`,
-            }))} />
+            }), { forwardAttributes: true })} />
         </Label>
     );
 };

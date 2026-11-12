@@ -178,7 +178,7 @@ export const FAB = (props) => {
                 className: `relative rounded-full ${bgClass} text-white shadow-lg
                     flex items-center justify-center active:brightness-90
                     transition-transform duration-200 ${hasActions && isOpen ? "rotate-45" : ""}`,
-            }))}>
+            }), { forwardAttributes: true })}>
                 {Icon ? <Icon size={iconSize} color="#ffffff" aria-hidden="true" /> : children}
             </button>
         </div>

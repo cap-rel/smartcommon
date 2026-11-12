@@ -177,6 +177,30 @@ Un champ contrôlé (`value` + `onChange`) hors `<Form>` accepte :
 - `error` (node) : message fourni par l'appelant (erreur serveur par
   exemple), affiché en rouge sous le champ, sans attendre de submit.
 
+## Attributs `data-*` et `aria-*` (tests, accessibilité)
+
+Un attribut `data-*` ou `aria-*` posé directement sur le composant arrive
+sur son élément natif principal :
+
+```jsx
+<Button label="Envoyer" data-testid="send" />          // sur le <button> (ou le <a> avec href)
+<Input label="Nom" data-testid="name" aria-describedby="name-help" />  // sur le <input>
+```
+
+Composants concernés : `Button`, `FAB`, `Input`, `Select`,
+`SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
+saisie) et `TabbarItem` (son conteneur). Les autres props restent
+filtrées : seuls les noms en `data-` et `aria-` passent.
+
+Pour viser un autre élément, ou pour un composant absent de cette liste,
+utiliser le slot `<élément>Props` (`buttonProps`, `inputProps`,
+`containerProps`...). Il est prioritaire : avec `data-testid="a"` et
+`buttonProps={{ "data-testid": "b" }}`, le bouton porte `b`.
+
+Côté composant, l'élément qui reçoit ces attributs se déclare par
+`mergeProps("input", fn, { forwardAttributes: true })`, sur un seul
+élément par composant.
+
 ## Limites connues
 
 - `isFormSubmitted` **ne reset jamais**. C'est volontaire (les champs
