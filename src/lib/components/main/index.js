@@ -1,4 +1,5 @@
 export * from "./Block";
+export * from "./DesktopSplit";
 export * from "./List";
 export * from "./ListItem";
 export * from "./Page";

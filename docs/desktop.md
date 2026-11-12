@@ -20,6 +20,7 @@ Conventions communes :
 ```jsx
 import {
     Dropdown, ContextMenu, useContextMenu, useHotkeys, UserMenu, DesktopHeader,
+    DesktopSplit,
 } from "@cap-rel/smartcommon";
 ```
 
@@ -244,3 +245,49 @@ Slots : `headerProps`, `backButtonProps`, `titleProps`, `subtitleProps`,
 `searchProps`, `actionsProps`, `UserMenu` (props du `UserMenu`). Les
 attributs `data-*` / `aria-*` posés sur `<DesktopHeader>` arrivent sur le
 `<header>`.
+
+## `<DesktopSplit>`
+
+Maître-détail desktop, toujours côte à côte : un écran desktop est large,
+il n'y a pas de bascule d'orientation (contrairement au maître-détail
+tablette). Le maître (un `DataTable` en général) garde sa largeur, le
+détail prend le reste et affiche `placeholder` tant que rien n'est
+sélectionné. Chaque volet défile seul.
+
+```jsx
+<div className="flex flex-col h-full">
+    <DesktopHeader title="Interventions" />
+    <div className="flex-1 min-h-0">
+        <DesktopSplit
+            master={<DataTable ... onRowClick={(row) => setSelected(row)} />}
+            detail={<InterventionDetail intervention={selected} />}
+            hasSelection={!!selected}
+            placeholder={<p className="p-4 text-soft-text">Choisir une intervention</p>}
+            masterProps={{ "aria-label": "Interventions" }}
+        />
+    </div>
+</div>
+```
+
+`DesktopSplit` prend toute la hauteur (`h-full`) : l'envelopper dans un
+conteneur `flex-1 min-h-0` sous le `DesktopHeader`.
+
+Largeur du maître : `masterWidth`, `"w-[56%] max-w-[860px]"` par défaut,
+sans préfixe `lg:` : les deux volets restent côte à côte même dans une
+fenêtre desktop étroite (la brique de smartInterventions passait le
+maître en pleine largeur sous 1024 px et écrasait le détail).
+
+| Prop | Type | Défaut | Notes |
+|------|------|--------|-------|
+| `master` | node | - | volet gauche |
+| `detail` | node | - | volet droit, affiché si `hasSelection` |
+| `hasSelection` | bool | `false` | affiche `detail` plutôt que `placeholder` |
+| `placeholder` | node | `null` | volet droit sans sélection |
+| `masterWidth` | string | `"w-[56%] max-w-[860px]"` | classes de largeur du maître |
+| `masterClassName` | string | `""` | classes du maître |
+| `detailClassName` | string | `""` | classes du détail |
+| `testId` | string | `"desktop-split"` | `data-testid` ; volets `-master` et `-detail` |
+
+Slots : `containerProps`, `masterProps`, `detailProps`. Les volets sont
+des `<section>` : un `aria-label` passé par `masterProps` / `detailProps`
+en fait des régions nommées pour les lecteurs d'écran.
