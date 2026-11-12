@@ -418,6 +418,10 @@ export const nl = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Annuleren",
+        confirm: "OK",
+    },
     // TODO native review for nl
     ViewportProvider: {
         confirmReloadMessage: "De weergave wijzigen zal de applicatie herladen. Doorgaan?",

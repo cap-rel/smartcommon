@@ -253,11 +253,27 @@ qui appellent `confirm()` :
 
 ```jsx
 <Provider config={libConfig}>
-    <ConfirmProvider labels={{ cancel: "Annuler", confirm: "OK" }}>
+    <ConfirmProvider labels={locales.fr.ConfirmProvider}>
         <App />
     </ConfirmProvider>
 </Provider>
 ```
+
+`labels` (`cancel`, `confirm`) existe dans tous les bundles ;
+`cancelText` / `confirmText` passés à un appel restent prioritaires.
+
+La boîte suit le thème (clair ou sombre) : surface `bg-soft-bg`, textes
+`text-strong-text` / `text-medium-text`, bordure `border-border`, bouton
+de confirmation `bg-primary` (ou `bg-error` pour `type: "danger"`).
+
+Accessibilité : `confirm()` ouvre un `role="alertdialog"`, `alert()` un
+`role="dialog"`, tous deux `aria-modal="true"`, nommés par le titre (ou
+le message sans titre) et décrits par le message et `detail`. Le bouton
+de confirmation reçoit le focus à l'ouverture, Tab reste dans la boîte,
+Échap annule un `confirm()` (résout `false`) sans fermer une `<Modal>`
+ouverte dessous, et le focus revient à l'élément qui l'avait avant
+l'ouverture. Un `alert()` ne se ferme que par son bouton. Un test cible
+donc `getByRole("alertdialog", { name: "Supprimer" })`.
 
 ### `<I18nextProvider>`
 
@@ -325,7 +341,7 @@ createRoot(document.getElementById("root")).render(
         debug={import.meta.env.DEV}
     >
         <I18nextProvider i18n={i18n} language="fr">
-            <ConfirmProvider labels={{ cancel: "Annuler", confirm: "OK" }}>
+            <ConfirmProvider labels={locales.fr.ConfirmProvider}>
                 <App />
             </ConfirmProvider>
         </I18nextProvider>

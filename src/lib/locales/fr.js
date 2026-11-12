@@ -415,6 +415,10 @@ export const fr = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Annuler",
+        confirm: "OK",
+    },
     ViewportProvider: {
         confirmReloadMessage: "Changer la vue va recharger l'application. Continuer ?",
     },

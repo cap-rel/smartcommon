@@ -421,6 +421,10 @@ export const pt = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Cancelar",
+        confirm: "OK",
+    },
     // TODO native review for pt
     ViewportProvider: {
         confirmReloadMessage: "Alterar a vista irá recarregar a aplicação. Continuar?",

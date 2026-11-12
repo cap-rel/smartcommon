@@ -419,6 +419,10 @@ export const de = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Abbrechen",
+        confirm: "OK",
+    },
     // TODO native review for de
     ViewportProvider: {
         confirmReloadMessage: "Das Ändern der Ansicht lädt die Anwendung neu. Fortfahren?",

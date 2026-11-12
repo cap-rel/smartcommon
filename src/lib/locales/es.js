@@ -419,6 +419,10 @@ export const es = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Cancelar",
+        confirm: "Aceptar",
+    },
     // TODO native review for es
     ViewportProvider: {
         confirmReloadMessage: "Cambiar la vista recargará la aplicación. Continuar?",

@@ -427,6 +427,10 @@ export const pl = {
             ],
         },
     },
+    ConfirmProvider: {
+        cancel: "Anuluj",
+        confirm: "OK",
+    },
     // TODO native review for pl
     ViewportProvider: {
         confirmReloadMessage: "Zmiana widoku przeładuje aplikację. Kontynuować?",
