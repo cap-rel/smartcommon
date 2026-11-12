@@ -40,7 +40,7 @@ faire ce câblage à la main pour le cas standard.
 ## `<Navbar>`
 
 Barre supérieure horizontale, "upper" (titre + actions gauche/droite)
-+ "bottom" (slot pour tabs, filtres, etc. — caché si pas utilisé).
++ "bottom" (slot pour tabs, filtres, etc. - caché si pas utilisé).
 
 ```jsx
 <Navbar
@@ -83,11 +83,16 @@ Props :
 
 - `id` (requis) : variables CSS globales.
 - `responsive` (défaut `true`) : bascule sidebar desktop.
-- `hideOnScroll` (défaut `false` — à l'inverse de Navbar) : la
+- `hideOnScroll` (défaut `false` - à l'inverse de Navbar) : la
   Tabbar reste visible par défaut (les onglets de navigation principale
   ne devraient pas disparaître au scroll).
 
-`centralButton` est listé comme TODO dans le code, pas implémenté.
+- `centralButton` : bouton d'action rond, surélevé, placé au milieu des
+  onglets. Objet `{ icon, label, onClick, badge?, disabled? }` ; `label`
+  est son nom accessible (seule l'icône s'affiche sur mobile).
+- `aria-label` : nom du repère de navigation. La barre porte
+  `role="navigation"` ; avec plusieurs barres de navigation sur l'écran,
+  le nommer ("Menu principal").
 
 ## `<Sidebar>`
 
@@ -144,6 +149,13 @@ Onglet de bottom-tabbar. Icône + label + badge optionnel + état
 
 Layout vertical (icône au-dessus, label en-dessous), responsive (sur
 desktop la tabbar bascule en sidebar).
+
+Accessibilité : l'onglet est exposé comme un lien (`role="link"`),
+atteignable au clavier et activé par Entrée. `active` pose
+`aria-current="page"`, `disabled` le retire de l'ordre de tabulation et
+bloque clic et clavier. Son nom accessible est `label` ; pour un onglet
+sans label, passer `aria-label`. Un test le cible donc par
+`getByRole("link", { name: "Accueil" })`.
 
 ### `<LowerNavbarItem>`
 

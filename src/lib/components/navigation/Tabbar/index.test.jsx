@@ -57,3 +57,11 @@ describe("Tabbar - centralButton", () => {
         expect(screen.getByTestId("badge").textContent).toBe("99+");
     });
 });
+
+describe("Tabbar - accessibility", () => {
+    it("is a navigation landmark named by aria-label", () => {
+        render(<Tabbar id="main" hideOnScroll={false} aria-label="Main menu">{tabs(3)}</Tabbar>);
+        const nav = screen.getByRole("navigation", { name: "Main menu" });
+        expect(nav.querySelectorAll("[role='link']")).toHaveLength(3);
+    });
+});

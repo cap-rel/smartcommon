@@ -189,6 +189,7 @@ export const Tabbar = (props) => {
 
   return (
     <motion.div { ...mergeProps("tabbar", props => ({
+      role: "navigation",
       ...props,
       "data-component": "Tabbar",
       ref: tabbarRef,
@@ -200,8 +201,8 @@ export const Tabbar = (props) => {
         shadow-xl shadow-black fixed right-0 bottom-0 left-0 z-10 bg-soft-bg flex justify-between items-center
         ${responsive ? "lg:top-0 lg:right-auto lg:w-50 lg:flex-col lg:justify-start lg:items-start lg:px-app-base lg:py-app-xl lg:gap-app-xs lg:shadow-black/10" : ""}
       `
-      // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium) 
-    }))}>
+      // ${hidden ? "translate-y-full" : "translate-y-0"} duration-(--medium)
+    }), { forwardAttributes: true })}>
       {content}
     </motion.div>
   );

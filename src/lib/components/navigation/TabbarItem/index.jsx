@@ -33,14 +33,36 @@ export const TabbarItem = (props) => {
         </span>
     );
 
+    // A tab navigates: exposed as a link, reachable with Tab and activated with
+    // Enter like a native link. `disabled` only blocked the pointer before; the
+    // keyboard is blocked here too.
+    const handleClick = (e) => {
+        if (disabled) {
+            return;
+        }
+        onClick(e);
+    };
+
     return (
         <div { ...mergeProps("container", props => ({
+            role: "link",
+            tabIndex: disabled ? -1 : 0,
+            "aria-current": active ? "page" : undefined,
+            "aria-disabled": disabled ? "true" : undefined,
             ...props,
             className: `
-                group flex-1 py-app-xs ${disabled ? "pointer-events-none" : ""}
+                group flex-1 py-app-xs cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:rounded-app-md
+                ${disabled ? "pointer-events-none" : ""}
                 ${responsive ? `lg:flex-0 lg:p-app-xs lg:active:brightness-soft lg:rounded-app-md lg:duration-(--really-quick) lg:w-full ${active ? "lg:bg-primary" : "lg:bg-soft-bg"}` : ""}
             `,
-            onClick
+            onClick: handleClick,
+            onKeyDown: (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleClick(e);
+                }
+                props.onKeyDown?.(e);
+            }
         }), { forwardAttributes: true })}>
 
             <div { ...mergeProps("iconAndLabelContainer", props => ({
