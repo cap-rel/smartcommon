@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { orderBy as lodashOrderBy } from "lodash";
 
 import { Button, Input, Spinner } from "lib/components";
-import { twMerge } from "lib/utils";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
+import { applyFunctionIfNotNil, twMerge } from "lib/utils";
 
 import { DEFAULT_LABELS, defaultProps, propTypes } from "./props";
 
@@ -40,6 +41,9 @@ const isRowActionTarget = (event) => {
     if (!t || typeof t.closest !== "function") return false;
     return Boolean(t.closest("[data-row-action]"));
 };
+
+// Keyboard focus ring of a clickable row or card.
+const ROW_FOCUS_CLASS = "outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset";
 
 const alignClass = (align) => {
     if (align === "center") return "text-center";
@@ -244,12 +248,20 @@ export const DataTable = (props) => {
     }, [allVisibleSelected, visibleIds, selectedKeys, emitSelection]);
 
     // ----- Display mode -----
-    // Render table and/or cards. "auto" renders both with Tailwind's md:
-    // prefix toggling visibility - this avoids any JS media query.
-    const renderTable = mode === "table" || mode === "auto";
-    const renderCards = mode === "cards" || mode === "auto";
-    const tableVisibilityClass = mode === "auto" ? "hidden md:table" : "table";
-    const cardsVisibilityClass = mode === "auto" ? "md:hidden" : "";
+    // "auto" follows the session viewport (docs/viewport.md): cards on a
+    // phone, table on a tablet or a desktop. Without a ViewportProvider it
+    // falls back to rendering both and toggling them with Tailwind's md:
+    // prefix, the historical behaviour.
+    const viewport = useContext(ViewportContext);
+    const autoFromViewport = mode === "auto" && viewport?.viewport
+        ? (viewport.isMobile ? "cards" : "table")
+        : null;
+    const effectiveMode = autoFromViewport ?? mode;
+    const cssAuto = effectiveMode === "auto";
+    const renderTable = effectiveMode === "table" || cssAuto;
+    const renderCards = effectiveMode === "cards" || cssAuto;
+    const tableVisibilityClass = cssAuto ? "hidden md:table" : "table";
+    const cardsVisibilityClass = cssAuto ? "md:hidden" : "";
 
     // ----- Row click handler -----
     const handleRowClick = useCallback((row, index, event) => {
@@ -257,6 +269,35 @@ export const DataTable = (props) => {
         if (isRowActionTarget(event)) return;
         onRowClick(row, index);
     }, [onRowClick]);
+
+    // Enter or Space on a focused clickable row opens it, like a click. Keys
+    // pressed on a control inside the row (checkbox, button) are left alone.
+    const handleRowKeyDown = useCallback((row, index, event) => {
+        if (!onRowClick || event.target !== event.currentTarget) return;
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        onRowClick(row, index);
+    }, [onRowClick]);
+
+    // Per-row attributes: `rowProps` is either the same object for every row
+    // (styling slot) or a function (row, index) => object (data-testid...).
+    const resolveRowProps = (row, index) => {
+        const resolved = typeof rowProps === "function" ? rowProps(row, index) : rowProps;
+        return resolved || {};
+    };
+
+    // Event handlers and focusability shared by table rows and cards.
+    const rowInteractionProps = (row, index, extra) => ({
+        onClick: (e) => {
+            applyFunctionIfNotNil(extra.onClick, e);
+            handleRowClick(row, index, e);
+        },
+        onKeyDown: (e) => {
+            applyFunctionIfNotNil(extra.onKeyDown, e);
+            handleRowKeyDown(row, index, e);
+        },
+        ...(onRowClick ? { tabIndex: extra.tabIndex ?? 0 } : {}),
+    });
 
     // ----- Empty state -----
     const isEmpty = !loading && visibleRows.length === 0;
@@ -283,17 +324,18 @@ export const DataTable = (props) => {
         const id = row?.[keyField];
         const reactKey = id != null ? id : `__idx_${index}`;
         const isSelected = id != null && selectedSet.has(id);
+        const extraRowProps = resolveRowProps(row, index);
 
         return (
             <tr
                 key={reactKey}
-                {...rowProps}
-                onClick={(e) => handleRowClick(row, index, e)}
+                {...extraRowProps}
+                {...rowInteractionProps(row, index, extraRowProps)}
                 className={twMerge(
                     "border-b border-border",
-                    onRowClick ? "cursor-pointer hover:bg-medium-bg" : "",
+                    onRowClick ? `cursor-pointer hover:bg-medium-bg ${ROW_FOCUS_CLASS}` : "",
                     isSelected ? "bg-primary/10" : "",
-                    rowProps.className
+                    extraRowProps.className
                 )}
             >
                 {selectable && (
@@ -338,19 +380,20 @@ export const DataTable = (props) => {
         const id = row?.[keyField];
         const reactKey = id != null ? id : `__idx_${index}`;
         const isSelected = id != null && selectedSet.has(id);
+        const ownRowProps = resolveRowProps(row, index);
+        const extraRowProps = { ...ownRowProps, ...cardProps };
 
         return (
             <div
                 key={reactKey}
-                {...rowProps}
-                {...cardProps}
-                onClick={(e) => handleRowClick(row, index, e)}
+                {...extraRowProps}
+                {...rowInteractionProps(row, index, extraRowProps)}
                 className={twMerge(
                     "rounded-lg border border-border p-3 bg-medium-bg",
                     "flex flex-col gap-1",
-                    onRowClick ? "cursor-pointer hover:brightness-soft" : "",
+                    onRowClick ? `cursor-pointer hover:brightness-soft ${ROW_FOCUS_CLASS}` : "",
                     isSelected ? "ring-1 ring-primary" : "",
-                    rowProps.className,
+                    ownRowProps.className,
                     cardProps.className
                 )}
             >
@@ -442,7 +485,7 @@ export const DataTable = (props) => {
 
             {/* Table mode */}
             {renderTable && (
-                <div className={mode === "auto" ? "hidden md:block" : "block"}>
+                <div className={cssAuto ? "hidden md:block" : "block"}>
                     <table
                         {...tableProps}
                         className={twMerge(

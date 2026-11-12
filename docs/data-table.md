@@ -1,8 +1,9 @@
 # DataTable
 
 `<DataTable>` est un tableau de données configuré par colonnes, avec
-**layout responsive automatique** (table desktop / cards mobile via
-Tailwind, sans media query JS), tri, pagination, recherche et sélection
+**layout responsive automatique** (table sur tablette et desktop, cards
+sur smartphone, d'après le viewport de session), tri, pagination,
+recherche et sélection
 multi-rows. Conçu pour les listes "à la WordPress admin" (interventions,
 factures, contacts, ...), pas pour les data-grids type Excel.
 
@@ -81,16 +82,19 @@ les données.
 
 Trois valeurs :
 
-- `"auto"` (défaut) : rend **simultanément** le `<table>` (visible
-  `md:`+) et les cards (visible mobile uniquement). Bascule à 768 px
-  via les classes Tailwind `hidden md:table` / `md:hidden`. **Pas de
-  JS media query** : SSR-safe, pas de flash.
+- `"auto"` (défaut) : suit le viewport de session lu dans
+  `<ViewportProvider>` (cf [viewport.md](viewport.md)) : les cards sur
+  smartphone (`isMobile`), la table sur tablette et desktop. Le mode est
+  figé pour la session : redimensionner la fenêtre ne bascule pas.
 - `"table"` : force la table à tous les viewports.
 - `"cards"` : force les cards à tous les viewports.
 
-Le mode `auto` double le coût de rendu (deux arbres React en parallèle,
-un des deux caché par CSS) — acceptable jusqu'à ~500 lignes paginées.
-Au-delà, forcer un mode explicite.
+Sans `<ViewportProvider>` monté, `"auto"` garde l'ancien comportement :
+il rend **simultanément** le `<table>` et les cards, et bascule à 768 px
+par les classes Tailwind `hidden md:table` / `md:hidden`. Ce repli double
+le coût de rendu (deux arbres, un caché par CSS) et duplique les
+attributs posés par `rowProps` (un même `data-testid` sur la ligne et
+sur la card) : monter `<ViewportProvider>` l'évite.
 
 ## Tri (controlled / uncontrolled)
 
@@ -116,7 +120,7 @@ const [sortBy, setSortBy] = useState({ key: "name", direction: "asc" });
 />
 ```
 
-En mode controlled, `<DataTable>` ne trie pas le `data` lui-même — le
+En mode controlled, `<DataTable>` ne trie pas le `data` lui-même : le
 parent doit re-récupérer trié (ou trier explicitement). Le composant
 émet juste les nouvelles intentions.
 
@@ -150,7 +154,7 @@ UI : bouton Précédent / "Page X sur Y" / bouton Suivant.
 
 - Filtre case-insensitive, substring sur la concaténation des valeurs
   brutes de chaque colonne.
-- Valeurs objets → `JSON.stringify`. Render functions JSX → **ignorées**
+- Valeurs objets -> `JSON.stringify`. Render functions JSX -> **ignorées**
   (cf section "Définition de colonnes").
 - Mode controlled : `search` + `onSearchChange` (l'input devient géré
   par le parent ; le debounce interne reste pour ne pas inonder le
@@ -163,7 +167,7 @@ UI : bouton Précédent / "Page X sur Y" / bouton Suivant.
 - une colonne checkbox en première position du tableau (et un
   checkbox par card),
 - une checkbox dans le header qui sélectionne / déselectionne **les
-  rows actuellement visibles** (page courante + filtre courant) — pas
+  rows actuellement visibles** (page courante + filtre courant), pas
   toutes les rows du dataset, par design.
 - une barre de notification "N ligne(s) sélectionnée(s)" affichée
   quand au moins une row est cochée.
@@ -193,6 +197,33 @@ Les checkboxes sont marquées `data-row-action`, ce qui les exclut du
 
 Permet de mettre des boutons d'action sur chaque row sans qu'ils
 déclenchent la navigation de détail.
+
+### Clavier
+
+Avec `onRowClick`, chaque row (et chaque card) entre dans l'ordre de
+tabulation (`tabIndex=0`, anneau de focus visible). Entrée ou Espace
+sur la row focalisée appelle `onRowClick(row, index)`, comme un clic.
+Une touche pressée sur un contrôle de la row (checkbox, bouton
+`data-row-action`) ne déclenche pas la row. Sans `onRowClick`, les rows
+restent hors de la tabulation.
+
+### Attributs par row (`rowProps`)
+
+`rowProps` accepte un objet (mêmes props sur toutes les rows) ou une
+fonction `(row, index) => props` pour des attributs propres à chaque
+row :
+
+```jsx
+<DataTable
+    columns={columns}
+    data={data}
+    onRowClick={(row) => navigate(`/invoices/${row.id}`)}
+    rowProps={(row) => ({ "data-testid": `invoice-row-${row.id}` })}
+/>
+```
+
+Le résultat s'applique au `<tr>` et à la card. Un `onClick` ou un
+`onKeyDown` renvoyé est appelé avant celui de `DataTable`.
 
 ## États
 
@@ -234,7 +265,7 @@ extension partielle.
 | `tableProps` | `<table>` |
 | `headerProps` | `<thead>` |
 | `headerCellProps` | `<th>` de chaque colonne |
-| `rowProps` | `<tr>` (table) ET `<div>` (card) |
+| `rowProps` | `<tr>` (table) ET `<div>` (card) ; objet ou `(row, index) => props` |
 | `cellProps` | `<td>` |
 | `cardProps` | `<div>` de la card (mode cards uniquement) |
 | `paginationProps` | barre de pagination |
@@ -262,10 +293,11 @@ conflits Tailwind.
 | `selectable` | bool | `false` | colonne checkbox + selection bar |
 | `selectedKeys` | array | - | controlled |
 | `onSelectionChange` | func | - | requis si controlled |
-| `mode` | enum | `"auto"` | `auto` \| `table` \| `cards` |
+| `mode` | enum | `"auto"` | `auto` (viewport de session) \| `table` \| `cards` |
 | `loading` | bool | `false` | rend un spinner |
 | `empty` | node | - | fallback empty state (sinon `labels.empty`) |
-| `onRowClick` | func | - | `(row, index) => void`, ignoré sur `data-row-action` |
+| `onRowClick` | func | - | `(row, index) => void`, ignoré sur `data-row-action` ; rows focalisables, Entrée / Espace |
+| `rowProps` | object \| func | - | slot de la row, ou `(row, index) => props` |
 | `labels` | object | `DEFAULT_LABELS` | merge partiel, `rowsSelected` est une fn |
 
 ## Limites connues

@@ -56,9 +56,13 @@ export const propTypes = {
     onSelectionChange: PropTypes.func,
 
     // Display
+    // "auto": cards on a phone, table on a tablet or desktop, read from the
+    // session viewport (ViewportProvider); without a provider, CSS md: switch.
     mode: PropTypes.oneOf(["auto", "table", "cards"]),
     loading: PropTypes.bool,
     empty: PropTypes.node,
+    // (row, index): makes rows focusable (tabIndex 0) and opened by Enter
+    // and Space as well as by a click.
     onRowClick: PropTypes.func,
 
     // i18n
@@ -70,7 +74,9 @@ export const propTypes = {
     tableProps: PropTypes.object,
     headerProps: PropTypes.object,
     headerCellProps: PropTypes.object,
-    rowProps: PropTypes.object,
+    // Same props for every row, or (row, index) => props for per-row
+    // attributes (data-testid...). Also applied to the cards.
+    rowProps: PropTypes.oneOfType([PropTypes.object, PropTypes.func]),
     cellProps: PropTypes.object,
     paginationProps: PropTypes.object,
     cardProps: PropTypes.object,
