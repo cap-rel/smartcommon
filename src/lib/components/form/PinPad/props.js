@@ -15,6 +15,7 @@ export const propTypes = {
     // Called when the validate key is pressed and value length is in range.
     onSubmit: PropTypes.func,
     minLength: PropTypes.number,
+    // Entry is not capped when omitted.
     maxLength: PropTypes.number,
     // "light" for a card background, "dark" for a black full-screen lock overlay.
     tone: PropTypes.oneOf(["light", "dark"]),
@@ -33,7 +34,6 @@ export const propTypes = {
 export const defaultProps = {
     onSubmit: null,
     minLength: 4,
-    maxLength: 8,
     tone: "light",
     keyboard: "global",
     error: false,

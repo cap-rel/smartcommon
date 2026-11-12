@@ -15,8 +15,9 @@ export const propTypes = {
         animations: PropTypes.object,
         pages: PropTypes.object,
     }),
-    // AnimatePresence mode. "wait" blocks new entry until previous exits;
-    // "sync" lets them overlap; "popLayout" reorders without re-mounting.
+    // AnimatePresence mode. "sync" (default) lets the leaving and entering
+    // pages overlap; "wait" blocks new entry until previous exits;
+    // "popLayout" reorders without re-mounting.
     mode: PropTypes.oneOf(["wait", "sync", "popLayout"]),
     // Override the previous pathname used for direction-aware animations.
     // When omitted, falls back to location.state?.prevPathname.
@@ -36,6 +37,6 @@ export const propTypes = {
 };
 
 export const defaultProps = {
-    mode: "wait",
+    mode: "sync",
     defaultAnimationKey: "fade",
 };

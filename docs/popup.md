@@ -43,13 +43,14 @@ const Demo = () => {
 - **Overlay** : `overlay` (défaut `true`) + `closeOnClickOverlay` (défaut
   `true`). L'overlay vient du composant `<Overlay>` partagé (le même
   que `<Panel>` utilise).
-- **Bouton de fermeture** : `closeButton` (défaut `true`) affiche une
-  croix en haut à droite. Click = `close()`.
+- **Bouton de fermeture** : `closeButton` (défaut `false`) affiche une
+  croix en haut à droite. Click = `close()`. Sans lui, la popup se ferme
+  par l'overlay ou par un bouton du contenu.
 - **Mounting** : contrairement à `<Modal>`, `<Popup>` **reste monté**
   même quand `isOpen=false` (transition CSS `opacity`). Les enfants
   sont donc dans le DOM en permanence.
 - **Pas d'escape** : aucun listener `keydown` ; le seul moyen de fermer
-  est le bouton X ou l'overlay.
+  est le bouton X (si `closeButton`), l'overlay ou un bouton du contenu.
 - **Pas de scroll-lock body** : la page derrière reste scrollable
   quand le popup est ouvert.
 
@@ -92,7 +93,7 @@ Pour customiser, utiliser le slot `popupProps` :
 | `isOpen` | bool | - | contrôle l'affichage (opacity, pas mount/unmount) |
 | `close` | func | - | callback de fermeture |
 | `title` | string | - | masque le header si absent et `closeButton=false` |
-| `closeButton` | bool | `true` | croix en haut à droite |
+| `closeButton` | bool | `false` | croix en haut à droite |
 | `overlay` | bool | `true` | overlay sombre |
 | `closeOnClickOverlay` | bool | `true` | overlay = click outside |
 | `responsive` | bool | `true` | dimensions desktop |

@@ -186,3 +186,11 @@ describe("PinPad - labels override", () => {
         expect(screen.getByLabelText("Valider")).toBeTruthy();
     });
 });
+
+describe("PinPad - defaults without props", () => {
+    it("pads to 4 dots and blocks validation below 4 digits when minLength is omitted", () => {
+        const { container } = render(<PinPad value="12" onChange={() => {}} onSubmit={() => {}} />);
+        expect(container.querySelectorAll("span.rounded-full")).toHaveLength(4);
+        expect(screen.getByLabelText("Validate").disabled).toBe(true);
+    });
+});

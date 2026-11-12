@@ -23,7 +23,7 @@ export const propTypes = {
 
 export const defaultProps = {
     responsive: true,
-    closeButton: true,
+    closeButton: false,
     overlay: true,
     closeOnClickOverlay: true,
     keepMounted: true,

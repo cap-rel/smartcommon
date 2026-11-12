@@ -39,9 +39,10 @@ const resolveFromConfig = ({ pathname, prevPathname, animationsConfig, defaultAn
 export const RoutingAnimationLayout = (props) => {
     const {
         animationsConfig,
-        mode,
+        // React 19 ignores function-component defaultProps: defaults live here.
+        mode = "sync",
         prevPathname,
-        defaultAnimationKey,
+        defaultAnimationKey = "fade",
         resolveAnimationKey,
         containerProps,
         children,

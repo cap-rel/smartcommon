@@ -19,8 +19,9 @@ export const NumericPad = (props) => {
         value,
         onChange,
         onConfirm,
-        mode,
-        label,
+        // React 19 ignores function-component defaultProps: defaults live here.
+        mode = "integer",
+        label = "",
         labels: labelsProp,
         backspaceIcon,
         confirmIcon,

@@ -21,7 +21,9 @@ export const Popup = (props) => {
         children,
         overlay = true,
         closeOnClickOverlay = true,
-        closeButton,
+        // No close button unless asked, the default consumers rely on (React
+        // 19 ignores defaultProps, so it is written here).
+        closeButton = false,
         title,
         close = () => {},
         isOpen,

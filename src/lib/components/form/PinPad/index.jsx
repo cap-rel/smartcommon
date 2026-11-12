@@ -29,14 +29,15 @@ export const PinPad = (props) => {
         value,
         onChange,
         onSubmit,
-        minLength,
-        maxLength,
-        tone,
         // React 19 no longer applies function-component defaultProps at runtime,
-        // so the default lives here (not only in props.js) to stay effective.
+        // so the defaults live here (not only in props.js) to stay effective.
+        minLength = 4,
+        // No default: without maxLength the entry is not capped.
+        maxLength,
+        tone = "light",
         keyboard = "global",
-        error,
-        disabled,
+        error = false,
+        disabled = false,
         labels: labelsProp,
     } = props;
 
