@@ -22,9 +22,11 @@ export const propTypes = {
     options: PropTypes.array,
 
     name: PropTypes.string,
-    value: PropTypes.bool,
+    // Single choice: value of the checked option ("" when none). Multiple
+    // choice: array of the checked values.
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
     onChange: PropTypes.func,
-    defaultValue: PropTypes.bool,
+    defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
 
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,

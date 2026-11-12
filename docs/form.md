@@ -189,8 +189,8 @@ sur son élément natif principal :
 
 Composants concernés : `Button`, `FAB`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
-saisie), `RadioBar` (son `radiogroup`), `TabbarItem` et
-`LowerNavbarItem` (leur conteneur). Les autres props restent filtrées :
+saisie), `RadioBar` et `Checker` (le conteneur des options),
+`TabbarItem` et `LowerNavbarItem` (leur conteneur). Les autres props restent filtrées :
 seuls les noms en `data-` et `aria-` passent.
 
 Pour viser un autre élément, ou pour un composant absent de cette liste,
@@ -228,6 +228,26 @@ retire toutes les options de la tabulation. Un test cible donc
 Cliquer sur l'option déjà cochée la décoche (valeur `""`), sauf si le
 champ est `required` : un champ obligatoire rempli ne peut plus être
 vidé.
+
+## `<Checker>`
+
+Liste d'options cochables, avec l'apparence `type` (`switch`,
+`checkbox`, `radio`, `icon`). `multiple` : `value` est le tableau des
+valeurs cochées ; sinon la valeur de l'option cochée, `""` si aucune.
+
+Accessibilité, quelle que soit l'apparence :
+
+- `multiple` : le conteneur est un `role="group"`, chaque option un
+  `role="checkbox"` avec `aria-checked`, toutes dans l'ordre de
+  tabulation ; Espace ou Entrée cochent et décochent.
+- choix unique : même comportement que `<RadioBar>` (`radiogroup`,
+  `radio`, une seule option tabulable, flèches, Espace et Entrée).
+  Cliquer sur l'option cochée la décoche, sauf si le champ est
+  `required`.
+
+Le groupe est nommé par le label visible (`aria-labelledby`), sinon par
+`aria-label`. `disabled` retire les options de la tabulation. Un
+`data-testid` passé par `optionProps` arrive sur chaque option.
 
 ## `<Select>` : choix vide
 

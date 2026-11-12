@@ -1,5 +1,5 @@
 import { FaStar } from "react-icons/fa6";
-import { useEffect } from "react";
+import { useId, useRef } from "react";
 import { isEmpty, isObject, isNil } from "lodash";
 
 import { useField, useVariantMerger } from "lib/hooks";
@@ -8,6 +8,10 @@ import { applyFunctionIfFunction, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
+const NEXT_KEYS = ["ArrowRight", "ArrowDown"];
+const PREVIOUS_KEYS = ["ArrowLeft", "ArrowUp"];
+const TOGGLE_KEYS = [" ", "Enter"];
+
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
 // TODO Add attributes to options like disabled, color, maybe props
 
@@ -15,8 +19,8 @@ export const Checker = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Checker", props);
 
     const {
-        id,
         name,
+        label,
         value,
         defaultValue,
         onChange = () => {},
@@ -40,6 +44,13 @@ export const Checker = (props) => {
 
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 
+    // The visible label names the group through aria-labelledby: a
+    // <label htmlFor> cannot point at a div.
+    const generatedId = useId();
+    const labelId = variantProps.labelProps?.id ?? `${generatedId}-label`;
+
+    const optionRefs = useRef([]);
+
     const errors = (currentValue) => ({
         required: {
             condition: required && isEmptyValue(currentValue),
@@ -61,46 +72,106 @@ export const Checker = (props) => {
 
     const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError }); // multiple ? [] : ""
 
+    const isEditable = !disabled && !readOnly && !isFormSubmitting;
+
+    const optionList = (options ?? []).map(option => ({
+        value: isObject(option) ? option.value : option,
+        label: isObject(option) ? option.label : option,
+    }));
+
+    const isChecked = (optionValue) => multiple ? (currentValue ?? []).includes(optionValue) : currentValue === optionValue;
+
+    // Single choice: roving tabindex, only the checked option (or the first
+    // one) is in the tab order. Multiple choice: every box is tabbable.
+    const checkedIndex = multiple ? -1 : optionList.findIndex(option => option.value === currentValue);
+    const tabbableIndex = checkedIndex === -1 ? 0 : checkedIndex;
+
+    // In single choice, clicking the checked option clears the field unless
+    // it is required: a required field cannot be emptied once filled.
     const handleOnClick = (optionValue) => {
-        if (!disabled && !readOnly && ! isFormSubmitting) {
-            let newValue;
-
-            if (multiple) {
-                const safeCurrentValue = currentValue ?? [];
-                newValue = safeCurrentValue.includes(optionValue) ? safeCurrentValue.filter(checkedOption => checkedOption !== optionValue) : [...safeCurrentValue, optionValue];
-            } else {
-                newValue = currentValue === optionValue ? "" : optionValue;
+        if (!isEditable) {
+            return;
+        }
+        if (multiple) {
+            const safeCurrentValue = currentValue ?? [];
+            setValue(safeCurrentValue.includes(optionValue) ? safeCurrentValue.filter(checkedOption => checkedOption !== optionValue) : [...safeCurrentValue, optionValue]);
+            return;
+        }
+        if (currentValue === optionValue) {
+            if (!required) {
+                setValue("");
             }
+            return;
+        }
+        setValue(optionValue);
+    };
 
-            setValue(newValue);
+    const handleOnKeyDown = (e, optionIndex) => {
+        if (TOGGLE_KEYS.includes(e.key)) {
+            e.preventDefault();
+            handleOnClick(optionList[optionIndex].value);
+            return;
+        }
+        if (multiple) {
+            return;
+        }
+
+        const step = NEXT_KEYS.includes(e.key) ? 1 : PREVIOUS_KEYS.includes(e.key) ? -1 : 0;
+        if (step === 0) {
+            return;
+        }
+
+        e.preventDefault();
+        const nextIndex = (optionIndex + step + optionList.length) % optionList.length;
+        optionRefs.current[nextIndex]?.focus();
+        if (isEditable) {
+            setValue(optionList[nextIndex].value);
         }
     };
+
+    const labelMergeProps = (key, propsFunction, mergeOptions) => key === "label"
+        ? mergeProps(key, props => ({ id: labelId, ...propsFunction(props) }), mergeOptions)
+        : mergeProps(key, propsFunction, mergeOptions);
 
     return (
         <Label 
             { ...variantProps}
             showErrors={isFormSubmitted}
             errors={filteredErrors}
-            mergeProps={mergeProps}
+            mergeProps={labelMergeProps}
         >
             {!isEmpty(options) &&
                 <div { ...mergeProps("optionsContainer", props => ({
+                    role: multiple ? "group" : "radiogroup",
+                    "aria-labelledby": isNil(label) ? undefined : labelId,
+                    "aria-required": required && !multiple ? "true" : undefined,
+                    "aria-disabled": disabled ? "true" : undefined,
                     ...props,
                     className: `flex flex-col divide-y divide-border border border-border w-full rounded-app-md`
-                }))}>
-                    {options.map((option, OI) => {
-                        const optionValue = isObject(option) ? option.value : option;
-                        const optionLabel = isObject(option) ? option.label : option;
-                        const checked = multiple ? (currentValue ?? []).includes(optionValue) : currentValue === optionValue;
+                }), { forwardAttributes: true })}>
+                    {optionList.map((option, OI) => {
+                        const optionValue = option.value;
+                        const optionLabel = option.label;
+                        const checked = isChecked(optionValue);
+                        const isTabbable = !disabled && (multiple || OI === tabbableIndex);
 
                         return (
                             <div key={`option${OI}`} { ...mergeProps("option", props => ({
+                                role: multiple ? "checkbox" : "radio",
+                                "aria-checked": checked ? "true" : "false",
+                                "aria-disabled": disabled ? "true" : undefined,
+                                tabIndex: isTabbable ? 0 : -1,
                                 ...props,
+                                ref: el => { optionRefs.current[OI] = el; },
                                 onClick: (e) => {
                                     applyFunctionIfFunction(props.onClick, e);
                                     handleOnClick(optionValue);
                                 },
-                                className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft duration-(--really-quick)`
+                                onKeyDown: (e) => {
+                                    handleOnKeyDown(e, OI);
+                                    applyFunctionIfFunction(props.onKeyDown, e);
+                                },
+                                className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft duration-(--really-quick) outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary`
                             }))}>
                                 <div { ...mergeProps("optionLabel", props => ({
                                     ...props,
