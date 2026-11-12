@@ -203,8 +203,9 @@ sur son élément natif principal :
 Composants concernés : `Button`, `FAB`, `Tag`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
 saisie), `Boolean` (le contrôle dessiné), `RadioBar` et `Checker` (le
-conteneur des options), `TabbarItem` et `LowerNavbarItem` (leur
-conteneur). Les autres props restent filtrées :
+conteneur des options), `TabbarItem`, `LowerNavbarItem` et `ListItem`
+(leur conteneur), `Modal`, `Popup` et `Panel` (l'élément
+`role="dialog"`). Les autres props restent filtrées :
 seuls les noms en `data-` et `aria-` passent.
 
 Pour viser un autre élément, ou pour un composant absent de cette liste,
