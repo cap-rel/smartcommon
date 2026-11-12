@@ -273,6 +273,10 @@ const logCore = (label, color, level, namespace, ...messages) => {
  *   log.info("GET /users", { id: 42 });
  *   log.error("fetch failed", error);
  *   log.debug("raw response", data);
+ *   log.warning("slow response");      // log.warn(...) is the same method
+ *
+ * `warn` is an alias of `warning` (same WARNING badge, same "warn" level),
+ * so code written against the console API (`logger.warn`) does not throw.
  *
  * Filtering:
  *   localStorage.LOG_LEVEL = "warn"          // Only warn + error
@@ -293,6 +297,10 @@ export const createLogger = (namespace) => {
             logger[method] = (dynamicLabel, ...messages) => logCore(dynamicLabel, color, level, namespace, ...messages);
         }
     }
+
+    // Console-style alias, kept out of BADGES so DebugConsole does not list
+    // the WARNING badge twice.
+    logger.warn = logger.warning;
 
     // Custom method: log.custom("LABEL", "color", ...messages)
     logger.custom = (customLabel, customColor, ...messages) =>

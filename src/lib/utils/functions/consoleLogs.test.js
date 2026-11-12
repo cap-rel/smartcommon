@@ -1,11 +1,51 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 
 import {
     createLogger,
+    log as defaultLog,
     getRecentLogs,
     filterSecrets,
     setLogBufferEnabled,
+    LOG_BADGES,
 } from "./consoleLogs";
+
+describe("createLogger warn alias", () => {
+    let warnSpy;
+
+    beforeEach(() => {
+        setLogBufferEnabled(false);
+        setLogBufferEnabled(true);
+        warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        warnSpy.mockRestore();
+    });
+
+    it("exposes warn on a namespaced logger and on the default log", () => {
+        expect(typeof createLogger("alias").warn).toBe("function");
+        expect(typeof defaultLog.warn).toBe("function");
+    });
+
+    it("logs warn() at the warn level with the WARNING badge, like warning()", () => {
+        const logger = createLogger("alias");
+        expect(() => logger.warn("disk almost full", 92)).not.toThrow();
+
+        expect(warnSpy).toHaveBeenCalledTimes(1);
+        const [format, ...rest] = warnSpy.mock.calls[0];
+        expect(format).toContain(" alias ");
+        expect(format).toContain(" WARNING ");
+        expect(rest).toContain("disk almost full");
+
+        const last = getRecentLogs().at(-1);
+        expect(last).toContain("WARN[alias] WARNING disk almost full 92");
+    });
+
+    it("keeps a single WARNING badge for DebugConsole", () => {
+        expect(LOG_BADGES.warn).toBeUndefined();
+        expect(LOG_BADGES.warning[0]).toBe("WARNING");
+    });
+});
 
 describe("filterSecrets", () => {
     it("masks Bearer tokens", () => {
