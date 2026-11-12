@@ -163,6 +163,13 @@ Item de la zone `bottom` d'une `<Navbar>`. Même API que `<TabbarItem>`
 visuellement mais layout adapté pour une bande horizontale dans la
 navbar (et non en bas d'écran).
 
+Même accessibilité que `<TabbarItem>` : lien (`role="link"`) atteignable
+au clavier et activé par Entrée, `aria-current="page"` quand `active`,
+`disabled` le retire de l'ordre de tabulation et bloque clic et clavier.
+Un `onClick` passé dans `containerProps` reste prioritaire sur `onClick`,
+au clic comme à Entrée. Pour un item sans label, passer `aria-label` ;
+`data-*` et `aria-*` posés sur le composant arrivent sur son conteneur.
+
 ### `<UpperNavbarItem>`
 
 Item de la zone `upper` (`left`/`right`) d'une `<Navbar>`. Composant

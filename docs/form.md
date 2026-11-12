@@ -189,9 +189,9 @@ sur son élément natif principal :
 
 Composants concernés : `Button`, `FAB`, `Input`, `Select`,
 `SearchableSelect`, `Textarea`, `Range`, `ColorPicker` (l'élément de
-saisie), `RadioBar` (son `radiogroup`) et `TabbarItem` (son conteneur).
-Les autres props restent
-filtrées : seuls les noms en `data-` et `aria-` passent.
+saisie), `RadioBar` (son `radiogroup`), `TabbarItem` et
+`LowerNavbarItem` (leur conteneur). Les autres props restent filtrées :
+seuls les noms en `data-` et `aria-` passent.
 
 Pour viser un autre élément, ou pour un composant absent de cette liste,
 utiliser le slot `<élément>Props` (`buttonProps`, `inputProps`,

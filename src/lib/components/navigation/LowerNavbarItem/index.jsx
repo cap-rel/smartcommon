@@ -19,9 +19,25 @@ export const LowerNavbarItem = (props) => {
     } = variantProps;
           
     const currentIcon = active ? (activeIcon ? activeIcon : icon) : icon;
-                                                
+
+    // An item navigates: exposed as a link, reachable with Tab and activated
+    // with Enter like a native link. `disabled` blocks pointer and keyboard.
+    const activate = (e, containerOnClick) => {
+        if (disabled) {
+            return undefined;
+        }
+        if (containerOnClick) {
+            return applyFunctionIfFunction(containerOnClick, e);
+        }
+        return onClick(e);
+    };
+
     return (
         <div { ...mergeProps("container", props => ({
+            role: "link",
+            tabIndex: disabled ? -1 : 0,
+            "aria-current": active ? "page" : undefined,
+            "aria-disabled": disabled ? "true" : undefined,
             ...props,
             style: { 
                 transition: `
@@ -32,18 +48,21 @@ export const LowerNavbarItem = (props) => {
             },
             className: `
                 bg-primary text-app-sm snap-center px-app-base py-app-xs border-b-4 flex justify-center items-center gap-app-xs flex-1 whitespace-nowrap rounded-app-base border-primary
+                cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-white lg:focus-visible:ring-primary
                 ${disabled ? "pointer-events-none" : ""}
                 ${active ? "text-white border-white font-app-semibold" : "font-app-base text-soft-text border-primary active:brightness-soft"}
                 lg:bg-transparent lg:cursor-pointer lg:border-b-2
                 ${active ? "lg:text-strong-text lg:border-primary" : "border-transparent lg:border-border"}
             `,
-            onClick: e => {
-                if (props.onClick) {
-                    return applyFunctionIfFunction(props.onClick, e);
+            onClick: e => activate(e, props.onClick),
+            onKeyDown: e => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    activate(e, props.onClick);
                 }
-                onClick(e);
+                props.onKeyDown?.(e);
             }
-        }))}>
+        }), { forwardAttributes: true })}>
             {/* border-b-4 */}
 
             {icon &&

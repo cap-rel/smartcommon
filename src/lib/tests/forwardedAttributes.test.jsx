@@ -18,6 +18,7 @@ import { SearchableSelect } from "lib/components/form/SearchableSelect";
 import { Range } from "lib/components/form/Range";
 import { ColorPicker } from "lib/components/form/ColorPicker";
 import { TabbarItem } from "lib/components/navigation/TabbarItem";
+import { LowerNavbarItem } from "lib/components/navigation/LowerNavbarItem";
 
 const ATTRIBUTES = { "data-testid": "target", "aria-describedby": "help" };
 
@@ -33,6 +34,7 @@ describe("forwarded attributes - main element of each component", () => {
         ["Range", () => <Range {...ATTRIBUTES} />, "INPUT"],
         ["ColorPicker", () => <ColorPicker {...ATTRIBUTES} />, "INPUT"],
         ["TabbarItem", () => <TabbarItem label="Files" {...ATTRIBUTES} />, "DIV"],
+        ["LowerNavbarItem", () => <LowerNavbarItem label="Files" {...ATTRIBUTES} />, "DIV"],
     ])("%s", (_name, renderComponent, tagName) => {
         render(renderComponent());
 
