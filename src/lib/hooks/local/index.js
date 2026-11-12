@@ -12,3 +12,4 @@ export * from "./useImageUrl";
 export * from "./useBarcodeScanner";
 export * from "./useDialog";
 export * from "./useContextMenu";
+export * from "./useHotkeys";

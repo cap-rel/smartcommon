@@ -18,7 +18,7 @@ Conventions communes :
 ## Import
 
 ```jsx
-import { Dropdown, ContextMenu, useContextMenu } from "@cap-rel/smartcommon";
+import { Dropdown, ContextMenu, useContextMenu, useHotkeys } from "@cap-rel/smartcommon";
 ```
 
 ## `<Dropdown>`
@@ -126,3 +126,34 @@ scroll ou un redimensionnement le ferment aussi.
 | `zIndex` | number | `60` | z-index du menu |
 
 Slots : `menuProps`, `itemProps`, `dividerProps`.
+
+## `useHotkeys(map, { enabled })`
+
+Raccourcis clavier pour les utilisateurs avancés : "/" pour la
+recherche, Échap pour fermer un détail, navigation...
+
+```jsx
+const { isDesktop } = useViewport();
+
+useHotkeys({
+    "mod+k": () => searchRef.current?.focus(),
+    "/": () => searchRef.current?.focus(),
+    "escape": closeDetail,
+}, { enabled: isDesktop });
+```
+
+Une combinaison est une touche en minuscules, précédée au besoin de
+`mod+` (Ctrl, ou Cmd sur macOS), `alt+`, `shift+`, dans cet ordre :
+`"mod+shift+s"`, `"escape"`, `"j"`, `"space"`. Un raccourci reconnu
+annule le comportement du navigateur et appelle `handler(event)`.
+
+- Un raccourci sans Ctrl, Cmd ni Alt (`"/"`, `"j"`) est ignoré pendant la
+  saisie dans un champ (`input`, `textarea`, `select`, `contenteditable`) ;
+  les combinaisons avec modificateur et Échap restent actives.
+- Un événement déjà traité (`defaultPrevented` : l'Échap qui ferme un
+  `Dropdown`, un `ContextMenu` ou une confirmation) est ignoré, comme
+  une touche tapée pendant une composition de texte (IME).
+- La dernière `map` passée est toujours utilisée : un objet écrit en
+  ligne ne réabonne pas l'écouteur à chaque rendu.
+- `enabled: false` détache l'écouteur (hors viewport desktop par
+  exemple).
