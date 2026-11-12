@@ -1,9 +1,9 @@
 import { useEffect } from "react";
-import { useVariantMerger } from "lib/hooks";
+import { useDialog, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil } from "lib/utils";
 import { FaXmark } from "react-icons/fa6";
 
-import { propTypes } from "./props";
+import { DEFAULT_LABELS, propTypes } from "./props";
 
 /**
  * Modal component - A reusable modal dialog
@@ -15,11 +15,18 @@ import { propTypes } from "./props";
  * @param {React.ReactNode} props.children - Modal content
  * @param {boolean} props.showCloseButton - Show X button in header (default: true)
  * @param {boolean} props.closeOnOverlayClick - Close when clicking backdrop (default: true)
+ * @param {boolean} props.closeOnEscape - Close on Escape (default: true)
+ * @param {object} props.labels - i18n, merged over DEFAULT_LABELS (`close`: close button name)
  * @param {string} props.size - Modal width: "sm" | "md" | "lg" | "xl" | "full" (default: "md")
  * @param {string} props.position - Position: "center" | "bottom" (default: "center")
  *   - "center": Centered on screen, rounded corners
  *   - "bottom": Mobile-style bottom sheet (full width, rounded top), centered on desktop
  * @param {number} props.zIndex - CSS z-index (default: 50)
+ *
+ * Accessibility: while open the content is a modal dialog (role="dialog",
+ * aria-modal) named by its title, or by an `aria-label` passed on the Modal
+ * when there is no title. Focus moves into it, Tab stays inside, Escape
+ * closes only the topmost dialog, and focus returns where it was on close.
  *
  * @example
  * // Basic usage
@@ -54,10 +61,16 @@ export const Modal = (props) => {
         children,
         showCloseButton = true,
         closeOnOverlayClick = true,
+        closeOnEscape = true,
         size = "md",
         position = "center",
         zIndex = 50,
+        labels: userLabels,
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose, closeOnEscape });
 
     // Prevent body scroll when modal is open
     useEffect(() => {
@@ -70,20 +83,6 @@ export const Modal = (props) => {
             document.body.style.overflow = "";
         };
     }, [isOpen]);
-
-    // Handle escape key to close modal
-    useEffect(() => {
-        const handleEscape = (e) => {
-            // An inner component (a photo editor tool, a nested dialog)
-            // may handle Escape itself and mark it prevented: never
-            // close over its head.
-            if (e.key === "Escape" && isOpen && !e.defaultPrevented) {
-                applyFunctionIfNotNil(onClose);
-            }
-        };
-        document.addEventListener("keydown", handleEscape);
-        return () => document.removeEventListener("keydown", handleEscape);
-    }, [isOpen, onClose]);
 
     if (!isOpen) return null;
 
@@ -119,26 +118,37 @@ export const Modal = (props) => {
         >
             <div
                 {...mergeProps("content", (p) => ({
+                    role: "dialog",
+                    "aria-modal": "true",
+                    "aria-labelledby": title ? titleId : undefined,
+                    tabIndex: -1,
                     ...p,
+                    ref: dialogRef,
+                    "data-component": "Modal",
+                    onKeyDown: (e) => {
+                        applyFunctionIfNotNil(p.onKeyDown, e);
+                        onKeyDown(e);
+                    },
                     onClick: (e) => e.stopPropagation(),
-                    className: `bg-white w-full ${sizeClasses[size] || sizeClasses.md} ${
+                    className: `bg-soft-bg text-strong-text outline-none w-full ${sizeClasses[size] || sizeClasses.md} ${
                         position === "bottom" ? "rounded-t-2xl lg:rounded-2xl" : "rounded-2xl mx-4"
                     } max-h-[90vh] overflow-hidden flex flex-col`,
-                }))}
+                }), { forwardAttributes: true })}
             >
                 {/* Header with title and close button */}
                 {(title || showCloseButton) && (
                     <div
                         {...mergeProps("header", (p) => ({
                             ...p,
-                            className: "flex items-center justify-between p-4 border-b border-gray-100",
+                            className: "flex items-center justify-between p-4 border-b border-border",
                         }))}
                     >
                         {title && (
                             <h2
                                 {...mergeProps("title", (p) => ({
                                     ...p,
-                                    className: "text-lg font-bold text-gray-900",
+                                    id: titleId,
+                                    className: "text-lg font-bold text-strong-text",
                                 }))}
                             >
                                 {title}
@@ -146,13 +156,15 @@ export const Modal = (props) => {
                         )}
                         {showCloseButton && (
                             <button
+                                type="button"
                                 onClick={onClose}
                                 {...mergeProps("closeButton", (p) => ({
+                                    "aria-label": labels.close,
                                     ...p,
-                                    className: "p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors",
+                                    className: "p-2 text-soft-text hover:text-strong-text hover:bg-medium-bg rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-primary outline-none",
                                 }))}
                             >
-                                <FaXmark />
+                                <FaXmark aria-hidden="true" />
                             </button>
                         )}
                     </div>

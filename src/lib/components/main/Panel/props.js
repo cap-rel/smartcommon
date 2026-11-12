@@ -7,6 +7,9 @@ export const propTypes = {
     position: PropTypes.oneOf(["bottom", "right", "top", "left"]),
     overlay: PropTypes.bool,
     closeOnClickOverlay: PropTypes.bool,
+    // Escape closes the panel. Defaults to closeOnClickOverlay: a panel that
+    // must be answered stays open on both.
+    closeOnEscape: PropTypes.bool,
     closeOnDrag: PropTypes.bool,
     isOpen: PropTypes.bool,
     close: PropTypes.func,

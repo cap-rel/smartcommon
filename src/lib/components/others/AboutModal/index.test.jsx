@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, within } from "@testing-library/react";
 
 const { toastCalls } = vi.hoisted(() => ({
     toastCalls: { info: [], error: [] },
@@ -121,7 +121,8 @@ describe("AboutModal", () => {
                 />
             );
             expect(screen.getByText("Custom title")).toBeDefined();
-            expect(screen.getByRole("button", { name: "OK" })).toBeDefined();
+            // Both the header X and the bottom button carry the close label.
+            expect(screen.getAllByRole("button", { name: "OK" })).toHaveLength(2);
             // unchanged labels still come from defaults
             expect(screen.getByText("Application")).toBeDefined();
             expect(screen.getByText("Version")).toBeDefined();
@@ -133,7 +134,8 @@ describe("AboutModal", () => {
             const onClose = vi.fn();
             render(<AboutModal open onClose={onClose} appName="MyApp" />);
 
-            fireEvent.click(screen.getByRole("button", { name: "Close" }));
+            const body = within(document.querySelector("[data-component='AboutModal']"));
+            fireEvent.click(body.getByRole("button", { name: "Close" }));
 
             expect(onClose).toHaveBeenCalledTimes(1);
         });

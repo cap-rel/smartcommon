@@ -61,10 +61,22 @@ const Demo = () => {
   l'appel au callback `close`.
 - **Animation** : framer-motion `transition: { duration }` (défaut
   0.18s) sur l'axe correspondant à la position.
+- **Escape** : ferme le panel via `close()` quand `closeOnEscape` est
+  vrai ; par défaut il vaut `closeOnClickOverlay`. Seul le dialogue
+  ouvert en dernier réagit (voir [modal.md](modal.md)).
+
+## Accessibilité
+
+Ouvert, le panel porte `role="dialog"` et `aria-modal="true"`, nommé
+par `title` (`aria-labelledby`) ou, sans titre, par un `aria-label`
+passé sur le `<Panel>`. Le focus entre dans le panel à l'ouverture,
+Tab reste à l'intérieur, et le focus revient à l'élément d'origine à la
+fermeture. Fermé (hors écran mais toujours monté), le panel est `inert`
+et `aria-hidden` : son contenu ne prend plus le focus clavier.
 
 ## API close (legacy)
 
-⚠ Cohérence : `<Panel>` utilise `close` (sans le préfixe `on`) là où
+Cohérence : `<Panel>` utilise `close` (sans le préfixe `on`) là où
 `<Modal>` utilise `onClose`. C'est un nom historique conservé pour
 compat. Nouveaux composants à venir : préférer `onClose`.
 
@@ -86,7 +98,9 @@ compat. Nouveaux composants à venir : préférer `onClose`.
 | `position` | enum | `"bottom"` | `bottom` \| `top` \| `left` \| `right` |
 | `overlay` | bool | `true` | overlay sombre |
 | `closeOnClickOverlay` | bool | `true` | overlay = click outside |
+| `closeOnEscape` | bool | `closeOnClickOverlay` | Escape = close |
 | `closeOnDrag` | bool | `true` | gesture drag-to-close |
+| `title` | string | - | titre, nomme le dialogue |
 | `duration` | number | `0.18` | durée d'animation (s) |
 | `goBackLimit` | number | `1/5` | seuil drag pour fermer (fraction de la dimension) |
 | `responsive` | bool | `true` | adaptation desktop |

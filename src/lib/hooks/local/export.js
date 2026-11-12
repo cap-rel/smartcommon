@@ -9,3 +9,4 @@ export * from "./useCachedQuery";
 export * from "./useAuthenticatedImage";
 export * from "./useImageUrl";
 export * from "./useBarcodeScanner";
+export * from "./useDialog";

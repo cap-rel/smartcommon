@@ -363,6 +363,12 @@ export const fr = {
     Page: {
         back: "Retour",
     },
+    Popup: {
+        close: "Fermer",
+    },
+    Modal: {
+        close: "Fermer",
+    },
     UpdatePrompt: {
         title: "Mise à jour disponible",
         message: "Une nouvelle version est disponible.",

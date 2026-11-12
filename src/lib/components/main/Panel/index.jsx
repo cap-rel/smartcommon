@@ -1,7 +1,7 @@
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { useEffect, useRef } from "react";
 
-import { useStates, useVariantMerger } from "lib/hooks";
+import { useDialog, useStates, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil, setGlobalVariables } from "lib/utils";
 
 import { defaultProps, propTypes } from "./props";
@@ -17,6 +17,9 @@ export const Panel = (props) => {
         children,
         overlay = true,
         closeOnClickOverlay = true,
+        // A panel the user may dismiss by its overlay may be dismissed by
+        // Escape too; one that must be answered keeps both closed.
+        closeOnEscape = closeOnClickOverlay,
         closeOnDrag = true,
         close = () => {},
         isOpen,
@@ -26,6 +29,14 @@ export const Panel = (props) => {
     } = variantProps;
    
     const panelRef = useRef();
+
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose: close, closeOnEscape });
+
+    // The panel element feeds both the size measurement and the dialog focus.
+    const setPanelElement = (el) => {
+        panelRef.current = el;
+        dialogRef.current = el;
+    };
 
     const initialStates = {
         panelHeight: 0,
@@ -145,23 +156,38 @@ export const Panel = (props) => {
                 }))} />
             }
             <motion.div { ...mergeProps("panel", props => ({
+                // Modal dialog while open. Closed (slid out of view but still
+                // mounted), it is inert: its content can neither be focused
+                // nor read.
+                ...(isOpen
+                    ? {
+                        role: "dialog",
+                        "aria-modal": "true",
+                        "aria-labelledby": title ? titleId : undefined,
+                        tabIndex: -1,
+                    }
+                    : { inert: true, "aria-hidden": "true" }),
                 ...props,
+                onKeyDown: e => {
+                    applyFunctionIfNotNil(props.onKeyDown, e);
+                    onKeyDown(e);
+                },
                 "data-component": "Panel",
                 dragListener: closeOnDrag,
                 drag,
                 dragConstraints,
                 dragElastic: 0,
                 onDragEnd: handleDragEnd,
-                ref: panelRef,
+                ref: setPanelElement,
                 style: { 
                     "--z-index": zIndex + 10,
                     [drag]: motionPosition,
                     opacity,
                     ...variables
                 },
-                className: `fixed z-(--z-index) p-app-base
+                className: `fixed z-(--z-index) p-app-base outline-none
                 gap-app-base flex flex-col bg-soft-bg overflow-y-auto ${className}`
-            }))}>
+            }), { forwardAttributes: true })}>
                 {/* duration-(--medium) */}
                 {/* ${isOpen ? "translate-y-0" : "translate-y-full"}` */}
                 <div { ...mergeProps("dash", props => ({
@@ -171,6 +197,7 @@ export const Panel = (props) => {
                 {title &&
                     <div { ...mergeProps("title", props => ({
                         ...props,
+                        id: titleId,
                         className: `text-app-base font-app-semibold`
                     }))}>
                         {title}

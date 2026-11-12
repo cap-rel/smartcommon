@@ -6,6 +6,13 @@ export const propTypes = {
     children: PropTypes.node,
     overlay: PropTypes.bool,
     closeOnClickOverlay: PropTypes.bool,
+    // Escape closes the popup. Defaults to closeOnClickOverlay: a popup that
+    // must be answered stays open on both.
+    closeOnEscape: PropTypes.bool,
+    // i18n: merged shallowly over DEFAULT_LABELS (see the locale bundles).
+    labels: PropTypes.shape({
+        close: PropTypes.string,
+    }),
     title: PropTypes.string,
     closeButton: PropTypes.bool,
     isOpen: PropTypes.bool,
@@ -27,4 +34,9 @@ export const defaultProps = {
     overlay: true,
     closeOnClickOverlay: true,
     keepMounted: true,
+};
+
+export const DEFAULT_LABELS = {
+    // Accessible name of the icon-only close button.
+    close: "Close",
 };

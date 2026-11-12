@@ -72,6 +72,8 @@ export const AboutModal = (props) => {
             onClose={handleClose}
             title={labels.title}
             size="sm"
+            // The header X and the bottom button share the close label.
+            labels={{ close: labels.close }}
         >
             <div data-component="AboutModal" className="p-4 flex flex-col gap-4">
                 <div className="flex flex-col gap-2 text-gray-600">

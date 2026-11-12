@@ -5,7 +5,7 @@ bouton de fermeture, contenu centré. Il a précédé `<Modal>` qui le
 remplace dans les nouveaux écrans.
 
 > **À éviter pour nouveaux usages** : préférer `<Modal>` qui gère en
-> plus l'escape, le scroll-lock du body et expose des tailles présets.
+> plus le scroll-lock du body et expose des tailles présets.
 > `<Popup>` est documenté ici pour les modules qui s'en servent encore
 > et pour expliquer la transition.
 
@@ -49,10 +49,25 @@ const Demo = () => {
 - **Mounting** : contrairement à `<Modal>`, `<Popup>` **reste monté**
   même quand `isOpen=false` (transition CSS `opacity`). Les enfants
   sont donc dans le DOM en permanence.
-- **Pas d'escape** : aucun listener `keydown` ; le seul moyen de fermer
-  est le bouton X (si `closeButton`), l'overlay ou un bouton du contenu.
+- **Escape** : ferme la popup ouverte via `close()` quand
+  `closeOnEscape` est vrai. Par défaut `closeOnEscape` vaut
+  `closeOnClickOverlay` : une popup qu'on ne ferme pas par l'overlay
+  (réponse obligatoire) ne se ferme pas non plus par Escape. Seul le
+  dialogue ouvert en dernier réagit (voir [modal.md](modal.md)).
+- **Fermée mais montée** : la popup cachée est `inert` et
+  `aria-hidden` : son contenu ne prend plus le focus clavier et n'est
+  plus lu.
 - **Pas de scroll-lock body** : la page derrière reste scrollable
   quand le popup est ouvert.
+
+## Accessibilité
+
+Ouverte, la popup porte `role="dialog"` et `aria-modal="true"`, nommée
+par son titre (`aria-labelledby`) ou, sans titre, par un `aria-label`
+passé sur la `<Popup>`. Le focus entre dans la popup à l'ouverture,
+Tab reste à l'intérieur, et le focus revient à l'élément d'origine à la
+fermeture. La croix (`closeButton`) est nommée par `labels.close`
+("Close" par défaut, `labels={locales.fr.Popup}` pour le français).
 
 ## API close (legacy)
 
@@ -96,6 +111,8 @@ Pour customiser, utiliser le slot `popupProps` :
 | `closeButton` | bool | `false` | croix en haut à droite |
 | `overlay` | bool | `true` | overlay sombre |
 | `closeOnClickOverlay` | bool | `true` | overlay = click outside |
+| `closeOnEscape` | bool | `closeOnClickOverlay` | Escape = close |
+| `labels` | object | anglais | `{ close }` : nom de la croix |
 | `responsive` | bool | `true` | dimensions desktop |
 | `zIndex` | number | `40` | overlay z-index |
 | `id` | string | - | utilisé par `data-component` |
@@ -122,7 +139,8 @@ Quand c'est possible (nouveau code, ou refacto d'un écran existant) :
 
 Différences à noter au passage :
 - `Modal` se démounte (`return null`) quand `!isOpen`, `Popup` reste monté.
-- `Modal` gère Escape + body scroll-lock automatiquement.
+- `Modal` gère le body scroll-lock automatiquement, et ferme sur Escape
+  même avec `closeOnOverlayClick={false}` (sauf `closeOnEscape={false}`).
 - `Modal` a des `size` présets, `Popup` doit override via `popupProps.className`.
 
 ## Voir aussi

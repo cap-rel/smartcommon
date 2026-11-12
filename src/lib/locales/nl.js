@@ -366,6 +366,12 @@ export const nl = {
     Page: {
         back: "Terug",
     },
+    Popup: {
+        close: "Sluiten",
+    },
+    Modal: {
+        close: "Sluiten",
+    },
     UpdatePrompt: {
         title: "Update beschikbaar",
         message: "Er is een nieuwe versie beschikbaar.",

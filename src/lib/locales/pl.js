@@ -375,6 +375,12 @@ export const pl = {
     Page: {
         back: "Wstecz",
     },
+    Popup: {
+        close: "Zamknij",
+    },
+    Modal: {
+        close: "Zamknij",
+    },
     UpdatePrompt: {
         title: "Dostępna aktualizacja",
         message: "Nowa wersja jest dostępna.",

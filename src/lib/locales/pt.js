@@ -369,6 +369,12 @@ export const pt = {
     Page: {
         back: "Voltar",
     },
+    Popup: {
+        close: "Fechar",
+    },
+    Modal: {
+        close: "Fechar",
+    },
     UpdatePrompt: {
         title: "Atualização disponível",
         message: "Está disponível uma nova versão.",

@@ -2,10 +2,10 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import { isNil } from "lodash";
 
 import { Button, Overlay } from "lib/components";
-import { useVariantMerger } from "lib/hooks";
+import { useDialog, useVariantMerger } from "lib/hooks";
 import { applyFunctionIfNotNil } from "lib/utils";
 
-import { defaultProps, propTypes } from "./props";
+import { DEFAULT_LABELS, defaultProps, propTypes } from "./props";
 
 // TODO z-index prop
 
@@ -21,6 +21,9 @@ export const Popup = (props) => {
         children,
         overlay = true,
         closeOnClickOverlay = true,
+        // A popup the user may dismiss by its overlay may be dismissed by
+        // Escape too; one that must be answered keeps both closed.
+        closeOnEscape = closeOnClickOverlay,
         // No close button unless asked, the default consumers rely on (React
         // 19 ignores defaultProps, so it is written here).
         closeButton = false,
@@ -28,7 +31,13 @@ export const Popup = (props) => {
         close = () => {},
         isOpen,
         keepMounted = true,
+        labels: userLabels,
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+    // Hooks run before the early return below (rules of hooks).
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose: close, closeOnEscape });
 
     // When keepMounted is false, a closed popup is fully unmounted (its content
     // -- including any submit buttons -- leaves the DOM) instead of being kept
@@ -57,14 +66,31 @@ export const Popup = (props) => {
             }))}>
 
                 <div { ...mergeProps("popup", props => ({
+                    // Modal dialog while open. Closed but kept mounted, it is
+                    // inert: its hidden content can neither be focused nor
+                    // read.
+                    ...(isOpen
+                        ? {
+                            role: "dialog",
+                            "aria-modal": "true",
+                            "aria-labelledby": isNil(title) ? undefined : titleId,
+                            tabIndex: -1,
+                        }
+                        : { inert: true, "aria-hidden": "true" }),
                     ...props,
+                    ref: dialogRef,
+                    onKeyDown: e => {
+                        applyFunctionIfNotNil(props.onKeyDown, e);
+                        onKeyDown(e);
+                    },
                     "data-component": "Popup",
                     className: `
                         w-full max-h-full duration-(--really-quick) overflow-y-auto rounded-app-md p-app-md pb-app-lg gap-app-base text-app-sm flex flex-col bg-soft-bg text-strong-text
                         ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
                         ${responsive ? "lg:w-200 lg:h-160 lg:max-w-3/5 lg:max-h-3/5" : ""}
+                        outline-none
                     `
-                }))}>
+                }), { forwardAttributes: true })}>
 
                     {(!isNil(title) || closeButton) &&
                         <div { ...mergeProps("titleAndButtonContainer", props => ({
@@ -74,6 +100,7 @@ export const Popup = (props) => {
 
                             <div { ...mergeProps("title", props => ({
                                 ...props,
+                                id: titleId,
                                 className: `text-app-base font-app-semibold`
                             }))}>
                                 {title}
@@ -89,6 +116,7 @@ export const Popup = (props) => {
                                         applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
                                     },
                                     buttonProps: {
+                                        "aria-label": labels.close,
                                         ...props.buttonProps,
                                         className: `text-app-lg z-60 bg-soft-bg text-soft-text p-app-xs rounded-app-xl -mr-app-xs -mt-app-xs`
                                     },

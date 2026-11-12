@@ -39,13 +39,32 @@ const Demo = () => {
 
 - **Scroll-lock body** : `document.body.style.overflow = "hidden"` quand
   `isOpen=true`, restauré au close ou à l'unmount.
-- **Escape** : un listener global `keydown` ferme la modale via
-  `onClose`. Désinstallé à l'unmount.
+- **Escape** : ferme la modale via `onClose`, sauf avec
+  `closeOnEscape={false}`. Seul le dialogue ouvert en dernier réagit :
+  avec deux dialogues empilés (une `<Popup>` ouverte dans une `<Modal>`,
+  une seconde `<Modal>`), Escape ferme celui du dessus et laisse celui du
+  dessous ouvert. Un Escape déjà traité (`defaultPrevented`, par
+  exemple par `ConfirmProvider` ou un outil interne) est ignoré.
 - **Click overlay** : `closeOnOverlayClick` (défaut `true`) ferme la
   modale. Le contenu intercepte le click pour ne pas fermer en cliquant
   dedans (`e.stopPropagation()`).
-- **Mounting** : `if (!isOpen) return null` — pas de rendu invisible,
+- **Mounting** : `if (!isOpen) return null` : pas de rendu invisible,
   Modal disparaît complètement du DOM quand fermée.
+- **Thème** : fond `bg-soft-bg`, texte `text-strong-text`, bordure
+  `border-border` : la modale suit le mode sombre comme le reste.
+
+## Accessibilité
+
+- Le contenu porte `role="dialog"` et `aria-modal="true"`. Il est nommé
+  par le titre (`aria-labelledby`) ; sans `title`, passer `aria-label`
+  sur la `<Modal>` (`<Modal aria-label="Aperçu photo" ...>`), il arrive
+  sur le dialogue comme les autres attributs `aria-*` et `data-*`.
+- À l'ouverture, le focus passe sur le dialogue (sauf si un champ
+  `autoFocus` du contenu l'a déjà pris). Tab et Maj+Tab tournent dans
+  le dialogue. À la fermeture, le focus revient sur l'élément qui
+  l'avait (le bouton d'ouverture en général).
+- Le bouton X est nommé par `labels.close` ("Close" par défaut, traduit
+  dans les bundles : `labels={locales.fr.Modal}`).
 
 ## Tailles (`size`)
 
@@ -67,7 +86,7 @@ Largeurs **desktop only** (mobile = toujours full width) :
   full width), desktop = redevient centré.
 
 Le mode `bottom` est idéal pour les modales de confirmation, les
-pickers, les menus contextuels — toutes les UI où sur mobile on
+pickers, les menus contextuels : toutes les UI où sur mobile on
 préfère "monter du bas" plutôt que "tomber au milieu".
 
 ## Pas de header / close button
@@ -84,7 +103,7 @@ préfère "monter du bas" plutôt que "tomber au milieu".
 | API close | `isOpen` + `onClose` | `isOpen` + `close` |
 | Sizes presets | sm/md/lg/xl/full | non |
 | Positions | center / bottom | center seulement |
-| Escape | oui | non |
+| Escape | oui | oui si `closeOnClickOverlay` |
 | Body scroll-lock | oui | non |
 | Implémentation | DOM brut + flex | composant `<Overlay>` partagé |
 | Recommandation | nouveaux usages | usages legacy (à migrer) |
@@ -115,6 +134,8 @@ compatibilité avec les modules qui l'utilisent déjà.
 | `children` | node | - | corps scrollable |
 | `showCloseButton` | bool | `true` | masque la croix |
 | `closeOnOverlayClick` | bool | `true` | click sur overlay = close |
+| `closeOnEscape` | bool | `true` | Escape = close (dialogue du dessus seulement) |
+| `labels` | object | anglais | `{ close }` : nom du bouton X |
 | `size` | enum | `"md"` | `sm` \| `md` \| `lg` \| `xl` \| `full` |
 | `position` | enum | `"center"` | `center` \| `bottom` |
 | `zIndex` | number | `50` | overlay z-index |
@@ -123,3 +144,7 @@ compatibilité avec les modules qui l'utilisent déjà.
 
 - [popup.md](popup.md) : alternative legacy.
 - [panel.md](panel.md) : pour un drawer latéral plutôt qu'une modale.
+- `useDialog({ isOpen, onClose, closeOnEscape })` : le hook partagé par
+  `Modal`, `Popup` et `Panel` (focus, Tab, Escape, pile des dialogues),
+  exporté pour un dialogue maison. Il renvoie `dialogRef` et `onKeyDown`
+  à poser sur l'élément `role="dialog"`, et `titleId` pour son titre.

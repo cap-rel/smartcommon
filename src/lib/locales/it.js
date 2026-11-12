@@ -367,6 +367,12 @@ export const it = {
     Page: {
         back: "Indietro",
     },
+    Popup: {
+        close: "Chiudi",
+    },
+    Modal: {
+        close: "Chiudi",
+    },
     UpdatePrompt: {
         title: "Aggiornamento disponibile",
         message: "È disponibile una nuova versione.",

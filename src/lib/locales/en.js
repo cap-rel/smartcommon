@@ -47,6 +47,8 @@ import { DEFAULT_LABELS as AddressInput } from "lib/components/form/AddressInput
 import { DEFAULT_LABELS as ArrayLabels } from "lib/components/form/Array/props";
 import { DEFAULT_LABELS as List } from "lib/components/main/List/props";
 import { DEFAULT_LABELS as Page } from "lib/components/main/Page/props";
+import { DEFAULT_LABELS as Popup } from "lib/components/main/Popup/props";
+import { DEFAULT_LABELS as Modal } from "lib/components/others/Modal/props";
 import { DEFAULT_LABELS as UpdatePrompt } from "lib/components/app/UpdatePrompt/props";
 import { DEFAULT_LABELS as InstallPrompt } from "lib/components/app/InstallPrompt/props";
 import { DEFAULT_LABELS as ConfirmProvider } from "lib/components/app/ConfirmProvider/props";
@@ -94,6 +96,8 @@ export const en = {
     Array: ArrayLabels,
     List,
     Page,
+    Popup,
+    Modal,
     UpdatePrompt,
     InstallPrompt,
     ConfirmProvider,
