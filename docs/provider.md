@@ -209,6 +209,15 @@ l'écran tant qu'elle n'est pas appliquée. Le libellé `dismissButton`
 n'existe plus ; un projet qui le passe encore n'affiche rien de plus.
 Pour bloquer l'application jusqu'à la mise à jour, choisir `modal`.
 
+Accessibilité et couleurs : la bannière est annoncée (`role="status"`,
+`aria-live="polite"`), le toast l'est par le `<Toaster>`. La modale est un
+vrai dialogue (`role="dialog"`, `aria-modal`, nommé par `labels.title`) :
+le focus y entre et Tab reste dedans, mais Échap ne la ferme pas, la
+mise à jour étant obligatoire. Les trois modes prennent les couleurs du
+thème (`primary`, surfaces et textes), mode sombre compris. En bas
+d'écran, la bannière garde la marge de la barre d'accueil iOS
+(`safe-area-inset-bottom`).
+
 ### Numéro de la nouvelle version
 
 Le service worker ne connaît pas le numéro de version. Quand une mise à
