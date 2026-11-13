@@ -41,7 +41,7 @@ const renderUserIcon = (icon) => {
 // Classes by status for the indicator badge.
 const indicatorClassesByStatus = {
     completed: "bg-primary text-white border border-primary",
-    current: "bg-white text-primary border-2 border-primary",
+    current: "bg-soft-bg text-primary border-2 border-primary",
     upcoming: "bg-strong text-soft-text border border-soft-border",
     error: "bg-error text-white border border-error",
 };

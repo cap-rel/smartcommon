@@ -163,3 +163,13 @@ describe("Stepper", () => {
         expect(connectors.length).toBe(sampleSteps.length - 1);
     });
 });
+
+describe("Stepper - dark mode", () => {
+    it("draws the current step on the theme surface, not a fixed white", () => {
+        const steps = [{ label: "One" }, { label: "Two" }];
+        const { container } = render(<Stepper steps={steps} currentStep={0} />);
+        const html = container.querySelector('[data-step-index="0"]').outerHTML;
+        expect(html).toContain("bg-soft-bg");
+        expect(html).not.toMatch(/bg-white(?![\w/-])/);
+    });
+});
