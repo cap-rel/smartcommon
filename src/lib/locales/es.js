@@ -491,7 +491,7 @@ export const es = {
         titleLabel: "Título (opcional)",
         titlePlaceholder: "Resumen breve",
         bodyLabel: "Descripción",
-        bodyPlaceholder: "¿Qué pasó? ¿Qué intentaba hacer?",
+        bodyPlaceholder: "Describa lo que pasó y lo que intentaba hacer.",
         bodyRequiredError: "Por favor, describa el problema.",
         bodyTooLongError: (max) => `La descripción es demasiado larga (máximo ${max} caracteres).`,
         screenshotLabel: "Captura de pantalla",

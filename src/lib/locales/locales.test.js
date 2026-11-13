@@ -100,7 +100,9 @@ describe("locale bundles - structural integrity", () => {
 
 describe("locale bundles - ASCII punctuation rule", () => {
     // Project rule: no curly quotes, ellipsis char, em/en-dash, bullets, arrows.
-    const FORBIDDEN = /[\u00AB\u00BB\u2013\u2014\u2018\u2019\u201C\u201D\u2022\u2026\u2192]/;
+    // Guillemets, dashes, curly quotes, bullet, ellipsis, arrow, and the
+    // inverted Spanish marks.
+    const FORBIDDEN = /[\u00A1\u00AB\u00BB\u00BF\u2013\u2014\u2018\u2019\u201C\u201D\u2022\u2026\u2192]/;
 
     const collectStrings = (value, path = "") => {
         const out = [];
