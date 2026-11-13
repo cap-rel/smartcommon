@@ -627,4 +627,6 @@ export const DataTable = (props) => {
 DataTable.propTypes = propTypes;
 DataTable.defaultProps = defaultProps;
 
-export { DEFAULT_LABELS } from "./props";
+// Public under a specific name, like PRINT_DEFAULT_LABELS: a bare
+// DEFAULT_LABELS at the package top level would not say whose labels they are.
+export { DEFAULT_LABELS as DATATABLE_DEFAULT_LABELS } from "./props";

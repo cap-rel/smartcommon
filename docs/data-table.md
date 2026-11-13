@@ -253,8 +253,8 @@ Le résultat s'applique au `<tr>` et à la card. Un `onClick` ou un
 ```
 
 `rowsSelected` est une fonction `(n) => string` pour gérer le pluriel
-selon la locale. `DEFAULT_LABELS` est exporté depuis le module pour
-extension partielle.
+selon la locale. Les textes anglais sont exportés par le paquet sous le nom
+`DATATABLE_DEFAULT_LABELS`, pour une extension partielle.
 
 ## Slots de styling
 
