@@ -26,6 +26,24 @@
         "node": true,
         "es2024": true
       }
+    },
+    {
+      "files": ["src/lib/**/*.{js,jsx}"],
+      "rules": { "no-console": "error" }
+    },
+    {
+      "files": [
+        "src/lib/**/*.test.{js,jsx}",
+        "src/lib/**/stories/**",
+        "src/lib/**/pages/**",
+        "src/lib/sw/**",
+        "src/lib/utils/functions/consoleLogs.js",
+        "src/lib/components/others/DebugWarnings/**",
+        "src/lib/components/others/DebugConsole/**",
+        "src/lib/hooks/useApiTest/**",
+        "src/lib/hooks/useApiTest2/**"
+      ],
+      "rules": { "no-console": "off" }
     }
   ]
 }
