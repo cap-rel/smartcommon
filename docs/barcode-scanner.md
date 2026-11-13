@@ -65,6 +65,12 @@ export const ProductScanner = () => {
 - **Formats acceptés** : passer `formats: ["QR_CODE", "EAN_13", ...]`.
   Défaut = 7 formats courants (QR + EAN + UPC + CODE128/39). Liste
   complète exportée comme `FORMAT_NAMES`.
+- **Accessibilité** : en plein écran, le scanner est un dialogue modal
+  (`role="dialog"`, `aria-modal`) nommé par son titre (`labels.title`).
+  Le focus y entre, Tab reste dedans, Échap le ferme comme la croix et
+  appelle `onClose`. La croix, sans texte visible, est nommée par
+  `labels.close` (aussi en infobulle). Avec `embedded`, rien de cela :
+  c'est le composant parent qui porte le dialogue.
 - **Test E2E** : pour Playwright, mocker `getUserMedia` ou le composant
   via `vi.mock`. Pas de méthode native pour injecter un scan simulé
   (limitation de html5-qrcode).
@@ -90,6 +96,9 @@ beforeAll(async () => { await import("html5-qrcode"); });
 | `formats` | array | 7 formats | sous-ensemble de `FORMAT_NAMES` |
 | `fps` | number | `10` | framerate de la caméra |
 | `qrbox` | `{width, height}` | `{280, 150}` | zone de scan |
+| `videoConstraints` | object | `{ facingMode: "environment" }` | `MediaTrackConstraints` passées à html5-qrcode ; ajouter `width` / `height` (`{ ideal: 1920 }`) pour mieux lire les codes 1D fins |
+| `experimentalFeatures` | object | `{ useBarCodeDetectorIfSupported: true }` | options expérimentales de html5-qrcode, transmises telles quelles |
+| `embedded` | bool | `false` | rendu dans la page, sans plein écran, sans titre ni croix : le parent fournit son cadre |
 | `debounceMs` | number | `1500` | uniquement en mode continuous |
 | `feedbackContent` | node | - | overlay info affiché par-dessus le scanner (typiquement le statut "claiming...") |
 | `labels` | object | `DEFAULT_LABELS` | merge partiel |
