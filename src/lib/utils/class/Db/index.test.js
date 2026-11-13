@@ -15,6 +15,41 @@ describe("Db class", () => {
         vi.restoreAllMocks();
     });
 
+    describe("hooks", () => {
+        it("saves a new updatedAt when a row is updated", async () => {
+            const db = new Db({ name: uniqueName("updated_at"), version: 1, stores: { foo: "id" }, debug: false });
+            const now = vi.spyOn(Date, "now").mockReturnValue(1_000_000_000_000);
+            await db.instance.foo.put({ id: 1, value: "a" });
+
+            now.mockReturnValue(1_000_000_600_000);
+            await db.instance.foo.update(1, { value: "b" });
+
+            const row = await db.instance.foo.get(1);
+            expect(row.createdAt).toBe(1_000_000_000);
+            expect(row.updatedAt).toBe(1_000_000_600);
+            db.instance.close();
+        });
+
+        it("purges week-old logs in dev without an explicit debug flag", async () => {
+            const name = uniqueName("purge_dev");
+            const first = new Db({ name, version: 1, stores: { foo: "id" }, debug: false });
+            const nowSec = Math.floor(Date.now() / 1000);
+            await first.instance.logs.bulkAdd([
+                { store: "foo", itemId: 1, action: "create", createdAt: nowSec - 8 * 24 * 3600 },
+                { store: "foo", itemId: 2, action: "create", createdAt: nowSec - 3600 },
+            ]);
+            first.instance.close();
+
+            // Vitest runs with import.meta.env.DEV, so debug defaults to true.
+            const second = new Db({ name, version: 1, stores: { foo: "id" } });
+            expect(second.debug).toBe(true);
+            await vi.waitFor(async () => {
+                expect((await second.instance.logs.toArray()).map(l => l.itemId)).toEqual([2]);
+            });
+            second.instance.close();
+        });
+    });
+
     describe("single-version mode (retro-compat)", () => {
         it("creates a Db with version + stores and exposes Dexie instance", async () => {
             const name = uniqueName("single_basic");

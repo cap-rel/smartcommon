@@ -3,6 +3,7 @@ import Dexie from "dexie";
 import { floor, forEach, keys } from "lodash";
 
 import { log, throwTypeError } from "lib/utils";
+import { LOGS_MAX_AGE_SECONDS } from "lib/utils/class/Db";
 
 // For multi-version Dexie schemas with .upgrade() callbacks, use the
 // `Db` class directly (lib/utils/class/Db). This hook only exposes the
@@ -80,7 +81,7 @@ const buildDb = ({ name, options, version, stores, debug }) => {
                     action: "create",
                     data: { ...item },
                     createdAt: dateNow
-                });
+                }).catch((err) => log.error("useDb: failed to log create", err));
             });
         });
 
@@ -91,8 +92,6 @@ const buildDb = ({ name, options, version, stores, debug }) => {
 
             const dateNow = floor(Date.now() / 1000);
 
-            item.updatedAt = dateNow;
-
             setTimeout(() => {
                 db.logs.add({
                     store,
@@ -100,9 +99,12 @@ const buildDb = ({ name, options, version, stores, debug }) => {
                     action: "update",
                     data: { before: { ...item }, after: { ...item, ...updates } },
                     createdAt: dateNow
-                });
+                }).catch((err) => log.error("useDb: failed to log update", err));
             });
 
+            // Dexie applies the object an updating hook returns; changing
+            // `item` in place is not saved.
+            return { updatedAt: dateNow };
         });
 
         db[store].hook('deleting', (key, item) => {
@@ -117,11 +119,16 @@ const buildDb = ({ name, options, version, stores, debug }) => {
                     action: "delete",
                     data: { ...item },
                     createdAt: floor(Date.now() / 1000)
-                });
+                }).catch((err) => log.error("useDb: failed to log delete", err));
             });
         });
         
     });
+
+    // Every write is logged: drop the entries older than the Db class keeps.
+    const cutoff = floor(Date.now() / 1000) - LOGS_MAX_AGE_SECONDS;
+    db.logs.where("createdAt").below(cutoff).delete()
+        .catch((err) => log.error("useDb: failed to purge old logs", err));
 
     return db;
 };

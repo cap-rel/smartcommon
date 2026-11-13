@@ -63,8 +63,9 @@ export const LocalCatalog = () => {
   d'`options` seul ne rouvre pas la base.
 - Ce hook ne gère qu'une version de schéma. Pour une migration avec
   `.upgrade()`, utiliser la classe `Db` de la bibliothèque.
-- `createdAt` et `updatedAt` sont en secondes Unix, posés à la création. Le
-  journal `logs` grossit sans limite : à purger par l'application si besoin.
+- `createdAt` et `updatedAt` sont en secondes Unix : les deux sont posés à la
+  création, `updatedAt` est rafraîchi à chaque mise à jour. Le journal `logs`
+  garde 7 jours : les entrées plus anciennes sont supprimées à l'ouverture.
 - La base est reconstruite quand le contenu de `stores` change (comparaison
   sur sa forme JSON), pas quand seul l'objet change d'identité.
 

@@ -3,7 +3,7 @@ import { floor, forEach, keys, isEqual, get, set, isPlainObject, isArray, isFunc
 
 import { log, throwTypeError } from "lib/utils";
 
-const LOGS_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
+export const LOGS_MAX_AGE_SECONDS = 7 * 24 * 60 * 60; // 7 days
 
 // FROZEN: do not modify this string.
 //
@@ -69,7 +69,9 @@ export class Db {
         this._initStores(normalized);
         this._initHooks(normalized[normalized.length - 1].stores);
 
-        if (debug) {
+        // Logs are only written in debug (dev by default): purge with the
+        // same resolved flag, else dev databases keep every row forever.
+        if (this.debug) {
             this._purgeLogs();
         }
     }
@@ -195,8 +197,6 @@ export class Db {
 
                 const dateNow = floor(Date.now() / 1000);
 
-                item.updatedAt = dateNow;
-
                 if (debug) {
                     setTimeout(() => {
                         db.logs.add({
@@ -211,6 +211,10 @@ export class Db {
                         }).catch((err) => log.db("Failed to log update:", err));
                     });
                 }
+
+                // Dexie applies the object an updating hook returns; changing
+                // `item` in place is not saved.
+                return { updatedAt: dateNow };
             });
 
             db[store].hook("deleting", (key, item) => {
