@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { ConflictResolver } from './ConflictResolver';
+import { fr } from 'lib/locales/fr';
 
 describe('ConflictResolver', () => {
     const mockConflicts = [
@@ -21,7 +22,9 @@ describe('ConflictResolver', () => {
     const defaultProps = {
         conflicts: mockConflicts,
         onResolve: vi.fn().mockResolvedValue(),
-        onCancel: vi.fn()
+        onCancel: vi.fn(),
+        // The app passes its language bundle; the defaults are English.
+        labels: fr.ConflictResolver
     };
 
     beforeEach(() => {
@@ -78,7 +81,7 @@ describe('ConflictResolver', () => {
             render(<ConflictResolver {...defaultProps} conflicts={multipleConflicts} />);
 
             fireEvent.click(screen.getByText(/Suivant/));
-            fireEvent.click(screen.getByText(/Precedent/));
+            fireEvent.click(screen.getByText(/Précédent/));
 
             expect(screen.getByText(/SOC001/)).toBeTruthy();
         });
@@ -100,7 +103,7 @@ describe('ConflictResolver', () => {
             const onResolve = vi.fn().mockResolvedValue();
             render(<ConflictResolver {...defaultProps} onResolve={onResolve} />);
 
-            fireEvent.click(screen.getByText(/Garder serveur/));
+            fireEvent.click(screen.getByText(/Garder la version du serveur/));
 
             await waitFor(() => {
                 expect(onResolve).toHaveBeenCalledWith('c1', 'server', null);
@@ -160,8 +163,8 @@ describe('ConflictResolver', () => {
 
             fireEvent.click(screen.getByText(/Fusionner/));
 
-            expect(screen.getAllByText('Client').length).toBeGreaterThan(0);
-            expect(screen.getAllByText('Serveur').length).toBeGreaterThan(0);
+            expect(screen.getAllByRole('button', { name: 'La mienne' }).length).toBeGreaterThan(0);
+            expect(screen.getAllByRole('button', { name: 'Serveur' }).length).toBeGreaterThan(0);
         });
 
         it('should call onResolve with merged data after selections', async () => {
@@ -171,7 +174,7 @@ describe('ConflictResolver', () => {
             fireEvent.click(screen.getByText(/Fusionner/));
 
             // Select client for all conflicting fields
-            const clientButtons = screen.getAllByRole('button', { name: 'Client' });
+            const clientButtons = screen.getAllByRole('button', { name: 'La mienne' });
             clientButtons.forEach(btn => fireEvent.click(btn));
 
             fireEvent.click(screen.getByText(/Appliquer/));
@@ -234,12 +237,12 @@ describe('ConflictResolver', () => {
     describe('metadata display', () => {
         it('should display server timestamp', () => {
             render(<ConflictResolver {...defaultProps} />);
-            expect(screen.getByText(/Serveur:/)).toBeTruthy();
+            expect(screen.getByText(/Serveur :/)).toBeTruthy();
         });
 
         it('should display client timestamp when available', () => {
             render(<ConflictResolver {...defaultProps} />);
-            expect(screen.getByText(/Local:/)).toBeTruthy();
+            expect(screen.getByText(/Local :/)).toBeTruthy();
         });
     });
 
@@ -277,5 +280,43 @@ describe('ConflictResolver', () => {
             render(<ConflictResolver {...defaultProps} conflicts={conflictWithObject} />);
             expect(screen.getByText('{"key":"value"}')).toBeTruthy();
         });
+    });
+});
+
+describe('ConflictResolver display (#12)', () => {
+    const conflict = {
+        conflict_id: 'c1',
+        table: 'product',
+        object_id: 68,
+        client_data: { label: 'label local', price: 10 },
+        server_data: { label: 'label serveur', price: 10 },
+        field_conflicts: ['label'],
+        server_tms: '2026-11-09T11:24:00Z',
+    };
+    const props = { conflicts: [conflict], onResolve: vi.fn().mockResolvedValue(), onCancel: vi.fn() };
+
+    it('uses theme classes, not the undefined conflict-resolver ones', () => {
+        const { container } = render(<ConflictResolver {...props} />);
+        expect(container.innerHTML).not.toMatch(/conflict-resolver__/);
+        expect(container.querySelector('[data-component="ConflictResolver"]').className).toMatch(/flex/);
+        expect(container.querySelector('tr[data-conflict="true"]').className).toMatch(/bg-error\/10/);
+    });
+
+    it('speaks English by default and renders real buttons', () => {
+        render(<ConflictResolver {...props} />);
+        expect(screen.getByRole('heading', { name: /Sync conflict - product #68/ })).toBeTruthy();
+        for (const name of ['Keep my version', 'Keep the server version', 'Merge', 'Cancel']) {
+            expect(screen.getByRole('button', { name })).toBeTruthy();
+        }
+        expect(screen.getByRole('rowheader', { name: /label \(in conflict\)/ })).toBeTruthy();
+    });
+
+    it('marks the chosen value in merge mode', () => {
+        render(<ConflictResolver {...props} />);
+        fireEvent.click(screen.getByRole('button', { name: 'Merge' }));
+        const serverChoice = screen.getByRole('button', { name: 'Server' });
+        fireEvent.click(serverChoice);
+        expect(screen.getByRole('button', { name: 'Server' }).getAttribute('aria-pressed')).toBe('true');
+        expect(screen.getByRole('button', { name: 'Apply' }).hasAttribute('disabled')).toBe(false);
     });
 });

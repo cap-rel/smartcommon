@@ -223,7 +223,12 @@ const MyComponent = () => {
 
 ### ConflictResolver
 
-Composant UI pour la résolution des conflits.
+Composant UI pour la résolution des conflits : tableau comparant votre
+version et celle du serveur (champs en conflit surlignés), puis "Garder ma
+version", "Garder la version du serveur" ou "Fusionner" champ par champ.
+Couleurs du thème, boutons `<Button>` de smartcommon. Textes en anglais par
+défaut : passer `locales.fr.ConflictResolver` (ou le donner une fois au
+`<Provider>`, voir `provider.md`), et ne surcharger que les clés voulues.
 
 ```javascript
 const [conflicts, setConflicts] = useState([]);
@@ -244,12 +249,7 @@ return (
         conflicts={conflicts}
         onResolve={handleResolve}
         onCancel={() => setConflicts([])}
-        labels={{
-            title: 'Conflit détecté',
-            keepClient: 'Garder ma version',
-            keepServer: 'Garder version serveur',
-            merge: 'Fusionner'
-        }}
+        labels={{ ...locales.fr.ConflictResolver, title: 'Conflit détecté' }}
     />
 );
 ```

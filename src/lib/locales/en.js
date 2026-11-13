@@ -56,6 +56,7 @@ import { DEFAULT_LABELS as InstallPrompt } from "lib/components/app/InstallPromp
 import { DEFAULT_LABELS as ConfirmProvider } from "lib/components/app/ConfirmProvider/props";
 import { DEFAULT_LABELS as ViewportProvider } from "lib/components/app/ViewportProvider/props";
 import { DEFAULT_LABELS as Print } from "lib/print/labels";
+import { DEFAULT_LABELS as ConflictResolver } from "lib/sync/conflictResolverLabels";
 import { DEFAULT_LABELS as ErrorBoundary } from "lib/components/app/ErrorBoundary/props";
 import { DEFAULT_LABELS as Sidebar } from "lib/components/navigation/Sidebar/props";
 import { DEFAULT_LABELS as UserMenu } from "lib/components/navigation/UserMenu/props";
@@ -111,6 +112,7 @@ export const en = {
     ConfirmProvider,
     ViewportProvider,
     Print,
+    ConflictResolver,
     ErrorBoundary,
     Sidebar,
     UserMenu,

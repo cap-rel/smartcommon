@@ -1,5 +1,11 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
+
+import { Button } from 'lib/components';
+import { useComponentLabels } from 'lib/hooks/local/useComponentLabels';
+import { twMerge } from 'lib/utils';
+
+import { DEFAULT_LABELS } from './conflictResolverLabels';
 
 /**
  * ConflictResolver - UI component for resolving sync conflicts
@@ -12,33 +18,16 @@ const ConflictResolver = ({
     onResolve,
     onCancel,
     renderField,
-    labels
+    labels,
+    className
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [mergeMode, setMergeMode] = useState(false);
     const [mergedData, setMergedData] = useState({});
     const [isResolving, setIsResolving] = useState(false);
 
-    // Default labels (French)
-    const defaultLabels = {
-        title: 'Conflit detecte',
-        fieldHeader: 'Champ',
-        clientHeader: 'Votre version',
-        serverHeader: 'Version serveur',
-        keepClient: 'Garder ma version',
-        keepServer: 'Garder serveur',
-        merge: 'Fusionner',
-        cancel: 'Annuler',
-        apply: 'Appliquer',
-        next: 'Suivant',
-        previous: 'Precedent',
-        conflictCount: 'Conflit {current} sur {total}',
-        modifiedBy: 'Modifie par {user} le {date}',
-        noValue: '-',
-        selectValue: 'Selectionner une valeur'
-    };
-
-    const l = { ...defaultLabels, ...labels };
+    // English defaults, then the app-wide theme labels, then the prop.
+    const l = { ...DEFAULT_LABELS, ...useComponentLabels('ConflictResolver', labels) };
 
     const currentConflict = conflicts[currentIndex];
 
@@ -164,51 +153,54 @@ const ConflictResolver = ({
     const objectLabel = currentConflict.object_ref
         || `${currentConflict.table} #${currentConflict.object_id}`;
 
+    const cellClass = (source, isConflicting, selectedSource) => twMerge(
+        'px-3 py-2 align-top break-words',
+        mergeMode && isConflicting && 'cursor-pointer hover:bg-primary/5',
+        selectedSource === source && 'bg-primary/10 ring-2 ring-inset ring-primary'
+    );
+
     return (
-        <div className="conflict-resolver">
+        <div
+            data-component="ConflictResolver"
+            className={twMerge('flex flex-col gap-app-md text-strong-text', className)}
+        >
             {/* Header */}
-            <div className="conflict-resolver__header">
-                <h2 className="conflict-resolver__title">
+            <div className="flex flex-wrap items-center justify-between gap-app-sm">
+                <h2 className="text-lg font-semibold">
                     {l.title} - {objectLabel}
                 </h2>
                 {conflicts.length > 1 && (
-                    <div className="conflict-resolver__nav">
-                        <button
+                    <div className="flex items-center gap-app-sm">
+                        <Button
+                            label={l.previous}
+                            variant="ghost"
                             onClick={goToPrevious}
                             disabled={currentIndex === 0}
-                            className="conflict-resolver__nav-btn"
-                        >
-                            {l.previous}
-                        </button>
-                        <span className="conflict-resolver__counter">
+                        />
+                        <span className="text-sm text-medium-text" aria-live="polite">
                             {l.conflictCount
                                 .replace('{current}', currentIndex + 1)
                                 .replace('{total}', conflicts.length)}
                         </span>
-                        <button
+                        <Button
+                            label={l.next}
+                            variant="ghost"
                             onClick={goToNext}
                             disabled={currentIndex === conflicts.length - 1}
-                            className="conflict-resolver__nav-btn"
-                        >
-                            {l.next}
-                        </button>
+                        />
                     </div>
                 )}
             </div>
 
             {/* Comparison table */}
-            <div className="conflict-resolver__table-container">
-                <table className="conflict-resolver__table">
-                    <thead>
+            <div className="overflow-x-auto rounded-app-md border border-border">
+                <table className="w-full text-sm border-collapse">
+                    <thead className="bg-medium-bg text-medium-text">
                         <tr>
-                            <th>{l.fieldHeader}</th>
-                            <th className={mergeMode ? 'selectable' : ''}>
-                                {l.clientHeader}
-                            </th>
-                            <th className={mergeMode ? 'selectable' : ''}>
-                                {l.serverHeader}
-                            </th>
-                            {mergeMode && <th>{l.selectValue}</th>}
+                            <th scope="col" className="px-3 py-2 text-left font-medium">{l.fieldHeader}</th>
+                            <th scope="col" className="px-3 py-2 text-left font-medium">{l.clientHeader}</th>
+                            <th scope="col" className="px-3 py-2 text-left font-medium">{l.serverHeader}</th>
+                            {mergeMode && <th scope="col" className="px-3 py-2 text-left font-medium">{l.selectValue}</th>}
                         </tr>
                     </thead>
                     <tbody>
@@ -225,49 +217,51 @@ const ConflictResolver = ({
                             return (
                                 <tr
                                     key={field}
-                                    className={isConflicting ? 'conflict-resolver__row--conflict' : ''}
+                                    data-conflict={isConflicting ? 'true' : undefined}
+                                    className={twMerge('border-t border-border', isConflicting && 'bg-error/10')}
                                 >
-                                    <td className="conflict-resolver__field-name">
+                                    <th scope="row" className="px-3 py-2 text-left align-top font-medium">
                                         {field}
-                                        {isConflicting && <span className="conflict-marker">*</span>}
-                                    </td>
+                                        {isConflicting && (
+                                            <span className="ml-1 text-error" title={l.conflictingField}>
+                                                <span aria-hidden="true">*</span>
+                                                <span className="sr-only">{` (${l.conflictingField})`}</span>
+                                            </span>
+                                        )}
+                                    </th>
                                     <td
-                                        className={`conflict-resolver__value ${
-                                            mergeMode && isConflicting ? 'clickable' : ''
-                                        } ${selectedSource === 'client' ? 'selected' : ''}`}
+                                        className={cellClass('client', isConflicting, selectedSource)}
                                         onClick={() => mergeMode && isConflicting && selectFieldValue(field, 'client')}
                                     >
                                         {renderField
                                             ? renderField(field, clientValue, serverValue, 'client')
-                                            : formatValue(clientValue, l.noValue)}
+                                            : formatValue(clientValue, l)}
                                     </td>
                                     <td
-                                        className={`conflict-resolver__value ${
-                                            mergeMode && isConflicting ? 'clickable' : ''
-                                        } ${selectedSource === 'server' ? 'selected' : ''}`}
+                                        className={cellClass('server', isConflicting, selectedSource)}
                                         onClick={() => mergeMode && isConflicting && selectFieldValue(field, 'server')}
                                     >
                                         {renderField
                                             ? renderField(field, clientValue, serverValue, 'server')
-                                            : formatValue(serverValue, l.noValue)}
+                                            : formatValue(serverValue, l)}
                                     </td>
                                     {mergeMode && (
-                                        <td className="conflict-resolver__selection">
+                                        <td className="px-3 py-2 align-top">
                                             {isConflicting && (
-                                                <>
-                                                    <button
+                                                <div className="flex gap-app-xs" role="group" aria-label={`${l.selectValue} - ${field}`}>
+                                                    <Button
+                                                        label={l.chooseClient}
+                                                        variant={selectedSource === 'client' ? 'primary' : 'outline'}
+                                                        aria-pressed={selectedSource === 'client'}
                                                         onClick={() => selectFieldValue(field, 'client')}
-                                                        className={selectedSource === 'client' ? 'active' : ''}
-                                                    >
-                                                        Client
-                                                    </button>
-                                                    <button
+                                                    />
+                                                    <Button
+                                                        label={l.chooseServer}
+                                                        variant={selectedSource === 'server' ? 'primary' : 'outline'}
+                                                        aria-pressed={selectedSource === 'server'}
                                                         onClick={() => selectFieldValue(field, 'server')}
-                                                        className={selectedSource === 'server' ? 'active' : ''}
-                                                    >
-                                                        Serveur
-                                                    </button>
-                                                </>
+                                                    />
+                                                </div>
                                             )}
                                         </td>
                                     )}
@@ -280,70 +274,44 @@ const ConflictResolver = ({
 
             {/* Metadata */}
             {currentConflict.server_tms && (
-                <div className="conflict-resolver__meta">
-                    <span className="conflict-resolver__meta-item">
-                        Serveur: {formatDateTime(currentConflict.server_tms)}
+                <div className="flex flex-wrap gap-app-md text-xs text-medium-text">
+                    <span>
+                        {l.serverDate} {formatDateTime(currentConflict.server_tms)}
                     </span>
                     {currentConflict.client_tms && (
-                        <span className="conflict-resolver__meta-item">
-                            Local: {formatDateTime(currentConflict.client_tms)}
+                        <span>
+                            {l.localDate} {formatDateTime(currentConflict.client_tms)}
                         </span>
                     )}
                 </div>
             )}
 
             {/* Actions */}
-            <div className="conflict-resolver__actions">
+            <div className="flex flex-wrap justify-end gap-app-sm">
                 {!mergeMode ? (
                     <>
-                        <button
-                            onClick={() => handleResolve('client')}
-                            disabled={isResolving}
-                            className="conflict-resolver__btn conflict-resolver__btn--client"
-                        >
-                            {l.keepClient}
-                        </button>
-                        <button
-                            onClick={() => handleResolve('server')}
-                            disabled={isResolving}
-                            className="conflict-resolver__btn conflict-resolver__btn--server"
-                        >
-                            {l.keepServer}
-                        </button>
-                        <button
-                            onClick={enterMergeMode}
-                            disabled={isResolving}
-                            className="conflict-resolver__btn conflict-resolver__btn--merge"
-                        >
-                            {l.merge}
-                        </button>
-                        <button
-                            onClick={onCancel}
-                            disabled={isResolving}
-                            className="conflict-resolver__btn conflict-resolver__btn--cancel"
-                        >
-                            {l.cancel}
-                        </button>
+                        <Button label={l.cancel} variant="ghost" onClick={onCancel} disabled={isResolving} />
+                        <Button label={l.merge} variant="outline" onClick={enterMergeMode} disabled={isResolving} />
+                        <Button label={l.keepServer} variant="secondary" onClick={() => handleResolve('server')} disabled={isResolving} />
+                        <Button label={l.keepClient} variant="primary" onClick={() => handleResolve('client')} disabled={isResolving} />
                     </>
                 ) : (
                     <>
-                        <button
-                            onClick={handleMergeApply}
-                            disabled={isResolving || !isMergeComplete}
-                            className="conflict-resolver__btn conflict-resolver__btn--apply"
-                        >
-                            {l.apply}
-                        </button>
-                        <button
+                        <Button
+                            label={l.cancel}
+                            variant="ghost"
                             onClick={() => {
                                 setMergeMode(false);
                                 setMergedData({});
                             }}
                             disabled={isResolving}
-                            className="conflict-resolver__btn conflict-resolver__btn--cancel"
-                        >
-                            {l.cancel}
-                        </button>
+                        />
+                        <Button
+                            label={l.apply}
+                            variant="primary"
+                            onClick={handleMergeApply}
+                            disabled={isResolving || !isMergeComplete}
+                        />
                     </>
                 )}
             </div>
@@ -358,12 +326,12 @@ function normalizeValue(value) {
     return String(value);
 }
 
-function formatValue(value, noValueLabel) {
+function formatValue(value, l) {
     if (value === null || value === undefined || value === '') {
-        return <span className="no-value">{noValueLabel}</span>;
+        return <span className="text-soft-text">{l.noValue}</span>;
     }
     if (typeof value === 'boolean') {
-        return value ? 'Oui' : 'Non';
+        return value ? l.yes : l.no;
     }
     if (typeof value === 'object') {
         return JSON.stringify(value);
@@ -375,7 +343,9 @@ function formatDateTime(isoString) {
     if (!isoString) return '';
     try {
         const date = new Date(isoString);
-        return date.toLocaleString('fr-FR', {
+        if (Number.isNaN(date.getTime())) return isoString;
+        // Browser locale, like the rest of the app's dates.
+        return date.toLocaleString(undefined, {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
@@ -402,7 +372,9 @@ ConflictResolver.propTypes = {
     onResolve: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
     renderField: PropTypes.func,
-    labels: PropTypes.object
+    /** Partial labels laid over the English defaults and the theme ones. */
+    labels: PropTypes.object,
+    className: PropTypes.string
 };
 
 ConflictResolver.defaultProps = {
