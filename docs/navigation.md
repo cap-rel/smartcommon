@@ -225,10 +225,6 @@ const AppShell = ({ children }) => {
 
 ## Limites connues
 
-- **`<Tabbar>.centralButton`** : TODO dans le code, pas implémenté (le
-  bouton "central rehaussé" type Material n'existe pas encore).
-- **Badge sur `<Sidebar>` links** : TODO, partiellement implémenté
-  selon le code.
 - **Label truncate** dans Tabbar : commentaire TODO mentionne que la
   troncature ne fonctionne pas comme attendu.
 - **`<UpperNavbarItem>`** : composant squelette sans propTypes ni

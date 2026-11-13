@@ -31,10 +31,16 @@ Défaut **`false`** (à l'inverse de `<Navbar>`) : la tabbar reste
 visible. Les onglets de navigation principale ne devraient pas
 disparaître au scroll.
 
+## Bouton central
+
+`centralButton` (`{ icon, label, onClick, badge, disabled }`) ajoute un
+bouton d'action rond et surélevé au milieu des onglets. `label` est son nom
+accessible, `badge` suit les règles des compteurs. Slots :
+`centralButtonContainerProps`, `centralButtonProps`,
+`centralButtonLabelProps`, `centralButtonBadgeProps`.
+
 ## Limites
 
-- `centralButton` est listé en TODO dans le code (bouton "central
-  rehaussé" Material non implémenté).
 - Pas de scroll horizontal natif : avec >5 onglets, ça tasse.
 
 ## Voir aussi

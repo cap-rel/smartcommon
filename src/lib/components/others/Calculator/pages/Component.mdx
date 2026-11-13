@@ -22,37 +22,45 @@ récupérer la valeur calculée.
    et appeler `useCalculator().open(onResult)` depuis n'importe quel
    descendant. Une seule instance partagée.
 
-## Operations
+## Opérations
 
 `+` `-` `×` `÷` `%` `+/-` `.`. Pas de parenthèses, pas de fonctions
-trig. Division par zéro -> `0`. Très grands nombres (≥ 1e12) affichés
-en notation exponentielle (6 décimales).
+trigonométriques. Division par zéro -> `0`. `%` tient compte de
+l'opération en cours : après `+` ou `-`, c'est un pourcentage de la valeur
+précédente (`50 + 10%` donne `55`) ; après `×` ou `÷`, la fraction
+`valeur / 100`. Très grands nombres (>= 1e12) affichés en notation
+exponentielle (6 décimales).
 
 ## Raccourcis clavier
 
 Actifs uniquement quand `isOpen=true` :
 
-`0-9` digit · `.` décimale · `+` `-` `*` `/` opérateur · `Enter`/`=`
-calcul · `Backspace` efface · `Delete` clear · `%` percent · `Escape`
-ferme.
+`0-9` chiffre, `.` décimale, `+` `-` `*` `/` opérateur, `Enter`/`=`
+calcul, `Backspace` efface, `Delete` remet à zéro, `%` pourcentage,
+`Escape` ferme.
 
 ## Historique & mémoire
 
 - `showHistory` (défaut true) : panneau qui liste les 5 dernières
   opérations. Limite `MAX_HISTORY=5` **non configurable**.
 - `showMemory` (défaut true) : `MC` `MR` `M+` `M-` + indicateur
-  `M: <valeur>` si non-zéro.
+  `<labels.memory>: <valeur>` si non nul.
 
 ## Positions
 
-`bottom-right` (défaut) · `bottom-left` · `bottom-center` · `center` ·
-`top-right` · `top-left`. Affecte à la fois la position de la
+`bottom-right` (défaut), `bottom-left`, `bottom-center`, `center`,
+`top-right`, `top-left`. Affecte à la fois la position de la
 calculatrice et celle du FAB.
 
-## Pas d'i18n
+## Textes et traduction
 
-Les labels internes (`Calculator`, `M:`, `History`, `Delete`) sont en
-dur. Seul `title` est paramétrable. Pour i18n complet : fork ou wrapper.
+Tous les textes (titre, historique, mémoire, bouton d'ouverture, bouton de
+fermeture, nom parlé de chaque touche à symbole) viennent de `labels`, en
+anglais par défaut. Passer `labels={locales.fr.Calculator}` (ou le bundle
+d'une des 8 langues livrées), ne surcharger que quelques clés, ou donner la
+traduction une fois pour toute l'application par le thème de `<Provider>`
+(`docs/provider.md`, "Libellés de toute l'application"). `title` remplace
+`labels.title`.
 
 ## Voir aussi
 
