@@ -32,7 +32,7 @@ Aucun paramètre.
 | `location` | object | Position courante ; `location.state` vaut toujours un objet (`{}` à défaut). |
 | `searchParams` | array | Retour de `useSearchParams()` : `[searchParams, setSearchParams]`. |
 | `navigate` | function | Le `navigate` de react-router, pour les cas non couverts. |
-| `history` | any | Valeur `history` de l'état global. La bibliothèque ne l'alimente plus : `undefined` sauf si l'application l'écrit. |
+| `history` | `location[]` | Emplacements visités dans l'onglet, du plus ancien au plus récent (50 au plus), le courant en dernier. |
 
 Les constructeurs se chaînent et chaque étape en renvoie un nouveau :
 `nav.replace().state({ from: "list" }).to("/detail")`.

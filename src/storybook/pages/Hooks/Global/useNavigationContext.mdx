@@ -30,7 +30,7 @@ Aucun paramètre. Le hook lit `config.navigation.debug` (à défaut
 | `location` | object | Position courante, `state` ramené à un objet. |
 | `searchParams` | array | `[searchParams, setSearchParams]` de react-router. |
 | `navigate` | function | Le `navigate` de react-router. |
-| `history` | any | Valeur `history` de l'état global (plus alimentée). |
+| `history` | `location[]` | Emplacements visités dans l'onglet, du plus ancien au plus récent (50 au plus), le courant en dernier. |
 
 Pas de `params` : ils sont ajoutés par `useNavigation()`.
 

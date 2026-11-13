@@ -1,9 +1,9 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { isFunction, isPlainObject, isUndefined, last } from "lodash";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 
 import { log, throwTypeError } from "lib/utils";
-import { useGlobalStates, useLibConfig } from "lib/hooks";
+import { useLibConfig } from "lib/hooks";
 
 // TODO .query(params) .scroll(false) .preserveState()
 
@@ -24,6 +24,8 @@ const createNavBuilder = (navigate, pathname, options) => ({
     },
 });
 
+const HISTORY_MAX_ENTRIES = 50;
+
 export const useNavigationContext = () => {    
     const libConfig = useLibConfig();
 
@@ -33,25 +35,24 @@ export const useNavigationContext = () => {
 
     const debug = isUndefined(navigationDebug) ? libDebug : navigationDebug;
 
-    const initialStates = { session: { history: [] } };
-    const gst = useGlobalStates({ initialStates });
-
-    const { history } = gst.values;
-
     const location = useLocation();
 
     const { key, pathname, state } = location;
 
     const filteredLocation = { ...location, state: !isPlainObject(state) ? {} : state };
 
+    // Locations visited in this tab, oldest first. Kept in a ref (the
+    // provider re-renders on every location change anyway) rather than in
+    // the global state, whose every write re-renders all its subscribers.
+    // A new array per visit, so consumers can compare it by identity; the
+    // key check keeps a double render from recording a visit twice.
+    const historyRef = useRef([]);
+    if (last(historyRef.current)?.key !== key) {
+        historyRef.current = [...historyRef.current, filteredLocation].slice(-HISTORY_MAX_ENTRIES);
+    }
+    const history = historyRef.current;
+
     useEffect(() => {
-        const lastLocation = last(history);
-
-        if (!lastLocation || lastLocation.key !== key) {
-            // gst.session.set("history[]", filteredLocation);
-            
-        }
-
         if (debug) {
             log.location(`pathname = ${pathname}, state =`, state);
         }
