@@ -520,7 +520,12 @@ export const PhotosUploader = (props) => {
                 },
                 isOpen: multiple ? selectedPhotoIndex === index : isPhotoSelected,
             }))}>
-                <div className="relative w-full">
+                {/* The image is the part of the popup that shrinks: a tall
+                    photo used to overflow it, cut with no hint that it
+                    scrolls, and pushed the title, description and save
+                    button out of sight. It now takes the room the form
+                    leaves, whole (object-contain). */}
+                <div className="relative w-full flex justify-center min-h-20 shrink">
                     {/* Delete is hidden in read-only mode: consulting a photo
                         must never offer a destructive action. */}
                     {!readOnly && (
@@ -546,7 +551,7 @@ export const PhotosUploader = (props) => {
                     ? <img { ...mergeProps("popupImg", props => ({
                         ...props,
                         src: photo?.previewUrl || photo?.src,
-                        className: `w-full border border-border`
+                        className: `w-full max-h-full object-contain border border-border`
                     }))} />
                     : <FaImage className="w-full text-soft-text text-[80px]" />
                 }
