@@ -8,6 +8,25 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.400] - 2026-11-13
+
+Tick a Boolean by tapping its label, like a native check box
+Read the install invitation in dark mode, close it with Escape and hear its title
+Show a DesktopHeader title that is not the h1 of a screen which already has one
+Offer the app installation only from a settings entry with InstallPrompt autoOffer
+Translate every component once on the Provider, prompts and providers included
+Override one label of a component without losing the translation of the others
+Disable a single Checker option and give it its own data-testid or aria attributes
+See the update prompt in the app colours, heard by screen readers, in dark mode too
+Read the About window in dark mode, with the app success colour on its update button
+Find smartcommon errors and warnings in the log extract joined to a feedback report
+Close the full screen barcode scanner with Escape and hear its title and close button
+Use the Calculator in eight languages, from the keyboard or a screen reader, in dark mode
+Keep the keyboard inside the PhotoEditor and hear its title, Escape keeps your edits
+Close the annotation type picker with Escape without closing a list open in an editor
+Cancel a QR pairing wait with Escape and read login errors in dark mode, in any language
+See keypads, steppers, scanners and forms in the app's own primary and error colours
+
 ## [1.0.399] - 2026-11-13
 
 Put data-testid and aria-* directly on Button, Input, Select, Textarea, FAB or TabbarItem
