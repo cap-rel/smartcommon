@@ -1,4 +1,4 @@
-import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, reduce, isArray, startsWith, unset as lUnset, get as lGet } from "lodash";
+import { flatMap, forEach, includes, isEmpty, isNil, isUndefined, keys, last, merge, reduce, isArray, unset as lUnset, get as lGet } from "lodash";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 
 import { useLibConfig, useStates } from "lib/hooks";
@@ -32,7 +32,10 @@ function _countStorageWrite(kind) {
   }
 }
 
-// TODO (prevValue) => ne fonctionne pas
+// True for the stored key of `path` itself or of one of its children
+// ("user.name", "items[0]"), not for a sibling sharing its prefix
+// ("first" must not match "firstname").
+const isSameOrChildPath = (key, path) => key === path || key.startsWith(`${path}.`) || key.startsWith(`${path}[`);
 
 export const useGlobalStatesContext = (props = {}) => {
   throwTypeError({ value: props, name: "useGlobalStates props", type: ["plain object"] })
@@ -114,7 +117,8 @@ export const useGlobalStatesContext = (props = {}) => {
 
   const storages = { ...local.get("global"), ...session.get("global") };
 
-  const st = useStates({ initialStates: reduce(storages, setInit, {}), debug: false });
+  // initialStates are defaults: values restored from storage win.
+  const st = useStates({ initialStates: merge({}, initialStates, reduce(storages, setInit, {})), debug: false });
 
   // Stable references to st methods (memoized inside useStates)
   const { set: stSet, get: stGet, unset: stUnset, values: stValues } = st;
@@ -154,8 +158,15 @@ export const useGlobalStatesContext = (props = {}) => {
 
   // TODO faire le cas où on veut set tout le globalState => path = "" ou value = undefined ?
   // TODO peut-être faire le cas ou le state ne change pas (on est dans le même storage et la valeur est la même)
-  // TODO (prevState) => {} n'est pas géré
-  const setByStorage = useCallback((storage, path, value) => {
+  const setByStorage = useCallback((storage, path, rawValue) => {
+    // An updater function receives the current value (the last item for a
+    // "path[]" push) and its RESULT is what gets stored: a function cannot
+    // be written to local or session storage.
+    const isPush = path.endsWith("[]");
+    const value = typeof rawValue === "function"
+      ? rawValue(isPush ? last(stGet(path.slice(0, -2)) ?? []) : stGet(path))
+      : rawValue;
+
     stSet(path, value);
 
     const localStorage = local.get("global") ?? {};
@@ -193,7 +204,7 @@ export const useGlobalStatesContext = (props = {}) => {
     if (debugRef.current) {
       log.globalState(`SET ${path} =>`, value);
     }
-  }, [stSet]);
+  }, [stSet, stGet]);
 
   // ---------------------- unset ----------------------
 
@@ -211,10 +222,7 @@ export const useGlobalStatesContext = (props = {}) => {
 
     const localStorage = local.get("global") ?? {};
 
-    const localPathsToUnset = flatMap(localStorage, (_, key) => {
-      // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(key, path) ? [key] : [];
-    });
+    const localPathsToUnset = flatMap(localStorage, (_, key) => (isSameOrChildPath(key, path) ? [key] : []));
 
     if (!isEmpty(localPathsToUnset) || !isUndefined(lGet(localStorage, path))) {
       forEach(localPathsToUnset, (key) => delete localStorage[key]);
@@ -230,10 +238,7 @@ export const useGlobalStatesContext = (props = {}) => {
 
     const sessionStorage = session.get("global") ?? {};
 
-    const sessionPathsToUnset = flatMap(sessionStorage, (_, key) => {
-      // TODO if i'ts "first", "firstname" will be deleted too => to correct
-      return startsWith(key, path) ? [key] : [];
-    });
+    const sessionPathsToUnset = flatMap(sessionStorage, (_, key) => (isSameOrChildPath(key, path) ? [key] : []));
 
     if (!isEmpty(sessionPathsToUnset) || !isUndefined(lGet(sessionStorage, path))) {
       forEach(sessionPathsToUnset, (key) => delete sessionStorage[key]);

@@ -22,7 +22,7 @@ const gst = useGlobalStatesContext(props);
 | Paramètre | Type | Défaut | Rôle |
 |---|---|---|---|
 | `props` | object | `{}` | Objet d'options, doit être un objet simple. |
-| `props.initialStates` | object | `{}` | Lu mais sans effet : l'état de départ vient de `localStorage` et `sessionStorage`. |
+| `props.initialStates` | object | `{}` | Valeurs par défaut ; celles restaurées de `localStorage` et `sessionStorage` passent devant. |
 
 Le hook lit `config.globalStates.debug` (à défaut `config.debug`) par
 `useLibConfig()`.

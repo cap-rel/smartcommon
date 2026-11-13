@@ -61,10 +61,11 @@ export const WarehousePicker = ({ warehouses }) => {
   volatile. Pour modifier un utilisateur gardé, réécrire avec le même stockage
   (`gst.values.user.rememberMe` dit lequel).
 - La persistance se fait par chemin, sous une entrée JSON `global` de chaque
-  stockage. Passer une valeur sérialisable à `local.set` / `session.set`, pas
-  une fonction.
-- `unset("first")` efface aussi les clés gardées qui commencent par `first`
-  (`firstname` compris).
+  stockage : la valeur doit être sérialisable. Une fonction
+  (`set("count", prev => prev + 1)`) reçoit la valeur courante, et c'est son
+  résultat qui est gardé.
+- `unset("user")` efface `user` et ses enfants (`user.name`), pas une clé
+  voisine comme `username`.
 - Hors de `<Provider>` (ou `<GlobalStatesProvider>`), le hook renvoie `{}`.
 - `config.globalStates.debug` (à défaut `config.debug`) journalise chaque
   écriture.
