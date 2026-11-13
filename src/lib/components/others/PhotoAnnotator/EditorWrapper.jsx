@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { FormContext } from "lib/components";
 import { twMerge } from "lib/utils";
+import { useDialog } from "lib/hooks/local/useDialog";
 
 // Hosts a type-specific renderEditor inside a fullscreen overlay. The editor
 // receives `onSave(partial)` and `onCancel()`. `partial` is shallow-merged
@@ -18,11 +19,21 @@ export const EditorWrapper = ({
     onCancel,
     overlayProps = {},
 }) => {
+    const isHeadless = !!typeDef?.headlessEditor;
+
+    // The overlay editor is a modal dialog: Tab kept inside, and Escape
+    // cancels unless something inside already handled it (a list closing).
+    const { dialogRef, onKeyDown } = useDialog({ isOpen: !!annotation && !!typeDef && !isHeadless, onClose: onCancel });
+
+    // A headless editor has no dialog of its own: Escape still cancels it.
     useEffect(() => {
-        const onKey = (e) => { if (e.key === "Escape") onCancel?.(); };
+        if (!isHeadless) return undefined;
+        const onKey = (e) => {
+            if (e.key === "Escape" && !e.defaultPrevented) onCancel?.();
+        };
         document.addEventListener("keydown", onKey);
         return () => document.removeEventListener("keydown", onKey);
-    }, [onCancel]);
+    }, [isHeadless, onCancel]);
 
     if (!annotation || !typeDef) return null;
 
@@ -51,9 +62,14 @@ export const EditorWrapper = ({
             onClick={onCancel}
         >
             <div
+                ref={dialogRef}
                 role="dialog"
+                aria-modal="true"
+                aria-label={typeDef.label}
+                tabIndex={-1}
+                onKeyDown={onKeyDown}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-medium-bg w-full sm:max-w-lg sm:rounded-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
+                className="outline-none relative bg-medium-bg w-full sm:max-w-lg sm:rounded-2xl shadow-xl max-h-[90vh] overflow-hidden flex flex-col"
             >
                 <FormContext.Provider value={null}>
                     {typeDef.renderEditor(annotation, {

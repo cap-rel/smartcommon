@@ -1,4 +1,5 @@
 import { twMerge } from "lib/utils";
+import { useDialog } from "lib/hooks/local/useDialog";
 
 export const TypePicker = ({
     annotationTypes,
@@ -8,6 +9,9 @@ export const TypePicker = ({
     pickerProps = {},
 }) => {
     const types = Object.entries(annotationTypes);
+
+    // Modal dialog named by its heading; Escape cancels like the button.
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen: true, onClose: onCancel });
 
     return (
         <div
@@ -19,12 +23,17 @@ export const TypePicker = ({
             onClick={onCancel}
         >
             <div
+                ref={dialogRef}
                 role="dialog"
+                aria-modal="true"
+                aria-labelledby={titleId}
+                tabIndex={-1}
+                onKeyDown={onKeyDown}
                 onClick={(e) => e.stopPropagation()}
-                className="relative bg-medium-bg rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md mx-0 sm:mx-4 max-h-[80vh] flex flex-col"
+                className="outline-none relative bg-medium-bg rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:max-w-md mx-0 sm:mx-4 max-h-[80vh] flex flex-col"
             >
                 <div className="p-4 border-b border-border">
-                    <h3 className="text-base font-semibold text-strong-text">
+                    <h3 id={titleId} className="text-base font-semibold text-strong-text">
                         {labels.chooseType}
                     </h3>
                 </div>
