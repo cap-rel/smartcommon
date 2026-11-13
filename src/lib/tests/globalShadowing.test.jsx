@@ -200,7 +200,9 @@ describe("Global-shadowing render smoke", () => {
 
         describe(`${name} (${sourcePath})`, () => {
             // The cold transform happens here, outside the per-test timeout.
-            beforeAll(() => loadComponent(), 60000);
+            // Await without returning: vitest runs a function returned by
+            // beforeAll as a teardown, which would call the component itself.
+            beforeAll(async () => { await loadComponent(); }, 60000);
 
             renderCases.forEach((props, i) => {
                 const label = JSON.stringify(props);
