@@ -64,7 +64,7 @@ ne travaille jamais sur une image couchée.
 | `onSave` | `(blob, { operations }) => void` | - | Image cuite + recette |
 | `onCancel` | `() => void` | - | Fermeture sans enregistrer |
 | `onError` | `(err) => void` | - | Erreur de chargement / export |
-| `tools` | string[] | `["crop","perspective","rotate","flip","straighten","adjust"]` | Outils affichés, dans l'ordre |
+| `tools` | string[] | `["crop","perspective","rotate","flip","straighten","adjust"]` | Outils affichés, dans l'ordre ; ajouter `"redact"` pour masquer des zones (rectangles opaques) |
 | `aspectRatios` | array | libre, original, 1:1, 4:3, 3:4, 16:9 | Ratios proposés par le recadrage |
 | `maxStraightenAngle` | number | `45` | Demi-amplitude du slider de redressement (degrés) |
 | `output` | `{ type, quality, maxWidth, maxHeight }` | `{ type:"image/jpeg", quality:0.9 }` | Encodage / redimensionnement du Blob final |
@@ -118,12 +118,14 @@ est toujours le filet de sécurité).
 ```js
 { type: "rotate90",   steps: 1 }                          // 0..3, horaire
 { type: "straighten", angle: 3.5 }                        // degrés, auto-crop
-{ type: "flip",       flipH: true, flipV: false }
-{ type: "perspective",corners: [{x,y},{x,y},{x,y},{x,y}] }// TL,TR,BR,BL normalises 0..1
-{ type: "crop",       rect: { x, y, w, h } }              // normalise 0..1
-{ type: "autoEnhance" }
+{ type: "flip",       flipH: true, flipV: false }         // ou axis: "h" | "v"
+{ type: "perspective",corners: [{x,y},{x,y},{x,y},{x,y}] }// TL,TR,BR,BL normalisés 0..1
+                                                          // + outWidth / outHeight facultatifs (px)
+{ type: "crop",       rect: { x, y, w, h } }              // normalisé 0..1
+{ type: "autoEnhance", clip: 0.005 }                      // part d'histogramme écrêtée
 { type: "adjust",     brightness, contrast, saturation, temperature } // -1..1
 { type: "scan",       binarize: true }                    // false = niveaux de gris
+{ type: "redact",     rects: [{ x, y, w, h }], color: "#000000" } // rectangles opaques, appliqués en dernier
 ```
 
 Le moteur applique les opérations dans un ordre canonique (géométrie

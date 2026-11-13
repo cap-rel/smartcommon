@@ -245,7 +245,7 @@ une seule pression ne ferme qu'un niveau.
 
 - une chaîne URL (passée telle quelle)
 - un `Blob` ou `File` -> `createObjectURL` / `revokeObjectURL` gérés
-  automatiquement via le hook interne `useImageUrl`
+  automatiquement via le hook `useImageUrl` (exporté par le paquet)
 
 ## Props complètes
 
