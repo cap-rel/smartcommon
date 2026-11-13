@@ -73,6 +73,8 @@ Sans `value` ni `onValueChange`, le composant gère un state interne.
 | Slot | Cible |
 |------|-------|
 | `containerProps` | wrapper racine (via `<Label>`) |
+| `starProps` | étoile "requis" du label (affichée quand `required` est passé) |
+| `requiredStarProps` | ancien nom de `starProps`, pris en compte seulement si `starProps` est absent |
 | `arrayContainerProps` | conteneur du champ + tags |
 | `arrayInputProps` | `<Input>` interne (champ de saisie) |
 | `tagsContainerProps` | wrapper de la liste de tags |

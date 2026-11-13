@@ -6,8 +6,17 @@ import { Input, Label } from "lib/components";
 
 import { arrayPropTypes, DEFAULT_LABELS } from "./props";
 
+// Label renders the required star through the `starProps` slot.
+// `requiredStarProps` is the former name of that slot: it still applies when
+// `starProps` is not given.
+const withStarProps = (props) => (
+  isNil(props.starProps) && !isNil(props.requiredStarProps)
+    ? { ...props, starProps: props.requiredStarProps }
+    : props
+);
+
 export const Array = (rawProps) => {
-  const { variantProps, mergeProps } = useVariantMerger("Array", rawProps);
+  const { variantProps, mergeProps } = useVariantMerger("Array", withStarProps(rawProps));
 
   const {
     label,
@@ -28,7 +37,10 @@ export const Array = (rawProps) => {
     containerProps,
     labelContainerProps,
     labelProps,
+    // Star slot (both names): read by Label through mergeProps, pulled out
+    // here so they do not land on the hidden input.
     requiredStarProps,
+    starProps,
     helpProps,
     childrenContainerProps,
     prefixProps,
@@ -49,7 +61,9 @@ export const Array = (rawProps) => {
 
   const { required, readOnly, disabled, id } = inputPs;
 
-  const allLabelPs = { label, help, containerProps, labelProps, requiredStarProps, helpProps };
+  // `required` makes Label render the star; its styling comes from the
+  // `starProps` slot that Label reads through mergeProps.
+  const allLabelPs = { label, help, required, containerProps, labelProps, helpProps };
 
   const initialStates = {
     localValue: defaultValue ?? [],

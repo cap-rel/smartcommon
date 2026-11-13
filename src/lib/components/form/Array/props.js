@@ -13,6 +13,9 @@ export const arrayPropTypes = {
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
     labelProps: PropTypes.object,
+    // Required star (shown when `required` is set).
+    starProps: PropTypes.object,
+    // Former name of `starProps`, used only when `starProps` is absent.
     requiredStarProps: PropTypes.object,
     helpProps: PropTypes.object,
     arrayContainerProps: PropTypes.object,

@@ -73,7 +73,11 @@ export default {
     labelProps: {
       table: { category: 'Elements' },
     },
+    starProps: {
+      table: { category: 'Elements' },
+    },
     requiredStarProps: {
+      description: "Former name of starProps, used when starProps is absent.",
       table: { category: 'Elements' },
     },
     helpProps: {

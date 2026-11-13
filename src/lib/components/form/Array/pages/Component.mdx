@@ -19,9 +19,9 @@ supprime. Valeur = tableau de strings.
 
 ## Workflow utilisateur
 
-1. Tape "intervention" → `Enter` → tag "intervention" ajouté.
-2. Tape "urgent" → `Enter` → tag "urgent" ajouté.
-3. Click sur un tag → suppression.
+1. Tape "intervention" -> `Enter` -> tag "intervention" ajouté.
+2. Tape "urgent" -> `Enter` -> tag "urgent" ajouté.
+3. Click sur un tag -> suppression.
 
 ## Forme de valeur
 
@@ -31,7 +31,7 @@ supprime. Valeur = tableau de strings.
 
 ## Comportement
 
-- Chaîne vide / whitespace-only → ignorée à l'ajout.
+- Chaîne vide / whitespace-only -> ignorée à l'ajout.
 - Pas de filtrage doublons.
 - Pas de drag-reorder, pas de Backspace pour supprimer le dernier.
 - Suppression click-only.
@@ -49,10 +49,16 @@ supprime. Valeur = tableau de strings.
 
 - Props `min` / `max` déclarées mais sans validation interne (à valider
   côté caller).
-- Pas de support objets — valeurs strings uniquement.
+- Pas de support objets - valeurs strings uniquement.
 - `hasCopyButton` déclaré mais pas implémenté (TODO).
-- Styling tag par défaut `uppercase` — override via
+- Styling tag par défaut `uppercase` - override via
   `tagProps.className` + `twMerge`.
+
+## Étoile "requis"
+
+Avec `required`, le label affiche une étoile stylable via `starProps`.
+`requiredStarProps` (ancien nom) reste accepté quand `starProps` est
+absent.
 
 ## Voir aussi
 
