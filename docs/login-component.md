@@ -58,8 +58,13 @@ détection `rememberMe` / `sharedDevice`. Pas d'appel manuel à
   3. à `consumed` : tokens persistés en localStorage (QR = trusted
      device par design), `onSuccess` appelé.
   Pendant claim+poll, un overlay plein écran bloque l'UI et expose un
-  bouton "Annuler". Le scanner se ferme dès qu'un QR a été lu (la caméra
-  se libère).
+  bouton "Annuler" (`labels.cancelQrLabel`). Le scanner se ferme dès
+  qu'un QR a été lu (la caméra se libère).
+- **Accessibilité de l'attente QR** : l'overlay est un dialogue modal
+  (`role="dialog"`, `aria-modal`) nommé par son message d'attente, lui-même
+  annoncé (`aria-live`). Le focus y entre et Tab reste dedans ; Échap
+  annule comme le bouton "Annuler". Une erreur QR se referme par un bouton
+  nommé `labels.qrErrorDismiss`, qui ramène au formulaire.
 
 ### Garde-fous
 
