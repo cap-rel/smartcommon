@@ -240,6 +240,14 @@ bundle : pour remplacer les étapes d'un seul navigateur en gardant le
 français ailleurs, repartir des guides du bundle
 (`guides: { ...locales.fr.InstallPrompt.guides, android: [...] }`).
 
+Une application qui ne veut pas d'invitation spontanée passe
+`autoOffer={false}` : le composant ne s'ouvre alors que par
+`openInstallPrompt()`, depuis une entrée "Installer l'application" des
+réglages par exemple. `isAppKnownInstalled()` permet de masquer cette
+entrée une fois l'application installée. La boîte se ferme par Échap ;
+fermée après une ouverture à la demande, elle ne compte pas comme un
+refus.
+
 ## Providers NON auto-montés
 
 `smartcommon` expose trois providers qui ne sont PAS dans

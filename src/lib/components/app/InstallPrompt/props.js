@@ -6,6 +6,7 @@ export const propTypes = {
     remindAfterDays: PropTypes.number,
     minVisits: PropTypes.number,
     report: PropTypes.bool,
+    autoOffer: PropTypes.bool,
     labels: PropTypes.shape({
         title: PropTypes.string,
         message: PropTypes.string,

@@ -63,6 +63,8 @@ const StepList = ({ steps, withShareIcon }) => (
  * @param {number} [props.remindAfterDays=14] days before re-offering after a refusal
  * @param {number} [props.minVisits=2] visits before the first invitation
  * @param {boolean} [props.report=true] report the install state to smartAuth
+ * @param {boolean} [props.autoOffer=true] false: never offers itself, opens
+ *   only through openInstallPrompt() (an "Install the app" entry)
  * @param {Object} [props.labels] translated strings
  * @param {Function} [props.onInstalled]
  * @param {Function} [props.onDismiss]
@@ -74,6 +76,7 @@ export const InstallPrompt = (props) => {
         remindAfterDays = 14,
         minVisits = 2,
         report = true,
+        autoOffer = true,
         labels = {},
         onInstalled,
         onDismiss,
@@ -139,7 +142,7 @@ export const InstallPrompt = (props) => {
 
     // The modal (and the steps opened from the banner) is a real dialog:
     // named by its title, Tab kept inside, Escape closes it like "Later".
-    const isVisible = shouldOffer || forced;
+    const isVisible = (autoOffer && shouldOffer) || forced;
     const isDialog = isVisible && (variant === "modal" || forced || showSteps);
     const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen: isDialog, onClose: handleDismiss });
 

@@ -240,3 +240,28 @@ describe("InstallPrompt - dialog and theme", () => {
         expect(banner.outerHTML).not.toMatch(/bg-white|text-gray-|bg-gray-|bg-blue-|text-blue-/);
     });
 });
+
+describe("InstallPrompt - on demand only", () => {
+    beforeEach(() => {
+        mockHookState.shouldOffer = true;
+        mockHookState.canPrompt = true;
+        mockHookState.installGuide = "android";
+        mockHookState.promptInstall = vi.fn().mockResolvedValue("accepted");
+        mockHookState.dismiss = vi.fn();
+    });
+
+    it("never offers itself with autoOffer={false}", () => {
+        const { container } = render(<InstallPrompt autoOffer={false} />);
+        expect(container.firstChild).toBeNull();
+    });
+
+    it("still opens through openInstallPrompt() with autoOffer={false}", () => {
+        render(<InstallPrompt autoOffer={false} labels={{ title: "Installer l'application" }} />);
+        openOnDemand();
+        expect(screen.getByRole("dialog", { name: "Installer l'application" })).toBeTruthy();
+
+        fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(mockHookState.dismiss).not.toHaveBeenCalled();
+    });
+});
