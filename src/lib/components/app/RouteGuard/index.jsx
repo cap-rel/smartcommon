@@ -22,8 +22,8 @@ export const RouteGuard = (props) => {
     } = props;
 
     // Detect logically-conflicting prop combinations and pick the most
-    // restrictive one. We log a console.warn so the dev sees it during
-    // development; in production this is essentially silent.
+    // restrictive one. The warning goes through the library logger, so it
+    // also shows in production (default level "warn").
     if (requireAuth && requireGuest) {
         logger.warning(
             "[RouteGuard] requireAuth and requireGuest were both set; falling back to requireAuth."

@@ -84,8 +84,10 @@ vers `/login` même si un `redirectTo` custom est passé.
 
 Combiner deux flags mutuellement exclusifs (`requireAuth + requireGuest`
 ou `requireDeviceIdentification + requireDeviceIdentified`) déclenche un
-`console.warn` côté dev. Le premier flag listé l'emporte. En production,
-le warn est silencieux (mais le comportement reste déterministe).
+avertissement par `createLogger("RouteGuard")`, à chaque rendu. Le premier
+flag listé l'emporte, le comportement reste déterministe. L'avertissement
+s'affiche aussi en production, dont le niveau par défaut est `warn` ; il
+se filtre par `localStorage` (`LOG_LEVEL`, `LOG_FILTER`).
 
 ## Différence avec `<Navigate>` brut
 
