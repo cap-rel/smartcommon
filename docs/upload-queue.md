@@ -1,7 +1,7 @@
 # useUploadQueue - queue d'uploads offline-first
 
-Hook React expose par `@cap-rel/smartcommon`. Permet d'enqueue un blob
-(photo, fichier joint, ...) meme si le reseau est coupe, de le persister
+Hook React exposé par `@cap-rel/smartcommon`. Permet de mettre en file un blob
+(photo, fichier joint, ...) même si le réseau est coupé, de le persister
 en IndexedDB et de le pousser vers `/upload` automatiquement quand la
 connexion revient.
 
@@ -20,7 +20,7 @@ connexion revient.
                                   +-------------------------+
                                   | smartAuth UploadCtrl    |
                                   | + table upload_idempo-  |
-                                  | tency (cf §14 spec)     |
+                                  | tency (spec, section 14)|
                                   +-------------------------+
 ```
 
@@ -37,7 +37,7 @@ const {
     flush,        // () => Promise<void>
     onResolved,   // (cb) => unsubscribe
 } = useUploadQueue({
-    endpoint: "upload",     // override si le module re-expose la route
+    endpoint: "upload",     // override si le module réexpose la route
     maxRetries: 10,         // cap des tentatives auto
     backoffBaseMs: 1000,    // backoff: 1s, 2s, 4s, ...
     backoffCapMs: 60000,    // borne haute
@@ -48,24 +48,24 @@ const {
 
 | Champ | Type | Notes |
 |-------|------|-------|
-| pending_id | string | UUID v4 genere localement |
+| pending_id | string | UUID v4 généré localement |
 | filename | string | |
 | mime | string | |
 | size | number | bytes |
 | status | string | `idle` \| `uploading` \| `failed` \| `resolved` |
-| attempts | number | incremente sur chaque echec retentable |
+| attempts | number | incrémenté à chaque échec qui sera retenté |
 | lastError | string \| null | message court |
 | lastErrorType | string \| null | `network` \| `http_4xx` \| `http_5xx` \| `max_retries` \| `quota` |
 | upload_id | string \| null | rempli quand `status === "resolved"` |
-| meta | object | libre, passe par le caller |
+| meta | object | libre, passé par l'appelant |
 | createdAt | number | unix seconds |
 | updatedAt | number | unix seconds |
 
-Le blob n'est pas expose dans la snapshot React (consumers n'en ont pas
-besoin et c'est lourd a serialiser dans le store). Il reste persiste en
+Le blob n'est pas exposé dans la snapshot React (les consommateurs n'en ont
+pas besoin et il est lourd à sérialiser dans le store). Il reste persisté en
 IDB.
 
-## Etats et transitions
+## États et transitions
 
 ```
                 +--------+
@@ -91,10 +91,10 @@ IDB.
                         +---retry(pid) / online event--> idle
 ```
 
-`http_4xx` ne se reset PAS sur reconnexion (c'est un probleme metier, pas
-reseau). Le caller doit corriger le payload puis appeler `retry(pid)`.
+`http_4xx` n'est PAS réinitialisé à la reconnexion (c'est un problème métier,
+pas réseau). L'appelant doit corriger le payload puis appeler `retry(pid)`.
 
-## Exemple d'integration dans un form
+## Exemple d'intégration dans un formulaire
 
 ```javascript
 import { useEffect, useState } from "react";
@@ -104,7 +104,7 @@ const InterventionForm = ({ interventionId }) => {
     const { enqueue, onResolved } = useUploadQueue();
     const [photos, setPhotos] = useState([]); // [{ pending_id?, upload_id?, previewUrl }]
 
-    // Reconcile pending_id -> upload_id quand le serveur a accepte.
+    // Reconcile pending_id -> upload_id quand le serveur a accepté.
     useEffect(() => onResolved(({ pending_id, upload_id }) => {
         setPhotos(ps => ps.map(p =>
             p.pending_id === pending_id
@@ -143,54 +143,54 @@ qui fait toute la plomberie ci-dessus.
   `name === "QuotaExceededError"`. Le caller affiche un toast et propose
   de faire de la place (cf [offline.md](offline.md) - utilitaires
   storage).
-- Apres resolution, la row est supprimee de IDB. Aucune retention.
-- Au mount du hook, hydratation : les rows non-`resolved` d'une session
-  precedente sont rechargees, les rows orphelines `resolved` (crash entre
-  notification et purge) sont supprimees silencieusement.
+- Après résolution, la ligne est supprimée d'IDB. Aucune rétention.
+- Au montage du hook, hydratation : les lignes non `resolved` d'une session
+  précédente sont rechargées, les lignes orphelines `resolved` (crash entre
+  notification et purge) sont supprimées silencieusement.
 
 ## Contrat backend smartAuth
 
 Le hook envoie `Idempotency-Key: <pending_id>` sur chaque tentative
-(meme cle pour tous les retries du meme blob). Le backend doit dedoublonner
+(même clé pour tous les retries du même blob). Le backend doit dédoublonner
 via une table `upload_idempotency` :
 
-- cle absente -> traitement normal, store de la reponse pour 24h.
-- cle deja vue, `completed` -> retour 200 + meme `upload_id` que la
-  premiere fois, **sans** re-traiter le fichier.
-- cle vue, `processing` -> retour `409 Conflict` avec
-  `{ retry_after_ms: 2000 }`. Le client attend puis re-tente sans
-  incrementer `attempts`.
+- clé absente -> traitement normal, réponse conservée 24h.
+- clé déjà vue, `completed` -> retour 200 + même `upload_id` que la
+  première fois, **sans** retraiter le fichier.
+- clé vue, `processing` -> retour `409 Conflict` avec
+  `{ retry_after_ms: 2000 }`. Le client attend puis retente sans
+  incrémenter `attempts`.
 
-Specification complete : section 14 du fichier `docs/internal/spec-uploadqueue.md`
-du present repo.
+Spécification complète : section 14 du fichier `docs/internal/spec-uploadqueue.md`
+de ce dépôt.
 
 ## Mode `useUpload({ queue: true })`
 
-Pour les modules qui utilisent deja `useUpload`, il suffit d'ajouter
+Pour les modules qui utilisent déjà `useUpload`, il suffit d'ajouter
 l'option `queue: true` pour rerouter l'upload via la queue :
 
 ```javascript
 const { uploadFile } = useUpload({ queue: true });
 
 // Retour toujours { upload_id, pending_id, filename, mime, size, ... }
-// - online + succes  -> { upload_id: "abc", pending_id: null, ... }
+// - online + succès  -> { upload_id: "abc", pending_id: null, ... }
 // - offline / 5xx / network -> { upload_id: null, pending_id, ... }
 // - 4xx              -> throw
 const { upload_id, pending_id } = await uploadFile(file);
 ```
 
-L'option `queue: false` (defaut) garde le comportement legacy strict :
+L'option `queue: false` (défaut) garde le comportement legacy strict :
 pas d'IDB, pas de header `Idempotency-Key`, pas de champ `pending_id`
-dans la reponse.
+dans la réponse.
 
-## Reset des etats (tests)
+## Réinitialisation des états (tests)
 
-Le module expose `__resetUploadQueueForTests()` (prefixe `__` = usage
-interne / tests uniquement). Il vide la queue en memoire, annule les
+Le module expose `__resetUploadQueueForTests()` (préfixe `__` = usage
+interne / tests uniquement). Il vide la queue en mémoire, annule les
 timers de retry et supprime la DB IDB. NE PAS appeler en runtime.
 
-## References
+## Références
 
-- Spec complete (incluant le contrat backend smartAuth) :
+- Spec complète (incluant le contrat backend smartAuth) :
   `docs/internal/spec-uploadqueue.md`.
 - Doc transverse upload PWA : `capdoc:UPLOAD_PWA.md`.
