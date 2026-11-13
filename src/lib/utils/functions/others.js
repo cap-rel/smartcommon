@@ -1,4 +1,4 @@
-import { isArray, isEmpty } from "lodash";
+import { isArray } from "lodash";
 import { createLogger } from "lib/utils/functions/consoleLogs";
 
 const logger = createLogger("others");
@@ -10,11 +10,25 @@ const logger = createLogger("others");
     return `${m}:${`0${s}`.slice(-2)}`;
   };
   
+  // Unix timestamp (seconds, number or numeric string) to a Date, or null
+  // when there is none.
+  const timestampToDateObject = (timestamp) => {
+    if (timestamp === null || timestamp === undefined || timestamp === "") {
+      return null;
+    }
+    const seconds = Number(timestamp);
+    if (!Number.isFinite(seconds)) {
+      logger.warning("not a timestamp", timestamp);
+      return null;
+    }
+    return new Date(seconds * 1000);
+  };
+
   export const timestampToDate = (timestamp) => {
-    if (isEmpty(timestamp)) {
+    const date = timestampToDateObject(timestamp);
+    if (!date) {
       return;
     }
-    const date = new Date(timestamp * 1000);
     const day = ("0" + date.getDate()).slice(-2);
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const year = date.getFullYear();
@@ -23,10 +37,10 @@ const logger = createLogger("others");
   };
   
   export const timestampToDateTime = (timestamp) => {
-    if (isEmpty(timestamp)) {
+    const date = timestampToDateObject(timestamp);
+    if (!date) {
       return;
     }
-    const date = new Date(timestamp * 1000);
     const day = ("0" + date.getDate()).slice(-2);
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
     const year = date.getFullYear();
@@ -117,27 +131,22 @@ const logger = createLogger("others");
         return false;
     }
   
-    array.forEach(item => {
-      if (typeof item !== 'object' || item === null) {
-        return false;
-      }
-    })
-  
-    return true;
+    return array.every(item => typeof item === 'object' && item !== null);
   }
   
   export const secsToTime = (secs) => {
-    const decH = secs / 60 / 60;
-    const h = ("0" + Math.floor(decH)).slice(-2);
-    const m = ("0" + Math.floor(("0." + decH.toString().split(".")[1]) * 60)).slice(-2);
+    const total = Math.max(0, Math.floor(Number(secs) || 0));
+    const h = String(Math.floor(total / 3600)).padStart(2, "0");
+    const m = String(Math.floor((total % 3600) / 60)).padStart(2, "0");
     return h !== "00" ? h + " h " + m : m !== "00" ? m + " min" : "moins d'une minute";
   }
   
   export const mToKm = (meters) => {
-    const decKm = meters / 1000;
-    const km = Math.floor(decKm);
-    const m = Math.floor(("0." + decKm.toString().split(".")[1]) * 1000);
-    return km ? km + "," + m.toString().substring(0, 1) + " km" : m + " m"; 
+    const total = Math.max(0, Math.floor(Number(meters) || 0));
+    const km = Math.floor(total / 1000);
+    const rest = total % 1000;
+    // One decimal, truncated: 2000 -> "2,0 km", 1580 -> "1,5 km".
+    return km ? km + "," + Math.floor(rest / 100) + " km" : rest + " m";
   }
   
   export function getUserLocation() {
@@ -159,9 +168,14 @@ const logger = createLogger("others");
     }
   
     // Extract the red, green, and blue values
-    const r = parseInt(cleanedHex.substring(0, 2), 16) || "?";
-    const g = parseInt(cleanedHex.substring(2, 4), 16) || "?";
-    const b = parseInt(cleanedHex.substring(4, 6), 16) || "?";
+    // 0 is a valid channel ("#000"): only an unparsable one becomes "?".
+    const channel = (part) => {
+      const value = parseInt(part, 16);
+      return Number.isNaN(value) ? "?" : value;
+    };
+    const r = channel(cleanedHex.substring(0, 2));
+    const g = channel(cleanedHex.substring(2, 4));
+    const b = channel(cleanedHex.substring(4, 6));
   
     // return `rgba(${r}, ${g}, ${b}, ${opacity})`;
     return `${r}, ${g}, ${b}`;
