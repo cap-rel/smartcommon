@@ -249,3 +249,10 @@
     font-weight: 700 !important;
     color: rgb(46, 52, 56) !important;
 }
+
+/* Guides of docs/ rendered as pages (utils/components/GuidePage.jsx) */
+.sc-guide-source {
+  margin-top: 32px;
+  font-size: 12px;
+  opacity: 0.7;
+}

@@ -30,6 +30,10 @@ and then is auto published on gitlab registry https://registry.inligit.fr/cap-re
 
 ## Documentation
 
+The documentation site, with every component, hook and module and the
+guides below, is published at https://smartmaker.org/components/ (run
+`./build_doc.sh` to republish it after a release).
+
 Component-specific guides live in [`docs/`](./docs) (written in French):
 
 Application setup
@@ -86,4 +90,5 @@ Business components
 - [`photo-annotator.md`](./docs/photo-annotator.md) - `<PhotoAnnotator>` (markers on a photo, controlled or event-based, type registry with optional headless editors)
 - [`photo-editor.md`](./docs/photo-editor.md) - `<PhotoEditor>` and the `imageEditor` engine
 
-For storybook stories: `npm run storybook`.
+Each guide is also a page of the site ("Guides" section). For a local
+copy of the site: `npm run storybook`.
