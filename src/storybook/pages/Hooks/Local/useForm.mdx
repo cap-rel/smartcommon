@@ -21,7 +21,7 @@ const form = useForm({ defaultValues, debug });
 | Paramètre | Type | Défaut | Rôle |
 |---|---|---|---|
 | `defaultValues` | object | `{}` | Valeurs de départ, par `name` de champ. |
-| `debug` | bool | `config.debug` | Lu mais sans effet aujourd'hui : les écritures ne sont pas journalisées. |
+| `debug` | bool | `config.debug` | Journalise chaque écriture de l'état du formulaire (`log.state`). |
 
 ## Valeur retournée
 

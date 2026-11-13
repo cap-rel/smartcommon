@@ -21,7 +21,8 @@ export const useForm = (props = {}) => {
     errors: {},
   }
 
-  const st = useStates({ initialStates, debug: false });
+  // Form state changes are logged when the form (or the library) is in debug.
+  const st = useStates({ initialStates, debug });
 
   // const { values, errors } = st.values;
 
