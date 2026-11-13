@@ -120,8 +120,8 @@ export const NumericPad = (props) => {
                     type="button"
                     aria-label={labels.confirm}
                     onClick={handleConfirm}
-                    className="mt-3 w-full h-14 rounded-xl bg-blue-600 text-white font-bold text-lg
-                        flex items-center justify-center gap-2 active:bg-blue-700 transition-colors"
+                    className="mt-3 w-full h-14 rounded-xl bg-primary text-white font-bold text-lg
+                        flex items-center justify-center gap-2 active:brightness-90 transition-colors"
                 >
                     {resolvedConfirmIcon}
                 </button>

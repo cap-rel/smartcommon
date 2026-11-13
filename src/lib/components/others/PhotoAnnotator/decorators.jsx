@@ -70,7 +70,7 @@ const NoteEditor = ({ annotation, onSave, onCancel }) => {
                 <button
                     type="button"
                     onClick={() => onSave({ payload: { description, color } })}
-                    className="flex-1 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm"
+                    className="flex-1 px-3 py-2 rounded-lg bg-primary text-white text-sm"
                 >
                     Valider
                 </button>
@@ -113,7 +113,7 @@ const ProductEditor = ({ annotation, onSave, onCancel }) => {
                             qty: 1,
                         },
                     })}
-                    className="flex-1 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm"
+                    className="flex-1 px-3 py-2 rounded-lg bg-primary text-white text-sm"
                 >
                     Valider
                 </button>
@@ -142,7 +142,7 @@ const PhotoEditor = ({ onSave, onCancel }) => (
                 onClick={() => onSave({
                     payload: { targetPhotoId: `photo-${Date.now()}` },
                 })}
-                className="flex-1 px-3 py-2 rounded-lg bg-blue-600 text-white text-sm"
+                className="flex-1 px-3 py-2 rounded-lg bg-primary text-white text-sm"
             >
                 Simuler la capture
             </button>

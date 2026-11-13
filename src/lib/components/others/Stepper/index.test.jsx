@@ -55,16 +55,17 @@ describe("Stepper", () => {
         expect(stepEls[2].getAttribute('data-status')).toBe('current');
     });
 
-    it("renders error status with a distinct visual (red class)", () => {
+    it("renders error status with the theme error colour", () => {
         const steps = [{ label: "Boom", status: "error" }];
         const { container } = render(<Stepper steps={steps} currentStep={0} />);
 
         const stepEl = container.querySelector('[data-step-index="0"]');
         expect(stepEl.getAttribute('data-status')).toBe('error');
 
-        // The indicator (or one of its descendants) should carry a red class.
+        // The indicator (or one of its descendants) carries the error token,
+        // so the app's own error colour shows, not a fixed red.
         const html = stepEl.outerHTML;
-        expect(html).toMatch(/red/);
+        expect(html).toMatch(/bg-error|text-error/);
     });
 
     it("renders without crashing when steps is an empty array", () => {

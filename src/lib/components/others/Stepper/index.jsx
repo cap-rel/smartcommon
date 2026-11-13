@@ -43,7 +43,7 @@ const indicatorClassesByStatus = {
     completed: "bg-primary text-white border border-primary",
     current: "bg-white text-primary border-2 border-primary",
     upcoming: "bg-strong text-soft-text border border-soft-border",
-    error: "bg-red-600 text-white border border-red-600",
+    error: "bg-error text-white border border-error",
 };
 
 // Classes by status for the connector line. A connector visually links the
@@ -53,7 +53,7 @@ const connectorClassesByStatus = {
     completed: "bg-primary",
     current: "bg-primary",
     upcoming: "bg-soft-border",
-    error: "bg-red-600",
+    error: "bg-error",
 };
 
 export const Stepper = (props) => {
@@ -165,7 +165,7 @@ export const Stepper = (props) => {
                             {!isNil(step.label) && (
                                 <div {...mergeProps("stepLabel", (p) => ({
                                     ...p,
-                                    className: `text-app-sm ${status === "current" ? "text-strong-text font-semibold" : status === "error" ? "text-red-600 font-semibold" : status === "completed" ? "text-strong-text" : "text-soft-text"} truncate`,
+                                    className: `text-app-sm ${status === "current" ? "text-strong-text font-semibold" : status === "error" ? "text-error font-semibold" : status === "completed" ? "text-strong-text" : "text-soft-text"} truncate`,
                                 }))}>
                                     {step.label}
                                 </div>

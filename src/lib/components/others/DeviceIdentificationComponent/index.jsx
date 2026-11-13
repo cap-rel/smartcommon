@@ -267,7 +267,7 @@ export const DeviceIdentificationComponent = (props) => {
                         role="alert"
                         {...errorAlertProps}
                         className={twMerge(
-                            "text-red-600 text-sm",
+                            "text-error text-sm",
                             errorAlertProps.className
                         )}
                     >

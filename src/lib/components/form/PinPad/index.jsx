@@ -117,7 +117,7 @@ export const PinPad = (props) => {
     const dotCount = Math.max(value.length, minLength);
     const filledClass = isDark ? "bg-white scale-110" : "bg-gray-800 dark:bg-white scale-110";
     const emptyClass = error
-        ? "border-2 border-red-500"
+        ? "border-2 border-error"
         : isDark
             ? "border-2 border-white/25"
             : "border-2 border-gray-300 dark:border-white/25";
@@ -183,8 +183,8 @@ export const PinPad = (props) => {
                     onClick={submit}
                     disabled={disabled || value.length < minLength}
                     aria-label={labels.validate}
-                    className={`${keyBase} text-base font-bold bg-blue-600 text-white
-                        hover:bg-blue-500 active:bg-blue-700 shadow-lg shadow-blue-600/25
+                    className={`${keyBase} text-base font-bold bg-primary text-white
+                        hover:brightness-110 active:brightness-90 shadow-lg shadow-primary/25
                         disabled:cursor-not-allowed disabled:shadow-none`}
                 >
                     <FaCheck />

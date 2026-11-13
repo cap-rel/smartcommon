@@ -385,7 +385,7 @@ export const FeedbackModal = (props) => {
                             }}
                         />
                         {validationErrors.body && (
-                            <span id="feedback-body-error" className="text-xs text-red-600" role="alert">
+                            <span id="feedback-body-error" className="text-xs text-error" role="alert">
                                 {validationErrors.body}
                             </span>
                         )}
@@ -428,7 +428,7 @@ export const FeedbackModal = (props) => {
                                         <button
                                             type="button"
                                             onClick={removeScreenshot}
-                                            className="text-sm text-red-600 hover:underline flex items-center gap-1"
+                                            className="text-sm text-error hover:underline flex items-center gap-1"
                                         >
                                             <FaXmark />
                                             {labels.screenshotRemove}
@@ -467,7 +467,7 @@ export const FeedbackModal = (props) => {
                                 aria-label={labels.screenshotChoose}
                             />
                             {validationErrors.screenshot && (
-                                <span className="text-xs text-red-600">
+                                <span className="text-xs text-error">
                                     {validationErrors.screenshot}
                                 </span>
                             )}
@@ -488,14 +488,14 @@ export const FeedbackModal = (props) => {
                             </label>
                         )}
                         {validationErrors.consent && (
-                            <span id="feedback-consent-error" className="text-xs text-red-600" role="alert">
+                            <span id="feedback-consent-error" className="text-xs text-error" role="alert">
                                 {validationErrors.consent}
                             </span>
                         )}
 
                         {status === "error" && (
                             <div
-                                className="text-sm text-red-600"
+                                className="text-sm text-error"
                                 role="alert"
                                 aria-live="assertive"
                             >

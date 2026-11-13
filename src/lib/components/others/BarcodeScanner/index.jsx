@@ -235,8 +235,8 @@ const BarcodeScannerContent = (props) => {
             >
                 <div className="flex flex-col items-center justify-center">
                     {cameraError ? (
-                        <div className="bg-red-900/50 border border-red-500 rounded-xl p-4 max-w-sm text-center">
-                            <p className="text-red-200 mb-3">{cameraError}</p>
+                        <div className="bg-error/20 border border-error rounded-xl p-4 max-w-sm text-center">
+                            <p className="text-white mb-3">{cameraError}</p>
                             <button
                                 type="button"
                                 onClick={() => setShowManualEntry(true)}
@@ -319,8 +319,8 @@ const BarcodeScannerContent = (props) => {
 
             <div className="flex-1 flex flex-col items-center justify-center px-4">
                 {cameraError ? (
-                    <div className="bg-red-900/50 border border-red-500 rounded-xl p-6 max-w-sm text-center">
-                        <p className="text-red-200 mb-4">{cameraError}</p>
+                    <div className="bg-error/20 border border-error rounded-xl p-6 max-w-sm text-center">
+                        <p className="text-white mb-4">{cameraError}</p>
                         <button
                             type="button"
                             onClick={() => setShowManualEntry(true)}

@@ -55,7 +55,7 @@ export const FeedbackButton = (props) => {
                 ref={buttonRef}
                 type="button"
                 onClick={openModal}
-                className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg"
+                className="flex items-center gap-2 px-3 py-2 text-sm text-medium-text hover:text-strong-text hover:bg-medium-bg rounded-lg"
                 aria-label={labels.buttonLabel}
             >
                 <FaBug />

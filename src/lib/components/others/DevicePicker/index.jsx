@@ -207,7 +207,7 @@ export const DevicePicker = (props) => {
                     role="alert"
                     {...errorAlertProps}
                     className={twMerge(
-                        "text-red-600 text-sm text-center",
+                        "text-error text-sm text-center",
                         errorAlertProps.className
                     )}
                 >

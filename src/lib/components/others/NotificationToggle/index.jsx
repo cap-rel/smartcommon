@@ -28,7 +28,7 @@ export const NotificationToggle = (props) => {
     if (permission === "unsupported") {
         return (
             <div data-component="NotificationToggle" className={rootClassName} {...restContainerProps}>
-                <span className="text-gray-500">{labels.unsupported}</span>
+                <span className="text-medium-text">{labels.unsupported}</span>
             </div>
         );
     }
@@ -36,8 +36,8 @@ export const NotificationToggle = (props) => {
     if (permission === "denied") {
         return (
             <div data-component="NotificationToggle" className={rootClassName} {...restContainerProps}>
-                <span className="text-gray-600">{labels.denied}</span>
-                <small className="text-gray-400">{labels.deniedHint}</small>
+                <span className="text-medium-text">{labels.denied}</span>
+                <small className="text-soft-text">{labels.deniedHint}</small>
             </div>
         );
     }
@@ -60,11 +60,11 @@ export const NotificationToggle = (props) => {
                     disabled={isLoading}
                     className="h-4 w-4"
                 />
-                <span className={isLoading ? "text-gray-400" : "text-gray-700"}>
+                <span className={isLoading ? "text-soft-text" : "text-strong-text"}>
                     {labels.toggleLabel}
                 </span>
             </label>
-            {error && <small className="text-red-500">{error}</small>}
+            {error && <small className="text-error">{error}</small>}
         </div>
     );
 };
