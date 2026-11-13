@@ -63,7 +63,15 @@ describe("Calculator - accessibility", () => {
     });
 
     it("only uses colour tokens the theme defines", () => {
-        render(<Calculator isOpen onOpenChange={() => {}} />);
+        const { container } = render(<Calculator isOpen onOpenChange={() => {}} />);
         expect(screen.getByRole("dialog").outerHTML).not.toMatch(/soft-bg-alt|soft-text-muted|primary-text/);
+        expect(container.innerHTML).not.toMatch(/soft-bg-alt|soft-text-muted|primary-text/);
+    });
+
+    it("draws its FAB icon in white on the primary colour", () => {
+        render(<Calculator />);
+        const fab = screen.getByRole("button", { name: "Open calculator" });
+        expect(fab.className).toContain("text-white");
+        expect(fab.className).not.toContain("primary-text");
     });
 });

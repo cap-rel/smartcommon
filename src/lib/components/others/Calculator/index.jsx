@@ -296,7 +296,7 @@ export const Calculator = (props) => {
                         ...p,
                         onClick: toggle,
                         style: { "--z-index": zIndex - 1 },
-                        className: `fixed z-(--z-index) w-14 h-14 bg-primary hover:bg-primary/90 text-primary-text rounded-full shadow-lg flex items-center justify-center transition-all active:scale-95 hover:shadow-xl ${fabPositionClasses[position]}`,
+                        className: `fixed z-(--z-index) w-14 h-14 bg-primary hover:bg-primary/90 text-white rounded-full shadow-lg flex items-center justify-center transition-all active:scale-95 hover:shadow-xl ${fabPositionClasses[position]}`,
                         "aria-label": labels.open,
                         title: labels.open,
                     }))}
