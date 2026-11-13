@@ -13,6 +13,7 @@ const installServiceWorker = () => {
     const registration = {
         waiting: { postMessage: vi.fn() },
         addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
         update: vi.fn().mockResolvedValue(undefined),
     };
     Object.defineProperty(navigator, "serviceWorker", {
@@ -120,5 +121,61 @@ describe("usePWAUpdate version info", () => {
 
         await waitFor(() => expect(result.current.newVersion).toBe("1.0.1"));
         expect(result.current.releaseNotes).toBeNull();
+    });
+});
+
+describe("usePWAUpdate listeners", () => {
+    let registration;
+
+    beforeEach(() => {
+        registration = installServiceWorker();
+        vi.stubGlobal("fetch", vi.fn().mockResolvedValue(jsonResponse({ version: "1.4.0" })));
+    });
+
+    afterEach(() => {
+        cleanup();
+        vi.unstubAllGlobals();
+        vi.restoreAllMocks();
+        delete navigator.serviceWorker;
+    });
+
+    const updateFoundListeners = () => registration.addEventListener.mock.calls.filter(([type]) => type === "updatefound");
+
+    it("does not add another updatefound listener when the callbacks change", async () => {
+        const { rerender } = renderHook(() => usePWAUpdate({ onUpdateAvailable: () => {} }));
+        await waitFor(() => expect(updateFoundListeners()).toHaveLength(1));
+
+        rerender();
+        rerender();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+
+        expect(updateFoundListeners()).toHaveLength(1);
+    });
+
+    it("removes its updatefound listener on unmount", async () => {
+        const { unmount } = renderHook(() => usePWAUpdate());
+        await waitFor(() => expect(updateFoundListeners()).toHaveLength(1));
+        const [, listener] = updateFoundListeners()[0];
+
+        unmount();
+
+        expect(registration.removeEventListener).toHaveBeenCalledWith("updatefound", listener);
+    });
+
+    it("calls the latest onUpdateAvailable", async () => {
+        const first = vi.fn();
+        const second = vi.fn();
+        const { rerender } = renderHook(({ cb }) => usePWAUpdate({ onUpdateAvailable: cb }), { initialProps: { cb: first } });
+        await waitFor(() => expect(first).toHaveBeenCalled());
+
+        rerender({ cb: second });
+        const [, listener] = updateFoundListeners()[0];
+        const installing = { state: "installed", addEventListener: vi.fn() };
+        registration.installing = installing;
+        listener();
+        const [, onStateChange] = installing.addEventListener.mock.calls[0];
+        onStateChange({ target: installing });
+
+        expect(second).toHaveBeenCalled();
     });
 });

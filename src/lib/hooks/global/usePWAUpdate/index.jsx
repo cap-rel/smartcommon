@@ -34,6 +34,15 @@ export const usePWAUpdate = (options = {}) => {
     const [releaseNotes, setReleaseNotes] = useState(null);
     const waitingWorkerRef = useRef(null);
 
+    // Latest callbacks, read by the listeners: inline functions passed by
+    // the app must not re-run the setup effect (and re-add its listeners).
+    const onUpdateAvailableRef = useRef(onUpdateAvailable);
+    const onUpdateActivatedRef = useRef(onUpdateActivated);
+    useEffect(() => {
+        onUpdateAvailableRef.current = onUpdateAvailable;
+        onUpdateActivatedRef.current = onUpdateActivated;
+    }, [onUpdateAvailable, onUpdateActivated]);
+
     // Check for updates manually
     const checkForUpdates = useCallback(async () => {
         if (!("serviceWorker" in navigator)) {
@@ -111,11 +120,13 @@ export const usePWAUpdate = (options = {}) => {
         }
 
         let intervalId = null;
+        let cancelled = false;
+        let watchedReg = null;
 
         const handleControllerChange = () => {
             // New SW has taken control
             setUpdateActivated(true);
-            onUpdateActivated?.();
+            onUpdateActivatedRef.current?.();
 
             if (autoReload) {
                 window.location.reload();
@@ -129,12 +140,12 @@ export const usePWAUpdate = (options = {}) => {
                 waitingWorkerRef.current = sw;
                 setUpdateAvailable(true);
                 fetchVersionInfo();
-                onUpdateAvailable?.();
+                onUpdateAvailableRef.current?.();
             }
         };
 
-        const handleUpdateFound = (reg) => {
-            const newWorker = reg.installing;
+        const handleUpdateFound = () => {
+            const newWorker = watchedReg?.installing;
             if (newWorker) {
                 newWorker.addEventListener("statechange", handleStateChange);
             }
@@ -144,6 +155,11 @@ export const usePWAUpdate = (options = {}) => {
             try {
                 const reg = await navigator.serviceWorker.getRegistration();
 
+                // Unmounted while the registration was loading: attach nothing.
+                if (cancelled) {
+                    return;
+                }
+
                 if (reg) {
                     setRegistration(reg);
 
@@ -152,11 +168,12 @@ export const usePWAUpdate = (options = {}) => {
                         waitingWorkerRef.current = reg.waiting;
                         setUpdateAvailable(true);
                         fetchVersionInfo();
-                        onUpdateAvailable?.();
+                        onUpdateAvailableRef.current?.();
                     }
 
-                    // Listen for new updates
-                    reg.addEventListener("updatefound", () => handleUpdateFound(reg));
+                    // Listen for new updates (removed on cleanup)
+                    watchedReg = reg;
+                    reg.addEventListener("updatefound", handleUpdateFound);
 
                     // Ask the server now, instead of waiting for the first
                     // checkInterval tick. Without this the only check left is
@@ -188,12 +205,14 @@ export const usePWAUpdate = (options = {}) => {
         init();
 
         return () => {
+            cancelled = true;
+            watchedReg?.removeEventListener("updatefound", handleUpdateFound);
             navigator.serviceWorker.removeEventListener("controllerchange", handleControllerChange);
             if (intervalId) {
                 clearInterval(intervalId);
             }
         };
-    }, [autoReload, checkInterval, checkForUpdates, fetchVersionInfo, onUpdateAvailable, onUpdateActivated]);
+    }, [autoReload, checkInterval, checkForUpdates, fetchVersionInfo]);
 
     return {
         updateAvailable,

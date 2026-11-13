@@ -74,7 +74,8 @@ export const UpdateSettingsRow = () => {
 - La lecture de `versionUrl` ajoute un paramètre anti-cache : un projet qui met
   tous les `*.json` en précache reçoit quand même le fichier de la nouvelle
   version.
-- Les fonctions passées en options doivent être stables (`useCallback`) : une
-  nouvelle fonction à chaque rendu réinstalle les écouteurs.
+- `onUpdateAvailable` et `onUpdateActivated` peuvent être des fonctions
+  écrites en ligne : le hook appelle toujours la dernière reçue, sans
+  réinstaller ses écouteurs.
 
 Guide complet : `docs/provider.md`. Voir aussi `docs/about-modal.md`.
