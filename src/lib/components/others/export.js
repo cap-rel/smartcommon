@@ -22,5 +22,4 @@ export * from "./PhotoEditor";
 export * from "./ProductCategoryBrowser";
 export { ALL_PRODUCTS_ID, UNCATEGORIZED_ID } from "./ProductCategoryBrowser/props";
 export { createDexieProductCategoryAdapters } from "./ProductCategoryBrowser/createDexieProductCategoryAdapters";
-export * from "./SearchBar";
 export * from "./Stepper";
