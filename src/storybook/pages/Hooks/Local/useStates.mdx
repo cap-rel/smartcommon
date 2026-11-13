@@ -1,0 +1,79 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useStates" />
+
+# useStates
+
+L'état local d'un composant regroupé dans un seul objet, lu et écrit par
+chemin (`"form.lines[0].qty"`). Remplace une série de `useState` quand l'état a
+plusieurs niveaux. C'est aussi la base de `useForm` et de l'état global.
+
+```jsx
+import { useStates } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const st = useStates({ initialStates, debug });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `initialStates` | object | `{}` | État de départ. |
+| `debug` | bool | `config.debug` | Journalise chaque écriture. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `values` | object | L'état courant. |
+| `states` | object | Le même objet que `values`. |
+| `get` | `(path) => any` | Valeur à un chemin, `undefined` s'il n'existe pas. |
+| `set` | `(path, value) => void` | Écrit une valeur, ou `value(précédente)` si `value` est une fonction. |
+| `unset` | `(path?) => void` | Supprime un chemin ; sans argument, vide tout l'état. |
+
+Syntaxe des chemins : `"a.b"` pour un objet, `"lines[2]"` pour un index,
+`"lines[]"` pour ajouter en fin de tableau. Les niveaux manquants sont créés.
+
+## Exemple
+
+```jsx
+import { useStates } from "@cap-rel/smartcommon";
+
+export const Cart = () => {
+  const { values, set, unset } = useStates({
+    initialStates: { lines: [], customer: { name: "" } },
+  });
+
+  const addLine = (product) => set("lines[]", { productId: product.id, qty: 1 });
+  const increment = (index) => set(`lines[${index}].qty`, (qty) => qty + 1);
+  const removeLine = (index) => unset(`lines[${index}]`);
+
+  return (
+    <>
+      <input value={values.customer.name} onChange={(e) => set("customer.name", e.target.value)} />
+      {values.lines.map((line, index) => (
+        <p key={line.productId}>
+          {line.qty} <button onClick={() => increment(index)}>+</button>
+          <button onClick={() => removeLine(index)}>x</button>
+        </p>
+      ))}
+      <button onClick={() => addLine({ id: Date.now() })}>Ajouter</button>
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Les valeurs de départ se passent dans `initialStates` :
+  `useStates({ isLoading: true })` part d'un état vide et journalise un
+  avertissement sur l'option inconnue.
+- `get`, `set` et `unset` gardent la même identité d'un rendu à l'autre : on
+  peut les mettre dans les dépendances d'un effet.
+- Une écriture qui ne change rien (valeur égale en profondeur) ne provoque pas
+  de nouveau rendu.
+- Chaque écriture copie l'état avec `structuredClone` : n'y ranger que des
+  données clonables (pas de fonction, pas d'élément DOM).
+- `unset("lines[1]")` retire l'élément du tableau et décale les suivants.

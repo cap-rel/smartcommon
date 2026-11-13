@@ -1,0 +1,68 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useHotkeys" />
+
+# useHotkeys
+
+Raccourcis clavier pour le poste fixe : une table qui associe une combinaison
+de touches à une fonction. Le hook écoute le document, ignore les frappes dans
+les champs de saisie et respecte les touches déjà traitées par une boîte de
+dialogue ou un menu.
+
+```jsx
+import { useHotkeys } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+useHotkeys(map, { enabled });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `map` | object | requis | `{ "mod+k": handler, "escape": handler }`. Chaque `handler(event)` reçoit l'événement clavier. |
+| `options.enabled` | bool | `true` | `false` détache l'écoute (hors poste fixe par exemple). |
+
+Une combinaison s'écrit en minuscules, avec dans cet ordre les préfixes
+facultatifs `mod+` (Ctrl, ou Cmd sur macOS), `alt+` et `shift+`, puis la
+touche : `"mod+shift+s"`, `"escape"`, `"j"`, `"/"`, `"space"`.
+
+## Valeur retournée
+
+Rien (`undefined`).
+
+## Exemple
+
+```jsx
+import { useRef } from "react";
+import { useHotkeys, useViewport } from "@cap-rel/smartcommon";
+
+export const InvoicesPage = ({ onCreate, onCloseDetail }) => {
+  const searchRef = useRef(null);
+  const { isDesktop } = useViewport();
+
+  useHotkeys({
+    "mod+k": () => searchRef.current?.focus(),
+    "/": () => searchRef.current?.focus(),
+    "mod+shift+n": onCreate,
+    "escape": onCloseDetail,
+  }, { enabled: isDesktop });
+
+  return <input ref={searchRef} type="search" placeholder="Rechercher" />;
+};
+```
+
+## Points d'attention
+
+- Un raccourci sans Ctrl, Cmd ni Alt (`"/"`, `"j"`) est ignoré pendant la saisie
+  dans un `input`, un `textarea`, un `select` ou un élément éditable. Les
+  combinaisons avec modificateur et Échap fonctionnent partout.
+- Un raccourci reconnu annule le comportement du navigateur (`preventDefault`) :
+  éviter de capter `"mod+r"` ou `"mod+w"`.
+- Une touche déjà traitée (`defaultPrevented`, par exemple l'Échap qui ferme un
+  menu) et une frappe pendant une composition de texte sont ignorées.
+- La table la plus récente est toujours utilisée : un objet écrit en ligne ne
+  réinstalle pas l'écoute à chaque rendu.
+
+Guide complet : `docs/desktop.md`.

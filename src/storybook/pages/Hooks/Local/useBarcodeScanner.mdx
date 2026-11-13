@@ -1,0 +1,69 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useBarcodeScanner" />
+
+# useBarcodeScanner
+
+Écoute une douchette USB ou Bluetooth qui se présente comme un clavier : elle
+tape le code très vite puis Entrée. Le hook reconnaît cette frappe rapide et
+appelle `onScan` avec le code, sans champ de saisie à mettre au point. Pour
+scanner avec la caméra, voir le composant `<BarcodeScanner>`.
+
+```jsx
+import { useBarcodeScanner } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+useBarcodeScanner({ onScan, enabled });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `onScan` | `(barcode) => void` | requis | Appelé avec le code lu (texte, espaces de bord retirés). |
+| `enabled` | bool | `true` | `false` détache l'écoute. |
+
+## Valeur retournée
+
+Rien (`undefined`).
+
+## Exemple
+
+```jsx
+import { useCallback } from "react";
+import { useBarcodeScanner } from "@cap-rel/smartcommon";
+
+export const CheckoutScreen = ({ cart, findProductByBarcode, isPaying }) => {
+  const handleScan = useCallback(async (barcode) => {
+    const product = await findProductByBarcode(barcode);
+    if (product) {
+      cart.add(product);
+    } else {
+      console.warn("[CheckoutScreen] unknown barcode", barcode);
+    }
+  }, [cart, findProductByBarcode]);
+
+  useBarcodeScanner({ onScan: handleScan, enabled: !isPaying });
+
+  return <CartView cart={cart} />;
+};
+```
+
+## Points d'attention
+
+- Une frappe est retenue si chaque caractère suit le précédent de moins de
+  50 ms ; le code doit faire au moins 4 caractères. Une saisie humaine est donc
+  ignorée.
+- Les touches tapées dans un `input`, un `textarea` ou un `select` sont
+  ignorées : la douchette n'agit que quand aucun champ n'a le focus.
+- Toute touche Entrée hors d'un champ est interceptée (`preventDefault`), même
+  sans code en cours : pendant que le hook écoute, Entrée n'active plus un
+  bouton qui a le focus. Le désactiver (`enabled: false`) sur les écrans qui en
+  ont besoin.
+- Passer un `onScan` stable (`useCallback`) : un nouveau à chaque rendu
+  réinstalle l'écoute.
+- L'objet d'options est obligatoire : `useBarcodeScanner()` sans argument lève
+  une erreur.
+
+Voir aussi `docs/barcode-scanner.md` (scan par la caméra).

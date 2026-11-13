@@ -1,0 +1,61 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useLibConfig" />
+
+# useLibConfig
+
+Lit l'objet `config` passé à `<Provider>` (par `<LibConfigProvider>`). Toute la
+bibliothèque s'y règle : client API, thème, routeur, variantes des composants,
+journaux. Une application s'en sert pour lire ses propres réglages placés au
+même endroit.
+
+```jsx
+import { useLibConfig } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const config = useLibConfig();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+L'objet `config` tel quel, ou `{}` hors de `<Provider>`. Clés lues par la
+bibliothèque :
+
+| Clé | Lue par |
+|---|---|
+| `api.prefixUrl`, `api.timeout`, `api.onApiError`, `api.onSessionExpired`, `api.onLoginPersist`, `api.debug` | `useApi` |
+| `theme` | `ThemeApplier` |
+| `router`, `basename` | `Router` |
+| `components.theme`, `components.themes`, `components.variants` | `useVariantMerger`, `useComponentLabels` |
+| `globalState.reducers` | `ReduxProvider` |
+| `debug`, `navigation.debug`, `globalStates.debug` | hooks de la bibliothèque |
+
+## Exemple
+
+```jsx
+import { useLibConfig } from "@cap-rel/smartcommon";
+
+export const ApiBaseNotice = () => {
+  const { api, debug } = useLibConfig();
+
+  if (!debug) {
+    return null;
+  }
+  return <small>API : {api?.prefixUrl ?? "non configurée"}</small>;
+};
+```
+
+## Points d'attention
+
+- Le hook ne signale pas l'absence de `<Provider>` : il renvoie `{}` et les
+  clés lues valent `undefined`. Toujours lire les sous-objets avec `?.`.
+- La configuration est celle du rendu de `<Provider>` : la remplacer par un
+  nouvel objet à chaque rendu recrée le client API et relance les effets qui en
+  dépendent.
+
+Guide complet : `docs/provider.md`.

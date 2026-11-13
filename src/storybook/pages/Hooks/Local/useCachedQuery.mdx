@@ -1,0 +1,99 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useCachedQuery" />
+
+# useCachedQuery
+
+Charge une donnée par le réseau et en garde une copie dans IndexedDB, pour
+l'afficher même hors ligne. Trois stratégies : réseau d'abord, cache d'abord,
+ou cache affiché tout de suite puis rafraîchi en arrière-plan. Fait pour les
+dictionnaires, la configuration, les listes de référence.
+
+```jsx
+import { CACHE_STRATEGIES, useCachedQuery } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const query = useCachedQuery({ db, store, key, fetchFn, strategy, ttl, staleTime, enabled });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `db` | Dexie | - | Base qui contient la table de cache (`useDb()` ou `Db.instance`). |
+| `store` | string | - | Table de cache, de schéma `"key"`. |
+| `key` | string | - | Clé de cette requête dans la table. |
+| `fetchFn` | `() => Promise` | - | Charge la donnée par le réseau. |
+| `strategy` | string | `CACHE_STRATEGIES.NETWORK_FIRST` | `NETWORK_FIRST`, `CACHE_FIRST` ou `STALE_WHILE_REVALIDATE`. |
+| `ttl` | number | `3600000` (1 h) | Âge en ms au-delà duquel la copie est supprimée. |
+| `staleTime` | number | `60000` (1 min) | Âge en ms au-delà duquel la copie est dite périmée. |
+| `enabled` | bool | `true` | `false` suspend le chargement. |
+
+Stratégies :
+
+- `NETWORK_FIRST` : en ligne, le réseau, avec la copie en secours si l'appel
+  échoue ; hors ligne, la copie.
+- `CACHE_FIRST` : la copie si elle est fraîche, sinon le réseau ; hors ligne,
+  la copie même périmée.
+- `STALE_WHILE_REVALIDATE` : la copie tout de suite, puis un rafraîchissement
+  en arrière-plan si elle est périmée.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `data` | any | La donnée, `null` au départ. |
+| `isLoading` | bool | Chargement en cours. |
+| `isFromCache` | bool | La donnée vient de la copie locale. |
+| `isStale` | bool | La copie affichée est périmée. |
+| `error` | Error ou null | Échec du chargement, par exemple hors ligne sans copie. |
+| `lastFetch` | number ou null | Horodatage (ms) de la donnée affichée. |
+| `refetch` | `() => Promise<void>` | Recharge selon la stratégie. |
+| `invalidate` | `() => Promise<void>` | Supprime la copie puis recharge. |
+
+## Exemple
+
+```jsx
+import { CACHE_STRATEGIES, useApi, useCachedQuery, useDb } from "@cap-rel/smartcommon";
+
+const STORES = { queryCache: "key" };
+
+export const CountrySelect = ({ value, onChange }) => {
+  const api = useApi();
+  const db = useDb({ name: "myapp", stores: STORES });
+
+  const { data: countries, isLoading, error } = useCachedQuery({
+    db,
+    store: "queryCache",
+    key: "countries",
+    fetchFn: () => api.get("dictionaries/countries"),
+    strategy: CACHE_STRATEGIES.CACHE_FIRST,
+    ttl: 24 * 60 * 60 * 1000,
+  });
+
+  if (isLoading) {
+    return <p>Chargement...</p>;
+  }
+  if (error) {
+    return <p role="alert">Pays indisponibles hors ligne.</p>;
+  }
+  return (
+    <select value={value} onChange={(e) => onChange(e.target.value)}>
+      {countries.map((c) => <option key={c.code} value={c.code}>{c.label}</option>)}
+    </select>
+  );
+};
+```
+
+## Points d'attention
+
+- Le chargement ne repart que quand `key` ou `enabled` changent. Un nouveau
+  `fetchFn` est pris en compte au prochain chargement, sans en déclencher un.
+- Hors ligne et sans copie, `error` vaut
+  `Error("No cached data available and offline")`.
+- Le hook suit l'état du réseau du navigateur, pas la joignabilité du serveur.
+- Un échec du rafraîchissement en arrière-plan (`STALE_WHILE_REVALIDATE`) est
+  ignoré : la copie reste affichée.
+
+Guide complet : `docs/offline.md`.

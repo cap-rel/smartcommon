@@ -1,0 +1,57 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useGlobalStatesContext" />
+
+# useGlobalStatesContext
+
+La fabrique qui construit l'état global. `<GlobalStatesProvider>` l'appelle
+une fois et place le résultat dans `GlobalStatesContext`. Elle est exportée
+pour monter un fournisseur sur mesure ; une page lit l'état avec
+`useGlobalStates()`.
+
+```jsx
+import { useGlobalStatesContext } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const gst = useGlobalStatesContext(props);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `props` | object | `{}` | Objet d'options, doit être un objet simple. |
+| `props.initialStates` | object | `{}` | Lu mais sans effet : l'état de départ vient de `localStorage` et `sessionStorage`. |
+
+Le hook lit `config.globalStates.debug` (à défaut `config.debug`) par
+`useLibConfig()`.
+
+## Valeur retournée
+
+Le même objet que `useGlobalStates()` : `values`, `get`, `getStorage`, `set`,
+`unset`, `local.set`, `session.set`. Le détail est sur la page
+`useGlobalStates`.
+
+## Exemple
+
+Ce que fait `<GlobalStatesProvider>` :
+
+```jsx
+import { GlobalStatesContext, useGlobalStatesContext } from "@cap-rel/smartcommon";
+
+export const MyGlobalStatesProvider = ({ children }) => {
+  const gst = useGlobalStatesContext();
+
+  return <GlobalStatesContext.Provider value={gst}>{children}</GlobalStatesContext.Provider>;
+};
+```
+
+## Points d'attention
+
+- Chaque appel crée un état séparé, relu depuis les stockages au montage : deux
+  instances ne voient pas les écritures en mémoire l'une de l'autre.
+- Au montage, l'état est reconstruit à partir de l'entrée `global` de
+  `localStorage` puis de `sessionStorage` (la session l'emporte sur une même clé).
+
+Voir aussi `docs/provider.md` (ordre de montage des fournisseurs).

@@ -1,0 +1,115 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useApi" />
+
+# useApi
+
+Le client HTTP de la PWA, partagé par toute l'application. Il porte la session
+SmartAuth (connexion, jetons, rafraîchissement, identifiant d'appareil) et
+expose les requêtes authentifiées vers l'API du module. L'objet est construit
+une seule fois par `<ApiProvider>`, que `<Provider>` monte déjà.
+
+```jsx
+import { useApi } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const api = useApi();
+```
+
+Aucun paramètre. Le client se règle dans `config.api` du `<Provider>` :
+
+| Clé de `config.api` | Type | Rôle |
+|---|---|---|
+| `prefixUrl` | string | Base des URL, par exemple `"/api.php/"`. |
+| `timeout` | number | Délai des requêtes en ms (défaut de ky : 10 s). |
+| `onApiError` | `(message) => void` | Appelé avec `error.apiMessage` à chaque erreur d'API, sauf `silent: true`. |
+| `onSessionExpired` | `() => void` | Appelé une seule fois quand la session est perdue. |
+| `onLoginPersist` | `async (baseUser) => object` | Complète l'utilisateur avant son enregistrement, à la connexion. |
+| `debug` | bool | Journal des requêtes. À défaut, `config.debug`. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `user` | object | Utilisateur connecté (`accessToken`, `refreshToken`, `tokenExpiry`, `rememberMe`...), `undefined` hors session. |
+| `get`, `post`, `put`, `patch`, `del` | `(url, options?) => Promise` | Requêtes authentifiées. Renvoient le JSON déjà lu, `null` pour un 204, un 205 ou un corps vide. |
+| `public` | instance ky | Client sans jeton, pour les routes publiques. Appeler `.json()` soi-même. |
+| `private` | instance ky | Client authentifié brut, sans `onApiError`. Appeler `.json()` soi-même. |
+| `login` | `(body, options?) => Promise` | `POST login`. Enregistre l'utilisateur, puis renvoie les données avec `needsDevicePick` et `existingUserDevices`. |
+| `logout` | `(options?) => Promise` | `POST logout`, puis efface l'utilisateur local même si le serveur ne répond pas. |
+| `entities`, `getEntities` | `(options?) => Promise` | `GET login` public : liste des entités. |
+| `device`, `identifyDevice` | `(body, options?) => Promise` | `POST device` avec `{ label, uuid, viewport_mode? }`. |
+| `claimQrPair` | `(pairingId, body?, options?) => Promise` | Réclame un appairage QR affiché sur le PC. |
+| `pollQrPair` | `(pairingId, claimToken, options?) => Promise` | Interroge l'appairage. Sur `status: "consumed"`, l'utilisateur est enregistré. |
+| `listUserDevices` | `(options?) => Promise` | `GET account/user-devices`. |
+| `createUserDevice` | `(body, options?) => Promise` | Crée un appareil logique. |
+| `linkUserDevice` | `(id, options?) => Promise` | Rattache cet appareil à un appareil logique existant. |
+| `renameUserDevice` | `(id, label, options?) => Promise` | Renomme un appareil logique. |
+| `deleteUserDevice` | `(id, options?) => Promise` | Supprime un appareil logique. |
+| `setDeviceViewportMode` | `(id, viewportMode, options?) => Promise` | Enregistre le mode d'affichage d'un appareil (`null` l'efface). |
+| `setDeviceInstallState` | `(installMode, options?) => Promise` | Signale `"standalone"` ou `"browser"` au serveur. |
+| `resetCircuit` | `() => void` | Ferme tout de suite le disjoncteur. |
+
+Options propres à `get` / `post` / `put` / `patch` / `del`, en plus de celles
+de ky (`json`, `searchParams`, `body`, `headers`, `timeout`) :
+
+- `raw: true` renvoie la `Response` au lieu du JSON (photo, PDF, fichier) ;
+- `silent: true` n'appelle pas `onApiError` (l'écran affiche son propre message).
+
+Une erreur rejetée porte, selon le cas : `apiMessage` et `apiCode` (lus dans le
+corps de la réponse), `url`, `method`, `sessionExpired`, `circuitOpen`,
+`circuitStatus` et `circuitUrl`.
+
+## Exemple
+
+```jsx
+import { useEffect, useState } from "react";
+import { useApi } from "@cap-rel/smartcommon";
+
+export const ThirdpartyList = () => {
+  const api = useApi();
+  const [thirdparties, setThirdparties] = useState([]);
+
+  useEffect(() => {
+    api.get("thirdparties", { searchParams: { limit: 50 } })
+      .then(setThirdparties)
+      .catch((error) => {
+        // A dead session is already reported once by onSessionExpired.
+        if (!error.sessionExpired) {
+          console.error("[ThirdpartyList] load failed", error.apiMessage ?? error.message);
+        }
+      });
+  }, [api]);
+
+  const rename = (id, name) => api.put(`thirdparties/${id}`, { json: { name } });
+
+  return thirdparties.map((t) => <p key={t.id} onClick={() => rename(t.id, t.name)}>{t.name}</p>);
+};
+```
+
+## Points d'attention
+
+- Les URL s'écrivent sans `/` initial (`"thirdparties"`) : ky les ajoute à
+  `prefixUrl`. Le corps JSON passe par l'option `json`.
+- Hors de `<Provider>` (ou `<ApiProvider>`), le hook renvoie `{}` et journalise
+  une erreur : tous les appels `api.*` sont alors `undefined`.
+- Un jeton expiré est rafraîchi avant l'envoi ; un 401 déclenche un seul
+  rafraîchissement puis une nouvelle tentative. Si la session est perdue,
+  l'utilisateur est effacé (`<RouteGuard>` renvoie vers `/login`),
+  `onSessionExpired` est appelé une fois et les erreurs portent
+  `sessionExpired: true`. Un 403 ne déconnecte pas.
+- Disjoncteur : les requêtes sont bloquées 5 s après une réponse 5xx ou une
+  perte de connexion, 30 s après une session perdue. Hors ligne, une requête
+  rejette avec `"No internet connection"`. Le retour en ligne ferme le
+  disjoncteur, sauf après une session perdue.
+- `login({ ..., rememberMe: true })` garde l'utilisateur dans `localStorage`,
+  sinon dans `sessionStorage`. L'appairage QR l'enregistre toujours dans
+  `localStorage`.
+- L'objet change d'identité quand l'utilisateur, `prefixUrl`, `timeout` ou
+  l'identifiant d'appareil changent : un `useEffect(..., [api])` repart alors.
+
+Guide complet : `docs/network.md`. Voir aussi `docs/provider.md` et
+`docs/login-component.md`.

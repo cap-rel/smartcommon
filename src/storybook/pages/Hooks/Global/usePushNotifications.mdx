@@ -1,0 +1,86 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/usePushNotifications" />
+
+# usePushNotifications
+
+Gère l'abonnement aux notifications Web Push de l'appareil : permission du
+navigateur, abonnement auprès du service push, enregistrement côté SmartAuth
+(routes `push/*`). C'est le moteur de `<NotificationToggle>` ; le hook sert
+directement pour une interface sur mesure.
+
+```jsx
+import { usePushNotifications } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const push = usePushNotifications();
+```
+
+Aucun paramètre. Les requêtes passent par `useApi()` : à monter sous
+`<Provider>`.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `permission` | string | `"default"`, `"granted"`, `"denied"` ou `"unsupported"`. |
+| `isSubscribed` | bool | Un abonnement push existe dans ce navigateur. |
+| `isLoading` | bool | Lecture de l'abonnement ou action en cours. |
+| `error` | string ou null | Message en anglais de la dernière erreur. |
+| `subscriptions` | array | Abonnements connus du serveur (`GET push/subscriptions`). |
+| `subscribe` | `(label?) => Promise<boolean>` | Demande la permission, abonne le navigateur puis l'enregistre sur le serveur. `label` nomme l'appareil. |
+| `unsubscribe` | `() => Promise<boolean>` | Désabonne le navigateur et le serveur (`DELETE push/unsubscribe`). |
+| `refreshSubscriptions` | `() => Promise<void>` | Relit la liste `subscriptions`. |
+
+## Exemple
+
+```jsx
+import { usePushNotifications } from "@cap-rel/smartcommon";
+
+export const PushSetting = () => {
+  const { permission, isSubscribed, isLoading, error, subscribe, unsubscribe } = usePushNotifications();
+
+  if (permission === "unsupported") {
+    return <p>Ce navigateur ne reçoit pas de notifications.</p>;
+  }
+  if (permission === "denied") {
+    return <p>Notifications bloquées dans les réglages du navigateur.</p>;
+  }
+
+  return (
+    <>
+      <label>
+        <input
+          type="checkbox"
+          checked={isSubscribed}
+          disabled={isLoading}
+          onChange={() => (isSubscribed ? unsubscribe() : subscribe("Téléphone atelier"))}
+        />
+        Recevoir les notifications
+      </label>
+      {error && <p role="alert">{error}</p>}
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Le hook ne lève jamais d'erreur : un navigateur sans support donne
+  `permission: "unsupported"`, et les actions renvoient `false` en remplissant
+  `error`. Chaque échec est journalisé.
+- `subscribe()` doit partir d'un geste de l'utilisateur (clic) : les
+  navigateurs refusent sinon la demande de permission.
+- Sur iOS, Web Push n'existe que pour une PWA installée sur l'écran d'accueil.
+- La clé VAPID est lue sur `push/vapid-public-key` (route publique). Sans clé
+  côté serveur, `subscribe()` renvoie `false` avec
+  `"Server not configured for push"`.
+- Quand le service worker renouvelle l'abonnement, il envoie le message
+  `push-resubscribe` ; le hook rejoue alors `POST push/subscribe` avec le jeton
+  de l'utilisateur. Le service worker du projet doit gérer `push`,
+  `notificationclick` et `pushsubscriptionchange`.
+
+Guide complet : `docs/push-notifications.md`.

@@ -1,0 +1,85 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Services/usePrintService" />
+
+# usePrintService
+
+Imprime des tickets (caisse, cuisine, ouverture de tiroir) depuis la PWA : sur
+une imprimante thermique ESC/POS branchée en USB, ou par la boîte
+d'impression du navigateur. Chaque type de document déclare comment il se
+rend ; les impressions passent dans une file avec de nouveaux essais.
+
+```jsx
+import { usePrintService } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { enqueue, pendingCount, service } = usePrintService({ templates, labels });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `templates` | object | - | `{ [type]: { escpos?, html? } }` : rendus de chaque type de document. Au moins un des deux par type. |
+| `labels` | object | textes anglais | Messages d'erreur à remplacer (`PRINT_DEFAULT_LABELS` donne la forme). |
+
+- `escpos(data, builder)` écrit le ticket avec le `TicketBuilder` reçu
+  (`text`, `line`, `separator`, `bold`, `alignCenter`, `cut`, `openDrawer`,
+  `qrCode`...).
+- `html(data)` renvoie le HTML imprimé par le navigateur.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `enqueue` | `(type, data, printer) => Promise<void>` | Ajoute une impression à la file ; résolue une fois imprimée. |
+| `pendingCount` | number | Impressions en attente, mis à jour à chaque ajout et fin. |
+| `service` | `PrintService` | L'instance sous-jacente, pour les cas non couverts. |
+
+`printer` : `{ protocol, paper_width, connection }`, avec `protocol` à `"usb"`,
+`"network"` ou `"browser"` (défaut) et `paper_width` à `58` ou `80` (défaut).
+
+## Exemple
+
+```jsx
+import { Button, usePrintService } from "@cap-rel/smartcommon";
+
+const TEMPLATES = {
+  sale: {
+    escpos: (sale, b) => b.alignCenter().bold(true).text(sale.shopName).bold(false).separator()
+      .alignLeft().text(`Total : ${sale.total.toFixed(2)} EUR`).cut(),
+    html: (sale) => `<h1>${sale.shopName}</h1><p>Total : ${sale.total.toFixed(2)} EUR</p>`,
+  },
+  drawer: { escpos: (_, b) => b.openDrawer() },
+};
+
+export const PrintReceiptButton = ({ sale, printer }) => {
+  const { enqueue, pendingCount } = usePrintService({ templates: TEMPLATES });
+
+  const print = async () => {
+    try {
+      await enqueue("sale", sale, printer);
+    } catch (error) {
+      console.error("[PrintReceiptButton] print failed", error.code, error.message);
+    }
+  };
+
+  return <Button label={pendingCount ? `Impression (${pendingCount})...` : "Imprimer le ticket"} onClick={print} />;
+};
+```
+
+## Points d'attention
+
+- `templates` et `labels` ne sont lus qu'au premier rendu : les déclarer hors
+  du composant.
+- Un échec est retenté jusqu'à 3 fois, à 1 s d'intervalle. Les erreurs portent
+  un `code` : `unknown_job_type`, `no_escpos_renderer`, `unsupported_protocol`,
+  `network_not_supported`.
+- `"network"` échoue toujours (`network_not_supported`) : une PWA ne peut pas
+  ouvrir de connexion TCP vers l'imprimante.
+- En USB, le premier envoi ouvre le choix de l'appareil par WebUSB : il doit
+  partir d'un geste de l'utilisateur (clic).
+- En mode `"browser"`, un type sans rendu `html` (tiroir-caisse) est sauté avec
+  un avertissement.
+- La connexion USB est fermée au démontage du composant.

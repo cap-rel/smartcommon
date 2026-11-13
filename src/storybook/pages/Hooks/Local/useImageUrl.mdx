@@ -1,0 +1,60 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useImageUrl" />
+
+# useImageUrl
+
+Transforme une source d'image (URL, `Blob` ou `File`) en URL utilisable dans
+`src`. Pour un `Blob` ou un `File`, le hook crée l'URL locale et la libère au
+bon moment, ce qui évite les fuites de mémoire d'un `URL.createObjectURL` oublié.
+
+```jsx
+import { useImageUrl } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const url = useImageUrl(src);
+```
+
+| Paramètre | Type | Rôle |
+|---|---|---|
+| `src` | string, Blob, File, null ou undefined | Source de l'image. |
+
+## Valeur retournée
+
+Une chaîne utilisable dans `src`, ou `null` :
+
+- une chaîne est rendue telle quelle ;
+- un `Blob` ou un `File` donne une URL `blob:` créée après le montage (`null` au
+  tout premier rendu) ;
+- toute autre valeur donne `null`.
+
+## Exemple
+
+```jsx
+import { useState } from "react";
+import { useImageUrl } from "@cap-rel/smartcommon";
+
+export const PhotoPicker = () => {
+  const [file, setFile] = useState(null);
+  const preview = useImageUrl(file);
+
+  return (
+    <>
+      <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
+      {preview && <img src={preview} alt="Aperçu" />}
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- L'URL locale est libérée quand `src` change ou au démontage : ne pas la
+  garder ailleurs pour s'en servir plus tard.
+- Passer le même objet `Blob` d'un rendu à l'autre : un nouvel objet à chaque
+  rendu recrée une URL à chaque fois.
+
+Voir aussi `docs/photo-annotator.md`.

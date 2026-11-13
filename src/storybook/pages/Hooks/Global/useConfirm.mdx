@@ -1,0 +1,82 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useConfirm" />
+
+# useConfirm
+
+Ouvre une boîte de confirmation ou d'information accessible, et attend la
+réponse avec un `await`. Remplace `window.confirm()` et `window.alert()` avec
+le thème de l'application. Le contexte vient de `<ConfirmProvider>`, que
+`<Provider>` ne monte pas : à placer soi-même sous `<Provider>`.
+
+```jsx
+import { useConfirm } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { confirm, alert } = useConfirm();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `confirm` | `(options) => Promise<boolean>` | Boîte à deux boutons. `true` si l'utilisateur confirme, `false` s'il annule (bouton, Échap, clic hors de la boîte). |
+| `alert` | `(options) => Promise<true>` | Boîte à un bouton, résolue à `true` à la fermeture. |
+
+Options d'un appel :
+
+| Option | Type | Rôle |
+|---|---|---|
+| `message` | node | Texte principal. Nomme la boîte s'il n'y a pas de titre. |
+| `title` | node | Titre, facultatif. |
+| `detail` | node | Ligne complémentaire tronquée, par exemple le nom de l'élément visé. |
+| `type` | string | `"danger"` ou `"delete"` (couleur d'erreur, icône corbeille), `"warning"`, `"info"` ; sinon une icône neutre. |
+| `confirmText` | string | Libellé du bouton de confirmation. Prioritaire sur `labels.confirm`. |
+| `cancelText` | string | Libellé du bouton d'annulation. Prioritaire sur `labels.cancel`. |
+
+## Exemple
+
+```jsx
+import { Button, ConfirmProvider, locales, useConfirm } from "@cap-rel/smartcommon";
+
+// Once, under <Provider>
+export const AppShell = ({ children }) => (
+  <ConfirmProvider labels={locales.fr.ConfirmProvider}>{children}</ConfirmProvider>
+);
+
+export const DeleteLineButton = ({ line, onDelete }) => {
+  const { confirm } = useConfirm();
+
+  const handleClick = async () => {
+    const ok = await confirm({
+      type: "delete",
+      title: "Supprimer la ligne",
+      message: "Cette ligne sera retirée du devis.",
+      detail: line.label,
+      confirmText: "Supprimer",
+    });
+    if (ok) {
+      onDelete(line.id);
+    }
+  };
+
+  return <Button label="Supprimer" onClick={handleClick} />;
+};
+```
+
+## Points d'attention
+
+- Hors de `<ConfirmProvider>`, le hook lève l'erreur
+  `"useConfirm must be used within a ConfirmProvider"`.
+- Une seule boîte à la fois : un second appel pendant qu'une boîte est ouverte
+  la remplace, et la promesse de la première ne se résout jamais.
+- Un `alert()` ne se ferme que par son bouton (ni Échap ni clic extérieur).
+- Échap annule un `confirm()` sans fermer une `<Modal>` ouverte dessous, et le
+  focus revient à l'élément qui l'avait avant l'ouverture.
+
+Guide complet : `docs/provider.md`.

@@ -1,0 +1,69 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useForm" />
+
+# useForm
+
+L'état d'un formulaire : valeurs, erreurs de validation et étapes de
+l'envoi. L'objet renvoyé se passe à `<Form form={form}>`, qui le partage avec
+les champs (`Input`, `Select`, `Calendar`...) et ajoute la fonction `submit`.
+
+```jsx
+import { Form, useForm } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const form = useForm({ defaultValues, debug });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `defaultValues` | object | `{}` | Valeurs de départ, par `name` de champ. |
+| `debug` | bool | `config.debug` | Lu mais sans effet aujourd'hui : les écritures ne sont pas journalisées. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `values` | object | Valeurs courantes, par `name` de champ. |
+| `errors` | object | Erreurs par champ puis par règle : `{ customer: { required: true } }`. |
+| `isFormSubmitting` | bool | Vrai pendant l'envoi. |
+| `isFormSubmitted` | bool | Vrai dès la première tentative d'envoi, jamais remis à `false`. |
+| `get`, `set`, `unset` | functions | Accès par chemin, comme `useStates` (`set("values.note", "")`). |
+| `setField` | `({ name, value, errors }) => void` | Utilisé par les champs pour écrire leur valeur et leurs erreurs. |
+
+## Exemple
+
+```jsx
+import { Button, Form, Input, useApi, useForm } from "@cap-rel/smartcommon";
+
+export const InterventionForm = () => {
+  const api = useApi();
+  const form = useForm({ defaultValues: { customer: "", note: "" } });
+
+  const onSubmit = async () => {
+    await api.post("intervention", { json: form.values });
+  };
+
+  return (
+    <Form form={form} onSubmit={onSubmit}>
+      <Input name="customer" label="Client" required />
+      <Input name="note" label="Note" />
+      <Button type="submit" label="Valider" loading={form.isFormSubmitting} />
+    </Form>
+  );
+};
+```
+
+## Points d'attention
+
+- Les champs n'affichent leurs erreurs qu'après la première tentative d'envoi
+  (`isFormSubmitted`), pas pendant la saisie initiale.
+- `useForm` ne renvoie pas `submit` : la fonction est ajoutée par `<Form>` à
+  l'objet qu'il partage avec ses descendants.
+- Les chemins de `get` / `set` partent de la racine de l'état : écrire
+  `set("values.customer", ...)`, pas `set("customer", ...)`.
+
+Guide complet : `docs/form.md`.

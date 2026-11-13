@@ -1,0 +1,80 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/usePWAUpdate" />
+
+# usePWAUpdate
+
+Détecte qu'une nouvelle version de la PWA attend dans le service worker, lit
+son numéro et l'applique. C'est le moteur de `<UpdatePrompt>` ; le hook sert
+directement pour une invite sur mesure ou un bouton "Rechercher une mise à
+jour" dans les réglages.
+
+```jsx
+import { usePWAUpdate } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const update = usePWAUpdate(options);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `options.autoReload` | bool | `false` | Recharge la page dès que le nouveau service worker prend la main. |
+| `options.checkInterval` | number | `0` | Intervalle de vérification en ms ; `0` désactive la vérification périodique. |
+| `options.onUpdateAvailable` | function | - | Appelé quand une mise à jour attend. |
+| `options.onUpdateActivated` | function | - | Appelé quand le nouveau service worker a pris la main. |
+| `options.versionUrl` | string ou null | `"version.json"` | Fichier `{ "version": "1.4.0", "notes": "..." }` lu à la détection, relatif à l'URL de base du document ; `null` désactive la lecture. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `updateAvailable` | bool | Une nouvelle version est installée et attend. |
+| `updateActivated` | bool | Le nouveau service worker a pris la main. |
+| `newVersion` | string ou null | Numéro lu dans `versionUrl`, `null` tant qu'il n'est pas lu ou s'il manque. |
+| `releaseNotes` | string ou null | Champ `notes` de `versionUrl`, `null` s'il est absent ou vide. |
+| `isApplying` | bool | `applyUpdate()` est en cours. |
+| `registration` | object ou null | Enregistrement du service worker. |
+| `checkForUpdates` | `() => Promise<boolean>` | Demande au navigateur de vérifier ; `false` sans service worker ou en cas d'échec (journalisé). |
+| `applyUpdate` | `() => void` | Active la version en attente (`SKIP_WAITING`) puis recharge la page. |
+| `reloadPage` | `() => void` | Recharge la page. |
+
+## Exemple
+
+```jsx
+import { Button, usePWAUpdate } from "@cap-rel/smartcommon";
+
+export const UpdateSettingsRow = () => {
+  const { updateAvailable, newVersion, isApplying, checkForUpdates, applyUpdate } = usePWAUpdate();
+
+  if (updateAvailable) {
+    return (
+      <Button
+        label={newVersion ? `Installer la version ${newVersion}` : "Installer la mise à jour"}
+        loading={isApplying}
+        onClick={applyUpdate}
+      />
+    );
+  }
+  return <Button label="Rechercher une mise à jour" onClick={checkForUpdates} />;
+};
+```
+
+## Points d'attention
+
+- Sans service worker (navigateur sans support, page non servie en HTTPS), le
+  hook reste inerte : `updateAvailable` vaut toujours `false`.
+- Au montage, le hook demande une vérification au serveur sans attendre
+  `checkInterval`.
+- `applyUpdate()` envoie le message `{ type: "SKIP_WAITING" }` : le service
+  worker du projet doit l'écouter et appeler `self.skipWaiting()`, sinon la page
+  se recharge sur l'ancienne version.
+- La lecture de `versionUrl` ajoute un paramètre anti-cache : un projet qui met
+  tous les `*.json` en précache reçoit quand même le fichier de la nouvelle
+  version.
+- Les fonctions passées en options doivent être stables (`useCallback`) : une
+  nouvelle fonction à chaque rendu réinstalle les écouteurs.
+
+Guide complet : `docs/provider.md`. Voir aussi `docs/about-modal.md`.

@@ -1,0 +1,74 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useNavigation" />
+
+# useNavigation
+
+Navigation entre les pages de la PWA, au-dessus de react-router. Le hook
+réunit la position courante, les paramètres de la route et un petit
+constructeur chaînable (`replace()`, `state()`, `to()`). Le contexte vient de
+`<NavigationProvider>`, que `<Provider>` monte déjà.
+
+```jsx
+import { useNavigation } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const nav = useNavigation();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `to` | `(path?) => void` | Va vers `path`. Sans argument, navigue vers la route courante (utile après `state()`). |
+| `replace` | `() => builder` | Renvoie un constructeur qui remplace l'entrée d'historique au lieu d'en ajouter une. |
+| `state` | `(state) => builder` | Renvoie un constructeur qui transmet `state` à la page suivante. `state` peut être une fonction qui reçoit l'état courant. |
+| `params` | object | Paramètres de la route active (`useParams()` de react-router). |
+| `location` | object | Position courante ; `location.state` vaut toujours un objet (`{}` à défaut). |
+| `searchParams` | array | Retour de `useSearchParams()` : `[searchParams, setSearchParams]`. |
+| `navigate` | function | Le `navigate` de react-router, pour les cas non couverts. |
+| `history` | any | Valeur `history` de l'état global. La bibliothèque ne l'alimente plus : `undefined` sauf si l'application l'écrit. |
+
+Les constructeurs se chaînent et chaque étape en renvoie un nouveau :
+`nav.replace().state({ from: "list" }).to("/detail")`.
+
+## Exemple
+
+```jsx
+import { useNavigation } from "@cap-rel/smartcommon";
+
+export const InterventionRow = ({ intervention }) => {
+  const nav = useNavigation();
+
+  return (
+    <button onClick={() => nav.state({ from: "list" }).to(`/interventions/${intervention.id}`)}>
+      {intervention.ref}
+    </button>
+  );
+};
+
+export const InterventionPage = () => {
+  const { params, location, replace } = useNavigation();
+  const backToList = () => replace().to("/interventions");
+
+  return <h1 onClick={backToList}>{params.id} ({location.state.from ?? "direct"})</h1>;
+};
+```
+
+## Points d'attention
+
+- `nav.to(path)` reprend par défaut le `state` de la page courante. Pour partir
+  sans état, passer `nav.state({}).to(path)`.
+- `params` n'est rempli que dans un composant rendu par une `<Route>` : le
+  hook lit `useParams()` à l'endroit où il est appelé.
+- `searchParams` est le tableau de react-router, pas un `URLSearchParams` :
+  `const [query] = nav.searchParams;`.
+- `config.navigation.debug` (à défaut `config.debug`) journalise chaque
+  changement de position.
+
+Guide complet : `docs/desktop.md` (navigation sur le poste fixe).

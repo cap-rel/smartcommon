@@ -1,0 +1,72 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useGlobalStates" />
+
+# useGlobalStates
+
+L'état global de l'application, partagé entre toutes les pages, avec une
+persistance au choix : en mémoire, dans `localStorage` ou dans
+`sessionStorage`. La bibliothèque y range elle-même la session SmartAuth
+(`user`) et l'identifiant d'appareil (`deviceId`). Le contexte vient de
+`<GlobalStatesProvider>`, que `<Provider>` monte déjà.
+
+```jsx
+import { useGlobalStates } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const gst = useGlobalStates();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `values` | object | Tout l'état global, à lire pendant le rendu. |
+| `get` | `(path) => any` | Valeur à un chemin. |
+| `set` | `(path, value) => void` | Écrit en mémoire seulement (perdu au rechargement). |
+| `local.set` | `(path, value) => void` | Écrit et garde la valeur dans `localStorage`. |
+| `session.set` | `(path, value) => void` | Écrit et garde la valeur dans `sessionStorage` (perdue à la fermeture de l'onglet). |
+| `unset` | `(path?) => void` | Supprime un chemin, partout. Sans argument, vide tout l'état et les deux stockages. |
+| `getStorage` | `(path) => string` | `"local"`, `"session"`, `"memory"`, ou `undefined` si la valeur n'existe pas. |
+
+Un chemin suit la syntaxe de `useStates` : `"cart.total"`, `"lines[0]"`, et
+`"lines[]"` pour ajouter en fin de tableau.
+
+## Exemple
+
+```jsx
+import { useGlobalStates } from "@cap-rel/smartcommon";
+
+export const WarehousePicker = ({ warehouses }) => {
+  const gst = useGlobalStates();
+  const current = gst.values.warehouseId;
+
+  return (
+    <select value={current ?? ""} onChange={(e) => gst.local.set("warehouseId", Number(e.target.value))}>
+      {warehouses.map((w) => <option key={w.id} value={w.id}>{w.label}</option>)}
+    </select>
+  );
+};
+```
+
+## Points d'attention
+
+- `set`, `local.set` et `session.set` retirent d'abord le chemin des deux
+  stockages : `gst.set("user", ...)` sur l'utilisateur connecté le rend
+  volatile. Pour modifier un utilisateur gardé, réécrire avec le même stockage
+  (`gst.values.user.rememberMe` dit lequel).
+- La persistance se fait par chemin, sous une entrée JSON `global` de chaque
+  stockage. Passer une valeur sérialisable à `local.set` / `session.set`, pas
+  une fonction.
+- `unset("first")` efface aussi les clés gardées qui commencent par `first`
+  (`firstname` compris).
+- Hors de `<Provider>` (ou `<GlobalStatesProvider>`), le hook renvoie `{}`.
+- `config.globalStates.debug` (à défaut `config.debug`) journalise chaque
+  écriture.
+
+Voir aussi `docs/provider.md` (ordre de montage des fournisseurs).

@@ -1,0 +1,74 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useOnlineStatus" />
+
+# useOnlineStatus
+
+Dit si l'appareil a du réseau et si le serveur répond vraiment. Le passage en
+ligne attend un court délai de stabilité, pour ne pas osciller sur un réseau
+mobile instable, et une sonde légère vérifie le serveur à intervalle régulier.
+
+```jsx
+import { useOnlineStatus } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const status = useOnlineStatus({ healthCheckUrl, healthCheckInterval, stabilityDelay, timeout });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `healthCheckUrl` | string ou null | route `health` sous `config.api.prefixUrl` | URL sondée. `null` : pas de sonde, état du réseau seul. |
+| `healthCheckInterval` | number | `30000` | Intervalle des sondes en ms ; `0` sonde une seule fois au montage. |
+| `stabilityDelay` | number | `1000` | Attente en ms avant de déclarer le retour en ligne. |
+| `timeout` | number | `5000` | Délai d'une sonde en ms. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isOnline` | bool | Le navigateur se dit en ligne. |
+| `isOffline` | bool | L'inverse de `isOnline`. |
+| `isServerReachable` | bool ou null | Le serveur a répondu ; `null` sans sonde ou avant la première réponse. |
+| `lastOnline` | number ou null | Horodatage (ms) du dernier passage en ligne. |
+| `lastCheck` | number ou null | Horodatage (ms) de la dernière vérification. |
+| `checkNow` | `() => Promise<boolean>` | Vérifie tout de suite. Résout la joignabilité du serveur avec une sonde, l'état du réseau sinon. |
+
+## Exemple
+
+```jsx
+import { useOnlineStatus } from "@cap-rel/smartcommon";
+
+export const ConnectionBanner = () => {
+  const { isOffline, isServerReachable, checkNow } = useOnlineStatus();
+
+  if (isOffline) {
+    return <p role="status">Hors ligne : vos saisies sont gardées sur l'appareil.</p>;
+  }
+  if (isServerReachable === false) {
+    return (
+      <p role="status">
+        Serveur injoignable. <button onClick={checkNow}>Réessayer</button>
+      </p>
+    );
+  }
+  return null;
+};
+```
+
+## Points d'attention
+
+- Sans `config.api.prefixUrl` et sans `healthCheckUrl`, aucune sonde n'est
+  faite et `isServerReachable` reste `null`.
+- La sonde est une requête `HEAD` sans jeton. Toute réponse sous 500 compte
+  comme joignable (un ancien SmartAuth sans route `health` répond 404 mais il
+  est là) ; une erreur 5xx ou l'absence de réponse non.
+- Toutes les instances partagent une seule sonde par URL : la requête en cours
+  et, pour les sondes périodiques, une réponse de moins d'une demi-période.
+  `checkNow()` et le retour en ligne interrogent toujours le serveur.
+- `resetHealthCheckCache()`, exporté à côté, oublie les réponses partagées (à la
+  déconnexion par exemple).
+
+Guide complet : `docs/offline.md`.

@@ -1,0 +1,71 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useDb" />
+
+# useDb
+
+Ouvre une base IndexedDB (Dexie) déclarée par son schéma, et la garde la même
+d'un rendu à l'autre. Chaque table reçoit des dates `createdAt` / `updatedAt`
+et un journal des créations, modifications et suppressions dans une table
+`logs` ajoutée d'office.
+
+```jsx
+import { useDb } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const db = useDb({ name, version, stores, options, debug });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `name` | string | requis | Nom de la base IndexedDB. |
+| `version` | number | `1` | Version du schéma Dexie. |
+| `stores` | object | `{}` | Schéma Dexie : `{ products: "id, ref, label" }`. |
+| `options` | object | `{}` | Options passées à `new Dexie(name, options)`. |
+| `debug` | bool | - | Journalise chaque création, modification et suppression. |
+
+## Valeur retournée
+
+L'instance Dexie (`db.products`, `db.logs`, `db.transaction(...)`), stable tant
+que `name`, `version`, `stores` et `debug` ne changent pas.
+
+La table `logs` (`id++, store, itemId, action, data, createdAt`) reçoit une
+ligne par écriture : `action` vaut `"create"`, `"update"` ou `"delete"`.
+
+## Exemple
+
+```jsx
+import { useEffect, useState } from "react";
+import { useDb } from "@cap-rel/smartcommon";
+
+const STORES = { products: "id, ref, label", queryCache: "key" };
+
+export const LocalCatalog = () => {
+  const db = useDb({ name: "offlinepropale", version: 1, stores: STORES });
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    db.products.orderBy("label").toArray()
+      .then(setProducts)
+      .catch((error) => console.error("[LocalCatalog] read failed", error));
+  }, [db]);
+
+  return products.map((p) => <p key={p.id}>{p.ref} - {p.label}</p>);
+};
+```
+
+## Points d'attention
+
+- `options` ne compte pas dans la clé de mémorisation : un changement
+  d'`options` seul ne rouvre pas la base.
+- Ce hook ne gère qu'une version de schéma. Pour une migration avec
+  `.upgrade()`, utiliser la classe `Db` de la bibliothèque.
+- `createdAt` et `updatedAt` sont en secondes Unix, posés à la création. Le
+  journal `logs` grossit sans limite : à purger par l'application si besoin.
+- La base est reconstruite quand le contenu de `stores` change (comparaison
+  sur sa forme JSON), pas quand seul l'objet change d'identité.
+
+Voir aussi `docs/product-category-browser.md` (adaptateurs Dexie).

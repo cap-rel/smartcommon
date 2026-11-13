@@ -1,0 +1,86 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useInstallPrompt" />
+
+# useInstallPrompt
+
+Dit si la PWA est installée sur cet appareil et pilote l'invitation à
+l'installer : bouton natif sur Chromium, étapes à suivre ailleurs, rappel
+espacé après un refus. C'est le moteur de `<InstallPrompt>` ; le hook sert
+directement pour une invitation sur mesure.
+
+```jsx
+import { useInstallPrompt } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const install = useInstallPrompt(options);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `options.remindAfterDays` | number | `14` | Jours avant de proposer à nouveau après un refus. |
+| `options.minVisits` | number | `2` | Visites avant la première invitation ; `0` la propose tout de suite. |
+| `options.report` | bool | `true` | Signale le mode d'exécution à SmartAuth (`setDeviceInstallState`), une fois par session et seulement connecté. |
+| `options.onInstalled` | function | - | Appelé quand l'application est installée pendant la session. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isStandalone` | bool | L'application tourne en ce moment depuis l'écran d'accueil. |
+| `isInstalled` | bool | L'application a déjà été vue installée sur ce profil de navigateur. |
+| `canPrompt` | bool | Le navigateur a fourni son invite native (Chromium). |
+| `needsManualInstructions` | bool | Pas d'invite native : il faut montrer les étapes (`!canPrompt`). |
+| `platform` | string | `"ios"`, `"android"`, `"desktop"` ou `"unknown"`. |
+| `installGuide` | string | Étapes à montrer : `"ios"`, `"in-app"`, `"android"`, `"android-firefox"`, `"android-samsung"`, `"desktop-chromium"`, `"macos-safari"`, `"desktop-firefox"` ou `"unknown"`. |
+| `shouldOffer` | bool | Le moment est venu de proposer l'installation. |
+| `promptInstall` | `() => Promise<string>` | Ouvre l'invite native ; résout `"accepted"`, `"dismissed"` ou `"unavailable"`. |
+| `dismiss` | `(options?) => void` | Enregistre un refus ; `{ forever: true }` ne propose plus jamais. |
+| `reset` | `() => void` | Oublie les refus. |
+
+Le module exporte aussi `openInstallPrompt()` (ouvre l'`<InstallPrompt>` monté,
+sans tenir compte des refus) et `isAppKnownInstalled()` (même réponse que
+`isInstalled`, sans monter le hook).
+
+## Exemple
+
+```jsx
+import { Button, useInstallPrompt } from "@cap-rel/smartcommon";
+
+export const InstallBanner = () => {
+  const { shouldOffer, canPrompt, installGuide, promptInstall, dismiss } = useInstallPrompt({ minVisits: 3 });
+
+  if (!shouldOffer) {
+    return null;
+  }
+
+  return (
+    <aside>
+      {canPrompt
+        ? <Button label="Installer l'application" onClick={promptInstall} />
+        : <p>Étapes pour votre navigateur : {installGuide}</p>}
+      <Button label="Plus tard" onClick={() => dismiss()} />
+    </aside>
+  );
+};
+```
+
+## Points d'attention
+
+- `isInstalled` ne redevient jamais `false` : c'est "vue installée au moins une
+  fois", gardé dans `localStorage` (`smartcommon.install.state`). Effacer les
+  données du site remet l'application à "non installée". Aucune requête HTTP ne
+  dit si l'application est installée.
+- Trois refus valent un refus définitif.
+- Chaque montage du hook compte une visite : en monter un seul, ou passer par
+  `<InstallPrompt>`. Pour masquer une entrée de menu, utiliser
+  `isAppKnownInstalled()` plutôt qu'un second hook.
+- Les valeurs lues dans le stockage le sont une fois au montage : l'invitation
+  n'apparaît pas en cours de session parce qu'un délai a expiré.
+- `promptInstall()` doit partir d'un geste de l'utilisateur. Sans invite native
+  disponible, il renvoie `"unavailable"`.
+
+Voir aussi `docs/provider.md` (composant `<InstallPrompt>`).

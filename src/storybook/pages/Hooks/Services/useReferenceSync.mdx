@@ -1,0 +1,108 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Services/useReferenceSync" />
+
+# useReferenceSync
+
+Rapatrie un référentiel Dolibarr (produits, catégories, tiers, contacts, leurs
+images et PDF, des dictionnaires) dans les tables Dexie du module, pour le
+consulter hors ligne. La synchronisation est décrite par configuration et ne va
+que dans un sens : du serveur vers l'appareil. Les envois propres au métier
+restent dans le module.
+
+```jsx
+import { useReferenceSync } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const ref = useReferenceSync(options);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `db` | Dexie | - | Base du module, qui contient toutes les tables citées. |
+| `appVersion` | string | `"1.0.0"` | Version envoyée à `sync/register`. |
+| `entities` | array | `[]` | `{ objectType, store, mapper?, cleanOrphans? }` : un type d'objet tiré page par page dans une table. |
+| `documents` | array | `[]` | `{ objectType, store, fk, doctypes, enabled? }` : fichiers liés, téléchargés en lot. |
+| `dataFeeds` | array | `[]` | `{ key, endpoint, store, mapper?, extract?, clearBefore? }` : route simple (dictionnaire, réglages). |
+| `metaStore` | string | `"syncMeta"` | Table clé/valeur (`{ key, value }`) pour l'identifiant du client et les dates. |
+| `getSyncPreferences` | `async () => object` | `null` | Préférences passées à `enabled` et `doctypes` quand ce sont des fonctions. |
+| `onProgress` | `(progress) => void` | `null` | Reçoit chaque `syncProgress`. |
+
+Dans `documents`, `doctypes` vaut un tableau (`["image", "pdf"]`) ou une
+fonction `(prefs) => string[]`, et `enabled` un booléen ou une fonction
+`(prefs) => bool`. `cleanOrphans: true` tire tout le type à chaque fois et
+supprime les entrées locales absentes du serveur (petits jeux de données comme
+les catégories).
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isSyncing` | bool | Synchronisation en cours. |
+| `syncProgress` | object ou null | `{ step, current, total }` ; `step` vaut la table en cours. |
+| `lastSyncAt` | Date ou null | Fin de la dernière synchronisation réussie. |
+| `error` | Error ou null | Dernière erreur. |
+| `isInitialized` | bool | `db` est fourni. |
+| `hasApi` | bool | Le client authentifié de `useApi` est disponible. |
+| `syncNow` | `() => Promise<object>` | Lance une synchronisation complète. |
+| `resetSync` | `() => Promise<object>` | Vide toutes les tables configurées et `metaStore`, puis resynchronise. |
+
+`syncNow()` résout `{ [store]: { success, count, ... }, syncedAt }`, ou `null`
+si une synchronisation tourne déjà.
+
+## Exemple
+
+```jsx
+import { useReferenceSync } from "@cap-rel/smartcommon";
+
+import { db } from "../db";
+import { mapCategory, mapProduct } from "../mappers";
+
+const ENTITIES = [
+  { objectType: "product", store: "products", mapper: mapProduct },
+  { objectType: "category", store: "categories", mapper: mapCategory, cleanOrphans: true },
+];
+const DOCUMENTS = [
+  { objectType: "product", store: "productDocuments", fk: "product_id", doctypes: ["image"] },
+];
+
+export const CatalogSyncButton = ({ appVersion }) => {
+  const { isSyncing, syncProgress, lastSyncAt, error, syncNow } = useReferenceSync({
+    db,
+    appVersion,
+    entities: ENTITIES,
+    documents: DOCUMENTS,
+  });
+
+  const run = () => syncNow().catch((err) => console.error("[CatalogSyncButton] sync failed", err));
+
+  return (
+    <>
+      <button onClick={run} disabled={isSyncing}>Mettre à jour le catalogue</button>
+      {syncProgress && <p>{syncProgress.step} : {syncProgress.current}/{syncProgress.total}</p>}
+      {lastSyncAt && <p>Dernière mise à jour : {lastSyncAt.toLocaleString("fr-FR")}</p>}
+      {error && <p role="alert">{error.message}</p>}
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Ordre fixe : enregistrement du client, puis `entities`, puis `documents`,
+  puis `dataFeeds`. L'erreur d'une étape est notée dans le résultat et la suite
+  continue, sauf un 403 (`ForbiddenSyncError`, arrêt immédiat pour ne pas se
+  faire bloquer par le pare-feu) et une annulation.
+- `syncNow()` lève `"Sync not ready"` sans `db` ni client API, et
+  `"Cannot sync while offline"` hors ligne.
+- Chaque type d'objet garde sa propre date de reprise, avancée seulement
+  quand toutes ses pages sont écrites : une coupure en cours de route reprend au
+  point précédent.
+- `resetSync()` interrompt une synchronisation en cours avant de vider les
+  tables.
+- Les requêtes passent par `useApi().private` : à monter sous `<Provider>`.
+
+Guide complet : `docs/offline.md`.

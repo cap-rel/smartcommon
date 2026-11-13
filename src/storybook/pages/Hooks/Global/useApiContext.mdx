@@ -1,0 +1,60 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useApiContext" />
+
+# useApiContext
+
+La fabrique qui construit l'objet renvoyé par `useApi()`. `<ApiProvider>`
+l'appelle une fois et place le résultat dans `ApiContext`. Elle est exportée
+pour monter un fournisseur sur mesure ; une page ou un composant lit le client
+avec `useApi()`, jamais avec ce hook.
+
+```jsx
+import { useApiContext } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const api = useApiContext();
+```
+
+Aucun paramètre. Le hook lit `config.api` par `useLibConfig()` (`prefixUrl`,
+`timeout`, `debug`, `onApiError`, `onLoginPersist`, `onSessionExpired`) et la
+session par `useGlobalStates()` (`user`, `deviceId`).
+
+## Valeur retournée
+
+Le même objet que `useApi()` : `user`, `get`, `post`, `put`, `patch`, `del`,
+`public`, `private`, `login`, `logout`, `entities`, `getEntities`, `device`,
+`identifyDevice`, `claimQrPair`, `pollQrPair`, `listUserDevices`,
+`createUserDevice`, `linkUserDevice`, `renameUserDevice`, `deleteUserDevice`,
+`setDeviceViewportMode`, `setDeviceInstallState`, `resetCircuit`. Le détail est
+sur la page `useApi`.
+
+## Exemple
+
+Ce que fait `<ApiProvider>`, à reproduire seulement pour un fournisseur maison :
+
+```jsx
+import { ApiContext, useApiContext } from "@cap-rel/smartcommon";
+
+export const MyApiProvider = ({ children }) => {
+  const api = useApiContext();
+
+  return <ApiContext.Provider value={api}>{children}</ApiContext.Provider>;
+};
+```
+
+## Points d'attention
+
+- Chaque appel crée un client indépendant : son propre disjoncteur, son propre
+  verrou de rafraîchissement du jeton, son propre suivi de session perdue. Deux
+  clients en parallèle peuvent rejouer le même jeton de rafraîchissement, que
+  SmartAuth traite comme une attaque (toute la famille de jetons est révoquée).
+- Doit être monté sous `<LibConfigProvider>` et `<GlobalStatesProvider>`, ce
+  que `<Provider>` fait déjà.
+- Au premier rendu, un identifiant d'appareil absent ou invalide est remplacé
+  par un UUID neuf, enregistré dans `localStorage` (`deviceId`).
+
+Voir aussi `docs/provider.md` (ordre de montage des fournisseurs).

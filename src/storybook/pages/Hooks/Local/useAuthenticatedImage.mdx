@@ -1,0 +1,72 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useAuthenticatedImage" />
+
+# useAuthenticatedImage
+
+Affiche une image servie par une route protégée par jeton, qu'une balise
+`img` ne peut pas charger seule. Le hook télécharge l'image avec l'en-tête
+`Authorization`, la garde dans IndexedDB et rend une URL locale utilisable dans
+`src`, y compris hors ligne.
+
+```jsx
+import { useAuthenticatedImage } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const image = useAuthenticatedImage({ db, store, url, token, ttl, staleTime, placeholder });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `db` | Dexie | - | Base qui contient la table de cache (`useDb()` ou `Db.instance`). Sans base, pas de cache. |
+| `store` | string | `"imageCache"` | Table de cache, de schéma `"key"`. |
+| `url` | string | - | URL complète de l'image. |
+| `token` | string | - | Jeton envoyé en `Authorization: Bearer ...`. |
+| `ttl` | number | `86400000` (24 h) | Âge en ms au-delà duquel la copie est supprimée. |
+| `staleTime` | number | `3600000` (1 h) | Âge en ms au-delà duquel la copie est rechargée en arrière-plan. |
+| `placeholder` | string ou null | `null` | Image affichée pendant le chargement, sans `url` ou en cas d'échec. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `src` | string ou null | URL à poser sur `img` : URL locale de l'image, sinon `placeholder`. |
+| `isLoading` | bool | Chargement en cours. |
+| `isFromCache` | bool | L'image vient de la copie locale. |
+| `error` | Error ou null | Échec (`"HTTP 404"`, `"Offline and no cached image"`...). |
+
+## Exemple
+
+```jsx
+import { useApi, useAuthenticatedImage, useDb } from "@cap-rel/smartcommon";
+
+const STORES = { imageCache: "key" };
+
+export const ThirdpartyLogo = ({ thirdpartyId }) => {
+  const { user } = useApi();
+  const db = useDb({ name: "myapp", stores: STORES });
+
+  const { src, isLoading } = useAuthenticatedImage({
+    db,
+    url: `/custom/mymodule/pwa/api.php/thirdparties/${thirdpartyId}/logo`,
+    token: user?.accessToken,
+    placeholder: "/img/logo-placeholder.svg",
+  });
+
+  return <img src={src ?? undefined} alt="" aria-busy={isLoading} />;
+};
+```
+
+## Points d'attention
+
+- La requête part par `fetch` direct, pas par `useApi` : `url` est complète (pas
+  de `prefixUrl`), et un jeton expiré n'est pas rafraîchi. Passer
+  `user.accessToken` pour suivre ses renouvellements.
+- La clé de cache est un condensé de `url` : deux URL différentes pour la même
+  image font deux copies.
+- Les URL locales créées sont libérées au démontage ou au changement d'image.
+
+Guide complet : `docs/offline.md`.

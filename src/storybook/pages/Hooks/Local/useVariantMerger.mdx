@@ -1,0 +1,84 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useVariantMerger" />
+
+# useVariantMerger
+
+Le hook sur lequel sont bâtis les composants de la bibliothèque. Il fusionne,
+dans cet ordre, le thème de l'application (`config.components`), les variantes
+demandées par la prop `variant` et les props passées au composant, puis
+distribue le résultat aux éléments du rendu. Il sert à écrire un composant qui
+suit les mêmes règles de thème que ceux de smartcommon.
+
+```jsx
+import { useVariantMerger } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger(componentKey, props);
+```
+
+| Paramètre | Type | Rôle |
+|---|---|---|
+| `componentKey` | string | Nom du composant, celui des clés de `config.components.themes` et `variants`. |
+| `props` | object | Props reçues par le composant ; `props.variant` vaut un nom, un objet ou un tableau des deux. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `variantProps` | object | Props finales après fusion du thème, des variantes et des props. |
+| `mergeProps` | `(key, propsFunction, options?) => object` | Props à étaler sur un élément (`"container"`) ou un sous-composant (`"Spinner"`). |
+| `mergeQuickProps` | `(props, keys) => object` | Reprend des props simples (`["disabled", ["size", "md"]]`), avec une valeur par défaut facultative. |
+| `setParams` | `(params) => void` | Paramètres passés aux `className` et `style` écrits comme fonctions dans un thème. |
+
+`mergeProps(key, propsFunction, { forwardAttributes })` :
+
+- pour un élément, lit la prop `<key>Props` (`containerProps`), la passe à
+  `propsFunction`, puis fusionne les `className` avec `twMerge`, les `style`
+  et les `ref` ;
+- pour un sous-composant (clé en majuscule), lit la prop `<Key>` du même nom ;
+- `forwardAttributes: true` reporte sur cet élément les attributs `data-*` et
+  `aria-*` posés sur le composant lui-même. Un seul élément par composant.
+
+## Exemple
+
+```jsx
+import { useVariantMerger } from "@cap-rel/smartcommon";
+
+export const InfoCard = (props) => {
+  const { variantProps, mergeProps } = useVariantMerger("InfoCard", props);
+  const { title, children } = variantProps;
+
+  return (
+    <div {...mergeProps("container", (p) => ({
+      ...p,
+      "data-component": "InfoCard",
+      className: `rounded-lg border border-border p-4 ${p.className || ""}`,
+    }), { forwardAttributes: true })}>
+      <h3 {...mergeProps("title", (p) => ({ ...p, className: `font-semibold ${p.className || ""}` }))}>
+        {title}
+      </h3>
+      {children}
+    </div>
+  );
+};
+
+// Usage: <InfoCard title="Stock" containerProps={{ className: "p-6" }} data-testid="stock-card" />
+```
+
+## Points d'attention
+
+- Les clés en majuscule désignent un sous-composant, celles qui finissent par
+  `Props` un élément : respecter cette convention dans les variantes.
+- Les `labels` d'un thème et ceux passés en prop sont fusionnés clé par clé :
+  surcharger un texte garde la traduction du thème pour les autres.
+- Le composant `Button` a des variantes prédéfinies (`primary`, `secondary`,
+  `outline`, `ghost`, `danger`, `rounded`, `outlined`, `reverse`, `uppercase`,
+  `floatingRight`) ; `config.components.variants` les remplace ou en ajoute.
+- Un composant qui ne passe pas par ce hook lit ses textes de thème avec
+  `useComponentLabels`.
+
+Voir aussi `docs/provider.md` (thème et variantes par composant).

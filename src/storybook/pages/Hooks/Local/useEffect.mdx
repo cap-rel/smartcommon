@@ -1,0 +1,63 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useEffect" />
+
+# useEffect
+
+Un `useEffect` de React décrit par un objet, avec un nom qui apparaît dans le
+journal de débogage. Il porte le même nom que le hook de React mais ne
+s'utilise pas pareil : il prend un objet, pas une fonction suivie d'un tableau.
+
+```jsx
+import { useEffect } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+useEffect({ on, deps, fn, debug });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `on` | string | - | Nom de l'effet dans le journal (`onLoad` pour `"load"`). |
+| `deps` | array | `[]` | Dépendances, comme le second argument de React. |
+| `fn` | function | `() => {}` | Corps de l'effet. |
+| `debug` | bool | `config.debug` | Journalise chaque exécution avec son numéro. |
+
+## Valeur retournée
+
+Rien (`undefined`).
+
+## Exemple
+
+```jsx
+import { useState } from "react";
+import { useApi, useEffect } from "@cap-rel/smartcommon";
+
+export const ProductDetail = ({ productId }) => {
+  const api = useApi();
+  const [product, setProduct] = useState(null);
+
+  useEffect({
+    on: "productChange",
+    deps: [api, productId],
+    fn: () => {
+      api.get(`products/${productId}`)
+        .then(setProduct)
+        .catch((error) => console.error("[ProductDetail] load failed", error.message));
+    },
+  });
+
+  return <h1>{product?.label}</h1>;
+};
+```
+
+## Points d'attention
+
+- La valeur renvoyée par `fn` est ignorée : pas de fonction de nettoyage.
+  Pour un abonnement ou un minuteur à défaire, garder le `useEffect` de React.
+- `deps` doit être un tableau et `fn` une fonction : sinon le hook lève une
+  erreur au rendu (`"deps must be array."`).
+- Importer ce hook et celui de React dans le même fichier oblige à renommer
+  l'un des deux (`import { useEffect as useReactEffect } from "react"`).

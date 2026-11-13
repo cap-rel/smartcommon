@@ -1,0 +1,63 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Services/useFeedback" />
+
+# useFeedback
+
+Ouvre la fenêtre "Signaler un problème" depuis un menu existant, sans le
+bouton flottant de `<FeedbackButton>`. Le hook rend la fenêtre toute prête
+(`modal`) et les fonctions pour l'ouvrir et la fermer.
+
+```jsx
+import { useFeedback } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { isOpen, open, close, modal } = useFeedback({ relayPath, appVersion, labels, photoEditorLabels });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `relayPath` | string | requis | Route qui relaie le signalement, par exemple `"feedback/report"`. |
+| `appVersion` | string | - | Version de la PWA, jointe au signalement. |
+| `labels` | object | textes anglais | Textes de la fenêtre (`locales.fr.Feedback`), posés sur ceux du thème. |
+| `photoEditorLabels` | object | textes anglais | Textes de l'éditeur qui masque les zones sensibles d'une capture. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isOpen` | bool | La fenêtre est ouverte. |
+| `open` | `() => void` | Ouvre la fenêtre. |
+| `close` | `() => void` | Ferme la fenêtre. |
+| `modal` | element | La fenêtre, à rendre une fois dans l'arbre. |
+
+## Exemple
+
+```jsx
+import { locales, useFeedback } from "@cap-rel/smartcommon";
+
+export const HelpMenu = ({ appVersion }) => {
+  const { open, modal } = useFeedback({
+    relayPath: "feedback/report",
+    appVersion,
+    labels: locales.fr.Feedback,
+  });
+
+  return (
+    <>
+      <button onClick={open}>Signaler un problème</button>
+      {modal}
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- `modal` doit être rendu, même fermé : sans lui, `open()` ne montre rien.
+- À la fermeture, le focus revient à l'élément qui avait ouvert la fenêtre.
+- Passer des objets `labels` stables (constantes, `locales`) : un nouvel objet
+  à chaque rendu reconstruit la fenêtre.

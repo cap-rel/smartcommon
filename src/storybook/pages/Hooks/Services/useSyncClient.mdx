@@ -1,0 +1,110 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Services/useSyncClient" />
+
+# useSyncClient
+
+Synchronisation dans les deux sens avec Dolibarr, à travers les routes
+`sync/*` de SmartAuth. Les créations, modifications et suppressions faites hors
+ligne sont gardées dans une base IndexedDB propre au hook, puis envoyées au
+retour du réseau ; les changements du serveur sont rapatriés ; les conflits
+sont signalés. Pour un référentiel en lecture seule, `useReferenceSync` suffit.
+
+```jsx
+import { useSyncClient } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const sync = useSyncClient(options);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `scope` | string[] | - | Types d'objets synchronisés (`"thirdparty"`, `"contact"`...), parents d'abord. |
+| `appVersion` | string | `null` | Version envoyée à `sync/register`. |
+| `healthCheckUrl` | string ou null | route `health` sous `prefixUrl` | Sonde de `useOnlineStatus` ; `null` : état du réseau seul. |
+| `autoSync` | bool | `true` | Synchronise au retour en ligne s'il reste des changements. |
+| `syncInterval` | number ou null | `null` | Synchronisation périodique en ms. |
+| `onConflict` | `(conflicts) => void` | `null` | Appelé quand un envoi rencontre des conflits. |
+| `onSyncStart` | `() => void` | `null` | Appelé au début de `sync()`. |
+| `onSyncComplete` | `(result) => void` | `null` | Appelé à la fin d'un `sync()` réussi. |
+| `onSyncError` | `(error) => void` | `null` | Appelé quand `sync()` échoue. |
+| `dbName` | string | `"smartauth_sync"` | Nom de la base IndexedDB. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isOnline`, `isServerReachable`, `checkNow` | | Repris de `useOnlineStatus`. |
+| `isInitialized` | bool | La base locale est ouverte. |
+| `isRegistered` | bool | Le client est enregistré auprès du serveur. |
+| `isSyncing` | bool | Un `sync()` est en cours. |
+| `lastSyncTime` | any | Date de la dernière synchronisation, telle que stockée. |
+| `pendingCount` | number | Changements locaux en attente d'envoi. |
+| `conflictsCount` | number | Conflits non résolus. |
+| `syncError` | Error ou null | Dernière erreur d'initialisation ou de `sync()`. |
+| `register` | `() => Promise` | Enregistre le client à l'avance (facultatif). |
+| `sync` | `() => Promise<object ou null>` | Envoi puis réception. `null` si une synchronisation tourne déjà. |
+| `push`, `pull` | `() => Promise<object>` | Envoi seul, réception seule. |
+| `create` | `(table, data) => Promise<tempId>` | Crée localement ; renvoie un identifiant temporaire. |
+| `update` | `(table, id, data) => Promise<void>` | Modifie localement une entité déjà présente. |
+| `remove` | `(table, id) => Promise<void>` | Supprime localement. |
+| `upsert` | `(table, id, data, queueChange?) => Promise<void>` | Crée ou met à jour ; `queueChange` (défaut `false`) met le changement en file d'envoi. |
+| `getEntity` | `(table, id) => Promise<object ou null>` | Lit une entité locale. |
+| `queryEntities` | `(table, filter?) => Promise<object[]>` | Lit une table, avec une fonction de filtre facultative. |
+| `getConflicts` | `() => Promise<array>` | Liste des conflits. |
+| `resolveConflict` | `(conflictId, resolution, data?) => Promise` | `resolution` : `"client"`, `"server"` ou `"merged"` (avec `data`). |
+| `getStatus` | `() => Promise<object ou null>` | État local. |
+| `getServerStatus` | `() => Promise<object>` | `GET sync/status`. |
+| `reset` | `() => Promise<void>` | Efface toutes les données de synchronisation. |
+
+Résultat de `sync()` :
+`{ pushed: { success, conflicts, errors, id_mappings }, pulled: { updated, deleted, errors }, conflicts, errors }`.
+
+## Exemple
+
+```jsx
+import { useSyncClient } from "@cap-rel/smartcommon";
+
+export const ContactsScreen = ({ appVersion }) => {
+  const { isOnline, isSyncing, pendingCount, sync, create } = useSyncClient({
+    scope: ["thirdparty", "contact"],
+    appVersion,
+    onSyncError: (error) => console.error("[ContactsScreen] sync failed", error),
+  });
+
+  const addCompanyWithContact = async () => {
+    const socid = await create("thirdparty", { name: "Nouvelle entreprise" });
+    // A child may reference its parent by the temporary id.
+    await create("contact", { lastname: "Martin", socid });
+  };
+
+  return (
+    <>
+      <p>{isOnline ? "En ligne" : "Hors ligne"} - {pendingCount} modification(s) en attente</p>
+      <button onClick={addCompanyWithContact}>Ajouter</button>
+      <button onClick={() => sync().catch(() => {})} disabled={isSyncing || !isOnline}>Synchroniser</button>
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Les requêtes passent par `useApi().private` : à monter sous `<Provider>`,
+  avec un utilisateur qui a identifié son appareil (`sync/register` lit
+  l'appareil dans le jeton). Les anciennes options `apiUrl` et `getAccessToken`
+  sont ignorées, avec un avertissement.
+- Les actions lèvent `"SyncClient not initialized"` tant que la base locale
+  n'est pas ouverte : attendre `isInitialized`.
+- `update()` exige que l'entité existe déjà localement ; pour un cache dont
+  l'entité peut manquer, utiliser `upsert()`.
+- `sync()` relance l'erreur après avoir appelé `onSyncError` : l'attraper.
+- Un 403 arrête la synchronisation (`ForbiddenSyncError`), pour ne pas se faire
+  bloquer par le pare-feu.
+- Pour présenter les conflits à l'utilisateur, voir le composant
+  `<ConflictResolver>`.
+
+Guide complet : `docs/offline.md`.

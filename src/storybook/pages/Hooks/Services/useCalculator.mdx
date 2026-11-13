@@ -1,0 +1,67 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Services/useCalculator" />
+
+# useCalculator
+
+Pilote la calculatrice partagée montée par `<CalculatorProvider>` : un seul
+exemplaire en haut de l'application, que n'importe quel écran ouvre pour
+récupérer un résultat (un prix, une quantité) sans remonter le composant.
+
+```jsx
+import { CalculatorProvider, useCalculator } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { isOpen, open, close, toggle } = useCalculator();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isOpen` | bool | La calculatrice est ouverte. |
+| `open` | `(onResult?) => void` | Ouvre la calculatrice. `onResult(result)` reçoit chaque résultat obtenu par `=`. |
+| `close` | `() => void` | Ferme la calculatrice et oublie `onResult`. |
+| `toggle` | `() => void` | Ouvre ou ferme. |
+
+## Exemple
+
+```jsx
+import { useState } from "react";
+import { CalculatorProvider, useCalculator } from "@cap-rel/smartcommon";
+
+// Once, high in the tree: props are those of <Calculator>.
+export const AppShell = ({ children }) => (
+  <CalculatorProvider position="center" closeOnResult showFab={false}>
+    {children}
+  </CalculatorProvider>
+);
+
+export const PriceField = () => {
+  const calculator = useCalculator();
+  const [price, setPrice] = useState(0);
+
+  return (
+    <button onClick={() => calculator.open((result) => setPrice(result))}>
+      Prix : {price}
+    </button>
+  );
+};
+```
+
+## Points d'attention
+
+- Hors de `<CalculatorProvider>`, le hook lève
+  `"useCalculator must be used within a CalculatorProvider"`.
+- `<CalculatorProvider>` transmet ses props à `<Calculator>` (`position`,
+  `closeOnResult`, `showFab`, `labels`...) : pour un bouton d'ouverture propre à
+  l'écran, passer `showFab={false}`.
+- `open()` sans argument garde le dernier `onResult` reçu ; seul `close()`
+  l'oublie.
+
+Guide complet : `docs/calculator.md`.

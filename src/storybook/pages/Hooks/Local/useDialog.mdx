@@ -1,0 +1,78 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useDialog" />
+
+# useDialog
+
+Le comportement clavier d'une boîte de dialogue modale, partagé par `Modal`,
+`Popup` et `Panel` : focus placé dans la boîte puis rendu à la fermeture, Tab
+qui tourne à l'intérieur, Échap qui ferme. Le hook sert à écrire une boîte
+maison qui se comporte comme celles de la bibliothèque.
+
+```jsx
+import { useDialog } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose, closeOnEscape });
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `isOpen` | bool | - | La boîte est ouverte. |
+| `onClose` | function | - | Appelé par Échap. |
+| `closeOnEscape` | bool | `true` | `false` laisse Échap sans effet. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `dialogRef` | ref | À poser sur l'élément `role="dialog"`. |
+| `onKeyDown` | function | À poser sur ce même élément : garde Tab à l'intérieur. |
+| `titleId` | string | `id` du titre, à référencer par `aria-labelledby`. |
+
+## Exemple
+
+```jsx
+import { useDialog } from "@cap-rel/smartcommon";
+
+export const SignatureDialog = ({ isOpen, onClose, children }) => {
+  const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose });
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div
+      ref={dialogRef}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby={titleId}
+      tabIndex={-1}
+      onKeyDown={onKeyDown}
+      className="fixed inset-0 m-auto h-fit max-w-md rounded-lg bg-soft-bg p-4"
+    >
+      <h2 id={titleId}>Signature du client</h2>
+      {children}
+      <button onClick={onClose}>Fermer</button>
+    </div>
+  );
+};
+```
+
+## Points d'attention
+
+- Seule la dernière boîte ouverte réagit à Échap et à Tab : fermer une
+  `Popup` ne ferme pas la `Modal` qui est dessous.
+- Un Échap déjà traité (`defaultPrevented`, par exemple par `<ConfirmProvider>`)
+  est ignoré.
+- Le focus va sur l'élément de la boîte, sauf si un élément intérieur l'a déjà
+  (champ `autoFocus`). Mettre `tabIndex={-1}` sur la boîte pour qu'elle puisse
+  le recevoir.
+- Le hook ne gère ni le fond, ni le défilement de la page, ni le rendu : à la
+  charge du composant.
+
+Guide complet : `docs/modal.md`.

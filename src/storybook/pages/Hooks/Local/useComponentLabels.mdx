@@ -1,0 +1,66 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useComponentLabels" />
+
+# useComponentLabels
+
+Les textes d'un composant qui ne passe pas par `useVariantMerger` (fournisseurs,
+invites, boîtes de dialogue). Une application peut donner les textes de tous
+les composants une seule fois dans le thème du `<Provider>` ; ce hook les lit
+et pose par-dessus ceux passés en prop `labels`, clé par clé.
+
+```jsx
+import { useComponentLabels } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const labels = useComponentLabels(componentKey, labels);
+```
+
+| Paramètre | Type | Rôle |
+|---|---|---|
+| `componentKey` | string | Nom du composant, le même que dans les bundles `locales`. |
+| `labels` | object | Textes reçus en prop, facultatifs. |
+
+## Valeur retournée
+
+Un objet : les `labels` du thème courant (`config.components.themes[theme][componentKey]`,
+y compris ceux des variantes nommées qu'il cite), recouverts par la prop
+`labels`. Les textes par défaut du composant n'y sont pas : le composant les
+fusionne lui-même en dessous.
+
+## Exemple
+
+```jsx
+import { useComponentLabels } from "@cap-rel/smartcommon";
+
+const DEFAULT_LABELS = { title: "Offline", retry: "Retry" };
+
+export const OfflineNotice = ({ labels, onRetry }) => {
+  const resolved = { ...DEFAULT_LABELS, ...useComponentLabels("OfflineNotice", labels) };
+
+  return (
+    <div role="status">
+      <p>{resolved.title}</p>
+      <button onClick={onRetry}>{resolved.retry}</button>
+    </div>
+  );
+};
+
+// In the Provider config, once for the whole app:
+// components: {
+//   theme: "fr",
+//   themes: { fr: { OfflineNotice: { labels: { title: "Hors ligne", retry: "Réessayer" } } } },
+// }
+```
+
+## Points d'attention
+
+- Surcharger un seul texte par la prop garde la traduction du thème pour les
+  autres.
+- Une prop `labels` qui n'est pas un objet simple est ignorée.
+- Les textes par défaut sont en anglais, comme dans toute la bibliothèque.
+
+Guide complet : `docs/provider.md`.

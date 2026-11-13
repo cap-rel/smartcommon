@@ -1,0 +1,76 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useViewport" />
+
+# useViewport
+
+Dit sur quel type d'écran tourne la PWA (téléphone, tablette, poste fixe) et
+permet à l'utilisateur d'imposer son choix. Le type est fixé une fois au
+démarrage, pour toute la session : une page choisit sa mise en page sans
+basculer quand la fenêtre change de taille. Le contexte vient de
+`<ViewportProvider>`, que `<Provider>` ne monte pas.
+
+```jsx
+import { useViewport } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { viewport, isMobile, isTablet, isDesktop, preference, setPreference } = useViewport();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `viewport` | string | `"mobile"`, `"tablet"` ou `"desktop"`, calculé au montage du fournisseur. |
+| `isMobile`, `isTablet`, `isDesktop` | bool | Raccourcis exclusifs sur `viewport`. |
+| `preference` | string | Choix enregistré : `"auto"`, `"mobile"`, `"tablet"` ou `"desktop"`. |
+| `setPreference` | `(next, options?) => Promise` | Enregistre un nouveau choix puis recharge la page. |
+
+`setPreference(next, { silent })` demande une confirmation avant de recharger,
+sauf avec `silent: true`. Une valeur hors des quatre admises lève une erreur ;
+la même valeur que l'actuelle ne fait rien.
+
+## Exemple
+
+```jsx
+import { ViewportProvider, useViewport } from "@cap-rel/smartcommon";
+
+// Once, under <Provider>
+export const AppShell = ({ children }) => <ViewportProvider>{children}</ViewportProvider>;
+
+export const InterventionsPage = () => {
+  const { isDesktop } = useViewport();
+
+  return isDesktop ? <InterventionsTable /> : <InterventionsCards />;
+};
+
+export const DisplaySetting = () => {
+  const { preference, setPreference } = useViewport();
+
+  return (
+    <select value={preference} onChange={(e) => setPreference(e.target.value)}>
+      <option value="auto">Automatique</option>
+      <option value="mobile">Téléphone</option>
+      <option value="tablet">Tablette</option>
+      <option value="desktop">Poste fixe</option>
+    </select>
+  );
+};
+```
+
+## Points d'attention
+
+- Hors de `<ViewportProvider>`, le hook lève une erreur qui demande de
+  l'ajouter autour de `<App />`.
+- En mode `"auto"`, un pointeur fin (souris, pavé tactile) donne `"desktop"` ;
+  sinon le petit côté de l'écran sépare téléphone et tablette.
+- Le choix est gardé dans `localStorage` (`smartcommon.viewport.preference`) et
+  ne s'applique qu'après rechargement : c'est voulu, une page ne change pas de
+  mise en page en cours de session.
+
+Guide complet : `docs/viewport.md`. Voir aussi `docs/desktop.md`.

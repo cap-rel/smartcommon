@@ -1,0 +1,97 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useUploadQueue" />
+
+# useUploadQueue
+
+File d'attente d'envois hors ligne. Chaque fichier est d'abord écrit dans
+IndexedDB, puis envoyé en arrière-plan sur la route d'upload, avec de nouveaux
+essais espacés et une relance au retour du réseau. Une photo prise sans réseau
+n'est donc jamais perdue. La file est unique pour toute la PWA, quel que soit
+le nombre de composants qui montent le hook.
+
+```jsx
+import { useUploadQueue } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const queue = useUploadQueue(options);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `options.endpoint` | string | `"upload"` | Route appelée par `useApi().post()`. |
+| `options.maxRetries` | number | `10` | Nombre maximal d'essais automatiques. |
+| `options.backoffBaseMs` | number | `1000` | Base de l'attente entre deux essais : 1 s, 2 s, 4 s... |
+| `options.backoffCapMs` | number | `60000` | Attente maximale entre deux essais. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `enqueue` | `(blob, meta?, options?) => Promise<{ pending_id }>` | Met un `Blob` ou un `File` en file, après l'écriture IndexedDB. `options.pendingId` impose l'identifiant. |
+| `pending` | array | Envois en cours ou en échec (sans le fichier lui-même). |
+| `retry` | `(pendingId) => Promise<void>` | Remet un envoi à zéro et le relance. |
+| `cancel` | `(pendingId) => Promise<void>` | Retire un envoi de la file. |
+| `flush` | `() => Promise<void>` | Relance tous les envois en attente (`status: "idle"`). |
+| `onResolved` | `(callback) => unsubscribe` | Appelle `callback({ pending_id, upload_id, meta })` quand le serveur accepte un envoi. |
+
+Une ligne de `pending` porte `pending_id`, `filename`, `mime`, `size`,
+`status` (`"idle"`, `"uploading"`, `"failed"`, `"resolved"`), `attempts`,
+`lastError`, `lastErrorType` (`"network"`, `"http_4xx"`, `"http_5xx"`,
+`"max_retries"`), `upload_id`, `meta`, `createdAt` et `updatedAt` (secondes
+Unix).
+
+## Exemple
+
+```jsx
+import { useEffect, useState } from "react";
+import { useApi, useUploadQueue } from "@cap-rel/smartcommon";
+
+export const InterventionPhotos = ({ interventionId }) => {
+  const api = useApi();
+  const { enqueue, pending, onResolved } = useUploadQueue();
+  const [uploadIds, setUploadIds] = useState([]);
+
+  // Swap the pending id for the server id once the photo is accepted.
+  useEffect(() => onResolved(({ upload_id, meta }) => {
+    if (meta.interventionId === interventionId) {
+      setUploadIds((ids) => [...ids, upload_id]);
+    }
+  }), [onResolved, interventionId]);
+
+  const addPhoto = (file) => enqueue(file, { interventionId });
+
+  const save = () => api.put(`intervention/${interventionId}`, { json: { photo_upload_ids: uploadIds } });
+
+  return (
+    <>
+      <input type="file" accept="image/*" onChange={(e) => addPhoto(e.target.files[0])} />
+      <p>{pending.length} photo(s) en attente</p>
+      <button onClick={save} disabled={pending.length > 0}>Enregistrer</button>
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Les options sont globales : le dernier composant monté impose les siennes à
+  toute la file.
+- `enqueue` lève une erreur `name === "QuotaExceededError"` quand il reste moins
+  de 10 Mo de stockage libre.
+- Un 4xx passe la ligne en `failed` sans nouvel essai : corriger la cause puis
+  appeler `retry(pendingId)`. Au retour du réseau, seuls les échecs réseau, 5xx
+  et `max_retries` sont relancés.
+- Un 409 (envoi déjà en cours côté serveur) est retenté après
+  `retry_after_ms` (2 s par défaut) sans compter d'essai.
+- Chaque essai envoie l'en-tête `Idempotency-Key: <pending_id>` : le serveur
+  doit dédoublonner sur cette clé.
+- Les envois non terminés d'une session précédente sont rechargés au premier
+  montage, puis relancés si le réseau est là.
+- `onResolved` est appelé avant que la ligne ne quitte la file : c'est le seul
+  moment où l'`upload_id` est disponible.
+
+Guide complet : `docs/upload-queue.md`. Voir aussi `docs/offline.md`.

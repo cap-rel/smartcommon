@@ -1,0 +1,59 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useNavigationContext" />
+
+# useNavigationContext
+
+La fabrique qui construit le contexte de navigation. `<NavigationProvider>`
+l'appelle une fois et place le résultat dans `NavigationContext`. Elle est
+exportée pour monter un fournisseur sur mesure ; une page lit la navigation
+avec `useNavigation()`.
+
+```jsx
+import { useNavigationContext } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const nav = useNavigationContext();
+```
+
+Aucun paramètre. Le hook lit `config.navigation.debug` (à défaut
+`config.debug`) par `useLibConfig()`.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `to`, `replace`, `state` | functions | Constructeur chaînable, décrit sur la page `useNavigation`. |
+| `location` | object | Position courante, `state` ramené à un objet. |
+| `searchParams` | array | `[searchParams, setSearchParams]` de react-router. |
+| `navigate` | function | Le `navigate` de react-router. |
+| `history` | any | Valeur `history` de l'état global (plus alimentée). |
+
+Pas de `params` : ils sont ajoutés par `useNavigation()`.
+
+## Exemple
+
+Ce que fait `<NavigationProvider>` :
+
+```jsx
+import { NavigationContext, useNavigationContext } from "@cap-rel/smartcommon";
+
+export const MyNavigationProvider = ({ children }) => {
+  const nav = useNavigationContext();
+
+  return <NavigationContext.Provider value={nav}>{children}</NavigationContext.Provider>;
+};
+```
+
+## Points d'attention
+
+- Doit être rendu dans un routeur react-router, sous `<LibConfigProvider>` et
+  `<GlobalStatesProvider>`.
+- Le fournisseur est monté au-dessus des `<Routes>` : à ce niveau aucune route
+  n'est encore résolue, d'où l'absence de `params`. Lire les paramètres avec
+  `useNavigation()` dans la page.
+
+Voir aussi `docs/provider.md` (ordre de montage des fournisseurs).

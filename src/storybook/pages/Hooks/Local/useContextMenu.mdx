@@ -1,0 +1,74 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Local/useContextMenu" />
+
+# useContextMenu
+
+L'état du menu contextuel (clic droit) affiché par `<ContextMenu>` sur le poste
+fixe. Le hook ouvre le menu à la position du pointeur, le garde dans la
+fenêtre, et retient l'élément à qui rendre le focus.
+
+```jsx
+import { ContextMenu, useContextMenu } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const ctx = useContextMenu();
+```
+
+Aucun paramètre.
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `isOpen` | bool | Le menu est ouvert. |
+| `x`, `y` | number | Position du menu en pixels. |
+| `items` | array | Entrées du menu ouvert. |
+| `returnFocusTo` | Element ou null | Élément qui avait le focus à l'ouverture. |
+| `open` | `(event, items) => void` | Annule le menu du navigateur et ouvre celui-ci. |
+| `close` | `() => void` | Ferme le menu. |
+
+Une entrée : `{ key?, label, icon?, onClick?, danger?, disabled?, divider?, testId? }`.
+
+## Exemple
+
+```jsx
+import { ContextMenu, useContextMenu } from "@cap-rel/smartcommon";
+
+export const InvoiceTable = ({ invoices, onOpen, onDuplicate, onDelete }) => {
+  const ctx = useContextMenu();
+
+  return (
+    <>
+      <table>
+        <tbody>
+          {invoices.map((invoice) => (
+            <tr key={invoice.id} onContextMenu={(e) => ctx.open(e, [
+              { key: "open", label: "Ouvrir", onClick: () => onOpen(invoice) },
+              { key: "dup", label: "Dupliquer", onClick: () => onDuplicate(invoice) },
+              { key: "sep", divider: true },
+              { key: "del", label: "Supprimer", danger: true, onClick: () => onDelete(invoice) },
+            ])}>
+              <td>{invoice.ref}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <ContextMenu state={ctx} />
+    </>
+  );
+};
+```
+
+## Points d'attention
+
+- Un seul `<ContextMenu state={ctx} />` par page suffit ; chaque cible passe ses
+  propres entrées à `open`.
+- Ouvert au clavier (touche menu, Maj+F10), sans position de pointeur, le menu
+  s'ouvre sous la cible.
+- `open` est la fonction d'ouverture ; l'état ouvert se lit dans `isOpen`.
+
+Guide complet : `docs/desktop.md`.

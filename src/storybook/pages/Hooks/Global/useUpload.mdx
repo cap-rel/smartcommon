@@ -1,0 +1,90 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Hooks/Global/useUpload" />
+
+# useUpload
+
+Envoie un fichier sur la route d'upload de SmartAuth (`POST upload`) et rend
+l'identifiant `upload_id` que le module cite ensuite dans son propre JSON. Deux
+modes : direct (l'envoi échoue avec une erreur) ou file d'attente hors ligne
+(`queue: true`, le fichier part plus tard si le réseau manque).
+
+```jsx
+import { useUpload } from "@cap-rel/smartcommon";
+```
+
+## Signature
+
+```js
+const { uploadFile, uploadFiles, cancelUpload } = useUpload(defaultOptions);
+```
+
+| Paramètre | Type | Défaut | Rôle |
+|---|---|---|---|
+| `defaultOptions.queue` | bool | `false` | Passe par `useUploadQueue` : stockage IndexedDB et nouvel essai automatique. |
+| `defaultOptions.endpoint` | string | `"upload"` | Route appelée, si le module la réexpose ailleurs. |
+| `defaultOptions.timeout` | number ou false | `UPLOAD_TIMEOUT` (120 s) | Délai d'un envoi ; `false` le désactive. |
+| `defaultOptions.retries` | number | `1` | Mode direct : nouveaux essais quand rien n'est revenu du serveur. |
+
+## Valeur retournée
+
+| Champ | Type | Rôle |
+|---|---|---|
+| `uploadFile` | `(file, options?) => Promise<object>` | Envoie un fichier. |
+| `uploadFiles` | `(files, options?) => Promise<object[]>` | Envoie un tableau ou une `FileList`, en parallèle. |
+| `cancelUpload` | `(uploadId) => Promise` | `DELETE upload/{uploadId}` : retire le fichier déposé côté serveur. |
+
+Options d'un appel à `uploadFile` : `filename` (défaut : `file.name`, sinon
+`"upload.bin"`), `timeout`, `retries` (mode direct), `meta` (mode file
+d'attente, rangé avec le fichier), plus les options de `useApi` comme
+`silent: true`.
+
+Résultat de `uploadFile` :
+
+- mode direct : la réponse du serveur, `{ upload_id, filename, mime, size, sha256 }` ;
+- mode file d'attente, envoi réussi : `{ upload_id, pending_id: null, filename, mime, size, sha256 }` ;
+- mode file d'attente, hors ligne, erreur réseau, 5xx ou 409 :
+  `{ upload_id: null, pending_id, filename, mime, size }`, le fichier part plus
+  tard et `useUploadQueue().onResolved` donne son `upload_id`.
+
+## Exemple
+
+```jsx
+import { useApi, useUpload } from "@cap-rel/smartcommon";
+
+export const CoverPhotoInput = ({ interventionId }) => {
+  const api = useApi();
+  const { uploadFile } = useUpload();
+
+  const handleChange = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+    try {
+      const { upload_id } = await uploadFile(file, { silent: true });
+      await api.put(`intervention/${interventionId}`, { json: { cover_image_upload_id: upload_id } });
+    } catch (error) {
+      console.error("[CoverPhotoInput] upload failed", error.response?.status, error.message);
+    }
+  };
+
+  return <input type="file" accept="image/*" onChange={handleChange} />;
+};
+```
+
+## Points d'attention
+
+- Mode direct : seul un envoi sans réponse (coupure, délai dépassé) est
+  retenté. Une réponse HTTP, même une erreur, est rendue telle quelle.
+- Mode file d'attente : une erreur 4xx (sauf 409) est levée, sans nouvel essai ;
+  le reste est mis en file.
+- `queue` se choisit une fois pour le composant : le changer entre deux rendus
+  change l'ordre des hooks.
+- `onProgress` est accepté mais ignoré : ni ky ni `fetch` ne donnent la
+  progression d'un envoi.
+- Préparer les photos avant l'envoi (`convertImageForUpload`,
+  `uploadRefusalReason`) : sans cela un téléphone peut dépasser la limite du
+  serveur.
+
+Guide complet : `docs/upload.md`. Voir aussi `docs/upload-queue.md`.
