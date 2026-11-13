@@ -284,19 +284,22 @@ When you see `can't access property "X", Y is undefined`:
 
 ## Automated Tools
 
-### ESLint Configuration
+### Lint: oxlint then ESLint
 
-ESLint is configured with rules to catch these errors at development time.
+`npm run lint` runs `oxlint && eslint .`. oxlint (fast, native) runs first
+with the rules of `.oxlintrc.json`; ESLint (`eslint.config.js`) then runs
+only what oxlint cannot do (the local rule below, the Storybook rules,
+the remaining React rules). The last block of `eslint.config.js` reads
+`.oxlintrc.json` and turns off in ESLint every rule oxlint already owns,
+so no rule reports twice.
 
-**File:** `eslint.config.js`
+Safety rules, in `.oxlintrc.json`:
 
-```javascript
-// Safety rules to prevent undefined/null access errors
-'no-unsafe-optional-chaining': 'error',
-'array-callback-return': ['error', { allowImplicit: true }],
-'no-prototype-builtins': 'error',
-'eqeqeq': ['error', 'always', { null: 'ignore' }],
-'no-implicit-coercion': 'warn',
+```json
+"eqeqeq": ["error", "always", { "null": "ignore" }],
+"no-unsafe-optional-chaining": "error",
+"array-callback-return": ["error", { "allowImplicit": true }],
+"no-prototype-builtins": "error"
 ```
 
 | Rule | Purpose |
@@ -305,7 +308,30 @@ ESLint is configured with rules to catch these errors at development time.
 | `array-callback-return` | Forces return statements in `.map()`, `.filter()`, etc. |
 | `no-prototype-builtins` | Prevents bugs with `obj.hasOwnProperty()` |
 | `eqeqeq` | Forces `===` instead of `==` (prevents bugs like `=` vs `===`) |
-| `no-implicit-coercion` | Warns about implicit type conversions |
+| `no-console` | Forbids raw `console.*` in `src/lib` (see below) |
+
+ESLint keeps `no-implicit-coercion` (warning, `!!x` allowed) and the
+local rule `local/no-shadowed-global-self-call`, which flags a call such
+as `Boolean(x)` inside a component named `Boolean`.
+
+#### No raw `console` in library code
+
+Library code logs through `createLogger` (`lib/utils`), never through
+`console.*`: the logger applies `LOG_LEVEL` / `LOG_FILTER` and feeds the
+log extract joined to a `FeedbackButton` report.
+
+```javascript
+import { createLogger } from "lib/utils";
+const log = createLogger("MyModule");
+log.error("upload failed", err);
+log.warning("unexpected status", status); // log.warn is an alias
+```
+
+`no-console` is an error for `src/lib/**`, except tests, stories, the
+`pages/` folders, the service worker (`src/lib/sw/`), the logger itself
+(`utils/functions/consoleLogs.js`), `DebugWarnings`, `DebugConsole` and
+the `useApiTest` hooks. The exact list is in the `overrides` of
+`.oxlintrc.json`.
 
 **Usage:**
 ```bash
