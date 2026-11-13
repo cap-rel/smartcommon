@@ -2,7 +2,7 @@ import { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
-import { usePWAUpdate } from "lib/hooks";
+import { useDialog, usePWAUpdate } from "lib/hooks";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
@@ -74,6 +74,9 @@ export const UpdatePrompt = (props) => {
 
     const visible = updateAvailable;
 
+    // The modal is a real dialog, but a mandatory one: no Escape, no close.
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen: variant === "modal" && visible, closeOnEscape: false });
+
     const messageFor = (l) => {
         if (!newVersion) {
             return l.message;
@@ -104,9 +107,9 @@ export const UpdatePrompt = (props) => {
             (t) => (
                 <div className="flex flex-col gap-2">
                     <p className="font-medium">{toastLabels.title}</p>
-                    <p className="text-sm text-gray-600">{toastMessage}</p>
+                    <p className="text-sm text-medium-text">{toastMessage}</p>
                     {releaseNotes && (
-                        <p className="text-xs text-gray-500 whitespace-pre-line max-h-32 overflow-y-auto">{releaseNotes}</p>
+                        <p className="text-xs text-soft-text whitespace-pre-line max-h-32 overflow-y-auto">{releaseNotes}</p>
                     )}
                     <div className="flex gap-2 mt-1">
                         <button
@@ -114,7 +117,7 @@ export const UpdatePrompt = (props) => {
                                 toast.dismiss(t.id);
                                 applyUpdate();
                             }}
-                            className="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
+                            className="px-3 py-1 text-sm font-medium text-white bg-primary rounded hover:brightness-95 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         >
                             {toastLabels.reloadButton}
                         </button>
@@ -145,9 +148,13 @@ export const UpdatePrompt = (props) => {
                     initial={{ opacity: 0, y: position === "top" ? -100 : 100 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: position === "top" ? -100 : 100 }}
-                    className={`fixed left-0 right-0 z-50 px-4 py-3 bg-blue-600 text-white shadow-lg ${
+                    role="status"
+                    aria-live="polite"
+                    className={`fixed left-0 right-0 z-50 px-4 py-3 bg-primary text-white shadow-lg ${
                         position === "top" ? "top-0" : "bottom-0"
                     }`}
+                    // Keeps the button above the iOS home indicator.
+                    style={position === "bottom" ? { paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" } : undefined}
                 >
                     <div className="flex items-center justify-between max-w-screen-lg mx-auto">
                         <div>
@@ -161,7 +168,7 @@ export const UpdatePrompt = (props) => {
                             <button
                                 onClick={applyUpdate}
                                 disabled={isApplying}
-                                className="px-4 py-2 text-sm font-medium bg-white text-blue-600 rounded hover:bg-blue-50 disabled:opacity-70 flex items-center gap-2"
+                                className="px-4 py-2 text-sm font-medium bg-soft-bg text-primary rounded hover:brightness-95 disabled:opacity-70 flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-white"
                             >
                                 {isApplying && <Spinner />}
                                 {mergedLabels.reloadButton}
@@ -187,18 +194,24 @@ export const UpdatePrompt = (props) => {
                         initial={{ scale: 0.9, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
-                        className="bg-white rounded-lg shadow-xl p-6 m-4 max-w-sm w-full"
+                        ref={dialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={titleId}
+                        tabIndex={-1}
+                        onKeyDown={onKeyDown}
+                        className="bg-soft-bg text-strong-text rounded-lg shadow-xl p-6 m-4 max-w-sm w-full outline-none"
                     >
-                        <h2 className="text-lg font-semibold mb-2">{mergedLabels.title}</h2>
-                        <p className={`text-gray-600 ${releaseNotes ? "mb-2" : "mb-4"}`}>{message}</p>
+                        <h2 id={titleId} className="text-lg font-semibold mb-2">{mergedLabels.title}</h2>
+                        <p className={`text-medium-text ${releaseNotes ? "mb-2" : "mb-4"}`}>{message}</p>
                         {releaseNotes && (
-                            <p className="text-sm text-gray-500 mb-4 whitespace-pre-line max-h-48 overflow-y-auto">{releaseNotes}</p>
+                            <p className="text-sm text-soft-text mb-4 whitespace-pre-line max-h-48 overflow-y-auto">{releaseNotes}</p>
                         )}
                         <div className="flex gap-3 justify-end">
                             <button
                                 onClick={applyUpdate}
                                 disabled={isApplying}
-                                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700 disabled:opacity-70 flex items-center gap-2"
+                                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded hover:brightness-95 disabled:opacity-70 flex items-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-soft-bg"
                             >
                                 {isApplying && <Spinner />}
                                 {mergedLabels.reloadButton}

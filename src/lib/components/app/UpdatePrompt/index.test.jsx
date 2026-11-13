@@ -41,12 +41,16 @@ vi.mock("react-hot-toast", () => {
     return { default: toast };
 });
 
-vi.mock("lib/hooks", () => ({
-    usePWAUpdate: (options) => {
-        mockHookState.options = options;
-        return mockHookState;
-    },
-}));
+vi.mock("lib/hooks", async () => {
+    const { useDialog } = await vi.importActual("lib/hooks/local/useDialog");
+    return {
+        usePWAUpdate: (options) => {
+            mockHookState.options = options;
+            return mockHookState;
+        },
+        useDialog,
+    };
+});
 
 import { UpdatePrompt } from "./index";
 
@@ -296,5 +300,45 @@ describe("UpdatePrompt", () => {
             render(<UpdatePrompt versionUrl="/build.json" />);
             expect(mockHookState.options.versionUrl).toBe("/build.json");
         });
+    });
+});
+
+describe("UpdatePrompt - theme and accessibility", () => {
+    const FIXED = /bg-white|text-gray-|bg-gray-|bg-blue-|text-blue-|hover:bg-blue-/;
+
+    beforeEach(() => {
+        mockHookState.updateAvailable = true;
+        mockHookState.isApplying = false;
+        mockHookState.newVersion = null;
+        mockHookState.releaseNotes = null;
+        mockHookState.applyUpdate = vi.fn();
+    });
+
+    it("shows the banner in the app colours and announces it", () => {
+        render(<UpdatePrompt variant="banner" labels={{ title: "Nouvelle version" }} />);
+        const banner = screen.getByRole("status");
+        expect(banner.textContent).toContain("Nouvelle version");
+        expect(banner.className).toContain("bg-primary");
+        expect(banner.outerHTML).not.toMatch(FIXED);
+    });
+
+    it("is a themed modal dialog named by its title that Escape does not close", () => {
+        render(<UpdatePrompt variant="modal" labels={{ title: "Nouvelle version" }} />);
+        const dialog = screen.getByRole("dialog", { name: "Nouvelle version" });
+        expect(dialog.getAttribute("aria-modal")).toBe("true");
+        expect(dialog.className).toContain("bg-soft-bg");
+        expect(dialog.outerHTML).not.toMatch(FIXED);
+
+        fireEvent.keyDown(dialog, { key: "Escape" });
+        expect(screen.getByRole("dialog", { name: "Nouvelle version" })).toBeTruthy();
+    });
+
+    it("draws the toast with theme colours", () => {
+        render(<UpdatePrompt />);
+        const [renderToast] = toastCalls.lastArgs ?? [];
+        expect(typeof renderToast).toBe("function");
+        const { container } = render(renderToast({ id: "t" }));
+        expect(container.innerHTML).not.toMatch(FIXED);
+        expect(container.innerHTML).toContain("bg-primary");
     });
 });
