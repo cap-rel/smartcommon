@@ -5,7 +5,7 @@ Ce document explique comment effectuer des requêtes vers l'API en utilisant le 
 ## Utilisation de base
 
 ```jsx
-import { useApi } from 'smartcommon';
+import { useApi } from '@cap-rel/smartcommon';
 
 const MyComponent = () => {
     const api = useApi();
@@ -263,5 +263,6 @@ try {
   `error.circuitOpen = true` et, si une erreur serveur l'a ouvert, `error.circuitStatus` et
   `error.circuitUrl`. C'est le cas de la relance automatique d'un GET par ky après un 500 :
   sans ces champs, l'application ne voyait que "Circuit breaker open" et perdait le 500
-- L'option `raw: true` est implémentée dans [context.jsx:347-352](../src/lib/hooks/global/useApi/context.jsx#L347-L352)
+- L'option `raw: true` renvoie la `Response` brute (binaire, images) : voir `handleResponse` dans
+  [context.jsx](../src/lib/hooks/global/useApi/context.jsx)
 - Le callback `onApiError` est appelé automatiquement pour les erreurs API (supprimable avec `{ silent: true }`)
