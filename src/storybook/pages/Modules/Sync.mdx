@@ -265,8 +265,9 @@ try {
 - `updateLocal` et `deleteLocal` lèvent `Entity not found: <table>/<id>` si
   l'entité n'est pas dans le cache local. Vérifier avec `storage.getEntity()`
   ou passer par `upsertLocal`.
-- `upsertLocal` marque l'entité comme modifiée localement même avec
-  `queueChange` à `false` : les pulls suivants ne la mettent plus à jour.
+- `upsertLocal` avec `queueChange` à `false` ne fait que mettre en cache :
+  les pulls suivants mettent l'entité à jour. Une modification locale déjà
+  en attente sur l'entité reste marquée.
 - `reset()` efface aussi le `client_uuid` : la synchronisation suivante
   enregistre un nouveau client. Pour supprimer la base elle-même, utiliser
   `storage.deleteDatabase()`.

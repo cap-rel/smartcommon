@@ -822,6 +822,11 @@ class SyncEngine {
     /**
      * Upsert an entity locally (create if not exists, update if exists)
      * This is useful for caching data without syncing to server
+     *
+     * Cache-only (queueChange false): the entity is not marked as locally
+     * modified, so a later pull() still refreshes it. A pending local change
+     * already on the entity stays marked and protected.
+     *
      * @param {string} table - Table name
      * @param {number|string} id - Entity ID
      * @param {Object} data - Entity data
@@ -830,6 +835,7 @@ class SyncEngine {
     async upsertLocal(table, id, data, queueChange = false) {
         const existing = await this.storage.getEntity(table, id);
         const now = new Date().toISOString();
+        const localUpdatedAt = queueChange ? now : (existing?.local_updated_at ?? null);
 
         if (existing) {
             // Update existing entity
@@ -839,7 +845,7 @@ class SyncEngine {
                 id,
                 updatedData,
                 existing.server_tms,
-                now
+                localUpdatedAt
             );
 
             if (queueChange) {
@@ -858,7 +864,7 @@ class SyncEngine {
                 id,
                 { ...data, id },
                 null,
-                now
+                localUpdatedAt
             );
 
             if (queueChange) {

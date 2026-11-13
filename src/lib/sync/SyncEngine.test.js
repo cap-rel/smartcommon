@@ -164,6 +164,27 @@ describe('SyncEngine', () => {
             expect((await storage.getEntity('thirdparty', 2)).server_tms).toBe('t2');
         });
 
+        it('refreshes an entity cached with upsertLocal', async () => {
+            await engine.upsertLocal('thirdparty', 7, { name: 'cached' });
+            expect((await storage.getEntity('thirdparty', 7)).local_updated_at).toBeNull();
+            api.pull.mockImplementation(async (type) => (type === 'thirdparty'
+                ? { updated: [{ id: 7, name: 'fresh', tms: 't1' }], deleted: [], has_more: false, server_time: 's' }
+                : { updated: [], deleted: [], has_more: false, server_time: 's' }));
+
+            await engine.pull();
+
+            expect((await storage.getEntity('thirdparty', 7)).data.name).toBe('fresh');
+        });
+
+        it('keeps the pending mark of an entity that a cache upsert updates', async () => {
+            await storage.putEntity('thirdparty', 8, { id: 8, name: 'mine' }, 't0', 'local-time');
+            await engine.upsertLocal('thirdparty', 8, { note: 'cached' });
+            expect((await storage.getEntity('thirdparty', 8)).local_updated_at).toBe('local-time');
+
+            await engine.upsertLocal('thirdparty', 9, { name: 'queued' }, true);
+            expect((await storage.getEntity('thirdparty', 9)).local_updated_at).not.toBeNull();
+        });
+
         it('keeps local modifications and applies deletions', async () => {
             await storage.putEntity('thirdparty', 1, { id: 1, name: 'mine' }, 't0', 'local-time');
             await storage.putEntity('thirdparty', 5, { id: 5 }, 't0', null);
