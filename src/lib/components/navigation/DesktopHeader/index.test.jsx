@@ -19,6 +19,17 @@ describe("DesktopHeader", () => {
         expect(screen.getByRole("navigation", { name: "Breadcrumb" })).toBeTruthy();
     });
 
+    it("renders the title with another tag when the screen already has its h1", () => {
+        render(withUser(<DesktopHeader title="Acme Industries" titleAs="p" />));
+        expect(screen.queryByRole("heading")).toBeNull();
+        expect(screen.getByText("Acme Industries").tagName).toBe("P");
+    });
+
+    it("renders no empty heading without a title", () => {
+        render(withUser(<DesktopHeader actions={<button type="button">New</button>} />));
+        expect(screen.queryByRole("heading")).toBeNull();
+    });
+
     it("pins the UserMenu on the right unless showUserMenu is false", () => {
         const { rerender } = render(withUser(<DesktopHeader title="Invoices" />));
         expect(screen.getByTestId("user-menu-trigger")).toBeTruthy();

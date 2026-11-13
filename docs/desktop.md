@@ -226,13 +226,15 @@ centre, actions de la page puis `UserMenu` à droite.
 ```
 
 Séparée du contenu par une bordure basse, sans ombre, `shrink-0` : la
-placer au-dessus d'un corps `flex-1 min-h-0`. Le bouton retour, sans
+placer au-dessus d'un corps `flex-1 min-h-0`. Sans `title`, aucun titre vide
+n'est rendu. Le bouton retour, sans
 texte visible, est nommé par `labels.back` (aussi en infobulle) et garde
 le `data-testid="desktop-header-back"` de smartInterventions.
 
 | Prop | Type | Défaut | Notes |
 |------|------|--------|-------|
 | `title` | node | - | titre de la page (`<h1>`) |
+| `titleAs` | elementType | `"h1"` | balise du titre ; `"p"` quand l'écran porte déjà son `<h1>` |
 | `subtitle` | node | - | à côté du titre (référence, compteur) |
 | `breadcrumb` | node | - | sous le titre |
 | `onBack` | func | - | affiche le bouton retour |

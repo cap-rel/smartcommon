@@ -1,3 +1,4 @@
+import { isNil } from "lodash";
 import { FaArrowLeft } from "react-icons/fa6";
 
 import { useVariantMerger } from "lib/hooks";
@@ -18,6 +19,7 @@ export const DesktopHeader = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("DesktopHeader", props);
     const {
         title,
+        titleAs: TitleTag = "h1",
         subtitle,
         breadcrumb,
         onBack,
@@ -55,12 +57,15 @@ export const DesktopHeader = (props) => {
                 ) : null}
                 <div className="min-w-0">
                     <div className="flex items-center gap-app-sm min-w-0">
-                        <h1 { ...mergeProps("title", p => ({
-                            ...p,
-                            className: "text-app-lg font-app-bold text-strong-text truncate",
-                        }))}>
-                            {title}
-                        </h1>
+                        {/* No empty heading: a screen without a title keeps its own outline */}
+                        {isNil(title) || title === "" ? null : (
+                            <TitleTag { ...mergeProps("title", p => ({
+                                ...p,
+                                className: "text-app-lg font-app-bold text-strong-text truncate",
+                            }))}>
+                                {title}
+                            </TitleTag>
+                        )}
                         {subtitle ? (
                             <span { ...mergeProps("subtitle", p => ({
                                 ...p,

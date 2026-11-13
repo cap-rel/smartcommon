@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 export const propTypes = {
     /** Page title, rendered as the h1. */
     title: PropTypes.node,
+    /** Tag of the title, "h1" by default; "p" when the screen renders its own h1. */
+    titleAs: PropTypes.elementType,
     /** Next to the title (a reference, a count). */
     subtitle: PropTypes.node,
     /** Under the title. */
