@@ -77,7 +77,7 @@ export const Page = (props) => {
     }, [pathname]);
 
     const animation = () => {
-        if (device?.type === "desktop") {
+        if (device === "desktop") {
             return "fade";
         }
 

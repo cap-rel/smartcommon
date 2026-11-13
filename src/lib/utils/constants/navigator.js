@@ -1,9 +1,9 @@
-import { isUndefined } from "lodash";
 import { createLogger } from "lib/utils/functions/consoleLogs";
 
 const logger = createLogger("navigator");
 
-const isNavigatorAvailable = isUndefined(navigator);
+// `typeof` does not throw where `navigator` is not declared (SSR, old Node).
+const isNavigatorAvailable = typeof navigator !== "undefined";
 
 const getDeviceType = () => {
     if (!isNavigatorAvailable) {
@@ -49,7 +49,7 @@ export const navigatorInfo = {
     // breaker convinced it was permanently offline, so it re-opened on every
     // drain attempt and queued offline work never flushed on reconnect
     // (smartInterventions E2E 84-offline-intervention-submit-queue).
-    isOnLine: isNavigatorAvailable ? true : navigator.onLine
+    isOnLine: isNavigatorAvailable ? navigator.onLine !== false : true
     // coords: locate()
 };
 
