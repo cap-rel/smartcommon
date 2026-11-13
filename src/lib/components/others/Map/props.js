@@ -19,6 +19,9 @@ export const propTypes = {
     tileAttribution: PropTypes.string,
     reverseGeocodeUrl: PropTypes.string,
 
+    /** Extra classes for the map container. */
+    className: PropTypes.string,
+
     // i18n: merged shallowly over DEFAULT_LABELS.
     labels: PropTypes.object,
 };

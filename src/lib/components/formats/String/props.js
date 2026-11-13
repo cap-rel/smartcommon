@@ -6,4 +6,6 @@ export const propTypes = {
     uppercase: PropTypes.bool,
     italic: PropTypes.bool,
     bold: PropTypes.bool,
+
+    stringProps: PropTypes.object,
 };

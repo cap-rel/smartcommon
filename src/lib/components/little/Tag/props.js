@@ -12,6 +12,7 @@ export const propTypes = {
     color: PropTypes.string,
     /** Content of the tag */
     children: PropTypes.node,
+    tagProps: PropTypes.object,
 };
 
 export const defaultProps = {

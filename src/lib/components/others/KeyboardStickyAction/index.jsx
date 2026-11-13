@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 
+import { propTypes } from "./props";
+
 /**
  * Threshold ratio: if visualViewport.height < window.innerHeight * threshold,
  * we consider the virtual keyboard is open.
@@ -76,3 +78,5 @@ export const KeyboardStickyAction = ({ children, className = "", style = {} }) =
         </>
     );
 };
+
+KeyboardStickyAction.propTypes = propTypes;

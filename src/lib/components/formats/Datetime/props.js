@@ -8,4 +8,8 @@ export const propTypes = {
     ]),
     locale: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     options: PropTypes.object,
+
+    linkProps: PropTypes.object,
+    iconProps: PropTypes.object,
+    datetimeProps: PropTypes.object,
 };

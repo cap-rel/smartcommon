@@ -122,10 +122,12 @@ de validation native** intégrée. Pour valider :
 | `PreviousButton` / `NextButton` | flèches de navigation mois |
 | `monthAndYearContainerProps` | conteneur "Mois Année" |
 | `monthProps` / `yearProps` | textes mois et année |
+| `monthSelectProps` / `yearSelectProps` | listes déroulantes mois et année |
 | `lowerContainerProps` | grille des jours (scrollable horizontalement) |
-| `dayAndWeekDayContainerProps` | cellule (jour + libellé jour de la semaine) |
+| `weekDayAndNumberContainerProps` | cellule (jour + libellé jour de la semaine) |
 | `weekDayProps` | libellé "Lun", "Mar", ... |
-| `dayProps` | numéro du jour |
+| `numberProps` | numéro du jour |
+| `badgeProps` | pastille d'un jour marqué (`items`) |
 
 ## Props
 
@@ -145,7 +147,7 @@ de validation native** intégrée. Pour valider :
 - **Sélection unique** : pas de range (la note `// IDEA interval` dans
   le code marque cette feature comme envisagée mais pas livrée).
 - **Pas de désactivation de dates** (weekends, jours fériés, dates
-  passées) via props. Solution : surcharger `dayProps` avec un
+  passées) via props. Solution : surcharger `numberProps` avec un
   callback qui inspecte la date affichée - pas évident, mieux vaut
   forker pour cet usage.
 - **Pas de minutes / secondes** : c'est un date picker, pas un datetime

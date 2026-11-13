@@ -56,6 +56,9 @@ export const propTypes = {
     onChange: PropTypes.func,
     defaultValue: PropTypes.bool,
 
+    // Consumer-provided message, rendered by Label below the field (unlike
+    // `errors`, which useField computes from the validation rules).
+    error: PropTypes.node,
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,
 
@@ -89,6 +92,7 @@ export const propTypes = {
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,
     DeleteButton: PropTypes.object,
+    SaveButton: PropTypes.object,
 
     // i18n: merged shallowly over DEFAULT_LABELS. Entries are either
     // strings or functions (when interpolated values are needed).

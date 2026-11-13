@@ -29,6 +29,9 @@ export const propTypes = {
     onChange: PropTypes.func,
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.number, PropTypes.array]),
 
+    // Consumer-provided message, rendered by Label below the field (unlike
+    // `errors`, which useField computes from the validation rules).
+    error: PropTypes.node,
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,
 

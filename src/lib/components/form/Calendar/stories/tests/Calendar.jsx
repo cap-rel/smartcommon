@@ -6,5 +6,5 @@ export const Calendar = setTestStory({
         yearsInterval: [2020, 2030],
     },
     props: propTypes,
-    hidden: ["id", "value", "onChange", "onMonthChange", "onYearChange", "containerProps", "upperContainerProps", "PreviousButton", "NextButton", "monthAndYearContainerProps", "monthProps", "yearProps", "lowerContainerProps", "dayAndWeekDayContainerProps", "weekDayProps", "dayProps"]
+    hidden: ["id", "value", "onChange", "onMonthChange", "onYearChange", "containerProps", "upperContainerProps", "PreviousButton", "NextButton", "monthAndYearContainerProps", "monthProps", "monthSelectProps", "yearProps", "yearSelectProps", "lowerContainerProps", "weekDayAndNumberContainerProps", "weekDayProps", "numberProps", "badgeProps"]
 });

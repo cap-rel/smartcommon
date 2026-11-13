@@ -12,7 +12,9 @@ export const propTypes = {
     children: PropTypes.node,
     containerProps: PropTypes.object,
     titleProps: PropTypes.object,
+    itemsContainerProps: PropTypes.object,
     controlsContainerProps: PropTypes.object,
+    noElementProps: PropTypes.object,
     SearchInput: PropTypes.object,
     SortButton: PropTypes.object,
 };

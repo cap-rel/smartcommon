@@ -25,6 +25,16 @@ export const propTypes = {
         }),
     }),
     onDownload: PropTypes.func,
+
+    itemProps: PropTypes.object,
+    linkProps: PropTypes.object,
+    iconProps: PropTypes.object,
+    nameProps: PropTypes.object,
+    sizeProps: PropTypes.object,
+    downloadIconProps: PropTypes.object,
+    listProps: PropTypes.object,
+    countProps: PropTypes.object,
+    emptyProps: PropTypes.object,
 };
 
 export const DEFAULT_LABELS = {

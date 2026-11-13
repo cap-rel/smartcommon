@@ -8,4 +8,6 @@ export const propTypes = {
     minimumFractionDigits: PropTypes.number,
     maximumFractionDigits: PropTypes.number,
     options: PropTypes.object,
+
+    numberProps: PropTypes.object,
 };

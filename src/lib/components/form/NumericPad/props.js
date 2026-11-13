@@ -17,6 +17,7 @@ export const propTypes = {
     backspaceIcon: PropTypes.node,
     confirmIcon: PropTypes.node,
     className: PropTypes.string,
+    containerProps: PropTypes.object,
 };
 
 export const defaultProps = {

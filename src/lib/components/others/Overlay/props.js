@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 
 export const propTypes = {
+    id: PropTypes.string,
     isOpen: PropTypes.bool,
     close: PropTypes.func,
     /** Called on overlay click, after close(). */

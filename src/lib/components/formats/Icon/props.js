@@ -8,4 +8,8 @@ export const propTypes = {
     label: PropTypes.node,
     color: PropTypes.string,
     size: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+
+    containerProps: PropTypes.object,
+    iconProps: PropTypes.object,
+    labelProps: PropTypes.object,
 };

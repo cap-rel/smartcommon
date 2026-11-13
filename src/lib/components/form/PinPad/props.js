@@ -29,6 +29,7 @@ export const propTypes = {
     // Accessible labels for the icon-only keys (see DEFAULT_LABELS).
     labels: PropTypes.object,
     className: PropTypes.string,
+    containerProps: PropTypes.object,
 };
 
 export const defaultProps = {

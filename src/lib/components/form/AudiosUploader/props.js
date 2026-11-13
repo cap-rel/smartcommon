@@ -24,6 +24,9 @@ export const propTypes = {
     onChange: PropTypes.func,
     defaultValue: PropTypes.bool,
 
+    // Consumer-provided message, rendered by Label below the field (unlike
+    // `errors`, which useField computes from the validation rules).
+    error: PropTypes.node,
     formSubmitted: PropTypes.bool,
     onError: PropTypes.func,
 
@@ -51,7 +54,7 @@ export const propTypes = {
     imgProps: PropTypes.object,
     titleProps: PropTypes.object,
     Popup: PropTypes.object,
-    popupImg: PropTypes.object,
+    popupImgProps: PropTypes.object,
     audioPlayerProps: PropTypes.object,
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,

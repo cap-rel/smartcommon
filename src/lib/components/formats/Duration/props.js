@@ -18,4 +18,6 @@ export const propTypes = {
     locale: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     style: PropTypes.oneOf(["long", "short", "narrow", "digital"]),
     options: PropTypes.object,
+
+    durationProps: PropTypes.object,
 };

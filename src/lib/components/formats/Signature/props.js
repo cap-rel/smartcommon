@@ -10,4 +10,6 @@ export const propTypes = {
             signedAt: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         }),
     ]),
+
+    imgProps: PropTypes.object,
 };

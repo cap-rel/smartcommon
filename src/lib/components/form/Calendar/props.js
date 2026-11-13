@@ -8,8 +8,9 @@ export const propTypes = {
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
     onChange: PropTypes.func,
-    /** Marked days (e.g. { "yyyy-mm-dd": { color, label } }). */
-    items: PropTypes.object,
+    /** Marked days, as yyyy-mm-dd strings: a day shows a badge counting
+     * how many times its date appears. */
+    items: PropTypes.arrayOf(PropTypes.string),
     onMonthChange: PropTypes.func,
     onYearChange: PropTypes.func,
 
@@ -19,9 +20,12 @@ export const propTypes = {
     NextButton: PropTypes.object,
     monthAndYearContainerProps: PropTypes.object,
     monthProps: PropTypes.object,
+    monthSelectProps: PropTypes.object,
     yearProps: PropTypes.object,
+    yearSelectProps: PropTypes.object,
     lowerContainerProps: PropTypes.object,
-    dayAndWeekDayContainerProps: PropTypes.object,
+    weekDayAndNumberContainerProps: PropTypes.object,
     weekDayProps: PropTypes.object,
-    dayProps: PropTypes.object,
+    numberProps: PropTypes.object,
+    badgeProps: PropTypes.object,
 }
