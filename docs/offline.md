@@ -307,13 +307,13 @@ if (isOffline) {
 
 ## Hook useCachedQuery
 
-Cache des donnees avec plusieurs strategies.
+Cache des données avec plusieurs stratégies.
 
-### Strategies
+### Stratégies
 
-| Strategie | Online | Offline |
+| Stratégie | Online | Offline |
 |-----------|--------|---------|
-| **NETWORK_FIRST** | Fetch reseau, cache en fallback | Utilise le cache |
+| **NETWORK_FIRST** | Fetch réseau, cache en fallback | Utilise le cache |
 | **CACHE_FIRST** | Cache si frais, sinon fetch | Utilise le cache |
 | **SWR** | Affiche cache, revalide en background | Utilise le cache |
 
@@ -335,24 +335,24 @@ const { data, isLoading, isFromCache, error, refetch } = useCachedQuery({
 ## Hook useUploadQueue
 
 Queue d'uploads offline-first. Persiste chaque blob en IndexedDB avant de
-rendre la main, puis le pousse vers `/upload` en arriere-plan avec un
-backoff exponentiel. Auto-flush a la reconnexion reseau.
+rendre la main, puis le pousse vers `/upload` en arrière-plan avec un
+backoff exponentiel. Auto-flush à la reconnexion réseau.
 
 ```javascript
 const { enqueue, pending, retry, cancel, flush, onResolved } = useUploadQueue();
 
-// Offline-safe : enqueue est async et awaite l'ecriture IDB.
+// Offline-safe : enqueue est async et attend l'écriture IDB.
 const { pending_id } = await enqueue(blob, { interventionId: 42 });
 
-// Branchement pour patcher le form quand le serveur a accepte l'upload :
+// Branchement pour patcher le form quand le serveur a accepté l'upload :
 useEffect(() => onResolved(({ pending_id, upload_id, meta }) => {
     // ... swap pending_id -> upload_id dans le state du form
 }), []);
 ```
 
-Voir [upload-queue.md](upload-queue.md) pour l'integration complete,
+Voir [upload-queue.md](upload-queue.md) pour l'intégration complète,
 le contrat backend smartAuth (header `Idempotency-Key`) et les transitions
-d'etat de la queue.
+d'état de la queue.
 
 ---
 
