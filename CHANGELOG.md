@@ -8,6 +8,38 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.399] - 2026-11-13
+
+Put data-testid and aria-* directly on Button, Input, Select, Textarea, FAB or TabbarItem
+Reach Tabbar tabs with the keyboard and hear which one is the current page
+Pick RadioBar options with the keyboard and a screen reader; a required choice stays filled
+A required Select that holds a value no longer offers an empty choice
+Show the install prompt and its browser steps in fr, de, es, it, nl, pl and pt via locales
+Get confirm dialogs that follow dark mode, take keyboard focus, close on Escape, translated
+Keep Tabbar visible on scroll and ask PinPad for 4 digits by default, as documented
+Get a console warning when useStates receives initial values outside initialStates
+Reach Navbar bottom items with the keyboard and hear which one is the current page
+Check Checker options with the keyboard and a screen reader; a required choice stays filled
+Toggle a Boolean field with the keyboard and hear it as a switch or checkbox
+Read in the viewport doc that ViewportProvider is mounted by hand under Provider
+See Tag colours in every app, with danger, info, neutral and status names, and tag data-*
+Hear which ChipBar filter is active, and which ones are disabled
+Call logger.warn() like logger.warning() instead of hitting a TypeError in a catch block
+Name the PinPad erase and validate keys in fr, de, es, it, nl, pl and pt via locales.PinPad
+Hear field errors on Input, Textarea and Select, and translate the password and step buttons
+Use Modal, Popup and Panel as real dialogs: focus kept inside, Escape, dark mode for Modal
+Jump between Block sections by heading (titleAs, h2 by default); no card shadow on desktop
+Make ListItem a keyboard button (onClick) or a real link (href); its icon only when asked
+Open DataTable rows with Enter or Space, tag rows via rowProps(row, index), auto by viewport
+See the badge of the last Tabbar tab in full on a phone: it sits on the icon, inside the tab
+Open kebab and user menus with Dropdown, driven by mouse or arrow keys, closed by Escape
+Act on a row by right click with ContextMenu and useContextMenu, keyboard friendly
+Bind desktop shortcuts with useHotkeys ("mod+k", "/", "escape") without eating typed text
+Reach settings and logout from a translated UserMenu in the top-right corner of desktop pages
+Give every desktop page the same top bar with DesktopHeader: title, back, search, actions
+Show a list and its detail side by side on desktop with DesktopSplit
+Navigate desktop apps from a DesktopSidebar whose collapsed state survives a reload
+
 ## [1.0.396] - 2026-10-29
 
 Animate a leaving page with its own content in RoutingAnimationLayout, not the incoming one
