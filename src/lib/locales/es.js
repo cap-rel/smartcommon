@@ -279,6 +279,7 @@ export const es = {
         enterManually: "Introducir manualmente",
         manualPlaceholder: "Código...",
         validate: "Validar",
+        close: "Cerrar",
     },
     AboutModal: {
         title: "Acerca de",

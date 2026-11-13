@@ -589,3 +589,30 @@ describe("BarcodeScanner", () => {
         });
     });
 });
+
+describe("BarcodeScanner - full screen dialog", () => {
+    beforeAll(async () => {
+        await import("html5-qrcode");
+    });
+
+    it("is a modal dialog named by its title, closed by Escape", async () => {
+        const onClose = vi.fn();
+        render(<BarcodeScanner open onClose={onClose} onScan={() => {}} labels={{ title: "Scanner un code" }} />);
+
+        const dialog = screen.getByRole("dialog", { name: "Scanner un code" });
+        expect(dialog.getAttribute("aria-modal")).toBe("true");
+
+        fireEvent.keyDown(dialog, { key: "Escape" });
+        await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    });
+
+    it("names its close button from the labels", () => {
+        render(<BarcodeScanner open onClose={() => {}} onScan={() => {}} labels={{ close: "Fermer" }} />);
+        expect(screen.getByRole("button", { name: "Fermer" })).toBeTruthy();
+    });
+
+    it("stays a plain region in embedded mode", () => {
+        render(<BarcodeScanner open embedded onClose={() => {}} onScan={() => {}} />);
+        expect(screen.queryByRole("dialog")).toBeNull();
+    });
+});

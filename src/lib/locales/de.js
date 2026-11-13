@@ -279,6 +279,7 @@ export const de = {
         enterManually: "Manuell eingeben",
         manualPlaceholder: "Code...",
         validate: "Bestätigen",
+        close: "Schließen",
     },
     AboutModal: {
         title: "Über",

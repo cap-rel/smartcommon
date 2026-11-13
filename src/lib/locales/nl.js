@@ -278,6 +278,7 @@ export const nl = {
         enterManually: "Handmatig invoeren",
         manualPlaceholder: "Code...",
         validate: "Valideren",
+        close: "Sluiten",
     },
     AboutModal: {
         title: "Over",

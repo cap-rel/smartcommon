@@ -281,6 +281,7 @@ export const pt = {
         enterManually: "Introduzir manualmente",
         manualPlaceholder: "Código...",
         validate: "Validar",
+        close: "Fechar",
     },
     AboutModal: {
         title: "Acerca de",

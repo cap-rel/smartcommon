@@ -275,6 +275,7 @@ export const fr = {
         enterManually: "Saisir manuellement",
         manualPlaceholder: "Code...",
         validate: "Valider",
+        close: "Fermer",
     },
     AboutModal: {
         title: "À propos",

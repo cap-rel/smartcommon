@@ -286,6 +286,7 @@ export const pl = {
         enterManually: "Wprowadź ręcznie",
         manualPlaceholder: "Kod...",
         validate: "Zatwierdź",
+        close: "Zamknij",
     },
     AboutModal: {
         title: "O aplikacji",

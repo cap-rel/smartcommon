@@ -35,6 +35,7 @@ export const propTypes = {
         enterManually: PropTypes.string,
         manualPlaceholder: PropTypes.string,
         validate: PropTypes.string,
+        close: PropTypes.string,
     }),
 };
 
@@ -55,6 +56,8 @@ export const DEFAULT_LABELS = {
     enterManually: "Enter manually",
     manualPlaceholder: "Code...",
     validate: "Validate",
+    // Accessible name and tooltip of the icon-only close button
+    close: "Close",
 };
 
 // Format names accepted by `formats` prop. Resolved at runtime to

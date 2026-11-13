@@ -8,6 +8,7 @@ import {
     propTypes,
 } from "./props";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { useDialog } from "lib/hooks/local/useDialog";
 import { createLogger } from "lib/utils";
 
 const log = createLogger("BarcodeScanner");
@@ -218,6 +219,10 @@ const BarcodeScannerContent = (props) => {
         }
     }, [manualBarcode, onScan, continuous, handleClose]);
 
+    // Full screen, the scanner is a modal dialog: named by its title, Tab
+    // kept inside, Escape closes it like the X. Embedded, the parent owns it.
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen: !embedded, onClose: handleClose });
+
     // Embedded mode: render only the camera region (and optional manual
     // entry fallback) inline. The parent component is responsible for
     // positioning, sizing, the close button and any surrounding chrome.
@@ -291,15 +296,22 @@ const BarcodeScannerContent = (props) => {
     return (
         <div
             data-component="BarcodeScanner"
-            className="fixed inset-0 bg-black/90 z-50 flex flex-col"
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
+            onKeyDown={onKeyDown}
+            className="fixed inset-0 bg-black/90 z-50 flex flex-col outline-none"
         >
             <div className="flex items-center justify-between px-4 py-3 bg-black/50">
-                <h2 className="text-white font-semibold text-lg">{labels.title}</h2>
+                <h2 id={titleId} className="text-white font-semibold text-lg">{labels.title}</h2>
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="p-2 rounded-full text-white hover:bg-white/20"
-                    aria-label="Close"
+                    className="p-2 rounded-full text-white hover:bg-white/20 outline-none focus-visible:ring-2 focus-visible:ring-white"
+                    aria-label={labels.close}
+                    title={labels.close}
                 >
                     <FaXmark className="text-xl" />
                 </button>
