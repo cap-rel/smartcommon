@@ -26,6 +26,32 @@ afterEach(() => {
 });
 
 describe("useBarcodeScanner", () => {
+    it("leaves a plain Enter alone, so a focused button still activates", () => {
+        renderHook(() => useBarcodeScanner({ onScan: vi.fn() }));
+        const event = new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true });
+
+        act(() => {
+            document.dispatchEvent(event);
+        });
+
+        expect(event.defaultPrevented).toBe(false);
+    });
+
+    it("consumes the Enter that ends a scan", () => {
+        renderHook(() => useBarcodeScanner({ onScan: vi.fn() }));
+        const event = new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true });
+
+        act(() => {
+            for (const c of "123456") {
+                advanceNow(10);
+                fireKey(c);
+            }
+            document.dispatchEvent(event);
+        });
+
+        expect(event.defaultPrevented).toBe(true);
+    });
+
     it("fires onScan when 6 chars are typed quickly then Enter", () => {
         const onScan = vi.fn();
         renderHook(() => useBarcodeScanner({ onScan }));

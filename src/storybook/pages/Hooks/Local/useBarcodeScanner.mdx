@@ -57,10 +57,9 @@ export const CheckoutScreen = ({ cart, findProductByBarcode, isPaying }) => {
   ignorée.
 - Les touches tapées dans un `input`, un `textarea` ou un `select` sont
   ignorées : la douchette n'agit que quand aucun champ n'a le focus.
-- Toute touche Entrée hors d'un champ est interceptée (`preventDefault`), même
-  sans code en cours : pendant que le hook écoute, Entrée n'active plus un
-  bouton qui a le focus. Le désactiver (`enabled: false`) sur les écrans qui en
-  ont besoin.
+- Seule la touche Entrée qui termine un code (au moins 4 caractères tapés en
+  rafale) est interceptée (`preventDefault`) : une autre Entrée garde son
+  effet, un bouton qui a le focus s'active normalement.
 - Passer un `onScan` stable (`useCallback`) : un nouveau à chaque rendu
   réinstalle l'écoute.
 - L'objet d'options est obligatoire : `useBarcodeScanner()` sans argument lève

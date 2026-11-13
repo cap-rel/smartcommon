@@ -42,14 +42,18 @@ export const useBarcodeScanner = ({ onScan, enabled = true }) => {
             const now = Date.now();
 
             if (e.key === "Enter") {
-                e.preventDefault();
                 const barcode = bufferRef.current.trim();
                 bufferRef.current = "";
                 if (timerRef.current) {
                     clearTimeout(timerRef.current);
                     timerRef.current = null;
                 }
-                handleBarcode(barcode);
+                // Only an Enter that ends a scan is consumed: any other one
+                // keeps its default action (a focused button, a link).
+                if (barcode.length >= MIN_BARCODE_LENGTH) {
+                    e.preventDefault();
+                    handleBarcode(barcode);
+                }
                 return;
             }
 
