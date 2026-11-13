@@ -95,6 +95,21 @@ const conflictFieldNames = (fieldConflicts) => {
     return [];
 };
 
+// Server side of a push conflict. The push answer carries no server row,
+// only { field: { client, server } } for the fields that differ: the fields
+// sent without a conflict hold the same value on both sides, so the server
+// version is the sent data with each conflicting field replaced by its
+// server value. A delete conflict sends field_conflicts as [] (empty PHP
+// array): nothing to replace then.
+const serverDataFromPushConflict = (clientData, fieldConflicts) => {
+    const serverValues = fieldConflicts && typeof fieldConflicts === 'object' && !Array.isArray(fieldConflicts)
+        ? Object.fromEntries(Object.entries(fieldConflicts)
+            .filter(([, detail]) => detail && typeof detail === 'object' && 'server' in detail)
+            .map(([field, detail]) => [field, detail.server]))
+        : {};
+    return { ...(clientData || {}), ...serverValues };
+};
+
 const isClientNotRegistered = (error) => error?.status === 404
     && /not registered/i.test(String(error?.data?.error || error?.message || ''));
 
@@ -538,7 +553,7 @@ class SyncEngine {
             object_id: change.id,
             action: conflict.action || change.action,
             client_data: change.data || {},
-            server_data: null,
+            server_data: serverDataFromPushConflict(change.data, conflict.field_conflicts),
             client_tms: conflict.client_tms ?? change.base_tms ?? null,
             server_tms: conflict.server_tms ?? null,
             field_conflicts: conflictFieldNames(conflict.field_conflicts),

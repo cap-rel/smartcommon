@@ -332,6 +332,32 @@ describe('SyncEngine', () => {
             expect((await storage.getEntity('thirdparty', 3)).local_updated_at).not.toBeNull();
         });
 
+        it('fills the server side of a push conflict from the field details', async () => {
+            await storage.putEntity('thirdparty', 3, { id: 3, name: 'A', town: 'Paris' }, 't3');
+            await engine.updateLocal('thirdparty', 3, { name: 'B', town: 'Paris' });
+            api.push.mockResolvedValue({
+                success: [], errors: [], id_mapping: [],
+                conflicts: [{ object_id: 3, client_tms: 't3', server_tms: 't4', field_conflicts: { name: { client: 'B', server: 'C' } } }]
+            });
+
+            const result = await engine.push();
+
+            expect(result.conflicts[0].server_data).toEqual({ name: 'C', town: 'Paris' });
+        });
+
+        it('keeps the server side an object for a delete conflict', async () => {
+            await storage.putEntity('thirdparty', 4, { id: 4, name: 'A' }, 't3');
+            await engine.deleteLocal('thirdparty', 4);
+            api.push.mockResolvedValue({
+                success: [], errors: [], id_mapping: [],
+                conflicts: [{ object_id: 4, action: 'delete', client_tms: 't3', server_tms: 't4', field_conflicts: [] }]
+            });
+
+            const result = await engine.push();
+
+            expect(result.conflicts[0].server_data).toEqual({});
+        });
+
         it('drops a change whose object no longer exists server-side', async () => {
             await storage.putEntity('thirdparty', 3, { id: 3 }, 't3');
             await engine.updateLocal('thirdparty', 3, { name: 'B' });

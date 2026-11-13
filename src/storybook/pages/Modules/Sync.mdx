@@ -214,7 +214,9 @@ Un conflit renvoyé par `getConflicts()` contient `conflict_id`, `table`,
 `field_conflict_details` et `created_at` ; les conflits connus du serveur ont
 aussi `table_name`. Un conflit de suppression n'est pas enregistré par le
 serveur : il reste local, avec un identifiant `local:<type>:<id>`, et ne peut
-pas être résolu en `"merged"`.
+pas être résolu en `"merged"`. Tant que le serveur n'a pas renvoyé le
+conflit, `server_data` est reconstruit depuis la réponse du push : les champs
+envoyés, chaque champ en conflit remplacé par sa valeur serveur.
 
 ```js
 const tempId = await engine.createLocal("thirdparty", { name: "Boulangerie Martin" });
