@@ -198,6 +198,47 @@ describe("log ring buffer", () => {
         expect(entries.length).toBeLessThan(40);
     });
 
+    describe("when the console is filtered", () => {
+        afterEach(() => {
+            localStorage.removeItem("LOG_LEVEL");
+            localStorage.removeItem("LOG_FILTER");
+            vi.unstubAllEnvs();
+            vi.restoreAllMocks();
+        });
+
+        it("still buffers an error that LOG_LEVEL hides from the console", () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            localStorage.setItem("LOG_LEVEL", "none");
+            createLogger("silenced").error("hidden on screen");
+
+            expect(consoleError).not.toHaveBeenCalled();
+            expect(getRecentLogs().at(-1)).toContain("hidden on screen");
+        });
+
+        it("still buffers a line whose namespace LOG_FILTER leaves out", () => {
+            const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
+            localStorage.setItem("LOG_FILTER", "useApi");
+            createLogger("Other").error("outside the filter");
+
+            expect(consoleError).not.toHaveBeenCalled();
+            expect(getRecentLogs().at(-1)).toContain("outside the filter");
+        });
+
+        it("keeps debug lines out of the buffer in production", () => {
+            vi.spyOn(console, "warn").mockImplementation(() => {});
+            vi.spyOn(console, "log").mockImplementation(() => {});
+            vi.stubEnv("PROD", true);
+            localStorage.setItem("LOG_LEVEL", "debug");
+            const log = createLogger("prod");
+            log.debug("noisy detail");
+            log.warning("worth reporting");
+
+            const entries = getRecentLogs();
+            expect(entries.some((e) => e.includes("noisy detail"))).toBe(false);
+            expect(entries.at(-1)).toContain("worth reporting");
+        });
+    });
+
     it("stops capturing when disabled", () => {
         setLogBufferEnabled(false);
         const log = createLogger("off");

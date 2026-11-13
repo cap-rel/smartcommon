@@ -111,7 +111,7 @@ réellement lues par smartcommon :
 | `router`, `basename` | `Router` | `"browser"` (défaut) ou `"hash"` ; chemin de base du routeur navigateur |
 | `components.theme`, `components.themes`, `components.variants` | `useVariantMerger`, `useComponentLabels` | thème et variantes par composant, libellés compris |
 | `globalState.reducers` | `ReduxProvider` | reducers RTK fusionnés avec ceux de smartcommon |
-| `feedback.logBuffer` | journal (`createLogger`) | `false` coupe l'extrait de journal joint par `FeedbackButton` |
+| `feedback.logBuffer` | journal (`createLogger`) | `false` coupe l'extrait de journal joint par `FeedbackButton` ; l'extrait garde les 200 dernières lignes au niveau de l'environnement (`warn` en production), même quand `LOG_LEVEL` ou `LOG_FILTER` les masquent à la console |
 | `debug`, `api.debug`, `navigation.debug`, `globalStates.debug` | hooks | journaux détaillés, globalement ou par domaine |
 
 Les clés `auth.api.*`, `i18n.translated` et `storage.*` de l'objet

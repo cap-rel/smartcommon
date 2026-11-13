@@ -169,8 +169,14 @@ const notifySubscribers = (entry) => {
 };
 
 /**
+ * Level of the environment: "debug" in dev, "warn" in prod.
+ */
+const getDefaultLogLevel = () =>
+    (typeof import.meta !== "undefined" && import.meta.env?.PROD) ? "warn" : "debug";
+
+/**
  * Returns the current effective log level.
- * Checks localStorage.LOG_LEVEL first, falls back to "debug" in dev, "warn" in prod.
+ * Checks localStorage.LOG_LEVEL first, falls back to the environment level.
  */
 const getLogLevel = () => {
     try {
@@ -178,7 +184,7 @@ const getLogLevel = () => {
         if (stored && LEVELS[stored] !== undefined) return stored;
     } catch (_) { /* SSR or restricted access */ }
 
-    return (typeof import.meta !== "undefined" && import.meta.env?.PROD) ? "warn" : "debug";
+    return getDefaultLogLevel();
 };
 
 /**
@@ -216,8 +222,17 @@ const getNamespaceColor = (namespace) => {
  * @param  {...any} messages - Data to log
  */
 const logCore = (label, color, level, namespace, ...messages) => {
-    // Level gate
     if (LEVELS[level] === undefined) level = "debug";
+
+    // Feed the ring buffer before the LOG_LEVEL / LOG_FILTER gates: they
+    // only tune what the console shows, and a report must carry its errors
+    // even when the console is silenced. The environment level still
+    // applies, so debug lines do not push the errors out of the excerpt.
+    if (LEVELS[level] >= LEVELS[getDefaultLogLevel()]) {
+        pushToLogBuffer(level, namespace, label, messages);
+    }
+
+    // Level gate
     if (LEVELS[level] < LEVELS[getLogLevel()]) return;
 
     // Namespace filter gate
@@ -248,11 +263,8 @@ const logCore = (label, color, level, namespace, ...messages) => {
 
     consoleFn(parts.join(""), ...styles, ...messages);
 
-    // Feed the ring buffer (always, regardless of console level filtering,
-    // so a report captures errors even when LOG_LEVEL hides them on screen)
-    pushToLogBuffer(level, namespace, label, messages);
-
-    // Notify subscribers (always, regardless of console level filtering)
+    // Notify subscribers (DebugConsole, other tabs) with the lines that pass
+    // LOG_LEVEL and LOG_FILTER; DebugConsole then applies its own filters.
     notifySubscribers({
         id: ++logIdCounter,
         timestamp: Date.now(),
