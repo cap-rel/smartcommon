@@ -1,5 +1,22 @@
 import Dexie from 'dexie';
 
+import { createLogger } from 'lib/utils';
+
+const log = createLogger('SyncStorage');
+
+// Ids reach the store as numbers or numeric strings depending on the caller
+// (the server sends strings, app code often passes numbers), and IndexedDB
+// keys 1 and '1' differently. Lookups try both forms of a numeric id.
+const idVariants = (id) => {
+    if (typeof id === 'number') {
+        return [id, String(id)];
+    }
+    if (typeof id === 'string' && /^-?\d+$/.test(id)) {
+        return [id, Number(id)];
+    }
+    return [id];
+};
+
 /**
  * SyncStorage - IndexedDB storage layer for offline sync
  * Uses Dexie for simplified IndexedDB operations and migrations
@@ -75,17 +92,39 @@ class SyncStorage {
      * Get a single entity by table and id
      */
     async getEntity(table, id) {
-        const entity = await this.db.entities.get([table, id]);
+        const entity = await this._getByIdVariants(this.db.entities, table, id);
         return entity || null;
+    }
+
+    /**
+     * Row of a [table+id] store under `id` or its other numeric form.
+     */
+    async _getByIdVariants(store, table, id) {
+        const [asGiven, ...others] = idVariants(id);
+        const exact = await store.get([table, asGiven]);
+        if (exact) {
+            return exact;
+        }
+        for (const other of others) {
+            const row = await store.get([table, other]);
+            if (row) {
+                log.debug(`${table} id ${JSON.stringify(id)} found as ${JSON.stringify(other)} (${typeof other})`);
+                return row;
+            }
+        }
+        return undefined;
     }
 
     /**
      * Store or update an entity
      */
     async putEntity(table, id, data, serverTms, localUpdatedAt = null) {
+        // Rewrite an existing row under its own key: storing 1 next to '1'
+        // would leave two copies of the same object.
+        const existing = await this._getByIdVariants(this.db.entities, table, id);
         const entity = {
             table,
-            id,
+            id: existing ? existing.id : id,
             data,
             server_tms: serverTms,
             local_updated_at: localUpdatedAt
@@ -98,7 +137,7 @@ class SyncStorage {
      * Delete an entity
      */
     async deleteEntity(table, id) {
-        await this.db.entities.delete([table, id]);
+        await this.db.entities.bulkDelete(idVariants(id).map(variant => [table, variant]));
     }
 
     /**
@@ -331,7 +370,7 @@ class SyncStorage {
      * Check if an entity has a tombstone
      */
     async hasTombstone(table, id) {
-        const tombstone = await this.db.local_tombstones.get([table, id]);
+        const tombstone = await this._getByIdVariants(this.db.local_tombstones, table, id);
         return tombstone !== undefined;
     }
 
@@ -339,7 +378,7 @@ class SyncStorage {
      * Delete a specific tombstone
      */
     async deleteTombstone(table, id) {
-        await this.db.local_tombstones.delete([table, id]);
+        await this.db.local_tombstones.bulkDelete(idVariants(id).map(variant => [table, variant]));
     }
 
     /**

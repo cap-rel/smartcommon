@@ -22,6 +22,40 @@ describe('SyncStorage', () => {
     });
 
     describe('entities', () => {
+        it('finds an entity stored with a string id when asked with a number, and back', async () => {
+            await storage.putEntity('product', '1', { label: 'from server' }, 't1');
+            await storage.putEntity('product', 2, { label: 'from app' }, 't2');
+
+            expect((await storage.getEntity('product', 1))?.data.label).toBe('from server');
+            expect((await storage.getEntity('product', '2'))?.data.label).toBe('from app');
+        });
+
+        it('updates the existing row instead of adding a copy under the other id type', async () => {
+            await storage.putEntity('product', '1', { label: 'v1' }, 't1');
+            await storage.putEntity('product', 1, { label: 'v2' }, 't2');
+
+            const rows = await storage.getEntitiesByTable('product');
+            expect(rows).toHaveLength(1);
+            expect(rows[0]).toMatchObject({ id: '1', data: { label: 'v2' } });
+        });
+
+        it('deletes an entity and its tombstone whatever the id type', async () => {
+            await storage.putEntity('product', '3', { label: 'x' }, 't');
+            await storage.addTombstone('product', '3');
+
+            expect(await storage.hasTombstone('product', 3)).toBe(true);
+            await storage.deleteEntity('product', 3);
+            await storage.deleteTombstone('product', 3);
+
+            expect(await storage.getEntity('product', '3')).toBeNull();
+            expect(await storage.hasTombstone('product', '3')).toBe(false);
+        });
+
+        it('keeps non numeric ids exact', async () => {
+            await storage.putEntity('product', 'temp_abc', { label: 'new' }, null);
+            expect((await storage.getEntity('product', 'temp_abc'))?.data.label).toBe('new');
+        });
+
         it('should store and retrieve an entity', async () => {
             await storage.putEntity('thirdparty', 123, { name: 'Test Company' }, '2024-01-01T00:00:00Z');
 

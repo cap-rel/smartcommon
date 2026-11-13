@@ -260,6 +260,8 @@ try {
 
 ## Pièges
 
+- Un identifiant numérique se lit sous ses deux formes : `getEntity('product', 1)`
+  trouve l'entité gardée sous `'1'`, et une écriture réutilise la clé existante.
 - `SyncStorage.init()` doit être attendu avant tout appel : sans lui, la base
   n'existe pas et chaque méthode échoue.
 - `updateLocal` et `deleteLocal` lèvent `Entity not found: <table>/<id>` si
