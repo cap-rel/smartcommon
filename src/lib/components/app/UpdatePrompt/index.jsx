@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
 
 import { usePWAUpdate } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
 
@@ -40,7 +41,7 @@ export const UpdatePrompt = (props) => {
         onUpdateActivated,
     } = props;
 
-    const mergedLabels = { ...DEFAULT_LABELS, ...labels };
+    const mergedLabels = { ...DEFAULT_LABELS, ...useComponentLabels("UpdatePrompt", labels) };
 
     const onUpdateAvailableRef = useRef(onUpdateAvailable);
     const labelsRef = useRef(mergedLabels);

@@ -30,6 +30,7 @@ import { DEFAULT_CORNERS } from "./perspectiveGeometry";
 import { CropOverlay } from "./CropOverlay";
 import { PerspectiveTool } from "./PerspectiveTool";
 import { RedactOverlay } from "./RedactOverlay";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 const log = createLogger("PhotoEditor");
 
@@ -118,7 +119,7 @@ const PhotoEditorContent = (props) => {
         footerProps,
     } = { ...defaultProps, ...props };
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("PhotoEditor", userLabels) };
 
     const [state, setState] = useState(initialState);
     const [activeTool, setActiveTool] = useState(null);

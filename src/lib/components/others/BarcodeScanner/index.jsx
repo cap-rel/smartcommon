@@ -7,6 +7,7 @@ import {
     defaultProps,
     propTypes,
 } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 const SCANNER_ELEMENT_ID = "barcode-scanner-region";
 
@@ -65,7 +66,7 @@ const BarcodeScannerContent = (props) => {
         labels: userLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("BarcodeScanner", userLabels) };
 
     const html5QrCodeRef = useRef(null);
     const lastScanRef = useRef(null);

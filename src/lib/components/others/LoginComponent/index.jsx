@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 import { FaQrcode } from "react-icons/fa6";
 
 import { useApi } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { Input, Button, Select, BarcodeScanner, DevicePicker } from "lib/components";
 import { twMerge } from "lib/utils";
 
@@ -50,7 +51,7 @@ export const LoginComponent = (props) => {
         labels: userLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("LoginComponent", userLabels) };
     const devicePickerLabels = userDevicePickerLabels;
     const resolvedEntitiesTimeoutMs = entitiesTimeoutMs ?? abortTimeoutMs;
     const resolvedLoginTimeoutMs = loginTimeoutMs ?? abortTimeoutMs;

@@ -3,6 +3,7 @@ import { FaBug } from "react-icons/fa6";
 
 import { propTypes, defaultProps, DEFAULT_LABELS } from "./props";
 import { FeedbackModal } from "./FeedbackModal";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 /**
  * FeedbackButton - "Report a problem" button + modal form for PWAs.
@@ -28,7 +29,7 @@ export const FeedbackButton = (props) => {
         photoEditorLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("Feedback", userLabels) };
 
     const [isOpen, setIsOpen] = useState(false);
     const buttonRef = useRef(null);

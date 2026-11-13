@@ -5,6 +5,7 @@ import { render, renderHook, screen, fireEvent, act } from "@testing-library/rea
 import { ConfirmProvider } from "./index";
 import { ConfirmContext } from "./context";
 import { fr } from "lib/locales/fr";
+import { LibConfigProvider } from "lib/components/app/LibConfigProvider";
 
 describe("ConfirmProvider", () => {
     it("renders its children", () => {
@@ -296,5 +297,35 @@ describe("ConfirmProvider - dialog semantics, keyboard and theme", () => {
         await open(trigger);
         expect(screen.getByRole("button", { name: fr.ConfirmProvider.cancel })).toBeDefined();
         expect(screen.getByRole("button", { name: fr.ConfirmProvider.confirm })).toBeDefined();
+    });
+});
+
+describe("ConfirmProvider - labels from the Provider theme", () => {
+    const themed = (ui, labels) => (
+        <LibConfigProvider value={{ components: { theme: "app", themes: { app: { ConfirmProvider: { labels } } } } }}>
+            {ui}
+        </LibConfigProvider>
+    );
+
+    const Probe = () => {
+        const ctx = useContext(ConfirmContext);
+        return <button onClick={() => ctx.confirm({ message: "Sure?" })}>open</button>;
+    };
+
+    it("takes its texts from the theme when no labels prop is given", async () => {
+        render(themed(<ConfirmProvider><Probe /></ConfirmProvider>, fr.ConfirmProvider));
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: "open" }));
+        });
+        expect(screen.getByRole("button", { name: fr.ConfirmProvider.cancel })).toBeDefined();
+    });
+
+    it("lets a labels prop override one text and keeps the theme for the other", async () => {
+        render(themed(<ConfirmProvider labels={{ confirm: "Supprimer" }}><Probe /></ConfirmProvider>, fr.ConfirmProvider));
+        await act(async () => {
+            fireEvent.click(screen.getByRole("button", { name: "open" }));
+        });
+        expect(screen.getByRole("button", { name: "Supprimer" })).toBeDefined();
+        expect(screen.getByRole("button", { name: fr.ConfirmProvider.cancel })).toBeDefined();
     });
 });

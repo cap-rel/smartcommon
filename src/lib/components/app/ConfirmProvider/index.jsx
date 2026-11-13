@@ -5,6 +5,7 @@ import { Overlay } from "lib/components";
 
 import { ConfirmContext } from "./context";
 import { DEFAULT_LABELS, propTypes } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 // Theme tokens only (soft-bg, strong-text, error...): they follow the
 // light / dark palette like the other components.
@@ -31,9 +32,10 @@ const FOCUS_RING = "outline-none focus-visible:ring-2 focus-visible:ring-primary
 export const ConfirmProvider = ({ children, labels }) => {
     const [state, setState] = useState(null);
 
+    const themedLabels = useComponentLabels("ConfirmProvider", labels);
     const resolvedLabels = {
-        cancel: labels?.cancel ?? DEFAULT_LABELS.cancel,
-        confirm: labels?.confirm ?? DEFAULT_LABELS.confirm,
+        cancel: themedLabels.cancel ?? DEFAULT_LABELS.cancel,
+        confirm: themedLabels.confirm ?? DEFAULT_LABELS.confirm,
     };
 
     const baseId = useId();

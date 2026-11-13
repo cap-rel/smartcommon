@@ -6,6 +6,7 @@ import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { applyFunctionIfNotNil, twMerge } from "lib/utils";
 
 import { DEFAULT_LABELS, defaultProps, propTypes } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 const SEARCH_DEBOUNCE_MS = 250;
 
@@ -96,7 +97,7 @@ export const DataTable = (props) => {
     const columns = Array.isArray(props.columns) ? props.columns : [];
     const data = Array.isArray(props.data) ? props.data : [];
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("DataTable", userLabels) };
 
     // ----- Sort (controlled or uncontrolled) -----
     const sortIsControlled = sortByProp !== undefined;

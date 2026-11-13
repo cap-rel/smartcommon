@@ -9,6 +9,7 @@ import {
   DEFAULT_REVERSE_GEOCODE_URL,
   propTypes,
 } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 // Pinned to the installed leaflet version so the CDN stylesheet matches the
 // runtime. Bump both together when upgrading leaflet.
@@ -86,7 +87,7 @@ export const Map = (props) => {
     onChange,
     className,
   } = props;
-  const labels = { ...DEFAULT_LABELS, ...(props.labels ?? {}) };
+  const labels = { ...DEFAULT_LABELS, ...useComponentLabels("Map", props.labels) };
 
   const containerRef = useRef(null);
   // Keep the latest callbacks/labels reachable from the effect without

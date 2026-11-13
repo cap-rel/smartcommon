@@ -14,6 +14,7 @@ import { CategoryGrid } from "./CategoryGrid";
 import { ProductGrid } from "./ProductGrid";
 import { ConfirmStep } from "./ConfirmStep";
 import { Cart } from "./Cart";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -78,7 +79,7 @@ const ProductCategoryBrowserContent = (props) => {
         cancelButtonProps = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("ProductCategoryBrowser", userLabels) };
 
     // A prefilled product in a quantity mode opens straight on the confirm
     // step (edit-an-existing-line flow).

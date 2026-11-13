@@ -14,6 +14,7 @@ import {
     normaliseDeviceIcon,
     propTypes,
 } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 // Map of icon key -> react-icons component.
 // Kept inside the file so consumers don't have to wire it; we still
@@ -69,7 +70,7 @@ export const DevicePicker = (props) => {
         labels: userLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("DevicePicker", userLabels) };
 
     const hasExistingDevices = existingDevices.length > 0;
 

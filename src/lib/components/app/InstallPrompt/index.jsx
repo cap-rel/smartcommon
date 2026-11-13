@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { INSTALL_PROMPT_OPEN_EVENT, useDialog, useInstallPrompt } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { createLogger } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
@@ -82,10 +83,11 @@ export const InstallPrompt = (props) => {
         onDismiss,
     } = props;
 
+    const themedLabels = useComponentLabels("InstallPrompt", labels);
     const mergedLabels = {
         ...DEFAULT_LABELS,
-        ...labels,
-        guides: { ...DEFAULT_LABELS.guides, ...labels.guides },
+        ...themedLabels,
+        guides: { ...DEFAULT_LABELS.guides, ...themedLabels.guides },
     };
 
     const {

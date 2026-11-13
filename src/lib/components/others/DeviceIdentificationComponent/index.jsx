@@ -3,6 +3,7 @@ import { isEmpty } from "lodash";
 import { MdDevices } from "react-icons/md";
 
 import { useApi } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { Input, Button, Checker } from "lib/components";
 import { detectAutoViewport } from "lib/components/app/ViewportProvider";
 import { ViewportContext } from "lib/components/app/ViewportProvider/context";
@@ -35,7 +36,7 @@ export const DeviceIdentificationComponent = (props) => {
         labels: userLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("DeviceIdentificationComponent", userLabels) };
     const resolvedTimeoutMs = identifyTimeoutMs ?? abortTimeoutMs;
 
     const api = useApi();

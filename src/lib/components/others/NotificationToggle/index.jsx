@@ -1,4 +1,5 @@
 import { usePushNotifications } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { twMerge } from "lib/utils";
 
 import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
@@ -16,7 +17,7 @@ import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
  */
 export const NotificationToggle = (props) => {
     const { label, labels: userLabels = {}, containerProps = {}, className } = props;
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("NotificationToggle", userLabels) };
 
     const { permission, isSubscribed, isLoading, error, subscribe, unsubscribe } =
         usePushNotifications();

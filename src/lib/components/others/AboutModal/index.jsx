@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { Modal } from "lib/components";
 
 import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 export const AboutModal = (props) => {
     const {
@@ -16,7 +17,7 @@ export const AboutModal = (props) => {
         labels: userLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("AboutModal", userLabels) };
 
     const [updateStatus, setUpdateStatus] = useState("idle");
     // 'idle' | 'checking' | 'available' | 'upToDate' | 'updating'

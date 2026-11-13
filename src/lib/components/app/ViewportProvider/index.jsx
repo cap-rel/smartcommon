@@ -9,6 +9,7 @@ import {
     ViewportContext,
 } from "./context";
 import { DEFAULT_LABELS, propTypes } from "./props";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 const VALID_PREFERENCES = ["auto", "mobile", "tablet", "desktop"];
 
@@ -68,7 +69,7 @@ export const ViewportProvider = ({ children, labels, onPreferenceChange }) => {
     });
 
     const confirmReloadMessage =
-        labels?.confirmReloadMessage ?? DEFAULT_LABELS.confirmReloadMessage;
+        useComponentLabels("ViewportProvider", labels).confirmReloadMessage ?? DEFAULT_LABELS.confirmReloadMessage;
 
     // setPreference(next, { silent }):
     //   silent=false (default) -> ask the user to confirm before reload

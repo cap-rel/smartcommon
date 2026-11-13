@@ -8,6 +8,7 @@ import { ImageCanvas } from "./ImageCanvas";
 import { TypePicker } from "./TypePicker";
 import { EditorWrapper } from "./EditorWrapper";
 import { AnnotationList } from "./AnnotationList";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 
 export const PhotoAnnotator = (props) => {
     const {
@@ -51,7 +52,7 @@ export const PhotoAnnotator = (props) => {
         markerProps = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("PhotoAnnotator", userLabels) };
 
     // Detect mode. Event-based wins if any of its props are present.
     const isEventMode = Boolean(

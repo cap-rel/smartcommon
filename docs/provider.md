@@ -109,7 +109,7 @@ réellement lues par smartcommon :
 | `api.onApiError`, `api.onSessionExpired`, `api.onLoginPersist` | `ApiProvider` | toast d'erreur, session expirée, enrichissement de l'utilisateur à la connexion |
 | `theme` | `ThemeApplier` | `"light"` (défaut), `"dark"` ou `"auto"` (suit le système) |
 | `router`, `basename` | `Router` | `"browser"` (défaut) ou `"hash"` ; chemin de base du routeur navigateur |
-| `components.theme`, `components.themes`, `components.variants` | `useVariantMerger` | thème et variantes par composant |
+| `components.theme`, `components.themes`, `components.variants` | `useVariantMerger`, `useComponentLabels` | thème et variantes par composant, libellés compris |
 | `globalState.reducers` | `ReduxProvider` | reducers RTK fusionnés avec ceux de smartcommon |
 | `feedback.logBuffer` | journal (`createLogger`) | `false` coupe l'extrait de journal joint par `FeedbackButton` |
 | `debug`, `api.debug`, `navigation.debug`, `globalStates.debug` | hooks | journaux détaillés, globalement ou par domaine |
@@ -117,6 +117,28 @@ réellement lues par smartcommon :
 Les clés `auth.api.*`, `i18n.translated` et `storage.*` de l'objet
 d'exemple de `components/app/LibConfigProvider/index.jsx` ne sont lues
 par aucun composant : ne pas s'appuyer dessus.
+
+### Libellés de toute l'application
+
+Sans `labels`, un composant parle anglais. Plutôt que de passer le bundle
+à chaque usage, l'application le donne une fois, dans la langue courante :
+
+```jsx
+const bundle = locales[lang] ?? {};
+const config = {
+    components: {
+        theme: "app",
+        themes: { app: Object.fromEntries(Object.entries(bundle).map(([name, labels]) => [name, { labels }])) },
+    },
+};
+```
+
+Tous les composants le lisent : ceux qui passent par `useVariantMerger`
+et les autres (`ConfirmProvider`, `UpdatePrompt`, `InstallPrompt`,
+`ViewportProvider`, `AboutModal`, `DataTable`, `LoginComponent`...) par
+`useComponentLabels(nom, labels)`. Une prop `labels` se pose par-dessus,
+clé par clé : remplacer un texte garde la traduction des autres.
+`ErrorBoundary`, monté au-dessus du contexte, garde sa prop `errorLabels`.
 
 ## `<ErrorBoundary>`
 
