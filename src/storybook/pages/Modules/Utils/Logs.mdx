@@ -44,7 +44,7 @@ import {
 | `filterSecrets` | `(text) => string` | Remplace jetons, mots de passe et clés par `[filtré]`. |
 | `recordNetworkError` | `(method, url, status) => void` | Ajoute une erreur réseau au tampon (20 entrées au plus). |
 | `getRecentNetworkErrors` | `() => Array` | Erreurs réseau enregistrées : `{ method, url, status, at }`. |
-| `setNetworkErrorBufferEnabled` | `(value) => void` | Active ou coupe le tampon réseau ; le couper le vide. |
+| `setNetworkErrorBufferEnabled` | `(value) => void` | Active ou coupe le tampon réseau ; le couper le vide. Piloté par `config.feedback.networkErrors` du `<Provider>`. |
 
 ## Le journal : `createLogger` et `log`
 

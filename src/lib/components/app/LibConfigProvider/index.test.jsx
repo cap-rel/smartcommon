@@ -4,6 +4,7 @@ import { render, renderHook, screen, waitFor } from "@testing-library/react";
 import { LibConfigProvider } from "./index";
 import { useLibConfig } from "lib/hooks";
 import { createLogger, getRecentLogs, setLogBufferEnabled } from "lib/utils/functions/consoleLogs";
+import { getRecentNetworkErrors, recordNetworkError, setNetworkErrorBufferEnabled } from "lib/utils/functions/networkErrors";
 
 describe("LibConfigProvider", () => {
     it("renders its children", () => {
@@ -130,5 +131,27 @@ describe("LibConfigProvider - feedback log buffer", () => {
         const log = createLogger("cfg-flip");
         log.error("after flip");
         await waitFor(() => expect(getRecentLogs().some((l) => l.includes("after flip"))).toBe(true));
+    });
+});
+
+describe("LibConfigProvider - feedback network errors", () => {
+    afterEach(() => {
+        setNetworkErrorBufferEnabled(true);
+    });
+
+    it("keeps recording network errors by default", async () => {
+        render(<LibConfigProvider value={{}}><span /></LibConfigProvider>);
+        recordNetworkError("GET", "/api/items", 500);
+
+        await waitFor(() => expect(getRecentNetworkErrors().at(-1)).toMatchObject({ method: "GET", status: 500 }));
+    });
+
+    it("stops and drains them when feedback.networkErrors is false", async () => {
+        recordNetworkError("GET", "/api/before", 502);
+        render(<LibConfigProvider value={{ feedback: { networkErrors: false } }}><span /></LibConfigProvider>);
+
+        await waitFor(() => expect(getRecentNetworkErrors()).toEqual([]));
+        recordNetworkError("POST", "/api/after", 500);
+        expect(getRecentNetworkErrors()).toEqual([]);
     });
 });

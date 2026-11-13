@@ -2,6 +2,7 @@ import { useEffect } from "react";
 
 import { I18nextProvider } from "lib/components";
 import { setLogBufferEnabled } from "lib/utils/functions/consoleLogs";
+import { setNetworkErrorBufferEnabled } from "lib/utils/functions/networkErrors";
 
 import { LibConfigContext } from "./context";
 import { propTypes } from "./props";
@@ -15,6 +16,13 @@ export const LibConfigProvider = (props) => {
   useEffect(() => {
     setLogBufferEnabled(logBuffer !== false);
   }, [logBuffer]);
+
+  // Same opt-out for the recent network errors joined to a report:
+  // libConfig.feedback.networkErrors set to false disables them.
+  const networkErrors = value?.feedback?.networkErrors;
+  useEffect(() => {
+    setNetworkErrorBufferEnabled(networkErrors !== false);
+  }, [networkErrors]);
 
   return (
     <LibConfigContext.Provider value={value}>
