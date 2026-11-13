@@ -10,7 +10,8 @@ import * as stories from "../.stories";
 
 Éditeur Markdown minimaliste à 2 modes : **édition** (textarea brut)
 et **rendu** (HTML sanitisé via DOMPurify + `marked`). Bascule via
-deux boutons "Markdown" / "Rendu" en bas du champ.
+deux boutons en bas du champ ("Markdown" / "Preview" par défaut,
+traduits via `labels`).
 
 Pensé pour les descriptions longues dans un formulaire (compte-rendu,
 notes, descriptions produit) où on veut un peu de mise en forme sans
@@ -24,10 +25,25 @@ strippés. Sûr pour du contenu utilisateur arbitraire.
 
 ## Capture de hauteur
 
-À la bascule vers le mode "Rendu", la hauteur de la textarea est lue
+À la bascule vers le mode rendu, la hauteur de la textarea est lue
 (`getBoundingClientRect()`) puis injectée dans le `<div>` HTML rendu
 via une variable CSS `--height`. Pas de saut visuel entre les deux
 modes.
+
+## Textes des boutons
+
+Les textes des deux boutons passent par `labels` (clé `Editor` des
+bundles de langue) : `markdownButton` ("Markdown") et `previewButton`
+("Preview" en anglais, "Rendu" en français).
+
+```jsx
+import { locales } from "@cap-rel/smartcommon";
+
+<Editor label="Compte-rendu" labels={locales.fr.Editor} />
+```
+
+L'étoile "requis" se style via `starProps` (`requiredStarProps`, ancien
+nom, reste accepté).
 
 ## Controlled / uncontrolled
 
@@ -36,11 +52,10 @@ modes.
 
 ## Limites
 
-- Pas de toolbar (gras, italique, listes…) — l'utilisateur tape du
+- Pas de toolbar (gras, italique, listes...) - l'utilisateur tape du
   Markdown brut.
 - Pas d'auto-resize de la textarea.
 - DOMPurify config non exposée via props.
-- Labels boutons "Markdown" / "Rendu" en dur (pas extraits en `labels`).
 
 ## Alternative WYSIWYG
 

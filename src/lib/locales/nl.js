@@ -352,6 +352,7 @@ export const nl = {
     SearchableSelect: {
         requiredError: "Dit veld is verplicht.",
         searchPlaceholder: "Zoeken...",
+        noResults: "Geen resultaten",
     },
     ColorPicker: {
         requiredError: "Dit veld is verplicht.",
@@ -364,6 +365,11 @@ export const nl = {
     },
     List: {
         searchPlaceholder: "Zoeken...",
+        noItems: "Geen items gevonden",
+    },
+    Editor: {
+        markdownButton: "Markdown",
+        previewButton: "Voorbeeld",
     },
     Page: {
         back: "Terug",

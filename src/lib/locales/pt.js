@@ -355,6 +355,7 @@ export const pt = {
     SearchableSelect: {
         requiredError: "Este campo é obrigatório.",
         searchPlaceholder: "Pesquisar...",
+        noResults: "Nenhum resultado",
     },
     ColorPicker: {
         requiredError: "Este campo é obrigatório.",
@@ -367,6 +368,11 @@ export const pt = {
     },
     List: {
         searchPlaceholder: "Pesquisar...",
+        noItems: "Nenhum item encontrado",
+    },
+    Editor: {
+        markdownButton: "Markdown",
+        previewButton: "Pré-visualização",
     },
     Page: {
         back: "Voltar",

@@ -81,7 +81,7 @@ export const List = props => {
                         ...props,
                         className: "text-soft-text text-center italic "
                     }))}>
-                        Aucun élément trouvé
+                        {labels.noItems}
                     </div>
                 }
                 {/* {!isNil(pagination) && 

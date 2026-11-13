@@ -361,6 +361,7 @@ export const pl = {
     SearchableSelect: {
         requiredError: "To pole jest wymagane.",
         searchPlaceholder: "Szukaj...",
+        noResults: "Brak wyników",
     },
     ColorPicker: {
         requiredError: "To pole jest wymagane.",
@@ -373,6 +374,11 @@ export const pl = {
     },
     List: {
         searchPlaceholder: "Szukaj...",
+        noItems: "Nie znaleziono elementów",
+    },
+    Editor: {
+        markdownButton: "Markdown",
+        previewButton: "Podgląd",
     },
     Page: {
         back: "Wstecz",

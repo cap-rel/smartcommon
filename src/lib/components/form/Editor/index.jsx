@@ -9,7 +9,16 @@ import { isNil } from "lodash";
 import { Label, Textarea, Button } from "lib/components";
 import { useStates, useVariantMerger } from "lib/hooks";
 
-import { propTypes } from "./props";
+import { propTypes, DEFAULT_LABELS } from "./props";
+
+// Label renders the required star through the `starProps` slot.
+// `requiredStarProps` is the former name of that slot: it still applies when
+// `starProps` is not given.
+const withStarProps = (props) => (
+  isNil(props.starProps) && !isNil(props.requiredStarProps)
+    ? { ...props, starProps: props.requiredStarProps }
+    : props
+);
 
 // TODO Style view (h1, h2, ...)
 // TODO Create a random id for textarea
@@ -24,6 +33,7 @@ export const Editor = ({
   labelContainerProps,
   labelProps,
   requiredStarProps,
+  starProps,
   helpProps,
   textareaContainerProps,
   textareaProps,
@@ -35,17 +45,33 @@ export const Editor = ({
   htmlButtonProps,
   htmlButtonIconProps,
   htmlButtonLabelProps,
+  labels: userLabels,
   ...props
 }) => {
 
-  const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("Editor", props);
+  // Label reads its slots through mergeProps, that is from what
+  // useVariantMerger receives: the Label slots pulled out above go back in.
+  const { variantProps, mergeProps, mergeQuickProps, setParams } = useVariantMerger("Editor", withStarProps({
+    ...props,
+    containerProps,
+    labelContainerProps,
+    labelProps,
+    requiredStarProps,
+    starProps,
+    helpProps,
+    labels: userLabels,
+  }));
+
+  // Theme labels (through useVariantMerger) overridden by the `labels` prop.
+  const labels = { ...DEFAULT_LABELS, ...variantProps.labels };
 
   const textareaPs = { ...props, ...textareaProps };
   const { required, readOnly, disabled, id, value, defaultValue } = textareaPs;
 
   const textareaPsForLabel = { disabled, required, readOnly, id };
 
-  const allLabelPs = { label, labelRow, help, containerProps, labelContainerProps, labelProps, requiredStarProps, helpProps, ...textareaPsForLabel };
+  // Label slots (container, label, star, help...) are read through mergeProps.
+  const allLabelPs = { label, labelRow, help, ...textareaPsForLabel };
 
   // Ref to access textarea element for height measurement
   const textareaContainerRef = useRef(null);
@@ -124,7 +150,7 @@ export const Editor = ({
               { ...mdButtonLabelProps}
               className={twMerge(`italic font-semibold`, mdButtonLabelProps?.className)}
             >
-              Markdown
+              {labels.markdownButton}
             </div>
           </Button>
           <Button
@@ -141,7 +167,7 @@ export const Editor = ({
               { ...htmlButtonLabelProps}
               className={twMerge(`italic font-semibold`, htmlButtonLabelProps?.className)}
             >
-              Rendu
+              {labels.previewButton}
             </div>
           </Button>
         </div>

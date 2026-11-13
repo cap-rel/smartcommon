@@ -27,8 +27,7 @@ export const propTypes = {
     error: PropTypes.node,
     variant: PropTypes.object,
 
-    // containerProps is applied both by Label (outer wrapper) and to the
-    // relative wrapper of the input and its dropdown.
+    // Outer wrapper (rendered by Label).
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
     iconProps: PropTypes.object,
@@ -42,6 +41,8 @@ export const propTypes = {
     helpAndErrorsContainerProps: PropTypes.object,
     helpProps: PropTypes.object,
     errorProps: PropTypes.object,
+    // Relative wrapper of the input, the clear button and the dropdown.
+    selectContainerProps: PropTypes.object,
     inputProps: PropTypes.object,
     clearButtonProps: PropTypes.object,
     dropdownProps: PropTypes.object,
@@ -52,4 +53,5 @@ export const propTypes = {
 export const DEFAULT_LABELS = {
     requiredError: "This field is required.",
     searchPlaceholder: "Search...",
+    noResults: "No results",
 };

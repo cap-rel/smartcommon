@@ -91,9 +91,19 @@ errors = (currentValue) => ({
 });
 ```
 
-Le message (`requiredError`) et le placeholder par défaut
-(`searchPlaceholder`) passent par `labels` (clé `SearchableSelect` des
-bundles de langue).
+Le message (`requiredError`), le placeholder par défaut
+(`searchPlaceholder`) et le texte de la liste vide (`noResults`,
+"No results" par défaut, "Aucun résultat" en français) passent par
+`labels` (clé `SearchableSelect` des bundles de langue).
+
+## Slots de styling
+
+`containerProps` cible le wrapper extérieur rendu par `<Label>`, comme
+pour `<Select>` et `<Input>`. Le wrapper relatif du champ, du bouton
+d'effacement et de la liste se style via `selectContainerProps`.
+Autres slots : `inputProps`, `clearButtonProps`, `dropdownProps`,
+`emptyMessageProps`, `optionProps` et ceux de `<Label>` (`labelProps`,
+`starProps`, `helpProps`...).
 
 ## Props
 
@@ -105,7 +115,7 @@ bundles de langue).
 | `defaultValue` | string \| number | - | uncontrolled |
 | `onChange` | func | - | `(value) => void` |
 | `placeholder` | string | `labels.searchPlaceholder` | texte si rien de sélectionné |
-| `labels` | object | `DEFAULT_LABELS` (anglais) | `requiredError`, `searchPlaceholder` |
+| `labels` | object | `DEFAULT_LABELS` (anglais) | `requiredError`, `searchPlaceholder`, `noResults` |
 | `required` | bool | - | active la validation `required` |
 | `disabled` | bool | - | grise le champ |
 | `variant` | object | - | hook variantMerger (rare en usage direct) |

@@ -349,6 +349,7 @@ export const fr = {
     SearchableSelect: {
         requiredError: "Ce champ est requis.",
         searchPlaceholder: "Rechercher...",
+        noResults: "Aucun résultat",
     },
     ColorPicker: {
         requiredError: "Ce champ est requis.",
@@ -361,6 +362,11 @@ export const fr = {
     },
     List: {
         searchPlaceholder: "Rechercher...",
+        noItems: "Aucun élément trouvé",
+    },
+    Editor: {
+        markdownButton: "Markdown",
+        previewButton: "Rendu",
     },
     Page: {
         back: "Retour",

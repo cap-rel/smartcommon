@@ -38,6 +38,7 @@ import { DEFAULT_LABELS as NotificationToggle } from "lib/components/others/Noti
 import { DEFAULT_LABELS as Files } from "lib/components/formats/Files/props";
 import { DEFAULT_LABELS as Input } from "lib/components/form/Input/props";
 import { DEFAULT_LABELS as Textarea } from "lib/components/form/Textarea/props";
+import { DEFAULT_LABELS as Editor } from "lib/components/form/Editor/props";
 import { DEFAULT_LABELS as Rater } from "lib/components/form/Rater/props";
 import { DEFAULT_LABELS as Range } from "lib/components/form/Range/props";
 import { DEFAULT_LABELS as Timer } from "lib/components/form/Timer/props";
@@ -92,6 +93,7 @@ export const en = {
     Files,
     Input,
     Textarea,
+    Editor,
     Rater,
     Range,
     Timer,

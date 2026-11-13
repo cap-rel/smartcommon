@@ -103,7 +103,9 @@ export const SearchableSelect = (props) => {
             errors={filteredErrors}
             mergeProps={mergeProps}
         >
-            <div ref={containerRef} {...mergeProps("container", p => ({
+            {/* containerProps belongs to Label's outer wrapper (as in Select
+                and Input): this wrapper has its own selectContainer slot. */}
+            <div ref={containerRef} {...mergeProps("selectContainer", p => ({
                 ...p,
                 className: `relative ${p?.className || ""}`
             }))}>
@@ -152,7 +154,7 @@ export const SearchableSelect = (props) => {
                                 ...p,
                                 className: `p-3 text-soft-text text-center ${p?.className || ""}`
                             }))}>
-                                Aucun resultat
+                                {labels.noResults}
                             </div>
                         ) : (
                             filteredOptions.map((opt) => (

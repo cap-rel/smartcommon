@@ -40,12 +40,24 @@ case-insensitive ET l'affichage.
 Règle `required` intégrée si la prop `required` est `true`. Message dans
 `labels.requiredError` (clé `SearchableSelect` des bundles de langue).
 
+## Textes
+
+`labels` (clé `SearchableSelect` des bundles de langue) :
+`requiredError`, `searchPlaceholder` et `noResults` (texte affiché
+quand aucune option ne correspond : "No results" par défaut,
+"Aucun résultat" en français).
+
+## Slots
+
+`containerProps` cible le wrapper extérieur rendu par `<Label>` (comme
+pour `<Select>` et `<Input>`). Le wrapper qui contient le champ, le
+bouton d'effacement et la liste a son propre slot,
+`selectContainerProps`.
+
 ## Limites
 
 - Filtre client-only (pas d'adapter async natif).
 - Pas de multi-select, pas de groupes, pas de surbrillance du match.
-- Texte de la liste vide ("Aucun resultat") écrit en dur dans le code,
-  hors `labels`.
 
 ## Voir aussi
 

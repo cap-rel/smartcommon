@@ -353,6 +353,7 @@ export const it = {
     SearchableSelect: {
         requiredError: "Questo campo è obbligatorio.",
         searchPlaceholder: "Cerca...",
+        noResults: "Nessun risultato",
     },
     ColorPicker: {
         requiredError: "Questo campo è obbligatorio.",
@@ -365,6 +366,11 @@ export const it = {
     },
     List: {
         searchPlaceholder: "Cerca...",
+        noItems: "Nessun elemento trovato",
+    },
+    Editor: {
+        markdownButton: "Markdown",
+        previewButton: "Anteprima",
     },
     Page: {
         back: "Indietro",

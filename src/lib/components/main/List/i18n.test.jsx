@@ -30,3 +30,25 @@ describe("placeholders follow labels", () => {
         expect(screen.getByPlaceholderText("Pick a customer")).toBeTruthy();
     });
 });
+
+describe("List - empty state follows labels", () => {
+    it("says so in English by default", () => {
+        render(<List />);
+        expect(screen.getByText("No items found")).toBeTruthy();
+    });
+
+    it("takes the text from a locale bundle", () => {
+        render(<List labels={fr.List} />);
+        expect(screen.getByText("Aucun élément trouvé")).toBeTruthy();
+    });
+
+    it("lets the consumer override the text", () => {
+        render(<List labels={{ noItems: "Nothing yet" }} />);
+        expect(screen.getByText("Nothing yet")).toBeTruthy();
+    });
+
+    it("is not shown when the list has items", () => {
+        render(<List><div>Row</div></List>);
+        expect(screen.queryByText("No items found")).toBeNull();
+    });
+});

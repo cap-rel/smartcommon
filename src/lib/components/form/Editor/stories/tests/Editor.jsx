@@ -6,5 +6,5 @@ export const Editor = setTestStory({
         label: "Article content",
     },
     props: propTypes,
-    hidden: ["id", "onValueChange", "containerProps", "labelContainerProps", "labelProps", "requiredStarProps", "helpProps", "textareaContainerProps", "textareaProps", "htmlProps", "buttonContainerProps", "mdButtonProps", "mdButtonIconProps", "mdButtonLabelProps", "htmlButtonProps", "htmlButtonIconProps", "htmlButtonLabelProps"]
+    hidden: ["id", "onValueChange", "containerProps", "labelContainerProps", "labelProps", "starProps", "requiredStarProps", "helpProps", "textareaContainerProps", "textareaProps", "htmlProps", "buttonContainerProps", "mdButtonProps", "mdButtonIconProps", "mdButtonLabelProps", "htmlButtonProps", "htmlButtonIconProps", "htmlButtonLabelProps"]
 });

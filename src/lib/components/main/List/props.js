@@ -28,4 +28,5 @@ export const defaultProps = {
 
 export const DEFAULT_LABELS = {
     searchPlaceholder: "Search...",
+    noItems: "No items found",
 };

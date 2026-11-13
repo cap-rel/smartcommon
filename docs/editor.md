@@ -2,8 +2,8 @@
 
 `<Editor>` est un éditeur Markdown minimaliste à 2 modes : **édition**
 (textarea brut markdown) et **rendu** (HTML sanitisé via DOMPurify +
-`marked`). Bascule via deux boutons "Markdown" / "Rendu" en bas du
-champ.
+`marked`). Bascule via deux boutons en bas du champ ("Markdown" /
+"Preview" par défaut, traduits via `labels`).
 
 Pensé pour les descriptions longues dans un formulaire (compte-rendu
 d'intervention, note d'observation, description d'un produit) où on
@@ -42,9 +42,20 @@ contenu n'est alors pas remonté au parent.
 
 Deux boutons en bas du champ :
 
-- **Markdown** : repasse en édition (textarea visible, preview HTML
-  cachée). Désactivé quand déjà en édition.
-- **Rendu** : passe en preview HTML. Désactivé quand déjà en preview.
+- **Markdown** (`labels.markdownButton`) : repasse en édition (textarea
+  visible, preview HTML cachée). Désactivé quand déjà en édition.
+- **Preview** (`labels.previewButton`, "Rendu" en français) : passe en
+  preview HTML. Désactivé quand déjà en preview.
+
+Les textes viennent de `labels` (clé `Editor` des bundles de langue),
+en anglais par défaut :
+
+```jsx
+import { locales } from "@cap-rel/smartcommon";
+
+<Editor label="Compte-rendu" labels={locales.fr.Editor} />
+// ou une seule clé : labels={{ previewButton: "Aperçu" }}
+```
 
 À chaque bascule vers le rendu, la hauteur de la textarea est capturée
 (`getBoundingClientRect()`) puis injectée dans le HTML rendu via une
@@ -69,13 +80,14 @@ arbitraire.
 | Slot | Cible |
 |------|-------|
 | `containerProps` | wrapper racine |
-| `labelContainerProps` / `labelProps` / `requiredStarProps` / `helpProps` | header label + aide |
+| `labelContainerProps` / `labelProps` / `helpProps` | header label + aide |
+| `starProps` | étoile "requis" (affichée avec `required`) ; `requiredStarProps`, ancien nom, reste accepté si `starProps` est absent |
 | `textareaContainerProps` | wrapper autour de textarea + preview HTML |
 | `textareaProps` | `<Textarea>` interne (mode édition) |
 | `htmlProps` | `<div>` qui rend le HTML preview |
-| `buttonContainerProps` | barre des 2 boutons (Markdown / Rendu) |
+| `buttonContainerProps` | barre des 2 boutons (Markdown / Preview) |
 | `mdButtonProps` / `mdButtonIconProps` / `mdButtonLabelProps` | bouton "Markdown" |
-| `htmlButtonProps` / `htmlButtonIconProps` / `htmlButtonLabelProps` | bouton "Rendu" |
+| `htmlButtonProps` / `htmlButtonIconProps` / `htmlButtonLabelProps` | bouton "Preview" |
 
 Toutes les `className` sont mergées via `twMerge`.
 
@@ -89,6 +101,7 @@ Toutes les `className` sont mergées via `twMerge`.
 | `value` | string | - | controlled : le markdown brut |
 | `onValueChange` | func | - | `(newValue) => void`, requis en controlled |
 | `defaultValue` | string | `""` | uncontrolled : valeur initiale |
+| `labels` | object | `DEFAULT_LABELS` (anglais) | `markdownButton`, `previewButton` |
 
 `<Editor>` accepte aussi tous les autres props standards de
 `<Textarea>` (rest spread sur le textarea interne), notamment :
@@ -101,7 +114,6 @@ Toutes les `className` sont mergées via `twMerge`.
 - **Pas d'auto-resize** de la textarea (taille fixe via Tailwind).
 - **DOMPurify config non exposée** via props : pour personnaliser les
   balises autorisées, forker le composant.
-- **Marqueurs en dur** : "Markdown" / "Rendu" pas extraits en `labels`.
 - Le commentaire `TODO Style view (h1, h2, ...)` indique que les
   styles Tailwind du HTML rendu sont sommaires : les titres ne sont
   pas mis en forme prose. Pour un rendu plus riche, surcharger
