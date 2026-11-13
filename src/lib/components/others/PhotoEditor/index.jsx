@@ -100,6 +100,17 @@ export const PhotoEditor = (props) => {
     );
 };
 
+// Points every ref (object or callback) at the same element.
+const assignRefs = (element, ...refs) => {
+    for (const ref of refs) {
+        if (typeof ref === "function") {
+            ref(element);
+        } else if (ref) {
+            ref.current = element;
+        }
+    }
+};
+
 const PhotoEditorContent = (props) => {
     const {
         src,
@@ -360,12 +371,7 @@ const PhotoEditorContent = (props) => {
             aria-labelledby={titleId}
             tabIndex={-1}
             {...containerProps}
-            ref={(el) => {
-                dialogRef.current = el;
-                const consumerRef = containerProps?.ref;
-                if (typeof consumerRef === "function") consumerRef(el);
-                else if (consumerRef) consumerRef.current = el;
-            }}
+            ref={(el) => assignRefs(el, dialogRef, containerProps?.ref)}
             onKeyDown={(e) => {
                 onDialogKeyDown(e);
                 containerProps?.onKeyDown?.(e);
