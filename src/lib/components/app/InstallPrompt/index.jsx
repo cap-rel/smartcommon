@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-import { INSTALL_PROMPT_OPEN_EVENT, useInstallPrompt } from "lib/hooks";
+import { INSTALL_PROMPT_OPEN_EVENT, useDialog, useInstallPrompt } from "lib/hooks";
 import { createLogger } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
@@ -26,13 +26,13 @@ const ShareIcon = (props) => (
  * shows the Share glyph instead of a number.
  */
 const StepList = ({ steps, withShareIcon }) => (
-    <ol className="space-y-3 text-sm text-gray-700">
+    <ol className="space-y-3 text-sm text-medium-text">
         {steps.map((step, index) => (
             <li key={step} className="flex items-center gap-3">
                 {withShareIcon && index === 0 ? (
-                    <ShareIcon className="w-6 h-6 shrink-0 text-blue-600" />
+                    <ShareIcon className="w-6 h-6 shrink-0 text-primary" />
                 ) : (
-                    <span className="w-6 shrink-0 text-center font-semibold text-blue-600">{index + 1}</span>
+                    <span className="w-6 shrink-0 text-center font-semibold text-primary">{index + 1}</span>
                 )}
                 <span>{step}</span>
             </li>
@@ -137,19 +137,25 @@ export const InstallPrompt = (props) => {
         onDismiss?.();
     };
 
-    if (!shouldOffer && !forced) return null;
+    // The modal (and the steps opened from the banner) is a real dialog:
+    // named by its title, Tab kept inside, Escape closes it like "Later".
+    const isVisible = shouldOffer || forced;
+    const isDialog = isVisible && (variant === "modal" || forced || showSteps);
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen: isDialog, onClose: handleDismiss });
+
+    if (!isVisible) return null;
 
     const dismissButton = (
         <button
             type="button"
             onClick={handleDismiss}
-            className="px-3 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+            className="px-3 py-2 text-sm font-medium text-strong-text bg-medium-bg rounded hover:brightness-95 outline-none focus-visible:ring-2 focus-visible:ring-primary"
         >
             {mergedLabels.dismissButton}
         </button>
     );
 
-    const primaryButtonClass = "px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700";
+    const primaryButtonClass = "px-4 py-2 text-sm font-medium text-white bg-primary rounded hover:brightness-95 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-soft-bg";
 
     const installButton = (
         <button type="button" onClick={handleInstall} className={primaryButtonClass}>
@@ -176,21 +182,25 @@ export const InstallPrompt = (props) => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 sm:items-center"
-                    role="dialog"
-                    aria-modal="true"
                     data-testid={stepsOnly ? "install-prompt-steps" : "install-prompt"}
                 >
                     <motion.div
                         initial={{ y: 40, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 40, opacity: 0 }}
-                        className="w-full max-w-sm m-4 p-5 bg-white rounded-xl"
+                        ref={dialogRef}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby={titleId}
+                        tabIndex={-1}
+                        onKeyDown={onKeyDown}
+                        className="w-full max-w-sm m-4 p-5 bg-soft-bg text-strong-text rounded-xl outline-none"
                     >
-                        <h2 className="text-lg font-semibold mb-2">
+                        <h2 id={titleId} className="text-lg font-semibold mb-2">
                             {stepsOnly ? stepsTitle : mergedLabels.title}
                         </h2>
                         {!stepsOnly && (
-                            <p className="text-sm text-gray-600 mb-4">{mergedLabels.message}</p>
+                            <p className="text-sm text-medium-text mb-4">{mergedLabels.message}</p>
                         )}
                         {withSteps && (
                             <div data-testid="install-prompt-guide" data-guide={installGuide}>
@@ -213,7 +223,7 @@ export const InstallPrompt = (props) => {
                 initial={{ opacity: 0, y: position === "top" ? -80 : 80 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: position === "top" ? -80 : 80 }}
-                className={`fixed left-0 right-0 z-50 px-4 py-3 bg-white border-soft-border ${
+                className={`fixed left-0 right-0 z-50 px-4 py-3 bg-soft-bg text-strong-text border-border ${
                     position === "top" ? "top-0 border-b" : "bottom-0 border-t"
                 }`}
                 // Keeps the buttons above the iOS home indicator.
@@ -223,7 +233,7 @@ export const InstallPrompt = (props) => {
                 <div className="flex items-center justify-between gap-4 max-w-screen-lg mx-auto">
                     <div className="min-w-0">
                         <p className="font-medium truncate">{mergedLabels.title}</p>
-                        <p className="text-sm text-gray-600">{mergedLabels.message}</p>
+                        <p className="text-sm text-medium-text">{mergedLabels.message}</p>
                     </div>
                     <div className="flex gap-2 shrink-0">
                         {dismissButton}

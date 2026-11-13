@@ -26,10 +26,14 @@ vi.mock("framer-motion", () => ({
     ),
 }));
 
-vi.mock("lib/hooks", () => ({
-    INSTALL_PROMPT_OPEN_EVENT: "smartcommon:install-prompt:open",
-    useInstallPrompt: () => mockHookState,
-}));
+vi.mock("lib/hooks", async () => {
+    const { useDialog } = await vi.importActual("lib/hooks/local/useDialog");
+    return {
+        INSTALL_PROMPT_OPEN_EVENT: "smartcommon:install-prompt:open",
+        useInstallPrompt: () => mockHookState,
+        useDialog,
+    };
+});
 
 import { InstallPrompt } from "./index";
 
@@ -184,5 +188,55 @@ describe("InstallPrompt", () => {
         await waitFor(() => {
             expect(screen.queryByTestId("install-prompt")).toBeNull();
         });
+    });
+});
+
+describe("InstallPrompt - dialog and theme", () => {
+    beforeEach(() => {
+        mockHookState.shouldOffer = true;
+        mockHookState.canPrompt = true;
+        mockHookState.installGuide = "android";
+        mockHookState.promptInstall = vi.fn().mockResolvedValue("accepted");
+        mockHookState.dismiss = vi.fn();
+    });
+
+    it("is a modal dialog named by its title", () => {
+        render(<InstallPrompt variant="modal" labels={{ title: "Installer l'application" }} />);
+        const dialog = screen.getByRole("dialog", { name: "Installer l'application" });
+        expect(dialog.getAttribute("aria-modal")).toBe("true");
+    });
+
+    it("closes on Escape and records the refusal of an offered invitation", () => {
+        const onDismiss = vi.fn();
+        render(<InstallPrompt variant="modal" onDismiss={onDismiss} />);
+
+        fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+
+        expect(mockHookState.dismiss).toHaveBeenCalled();
+        expect(onDismiss).toHaveBeenCalled();
+    });
+
+    it("closes on Escape without a refusal when opened on demand", () => {
+        mockHookState.shouldOffer = false;
+        render(<InstallPrompt />);
+        openOnDemand();
+
+        fireEvent.keyDown(screen.getByRole("dialog"), { key: "Escape" });
+
+        expect(screen.queryByRole("dialog")).toBeNull();
+        expect(mockHookState.dismiss).not.toHaveBeenCalled();
+    });
+
+    it("follows the theme tokens instead of fixed light colours", () => {
+        const { unmount } = render(<InstallPrompt variant="modal" />);
+        const dialog = screen.getByRole("dialog");
+        expect(dialog.className).toContain("bg-soft-bg");
+        expect(dialog.outerHTML).not.toMatch(/bg-white|text-gray-|bg-gray-|bg-blue-|text-blue-/);
+        unmount();
+
+        render(<InstallPrompt />);
+        const banner = screen.getByTestId("install-prompt");
+        expect(banner.className).toContain("bg-soft-bg");
+        expect(banner.outerHTML).not.toMatch(/bg-white|text-gray-|bg-gray-|bg-blue-|text-blue-/);
     });
 });
