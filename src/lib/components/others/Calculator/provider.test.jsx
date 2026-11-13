@@ -1,19 +1,24 @@
 import { describe, it, expect, vi } from "vitest";
+import { useEffect } from "react";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
 import { CalculatorProvider } from "./index";
 import { useCalculator } from "./useCalculator";
 import { fr } from "lib/locales/fr";
 
-let calculator;
-const Probe = () => {
-    calculator = useCalculator();
+// Hands the context value to the test after each render.
+const Probe = ({ onValue }) => {
+    const value = useCalculator();
+    useEffect(() => {
+        onValue(value);
+    });
     return null;
 };
 
+let calculator;
 const renderProvider = () => render(
     <CalculatorProvider labels={fr.Calculator} showFab={false}>
-        <Probe />
+        <Probe onValue={(value) => { calculator = value; }} />
     </CalculatorProvider>
 );
 
