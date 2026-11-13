@@ -215,6 +215,7 @@ export const fr = {
         requiredField: "Ce champ est requis.",
         devicePickError: "Impossible d'enregistrer cet appareil. Vérifiez votre connexion et réessayez.",
         devicePickMissingApiError: "Configuration manquante : l'API user-devices n'est pas disponible.",
+        qrErrorDismiss: "OK",
     },
     DevicePicker: {
         title: "Quel appareil utilisez-vous ?",

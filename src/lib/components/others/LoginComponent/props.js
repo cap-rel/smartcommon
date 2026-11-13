@@ -73,6 +73,7 @@ export const propTypes = {
         scanQrLabel: PropTypes.string,
         qrSeparator: PropTypes.string,
         cancelQrLabel: PropTypes.string,
+        qrErrorDismiss: PropTypes.string,
         scannerTitle: PropTypes.string,
         claimingMessage: PropTypes.string,
         pollingMessage: PropTypes.string,
@@ -123,6 +124,8 @@ export const DEFAULT_LABELS = {
     scanQrLabel: "Scan a QR code",
     qrSeparator: "or",
     cancelQrLabel: "Cancel",
+    // Closes a QR error and goes back to the password form
+    qrErrorDismiss: "OK",
     scannerTitle: "Scan the pairing QR code",
     claimingMessage: "Connecting to the server...",
     pollingMessage: "Waiting for confirmation on the computer...",

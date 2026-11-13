@@ -476,6 +476,23 @@ describe("LoginComponent - QR pair mode", () => {
         expect(screen.getByRole("alert").textContent).toMatch(/QR code/);
     });
 
+    it("dismisses a QR error with a translated button drawn in theme colours", async () => {
+        render(
+            <LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair labels={{ qrErrorDismiss: "Compris" }} />
+        );
+        fireEvent.click(screen.getByText(/Scan a QR code/i));
+        await act(async () => {
+            scannerProps.current.onScan("not-a-pairing-id");
+        });
+
+        const alert = screen.getByRole("alert");
+        expect(alert.className).toContain("text-error");
+        expect(alert.className).not.toMatch(/red-\d/);
+
+        fireEvent.click(screen.getByRole("button", { name: "Compris" }));
+        expect(screen.queryByRole("alert")).toBeNull();
+    });
+
     it("calls claimQrPair with the extracted pairing id and the device label", async () => {
         const id = "deadbeef".repeat(4);
         fakeApi.claimQrPair = vi.fn().mockResolvedValue({
@@ -720,6 +737,26 @@ describe("LoginComponent - QR pair mode", () => {
 
             // Overlay gone, scan button visible again (password mode)
             expect(screen.queryByRole("status")).toBeNull();
+            expect(screen.getByText(/Scan a QR code/i)).toBeDefined();
+        });
+
+        it("is a modal dialog named by its message, cancelled by Escape", async () => {
+            fakeApi.claimQrPair = vi.fn().mockResolvedValue({ status: "claimed", claim_token: "tok-1" });
+            fakeApi.pollQrPair = vi.fn(() => new Promise(() => {}));
+
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} enableQrPair />);
+            fireEvent.click(screen.getByText(/Scan a QR code/i));
+            await act(async () => {
+                await scannerProps.current.onScan(id);
+            });
+
+            const dialog = screen.getByRole("dialog", { name: /Waiting for confirmation/ });
+            expect(dialog.getAttribute("aria-modal")).toBe("true");
+
+            await act(async () => {
+                fireEvent.keyDown(dialog, { key: "Escape" });
+            });
+            expect(screen.queryByRole("dialog")).toBeNull();
             expect(screen.getByText(/Scan a QR code/i)).toBeDefined();
         });
     });

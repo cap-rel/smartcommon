@@ -226,6 +226,7 @@ export const pl = {
         requiredField: "To pole jest wymagane.",
         devicePickError: "Nie można zarejestrować tego urządzenia. Sprawdź połączenie i spróbuj ponownie.",
         devicePickMissingApiError: "Brak konfiguracji: API user-devices nie jest dostępne.",
+        qrErrorDismiss: "OK",
     },
     DevicePicker: {
         title: "Z jakiego urządzenia korzystasz?",

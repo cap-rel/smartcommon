@@ -221,6 +221,7 @@ export const pt = {
         requiredField: "Este campo é obrigatório.",
         devicePickError: "Não foi possível registar este dispositivo. Verifique a sua ligação e tente novamente.",
         devicePickMissingApiError: "Configuração em falta : a API user-devices não está disponível.",
+        qrErrorDismiss: "OK",
     },
     DevicePicker: {
         title: "Que dispositivo está a utilizar ?",

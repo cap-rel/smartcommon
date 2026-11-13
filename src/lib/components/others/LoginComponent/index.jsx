@@ -4,6 +4,7 @@ import { FaQrcode } from "react-icons/fa6";
 
 import { useApi } from "lib/hooks";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { useDialog } from "lib/hooks/local/useDialog";
 import { Input, Button, Select, BarcodeScanner, DevicePicker } from "lib/components";
 import { twMerge } from "lib/utils";
 
@@ -361,6 +362,10 @@ export const LoginComponent = (props) => {
     const scannerOpen = mode === "qr-scanning";
     const isClaimingOrPolling = mode === "qr-claiming" || mode === "qr-polling";
 
+    // The waiting overlay blocks the form: a modal dialog named by its
+    // message, Escape cancels like its button.
+    const { dialogRef: qrDialogRef, titleId: qrMessageId, onKeyDown: onQrDialogKeyDown } = useDialog({ isOpen: isClaimingOrPolling, onClose: handleQrClose });
+
     // When the post-login device-pick is in flight, take over the whole
     // render tree: the password form and the QR section are hidden so
     // the user can't accidentally restart the login while we wait for
@@ -475,7 +480,7 @@ export const LoginComponent = (props) => {
                     <p
                         role="alert"
                         {...errorAlertProps}
-                        className={twMerge("text-red-600 text-sm", errorAlertProps.className)}
+                        className={twMerge("text-error text-sm", errorAlertProps.className)}
                     >
                         {submitError}
                     </p>
@@ -533,7 +538,7 @@ export const LoginComponent = (props) => {
                     role="alert"
                     {...qrErrorAlertProps}
                     className={twMerge(
-                        "rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-700",
+                        "rounded-lg border border-error/40 bg-error/10 p-3 text-sm text-error",
                         qrErrorAlertProps.className
                     )}
                 >
@@ -543,7 +548,7 @@ export const LoginComponent = (props) => {
                         onClick={() => { setQrError(null); setMode("password"); }}
                         className="mt-2 underline"
                     >
-                        OK
+                        {labels.qrErrorDismiss}
                     </button>
                 </div>
             )}
@@ -560,16 +565,20 @@ export const LoginComponent = (props) => {
 
             {isClaimingOrPolling && (
                 <div
-                    role="status"
-                    aria-live="polite"
+                    ref={qrDialogRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-labelledby={qrMessageId}
+                    tabIndex={-1}
+                    onKeyDown={onQrDialogKeyDown}
                     {...qrOverlayProps}
                     className={twMerge(
-                        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 text-white p-6",
+                        "fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/70 text-white p-6 outline-none",
                         qrOverlayProps.className
                     )}
                 >
-                    <div className="size-16 border-4 border-white/30 border-t-white rounded-full animate-spin" />
-                    <p className="mt-6 text-center text-lg max-w-md">
+                    <div className="size-16 border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true" />
+                    <p id={qrMessageId} role="status" aria-live="polite" className="mt-6 text-center text-lg max-w-md">
                         {mode === "qr-claiming" ? labels.claimingMessage : labels.pollingMessage}
                     </p>
                     <button

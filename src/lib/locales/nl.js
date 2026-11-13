@@ -218,6 +218,7 @@ export const nl = {
         requiredField: "Dit veld is verplicht.",
         devicePickError: "Kan dit apparaat niet registreren. Controleer uw verbinding en probeer opnieuw.",
         devicePickMissingApiError: "Configuratie ontbreekt: de user-devices API is niet beschikbaar.",
+        qrErrorDismiss: "OK",
     },
     DevicePicker: {
         title: "Welk apparaat gebruikt u?",

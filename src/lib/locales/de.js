@@ -219,6 +219,7 @@ export const de = {
         requiredField: "Dieses Feld ist erforderlich.",
         devicePickError: "Dieses Gerät konnte nicht gespeichert werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
         devicePickMissingApiError: "Konfiguration fehlt: die user-devices API ist nicht verfügbar.",
+        qrErrorDismiss: "OK",
     },
     DevicePicker: {
         title: "Welches Gerät verwenden Sie?",
