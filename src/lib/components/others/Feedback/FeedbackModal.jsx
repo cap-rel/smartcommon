@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { FaPaperPlane, FaImage, FaXmark, FaDesktop, FaMicrophone, FaStop } from "react-icons/fa6";
+import { FaPaperPlane, FaImage, FaXmark, FaDesktop } from "react-icons/fa6";
 import { v4 as uuidv4 } from "uuid";
 
 import { Modal, Button, Input, Textarea, Select, PhotoEditor } from "lib/components";
@@ -11,7 +11,6 @@ import { DEFAULT_LABELS } from "./props";
 import { buildContext, buildFormData, prepareScreenshot, RETRYABLE_RELAY_STATUS } from "./feedbackPayload";
 import { captureScreen, canCaptureScreen } from "./screenshotCapture";
 import { enqueueReport, setQueueApiProvider, installOnlineFlush, flushQueue } from "./offlineQueue";
-import { useDictation } from "./useDictation";
 
 const log = createLogger("Feedback");
 
@@ -30,7 +29,6 @@ export const FeedbackModal = (props) => {
         appVersion = "",
         labels: userLabels = {},
         photoEditorLabels = {},
-        dictationLang,
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...useComponentLabels("Feedback", userLabels) };
@@ -61,13 +59,6 @@ export const FeedbackModal = (props) => {
     const [validationErrors, setValidationErrors] = useState({});
     const [isCapturing, setIsCapturing] = useState(false);
     const [isRedacting, setIsRedacting] = useState(false);
-
-    // Each dictated phrase is appended to the description, within its limit.
-    const appendDictation = useCallback((text) => {
-        setBody(prev => `${prev}${prev && !/\s$/.test(prev) ? " " : ""}${text}`.slice(0, BODY_MAX_LENGTH));
-    }, []);
-    const dictation = useDictation({ onText: appendDictation, lang: dictationLang });
-    const stopDictation = dictation.stop;
 
     const fileInputRef = useRef(null);
     const idempotencyKeyRef = useRef(null);
@@ -103,7 +94,6 @@ export const FeedbackModal = (props) => {
     }, [isOpen, status]);
 
     const resetForm = useCallback(() => {
-        stopDictation();
         updateScreenshot(null);
         setType("bug");
         setTitle("");
@@ -115,7 +105,7 @@ export const FeedbackModal = (props) => {
         setValidationErrors({});
         idempotencyKeyRef.current = null;
         if (fileInputRef.current) fileInputRef.current.value = "";
-    }, [stopDictation, updateScreenshot]);
+    }, [updateScreenshot]);
 
     const handleClose = useCallback(() => {
         // While the redaction editor is open, every close path (Escape,
@@ -213,7 +203,6 @@ export const FeedbackModal = (props) => {
     }, [body, screenshot, consent, labels]);
 
     const handleSubmit = useCallback(async () => {
-        stopDictation();
         if (!validate()) return;
 
         // Generate the idempotency key once per report; a retry after a
@@ -401,35 +390,10 @@ export const FeedbackModal = (props) => {
                                 {validationErrors.body}
                             </span>
                         )}
-                        {(dictation.isSupported || body.length > 0) && (
-                            <div className="flex items-center justify-between gap-2">
-                                {dictation.isSupported ? (
-                                    <button
-                                        type="button"
-                                        onClick={dictation.toggle}
-                                        aria-pressed={dictation.isListening}
-                                        className="flex items-center gap-1 text-sm text-primary hover:underline"
-                                    >
-                                        {dictation.isListening ? <FaStop aria-hidden="true" /> : <FaMicrophone aria-hidden="true" />}
-                                        {dictation.isListening ? labels.dictateStop : labels.dictateStart}
-                                    </button>
-                                ) : <span />}
-                                {body.length > 0 && (
-                                    <div className="text-xs text-gray-400" aria-hidden="true">
-                                        {body.length}/{BODY_MAX_LENGTH}
-                                    </div>
-                                )}
+                        {body.length > 0 && (
+                            <div className="text-xs text-gray-400 text-right" aria-hidden="true">
+                                {body.length}/{BODY_MAX_LENGTH}
                             </div>
-                        )}
-                        {dictation.isListening && (
-                            <span className="text-xs text-medium-text" role="status">
-                                {labels.dictationListening}
-                            </span>
-                        )}
-                        {dictation.error && !dictation.isListening && (
-                            <span className="text-xs text-error" role="alert">
-                                {labels.dictationError}
-                            </span>
                         )}
 
                         {/* Screenshot: file input (mobile) + screen capture (desktop) + redaction */}

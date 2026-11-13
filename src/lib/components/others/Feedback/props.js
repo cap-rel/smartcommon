@@ -19,10 +19,6 @@ export const propTypes = {
     // its own DEFAULT_LABELS. Without it the editor shows its English
     // defaults even in a localized application.
     photoEditorLabels: PropTypes.object,
-
-    // Language of the dictation (BCP 47, e.g. "fr-FR"). Defaults to the
-    // <html lang> of the app, else the browser language.
-    dictationLang: PropTypes.string,
 };
 
 export const defaultProps = {
@@ -51,10 +47,6 @@ export const DEFAULT_LABELS = {
     screenshotConsentLabel: "I confirm this screenshot shows no sensitive data, or that I have redacted it",
     screenshotConsentRequiredError: "Consent is required when an image is attached.",
     redactLabel: "Redact an area",
-    dictateStart: "Dictate",
-    dictateStop: "Stop dictation",
-    dictationListening: "Listening... speak now.",
-    dictationError: "Dictation failed. You can type the description instead.",
     submitLabel: "Send",
     submittingLabel: "Sending...",
     cancelLabel: "Cancel",

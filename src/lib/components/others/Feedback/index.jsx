@@ -12,9 +12,6 @@ import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
  * forwards to capTests with the intake key. The capTests key never
  * reaches the browser.
  *
- * When the browser offers the Web Speech API (Chrome, Edge, Safari), a
- * "Dictate" button fills the description by voice; it is hidden elsewhere.
- *
  * @param {Object} props
  * @param {string} props.relayPath - Relay endpoint path (required)
  * @param {boolean} props.visible - Show the button (module decides by right)
@@ -22,8 +19,6 @@ import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
  * @param {Object} props.labels - Text overrides (merged over DEFAULT_LABELS)
  * @param {Object} props.photoEditorLabels - Text overrides for the
  *   redaction editor (merged over PhotoEditor's DEFAULT_LABELS)
- * @param {string} props.dictationLang - Dictation language (BCP 47),
- *   defaults to the app <html lang>
  */
 export const FeedbackButton = (props) => {
     const {
@@ -32,7 +27,6 @@ export const FeedbackButton = (props) => {
         appVersion = "",
         labels: userLabels = {},
         photoEditorLabels = {},
-        dictationLang,
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...useComponentLabels("Feedback", userLabels) };
@@ -75,7 +69,6 @@ export const FeedbackButton = (props) => {
                 appVersion={appVersion}
                 labels={userLabels}
                 photoEditorLabels={photoEditorLabels}
-                dictationLang={dictationLang}
             />
         </>
     );
