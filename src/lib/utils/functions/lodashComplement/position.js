@@ -45,5 +45,3 @@ export function toSTimestamp(date) {
 export function toMsTimestamp(date) {
   return isDate(date) ? date.getTime() : (date * 1000);
 }
-
-export function position() {}

@@ -99,7 +99,7 @@ const rules = [
 | `sortArrayByNumber` | `(array, prop, sort = "ascending")` | Trie en place par nombre (`"descending"` pour l'inverse). |
 | `sortArrayByString` | `(array, prop, sort = "ascending")` | Trie en place par texte, sans tenir compte de la casse. |
 | `sortObjectByNumber` | `(object, prop, sort = "ascending")` | Renvoie un nouvel objet dont les entrées sont triées par nombre. |
-| `isArrayOfObjects` | `(array) => boolean` | Voir les pièges. |
+| `isArrayOfObjects` | `(array) => boolean` | `true` si chaque élément est un objet non nul. |
 | `isFirst` | `(value, item) => boolean` | `item` est-il le premier élément (tableau, chaîne, valeurs d'un objet, chiffres d'un nombre) ? |
 | `isLast` | `(value, item) => boolean` | Même chose pour le dernier. |
 | `searchBarFilter` | `(searchedValues, search) => boolean` | Une des valeurs contient-elle la recherche ? Sans casse ni espaces. |
@@ -158,19 +158,13 @@ for (const [share, blob] of files) {
 
 ## Pièges
 
-- `isArrayOfObjects` renvoie `true` pour tout tableau, même `[1, 2]` : le
-  `return false` de la boucle ne sort pas de la fonction.
-- `hexToRgb` affiche `?` pour une composante nulle (`"#000"` donne
-  `"?, ?, ?"`).
-- `mToKm` casse sur un nombre rond de kilomètres (`2000` donne `"2,N km"`).
-- `navigatorInfo.device.type` vaut toujours `"mobile"` et
-  `navigatorInfo.language` toujours `"en"` dans un navigateur : le test de
-  présence de `navigator` est inversé. Pour le type d'écran, utiliser
-  `useViewport` ; pour la langue, `navigator.language`.
+- `hexToRgb` n'affiche `?` que pour une composante illisible.
+- `navigatorInfo.device.type` vient du user agent, figé au chargement : pour
+  le mode d'interface (qui suit la largeur et le choix de l'utilisateur),
+  utiliser `useViewport`.
 - `print` remplace la page si elle est déjà chargée : jamais en production.
 - `generateRandomString` n'est pas fait pour un secret : utiliser
   `crypto.getRandomValues`.
-- `position` est exporté mais vide (ne fait rien) : ne pas l'utiliser.
 - `sortArrayByNumber` et `sortArrayByString` modifient le tableau reçu :
   copier d'abord (`[...list]`) pour un tableau issu d'un état React.
 

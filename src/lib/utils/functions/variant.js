@@ -1,4 +1,5 @@
-import { twMerge } from "tailwind-merge";
+// The library twMerge knows the app-* spacing and radius tokens.
+import { twMerge } from "./tailwindMerge";
 import { isFunction } from "lodash";
 
 export function resolveProp(prop, params = {}){
@@ -53,10 +54,6 @@ export function resolveProp(prop, params = {}){
 //     return style;
 // }
 
-export function mergeProps() {
-
-}
-
 export function mergeClassName(props, defaultClassName = "") {
     const className = twMerge(defaultClassName, props?.className);
     return { className };
@@ -65,10 +62,6 @@ export function mergeClassName(props, defaultClassName = "") {
 export function mergeStyle(props, defaultStyle = {}) {
     const style = { ...defaultStyle, ...props?.style };
     return { style };
-}
-
-export function mergePropsPlus(props, variants, variant) {
-    // const currentVariant = isString(variant) ? (!isNil(variants[variant]) ? variants[variant][elementKey] : {}) : variant;
 }
 
 // export function mergeProps(elementStyle, elementClassName, elementProps, defaultVariants, variant, elementKey, params = {}) {
@@ -101,47 +94,16 @@ export function mergePropsPlus(props, variants, variant) {
 //     return { ...elementProps, style, className };
 // }
 
-export function convertCSSVar(css) {     
-    const string = "var(--color var(--font) fsdfsdf ) fdsfds var(  --size) var--image)";
+// Pulls the var(...) references out of a CSS value: returns their contents
+// and the value without them.
+export function convertCSSVar(css) {
+    const vars = [];
+    const newStr = css.replace(/var\((.*?)\)/g, (match, content) => {
+        vars.push(content);
+        return "";
+    });
 
-    // function getAllIndexes(str, subStr) {
-    //     let indexes = [];
-    //     let index = str.indexOf(subStr);
-        
-    //     while (index !== -1) {
-    //         indexes.push(index);
-    //         index = str.indexOf(subStr, index + 1);
-    //     }
-        
-    //     return indexes;
-    // }
-
-    // return getAllIndexes(test ,"var(");
-
-    function extractVars(str) {
-        let regex = /var\(([^)]+)\)/g;
-        let vars = [];
-        let match;
-    
-        while ((match = regex.exec(str)) !== null) {
-            vars.push(match[1]); // Capture uniquement le contenu entre var(...)
-        }
-    
-        return vars;
-    }
-
-    function extractAndRemoveVars(str) {
-        let vars = [];
-        let newStr = str.replace(/var\((.*?)\)/g, (match, content) => {
-            vars.push(content); // On stocke le contenu de var() dans le tableau
-            return ""; // On remplace par une chaîne vide pour supprimer l'occurrence
-        });
-    
-        return { vars, newStr };
-    }
-    
-
-    return extractAndRemoveVars(css);
+    return { vars, newStr };
 }
 
 export const convertClassName = (className, params) => {

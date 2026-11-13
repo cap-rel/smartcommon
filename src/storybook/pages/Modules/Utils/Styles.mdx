@@ -25,7 +25,7 @@ import {
 | Symbole | Signature | Rôle |
 |---------|-----------|------|
 | `twMerge` | `(...classLists) => string` | Fusionne des classes Tailwind, la dernière l'emporte en cas de conflit, jetons `app-*` compris. |
-| `mergeClassName` | `(props, defaultClassName = "") => { className }` | Fusionne la classe par défaut et `props.className`. |
+| `mergeClassName` | `(props, defaultClassName = "") => { className }` | Fusionne la classe par défaut et `props.className` par le `twMerge` de la bibliothèque (jetons `app-*` compris). |
 | `mergeStyle` | `(props, defaultStyle = {}) => { style }` | Fusionne le style par défaut et `props.style`. |
 | `resolveProp` | `(prop, params = {})` | Appelle `prop(params)` si c'est une fonction, sinon renvoie `prop`. |
 | `getVariable` | `(key) => string` | Lit une variable CSS calculée sur `<html>` (`"--color-primary"`). |
@@ -36,7 +36,6 @@ import {
 | `formatBadgeCount` | `(value, max = BADGE_MAX_COUNT) => string \| null` | Texte d'un badge compteur, ou `null` s'il ne faut rien afficher. |
 | `BADGE_MAX_COUNT` | `99` | Au-delà, le badge affiche `99+`. |
 | `BADGE_CLASS_NAME` | chaîne | Classes Tailwind de la pastille, à poser dans un parent `relative`. |
-| `mergeProps`, `mergePropsPlus` | `()` | Fonctions vides, gardées pour compatibilité : ne font rien. |
 
 ## Fusionner des classes : `twMerge`
 
@@ -76,9 +75,6 @@ tel quel.
 
 ## Pièges
 
-- `mergeClassName` s'appuie sur le `twMerge` standard de `tailwind-merge`,
-  qui ne connaît pas les jetons `app-*` : `p-app-sm` et `p-app-lg` restent
-  tous les deux. Préférer `twMerge` exporté ici.
 - `convertClassName` construit une fonction avec `new Function` : ne
   jamais lui passer un texte venu de l'utilisateur ou du serveur, et il
   échoue sous une politique CSP qui interdit `unsafe-eval`.
