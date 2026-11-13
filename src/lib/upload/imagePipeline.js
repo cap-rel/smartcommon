@@ -25,6 +25,7 @@
 //   convertImageForUpload(file, options?)   -> Promise<{ file, width, height, mime, dateTaken }>
 //     - success: a WebP or JPEG File, or the original when no conversion is needed
 //     - decode/encode failure: the ORIGINAL file untouched, never a rejected promise
+//     - rejects only when called without a file
 //   uploadRefusalReason(file, limits?)      -> "heic" | "bad-format" | "too-large" | null
 //
 // Options of convertImageForUpload:
@@ -361,11 +362,11 @@ const EXTENSION_BY_MIME = { "image/webp": "webp", "image/jpeg": "jpg" };
  *
  * NEVER throws for a given file and NEVER loses the photo: on any decode or
  * encode failure the original File is returned with its own mime; the caller
- * pre-checks it against the server limits.
+ * pre-checks it against the server limits. Throws only when `file` is missing.
  *
  * @param {File} file
  * @param {{maxSide?: number, quality?: number, webp?: boolean, serverWebp?: boolean,
- *          acceptedMimes?: string[], maxBytes?: number,
+ *          acceptedMimes?: string[], maxBytes?: number, targetBytes?: number,
  *          metadata?: {title?: string, description?: string, keywords?: string[]}}} [options]
  * @returns {Promise<{file: File, width: number, height: number, mime: string, dateTaken: string|null}>}
  */

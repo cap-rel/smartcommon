@@ -626,7 +626,8 @@ export const syncDataFeed = async ({ api, db, feed, signal = null }) => {
  * @param {Function|null} options.getSyncPreferences - async () => prefs object,
  *   passed to each document entry's enabled/doctypes resolvers
  * @param {Function|null} options.onProgress - (progress|null) => void mirror of syncProgress
- * @returns {Object} { isSyncing, syncProgress, lastSyncAt, error, isInitialized, syncNow, resetSync }
+ * @returns {Object} { isSyncing, syncProgress, lastSyncAt, error, isInitialized, hasApi,
+ *   syncNow, resetSync } (hasApi: false until an api client is available)
  */
 export const useReferenceSync = ({
     db,

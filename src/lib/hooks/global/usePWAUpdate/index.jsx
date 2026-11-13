@@ -14,7 +14,8 @@ const log = createLogger("usePWAUpdate");
  * @param {string|null} options.versionUrl - JSON file describing the deployed build,
  *   `{ "version": "1.4.0", "notes": "..." }`, read when an update is detected.
  *   Resolved against the document base URL (default: "version.json", null to disable)
- * @returns {Object} { updateAvailable, updateActivated, newVersion, releaseNotes, checkForUpdates, applyUpdate }
+ * @returns {Object} { updateAvailable, updateActivated, newVersion, releaseNotes, isApplying,
+ *   registration, checkForUpdates, applyUpdate, reloadPage }
  */
 export const usePWAUpdate = (options = {}) => {
     const {

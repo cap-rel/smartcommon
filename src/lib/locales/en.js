@@ -7,8 +7,8 @@
 // same keys, same function signatures, same number of arguments.
 //
 // Consumer usage:
-//   import { en } from "@cap-rel/smartcommon/locales";
-//   <PhotosUploader labels={en.PhotosUploader} />
+//   import { locales } from "@cap-rel/smartcommon";
+//   <PhotosUploader labels={locales.en.PhotosUploader} />
 
 import { DEFAULT_LABELS as PhotosUploader } from "lib/components/form/PhotosUploader/props";
 import { DEFAULT_LABELS as AnnotatedPhotosUploader } from "lib/components/form/AnnotatedPhotosUploader/props";
