@@ -12,6 +12,8 @@ import { FeedbackModal } from "./FeedbackModal";
  * @param {Object} options.labels - Text overrides
  * @param {Object} options.photoEditorLabels - Text overrides for the
  *   redaction editor (merged over PhotoEditor's DEFAULT_LABELS)
+ * @param {string} options.dictationLang - Dictation language (BCP 47),
+ *   defaults to the app <html lang>
  * @returns {{ isOpen: boolean, open: function, close: function, modal: React.ReactNode }}
  *
  * @example
@@ -21,7 +23,7 @@ import { FeedbackModal } from "./FeedbackModal";
  * {modal}
  */
 export const useFeedback = (options = {}) => {
-    const { relayPath, appVersion, labels, photoEditorLabels } = options;
+    const { relayPath, appVersion, labels, photoEditorLabels, dictationLang } = options;
 
     const [isOpen, setIsOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -56,8 +58,9 @@ export const useFeedback = (options = {}) => {
             appVersion={appVersion}
             labels={labels}
             photoEditorLabels={photoEditorLabels}
+            dictationLang={dictationLang}
         />
-    ), [isOpen, close, relayPath, appVersion, labels, photoEditorLabels]);
+    ), [isOpen, close, relayPath, appVersion, labels, photoEditorLabels, dictationLang]);
 
     return { isOpen, open, close, modal };
 };
