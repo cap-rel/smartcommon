@@ -248,3 +248,21 @@ describe("useVariantMerger - forwarded attributes", () => {
         expect(merged["aria-label"]).toBe("Save the file");
     });
 });
+
+describe("useVariantMerger - labels", () => {
+    const wrapper = ({ children }) => (
+        <LibConfigProvider value={{ components: { theme: "app", themes: { app: { Input: { labels: { showPassword: "Afficher", hidePassword: "Masquer" } } } } } }}>
+            {children}
+        </LibConfigProvider>
+    );
+
+    it("gives the theme labels to a component without labels", () => {
+        const { result } = renderHook(() => useVariantMerger("Input", {}), { wrapper });
+        expect(result.current.variantProps.labels).toEqual({ showPassword: "Afficher", hidePassword: "Masquer" });
+    });
+
+    it("keeps the theme labels a partial labels prop does not override", () => {
+        const { result } = renderHook(() => useVariantMerger("Input", { labels: { hidePassword: "Cacher" } }), { wrapper });
+        expect(result.current.variantProps.labels).toEqual({ showPassword: "Afficher", hidePassword: "Cacher" });
+    });
+});

@@ -1,4 +1,4 @@
-import { castArray, isArray, isFunction, isNil, isString, isUndefined } from "lodash";
+import { castArray, isArray, isFunction, isNil, isPlainObject, isString, isUndefined } from "lodash";
 import { useCallback } from "react";
 
 import { mergeObj, twMerge } from "lib/utils";
@@ -60,11 +60,14 @@ export const useVariantMerger = (componentKey, props) => {
                 mergedVariant[key] = mergeVariant(previousProp, nextProp);
             } else if (isElementProps(key)) {
                 mergedVariant[key] = mergeElementProps(previousProp, nextProp);
+            } else if (key === "labels" && isPlainObject(previousProp) && isPlainObject(nextProp)) {
+                // Overriding one text keeps the theme's translation of the others
+                mergedVariant[key] = { ...previousProp, ...nextProp };
             } else if (!isUndefined(nextProp)) {
                 mergedVariant[key] = nextProp;
             }
         }
-        
+
         return mergedVariant;
     };
 
