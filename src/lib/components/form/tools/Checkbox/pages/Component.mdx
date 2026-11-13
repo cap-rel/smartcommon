@@ -6,4 +6,21 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Checkbox
+
+Case à cocher graphique (carré arrondi, fond primaire et coche quand
+`checked`) des
+primitives de formulaire. Elle ne porte pas de valeur : `Boolean`
+(`type="checkbox"`) et `Checker` (type par défaut) la rendent à côté de
+leur `<input>` caché et gèrent l'état.
+
+```jsx
+<Boolean type="checkbox" label="J'accepte les conditions" value={ok} onChange={setOk} />
+```
+
+On ne l'utilise pas seule : elle attend le `mergeProps` du parent
+(l'exemple ci-dessous en passe un qui applique les classes par défaut).
+Ses éléments se stylent depuis le parent par `checkboxProps` et
+`checkboxIconProps`.
+
 <PropsPage of={stories} />

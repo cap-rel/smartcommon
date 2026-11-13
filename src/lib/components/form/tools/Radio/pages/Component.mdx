@@ -6,4 +6,18 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Radio
+
+Bouton radio graphique (cercle à bordure épaisse couleur primaire quand
+`checked`) des primitives de formulaire. Il ne porte pas de valeur : `Boolean` et `Checker` le rendent
+avec `type="radio"`, à côté de leur `<input>` caché, et gèrent l'état.
+
+```jsx
+<Checker type="radio" label="Priorité" options={options} value={priority} onChange={setPriority} />
+```
+
+On ne l'utilise pas seul : il attend le `mergeProps` du parent (l'exemple
+ci-dessous en passe un qui applique les classes par défaut). Il se style
+depuis le parent par `radioProps`.
+
 <PropsPage of={stories} />

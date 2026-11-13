@@ -1,4 +1,5 @@
 import { applyFunctionIfNotNil } from "lib/utils";
+import { propTypes } from "./props";
 
 export const Radio = (props) => {
     const {
@@ -19,3 +20,5 @@ export const Radio = (props) => {
         }))}/>
     );
 };
+
+Radio.propTypes = propTypes;

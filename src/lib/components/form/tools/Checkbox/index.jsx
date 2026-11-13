@@ -1,6 +1,7 @@
 import { FaCheck } from "react-icons/fa6";
 
 import { applyFunctionIfNotNil } from "lib/utils";
+import { propTypes } from "./props";
 
 export const Checkbox = (props) => {
     const {
@@ -26,3 +27,5 @@ export const Checkbox = (props) => {
         </div>
     );
 };
+
+Checkbox.propTypes = propTypes;

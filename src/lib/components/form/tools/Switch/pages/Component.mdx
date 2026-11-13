@@ -6,4 +6,19 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Switch
+
+Interrupteur graphique (pastille qui glisse, fond couleur primaire quand
+`checked`) des primitives de formulaire. Il ne porte pas de valeur :
+`Boolean` (type par défaut) et `Checker` (`type="switch"`) le rendent à
+côté de leur `<input>` caché et gèrent l'état.
+
+```jsx
+<Boolean label="Notifications" value={enabled} onChange={setEnabled} />
+```
+
+On ne l'utilise pas seul : il attend le `mergeProps` du parent (l'exemple
+ci-dessous en passe un qui applique les classes par défaut). Ses éléments
+se stylent depuis le parent par `switchProps` et `switchCircleProps`.
+
 <PropsPage of={stories} />

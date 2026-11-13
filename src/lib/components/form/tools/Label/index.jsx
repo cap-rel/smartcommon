@@ -4,6 +4,7 @@ import { isNil, map } from "lodash";
 import { twMerge } from "lib/utils";
 
 import { getFieldErrors } from "./fieldErrors";
+import { propTypes } from "./props";
 
 // IDEA Mini-popup for help
 
@@ -137,3 +138,5 @@ export const Label = (props) => {
         </div>
     );
 }
+
+Label.propTypes = propTypes;

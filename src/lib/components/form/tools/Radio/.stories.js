@@ -8,7 +8,7 @@ export default {
             codePanel: true,
             description: {
                 component:
-                    "Low-level radio glyph used by the RadioBar / Checker " +
+                    "Low-level radio glyph used by the Boolean / Checker " +
                     "form primitives. It receives its mergeProps from the " +
                     "parent variant merger; this story passes a passthrough " +
                     "that applies the slot's own default classes.",

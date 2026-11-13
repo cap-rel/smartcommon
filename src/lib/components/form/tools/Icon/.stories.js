@@ -8,8 +8,9 @@ export default {
             codePanel: true,
             description: {
                 component:
-                    "Low-level toggleable icon used by the Checker form " +
-                    "primitive (e.g. a favourite star). Colored with the " +
+                    "Low-level toggleable icon used by the Boolean, Checker " +
+                    "and Rater form primitives (e.g. a favourite star). " +
+                    "Colored with the " +
                     "theme primary when checked. It receives its mergeProps " +
                     "from the parent variant merger; this story passes a " +
                     "passthrough that applies the slot's own default classes.",

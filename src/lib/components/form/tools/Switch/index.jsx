@@ -1,4 +1,5 @@
 import { applyFunctionIfNotNil } from "lib/utils";
+import { propTypes } from "./props";
 
 export const Switch = (props) => {
     const {
@@ -24,3 +25,5 @@ export const Switch = (props) => {
         </div>
     );
 };
+
+Switch.propTypes = propTypes;

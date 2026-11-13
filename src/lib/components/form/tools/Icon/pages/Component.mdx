@@ -6,4 +6,20 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Icon
+
+Icône basculante des primitives de formulaire (une étoile de favori par
+exemple) : couleur primaire quand `checked`, grisée sinon. Elle ne porte
+pas de valeur : `Boolean` et `Checker` la rendent avec `type="icon"`
+(icône `checkedIcon`), `Rater` en aligne une par cran de la note
+(`ratingIcon`).
+
+```jsx
+<Boolean type="icon" checkedIcon={<FaStar />} label="Favori" value={fav} onChange={setFav} />
+```
+
+On ne l'utilise pas seule : elle attend le `mergeProps` du parent
+(l'exemple ci-dessous en passe un qui applique les classes par défaut).
+Elle se style depuis le parent par `checkedIconProps`.
+
 <PropsPage of={stories} />

@@ -1,4 +1,5 @@
 import { applyFunctionIfNotNil } from "lib/utils";
+import { propTypes } from "./props";
 
 export const Icon = (props) => {
     const {
@@ -22,3 +23,5 @@ export const Icon = (props) => {
         </div>
     );
 };
+
+Icon.propTypes = propTypes;

@@ -6,4 +6,38 @@ import * as stories from "../.stories";
 
 <Meta of={stories} />
 
+# Label
+
+Habillage commun des champs de formulaire : libellé (avec icône et
+astérisque si `required`), le champ lui-même en `children` entre un
+`prefix` et un `suffix` éventuels, puis un pied avec l'aide et les
+erreurs. `Input`, `Textarea`, `Select`, `Checker`, `Rater`, les uploaders
+et la plupart des primitives de formulaire le rendent pour vous ; on
+l'utilise directement pour habiller un champ maison du même style.
+
+```jsx
+<Label id="email" label="Email" required help="Jamais partagé.">
+    <input id="email" />
+</Label>
+```
+
+## Erreurs
+
+- `error` : message fourni par l'appelant, toujours affiché, d'id
+  `${id}-error` ;
+- `errors` : règles `{ condition, message }` (celles de `useField`),
+  affichées seulement si `showErrors` (formulaire soumis) et quand
+  `condition` est vraie, d'ids `${id}-error-0`, `${id}-error-1`...
+
+Le champ référence ces ids par `aria-describedby` (même calcul, dans
+`fieldErrors.js`). Avec une erreur, le pied passe en rouge.
+
+## Slots
+
+Rendu par une primitive, `Label` reçoit son `mergeProps` ; seul, il
+applique les classes par défaut de chaque élément et les props
+`<élément>Props` correspondantes : `containerProps`,
+`labelContainerProps`, `labelProps`, `starProps`, `childrenContainerProps`,
+`footerProps`, `helpProps`, `errorProps`...
+
 <PropsPage of={stories} />
