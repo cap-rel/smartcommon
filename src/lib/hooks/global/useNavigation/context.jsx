@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { isFunction, isPlainObject, isUndefined, last } from "lodash";
-import { useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { log, throwTypeError } from "lib/utils";
 import { useLibConfig } from "lib/hooks";
@@ -41,16 +41,17 @@ export const useNavigationContext = () => {
 
     const filteredLocation = { ...location, state: !isPlainObject(state) ? {} : state };
 
-    // Locations visited in this tab, oldest first. Kept in a ref (the
-    // provider re-renders on every location change anyway) rather than in
-    // the global state, whose every write re-renders all its subscribers.
-    // A new array per visit, so consumers can compare it by identity; the
-    // key check keeps a double render from recording a visit twice.
-    const historyRef = useRef([]);
-    if (last(historyRef.current)?.key !== key) {
-        historyRef.current = [...historyRef.current, filteredLocation].slice(-HISTORY_MAX_ENTRIES);
+    // Locations visited in this tab, oldest first. Local state of the
+    // provider rather than global state, whose every write re-renders all its
+    // subscribers. Updated during render when the location key changes (the
+    // React pattern for state derived from a changing input): React renders
+    // again at once, before committing, with the new entry.
+    const [history, setHistory] = useState(() => [filteredLocation]);
+    if (last(history)?.key !== key) {
+        setHistory((prev) => (last(prev)?.key === key
+            ? prev
+            : [...prev, filteredLocation].slice(-HISTORY_MAX_ENTRIES)));
     }
-    const history = historyRef.current;
 
     useEffect(() => {
         if (debug) {
