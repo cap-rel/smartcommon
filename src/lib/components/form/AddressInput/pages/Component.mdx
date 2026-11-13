@@ -24,8 +24,19 @@ données.
 - Debounce sur la frappe avant requête.
 - `AbortController` : la requête en cours est annulée à chaque
   nouvelle saisie.
-- Click sur suggestion → `onChange(item)` + ferme la liste.
+- Click sur suggestion -> `onChange(item)` + ferme la liste.
 - Pas de validation native (`errors: () => ({})`).
+- `disabled` / `readOnly` : champ non modifiable, aucune requête ni
+  liste de suggestions (une recherche en cours est annulée).
+- Le `<label>` est relié à l'`<input>` (`htmlFor` / `id`) ; un message
+  `error` est relié par `aria-describedby`.
+
+## Slots
+
+Le champ interne se style via le slot `Input` (`inputContainerProps`,
+`inputProps`, `inputIconProps`, `Spinner`), la liste via
+`suggestionsContainerProps` et `suggestionProps`, l'étoile "requis" via
+`starProps`.
 
 ## Limites Nominatim
 

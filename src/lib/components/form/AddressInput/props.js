@@ -14,6 +14,7 @@ export const propTypes = {
   defaultValue: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   onChange: PropTypes.func,
   required: PropTypes.bool,
+  // Not editable, no address lookup, no suggestion list.
   disabled: PropTypes.bool,
   readOnly: PropTypes.bool,
   // Consumer-provided message, rendered by Label below the field (unlike
@@ -41,13 +42,6 @@ export const propTypes = {
   Input: PropTypes.object,
   suggestionsContainerProps: PropTypes.object,
   suggestionProps: PropTypes.object,
-  requiredStarProps: PropTypes.object,
-  inputContainerProps: PropTypes.object,
-  inputProps: PropTypes.object,
-  inputSpinnerProps: PropTypes.object,
-  inputIconProps: PropTypes.object,
-  listProps: PropTypes.object,
-  listItemProps: PropTypes.object
 };
 
 export const DEFAULT_LABELS = {

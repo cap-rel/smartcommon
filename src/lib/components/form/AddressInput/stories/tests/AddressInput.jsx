@@ -6,5 +6,5 @@ export const AddressInput = setTestStory({
         label: "Address",
     },
     props: propTypes,
-    hidden: ["containerProps", "labelContainerProps", "labelProps", "requiredStarProps", "helpProps", "inputContainerProps", "inputProps", "inputSpinnerProps", "inputIconProps", "listProps", "listItemProps"]
+    hidden: ["containerProps", "labelContainerProps", "labelProps", "starProps", "helpProps", "relativeContainerProps", "Input", "suggestionsContainerProps", "suggestionProps"]
 });

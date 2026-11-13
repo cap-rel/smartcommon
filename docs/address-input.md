@@ -78,6 +78,13 @@ ton modèle de données - souvent quelque chose comme :
 - **Liste de suggestions** affichée sous l'input. Click sur une
   suggestion -> `onChange(item)` + ferme la liste.
 - **Pas de validation native** (`errors: () => ({})`).
+- **`disabled` / `readOnly`** : le champ n'est pas modifiable, aucune
+  requête Nominatim n'est lancée et la liste de suggestions n'est pas
+  affichée (une recherche en cours est annulée). L'attribut natif
+  `disabled` / `readonly` est posé sur l'`<input>`, comme pour `<Input>`.
+- **Accessibilité** : le `<label>` est relié à l'`<input>` par
+  `htmlFor` / `id` (id généré si absent) ; un message `error` est relié
+  par `aria-describedby` et passe le champ en `aria-invalid`.
 
 ## Limites de Nominatim
 
@@ -93,10 +100,21 @@ ton modèle de données - souvent quelque chose comme :
 
 ## Slots de styling
 
-`containerProps`, `labelContainerProps`, `labelProps`, `helpProps`,
+| Slot | Cible |
+|------|-------|
+| `containerProps` / `labelContainerProps` / `iconProps` / `labelProps` / `starProps` / `helpProps` / `errorProps` / ... | header label, étoile "requis", aide et erreurs (via `<Label>`) |
+| `relativeContainerProps` | wrapper positionné du champ et de la liste |
+| `Input` | `<Input>` interne : `inputContainerProps`, `inputProps`, `inputIconProps`, `Spinner`... |
+| `suggestionsContainerProps` | liste `<ul>` des suggestions |
+| `suggestionProps` | chaque suggestion `<li>` |
+
+`twMerge` appliqué en interne. Les anciens noms `requiredStarProps`,
 `inputContainerProps`, `inputProps`, `inputSpinnerProps`,
-`inputIconProps`, `listProps`, `listItemProps`. `twMerge` appliqué en
-interne.
+`inputIconProps`, `listProps` et `listItemProps` (au premier niveau)
+n'étaient lus par aucun élément et ne sont plus déclarés : utiliser
+`starProps`, `Input={{ inputContainerProps }}`, `Input={{ inputProps }}`,
+`Input={{ Spinner }}`, `Input={{ inputIconProps }}`,
+`suggestionsContainerProps` et `suggestionProps`.
 
 ## Props
 
@@ -111,8 +129,9 @@ interne.
 | `help` | string | - | aide |
 | `onValueChange` | func | - | alias de `onChange` (compat) |
 
-Plus les props standards de `<Input>` (`required`, `disabled`,
-`readOnly`, etc.).
+| `disabled` | bool | `false` | champ grisé, pas de recherche ni de suggestions |
+| `readOnly` | bool | `false` | champ non modifiable, pas de recherche ni de suggestions |
+| `error` | node | - | message affiché sous le champ, relié en `aria-describedby` |
 
 ## Limites connues
 

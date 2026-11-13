@@ -36,28 +36,23 @@ export default {
     labelProps: {
       table: { category: 'Elements' },
     },
-    requiredStarProps: {
+    starProps: {
       table: { category: 'Elements' },
     },
     helpProps: {
       table: { category: 'Elements' },
     },
-    inputContainerProps: {
+    relativeContainerProps: {
       table: { category: 'Elements' },
     },
-    inputProps: {
+    Input: {
+      description: "Props of the inner Input (inputContainerProps, inputProps, inputIconProps, Spinner...).",
       table: { category: 'Elements' },
     },
-    inputSpinnerProps: {
+    suggestionsContainerProps: {
       table: { category: 'Elements' },
     },
-    inputIconProps: {
-      table: { category: 'Elements' },
-    },
-    listProps: {
-      table: { category: 'Elements' },
-    },
-    listItemProps: {
+    suggestionProps: {
       table: { category: 'Elements' },
     },
   },

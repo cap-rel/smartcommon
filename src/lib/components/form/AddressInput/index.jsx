@@ -1,9 +1,10 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useId } from 'react';
 import { FaSearchLocation } from 'react-icons/fa';
-import { isEmpty } from 'lodash';
+import { isEmpty, isString } from 'lodash';
 
 import { useStates, useField, useVariantMerger } from 'lib/hooks';
 import { Label, Input } from 'lib/components';
+import { getFieldErrorAria } from 'lib/components/form/tools/Label/fieldErrors';
 
 import { propTypes, DEFAULT_LABELS } from "./props";
 import { createLogger } from "lib/utils";
@@ -12,57 +13,28 @@ const log = createLogger("AddressInput");
 
 // TODO Find a way to replace input focus condition
 
-// {
-//   id,
-//   label,
-//   help,
-//   icon,
-//   prefix,
-//   suffix,
-//   hasCopyButton = false,
-//   required = false,
-//   readOnly = false,
-//   disabled = false,
-//   // patternError,
-//   loading = false,
-
-//   // name,
-//   defaultValue,
-//   value,
-//   onValueChange = () => {},
-
-//   variant = "smart",
-
-//   containerProps,
-//   labelContainerProps,
-//   labelProps,
-//   requiredStarProps,
-//   helpProps,
-//   childrenContainerProps,
-//   prefixProps,
-//   suffixProps,
-
-//   inputContainerProps,
-//   inputSpinnerProps,
-//   inputIconProps,
-//   listProps,
-//   listItemProps,
-//   ...props
-// }
-
 export const AddressInput = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("AddressInput", props);
 
   const { 
     id,
+    label,
     name,
     defaultValue,
     value,
     onChange,
+    disabled = false,
+    readOnly = false,
+    error,
     labels: userLabels = {},
   } = variantProps;
 
   const labels = { ...DEFAULT_LABELS, ...userLabels };
+
+  // Same id on the <label htmlFor> and on the inner <input>, generated when
+  // the consumer passes none (as Input does).
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
 
   const initialStates = {
     suggestions: [],
@@ -76,6 +48,9 @@ export const AddressInput = (props) => {
   const errors = (currentValue) => ({});
   
   const { currentValue, setValue, isFormSubmitted, isFormSubmitting, filteredErrors } = useField({ name, defaultValue, value, onChange, errors, formSubmitted: variantProps.formSubmitted, onError: variantProps.onError });
+
+  // A disabled or read-only field neither changes nor looks addresses up.
+  const isLocked = disabled || readOnly || isFormSubmitting;
 
   const fetchSuggestions = async (query) => {
     // Abort any pending request before starting a new one
@@ -135,7 +110,26 @@ export const AddressInput = (props) => {
     };
   }, []);
 
+  // Locking the field drops the pending lookup and the open list.
+  useEffect(() => {
+    if (!disabled && !readOnly) {
+      return;
+    }
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    set("suggestions", []);
+    set("isSearching", false);
+  }, [disabled, readOnly, set]);
+
   const handleInputOnChange = (newValue) => {
+    if (isLocked) {
+      return;
+    }
+
     set("suggestions", []);
     setValue(newValue);
 
@@ -152,6 +146,10 @@ export const AddressInput = (props) => {
   };
 
   const handleSelectionOnClick = (newValue) => {
+    if (isLocked) {
+      return;
+    }
+
     setValue(newValue)
     set("suggestions", []);
   };
@@ -159,6 +157,7 @@ export const AddressInput = (props) => {
   return (
     <Label
       { ...variantProps}
+      id={inputId}
       showErrors={isFormSubmitted}
       errors={filteredErrors}
       mergeProps={mergeProps}
@@ -170,7 +169,19 @@ export const AddressInput = (props) => {
         <Input { ...mergeProps("Input", props => ({
           ...props,
           // variant varchar
-          readOnly: isFormSubmitting,
+          id: inputId,
+          disabled,
+          readOnly: readOnly || isFormSubmitting,
+          inputProps: {
+            // The inner Input has no label of its own and would take the
+            // placeholder as accessible name, hiding the visible label.
+            // A consumer aria-label still wins.
+            ...(isString(label) && !isEmpty(label) ? { "aria-label": label } : {}),
+            ...props.inputProps,
+            // aria-invalid + aria-describedby pointing at the messages the
+            // outer Label renders.
+            ...getFieldErrorAria({ id: inputId, showErrors: isFormSubmitted, errors: filteredErrors, error }, props.inputProps),
+          },
           loading: isSearching,
           inputIcon: <FaSearchLocation />,
           placeholder: props.placeholder ?? labels.searchPlaceholder,
@@ -181,7 +192,7 @@ export const AddressInput = (props) => {
         }))}
          
         />
-        {(!isEmpty(suggestions)) && (
+        {(!isLocked && !isEmpty(suggestions)) && (
           <ul { ...mergeProps("suggestionsContainer", props => ({
             ...props,
             className: `absolute z-10 top-[calc(100%+4px)] max-h-80 left-0 right-0 bg-strong col border border-strong-border rounded-md overflow-y-auto shadow-2xl`
