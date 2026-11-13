@@ -30,7 +30,7 @@ connexion revient.
 import { useUploadQueue } from "@cap-rel/smartcommon";
 
 const {
-    enqueue,      // async (blob, meta?) => { pending_id }
+    enqueue,      // async (blob, meta?, { pendingId }?) => { pending_id }
     pending,      // Array<PendingUpload>
     retry,        // (pending_id) => Promise<void>
     cancel,       // (pending_id) => Promise<void>
@@ -55,7 +55,7 @@ const {
 | status | string | `idle` \| `uploading` \| `failed` \| `resolved` |
 | attempts | number | incrémenté à chaque échec qui sera retenté |
 | lastError | string \| null | message court |
-| lastErrorType | string \| null | `network` \| `http_4xx` \| `http_5xx` \| `max_retries` \| `quota` |
+| lastErrorType | string \| null | `network` \| `http_4xx` \| `http_5xx` \| `max_retries` |
 | upload_id | string \| null | rempli quand `status === "resolved"` |
 | meta | object | libre, passé par l'appelant |
 | createdAt | number | unix seconds |
@@ -125,7 +125,7 @@ const InterventionForm = ({ interventionId }) => {
             return;
         }
         await api.put(`intervention/${interventionId}`, {
-            photo_upload_ids: photos.map(p => p.upload_id),
+            json: { photo_upload_ids: photos.map(p => p.upload_id) },
         });
     };
 
@@ -174,8 +174,8 @@ const { uploadFile } = useUpload({ queue: true });
 
 // Retour toujours { upload_id, pending_id, filename, mime, size, ... }
 // - online + succès  -> { upload_id: "abc", pending_id: null, ... }
-// - offline / 5xx / network -> { upload_id: null, pending_id, ... }
-// - 4xx              -> throw
+// - offline / 5xx / 409 / network -> { upload_id: null, pending_id, ... }
+// - autre 4xx        -> throw
 const { upload_id, pending_id } = await uploadFile(file);
 ```
 
@@ -187,7 +187,8 @@ dans la réponse.
 
 Le module expose `__resetUploadQueueForTests()` (préfixe `__` = usage
 interne / tests uniquement). Il vide la queue en mémoire, annule les
-timers de retry et supprime la DB IDB. NE PAS appeler en runtime.
+timers de retry et vide la table IDB de la queue (la base reste). NE PAS
+appeler en runtime.
 
 ## Références
 
