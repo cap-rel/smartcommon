@@ -15,10 +15,6 @@ import {
   reducers,
   globalReducer,
   setGlobalStates,
-  userReducer,
-  setUser,
-  updateUser,
-  unsetUser,
 } from "@cap-rel/smartcommon";
 ```
 
@@ -29,10 +25,6 @@ import {
 | `reducers` | `{ global: globalReducer }` | Reducers montés d'office dans le store. |
 | `globalReducer` | reducer | Tranche `global`, état initial `{}`. |
 | `setGlobalStates` | `(payload) => action` | Remplace toute la tranche `global` (type `global/setGlobalStates`). |
-| `userReducer` | reducer | Tranche utilisateur historique, non montée par défaut (voir plus bas). |
-| `setUser` | `(user) => action` | Remplace l'utilisateur et l'enregistre (type `users/setUser`). |
-| `updateUser` | `(partial) => action` | Fusionne `partial` dans l'utilisateur et l'enregistre (type `users/updateUser`). |
-| `unsetUser` | `() => action` | Vide l'utilisateur et l'efface du stockage (type `users/unsetUser`). |
 
 ## Ajouter ses propres tranches
 
@@ -73,19 +65,11 @@ Les composants lisent ensuite `state.cart` avec `useSelector` de
 pas envoyer `setGlobalStates` soi-même : l'appel suivant du hook
 écraserait la valeur.
 
-## La tranche utilisateur
+## L'utilisateur connecté
 
-`userReducer` et ses actions viennent de l'ancienne gestion de session.
-Elles ne sont plus utilisées par `useApi` : l'utilisateur connecté est
-dans les états globaux et se lit par `useApi().user` (voir `Hooks/useApi`).
-
-- `userReducer` n'est pas dans `reducers` : `setUser`, `updateUser` et
-  `unsetUser` ne changent l'état Redux que si l'application monte la
-  tranche elle-même (`globalState: { reducers: { user: userReducer } }`).
-- Leurs reducers écrivent directement la clé `user` de `localStorage` (si
-  `rememberMe` est vrai) ou de `sessionStorage`, et `unsetUser` efface les
-  deux. Les mélanger avec la connexion de `useApi` mène à deux sources
-  pour le même utilisateur.
+Il n'est pas dans le store Redux : `useApi` le garde dans les états
+globaux, et il se lit par `useApi().user` (voir `Hooks/useApi`). L'ancienne
+tranche `user` et ses actions ne sont plus exportées par le paquet.
 
 ## Pièges
 
@@ -94,9 +78,9 @@ dans les états globaux et se lit par `useApi().user` (voir `Hooks/useApi`).
   et perd son état.
 - Une tranche nommée `global` dans `globalState.reducers` remplace celle de
   smartcommon et casse `useGlobalStates`.
-- `useApi` écrit l'utilisateur connecté sous la clé `user` des états
-  globaux : `updateUser` ne le modifie pas, et `useApi().user` ne voit pas
-  ses changements.
+- Pour modifier l'utilisateur connecté, écrire la clé `user` des états
+  globaux avec le même stockage que `useApi` (voir `Hooks/useGlobalStates`),
+  pas une tranche Redux.
 
 Guide complet : `docs/provider.md` (sections "Schéma de montage" et
 "Forme du `config`").

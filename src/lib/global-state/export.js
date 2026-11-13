@@ -7,4 +7,6 @@ export const reducers = {
 };
 
 export * from "./slices/globalSlice";
-export * from "./slices/userSlice";
+// The user slice is not public: the signed-in user lives in the global
+// states (useApi), and only the legacy useApiTest2 hooks import the slice
+// directly.
