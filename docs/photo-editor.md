@@ -72,6 +72,15 @@ ne travaille jamais sur une image couchée.
 | `labels` | object | `DEFAULT_LABELS` (anglais) | i18n (voir plus bas) |
 | `containerProps`, `headerProps`, `titleProps`, `canvasAreaProps`, `toolbarProps`, `footerProps` | object | - | Slots de style (fusionnés via `twMerge`) |
 
+## Accessibilité
+
+L'éditeur est un dialogue modal (`role="dialog"`, `aria-modal`) nommé
+par son titre : le focus y entre et Tab reste dedans. Échap ne le ferme
+volontairement pas, pour ne pas perdre les retouches sans confirmation :
+la croix (`onCancel`) reste la seule sortie sans enregistrer. Un `ref` ou
+un `onKeyDown` passés par `containerProps` sont conservés à côté de ceux
+du dialogue.
+
 ## Outils
 
 ### Géométrie
