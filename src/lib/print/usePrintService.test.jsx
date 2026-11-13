@@ -11,6 +11,7 @@ const { usbInstance, usbConstructorSpy } = vi.hoisted(() => {
     const ctor = vi.fn(function FakeWebUSBPrinter() {
         Object.assign(this, instance);
     });
+    ctor.isSupported = vi.fn(() => true);
     return { usbInstance: instance, usbConstructorSpy: ctor };
 });
 

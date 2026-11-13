@@ -57,6 +57,20 @@ function buildError(code, message) {
     return err;
 }
 
+// Errors a retry cannot fix: configuration, an unsupported browser, or a
+// device picker the user closed (a retry would also lack the user gesture
+// WebUSB requires).
+const DEFINITIVE_ERROR_CODES = new Set([
+    "unknown_job_type",
+    "no_escpos_renderer",
+    "unsupported_protocol",
+    "network_not_supported",
+    "webusb_not_supported",
+]);
+const DEFINITIVE_DOM_ERRORS = new Set(["NotFoundError", "SecurityError", "NotAllowedError"]);
+
+const isDefinitiveError = (err) => DEFINITIVE_ERROR_CODES.has(err?.code) || DEFINITIVE_DOM_ERRORS.has(err?.name);
+
 export class PrintService {
     /**
      * @param {object} [options]
@@ -140,7 +154,8 @@ export class PrintService {
                 job.resolve();
             } catch (err) {
                 job.retries--;
-                if (job.retries <= 0) {
+                if (job.retries <= 0 || isDefinitiveError(err)) {
+                    log.error(`[PrintService] Job "${job.type}" failed:`, err?.message);
                     this.queue.shift();
                     job.reject(err);
                 } else {
@@ -196,6 +211,9 @@ export class PrintService {
 
     async sendViaUsb(data) {
         if (!this.usbPrinter || !this.usbPrinter.isConnected()) {
+            if (!WebUSBPrinter.isSupported()) {
+                throw buildError("webusb_not_supported", this.labels.webusbNotSupported);
+            }
             this.usbPrinter = new WebUSBPrinter();
             await this.usbPrinter.connect();
         }

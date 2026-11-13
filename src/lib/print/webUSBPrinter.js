@@ -25,7 +25,12 @@ export class WebUSBPrinter {
 
     async connect() {
         if (!WebUSBPrinter.isSupported()) {
-            throw new Error("WebUSB is not supported in this browser");
+            // PrintService checks support first and throws its translated
+            // message; this guards direct use of the driver.
+            const err = new Error("WebUSB is not supported in this browser");
+            err.code = "webusb_not_supported";
+            log.error("connect:", err.message);
+            throw err;
         }
 
         this.device = await navigator.usb.requestDevice({

@@ -171,9 +171,12 @@ un `message` tiré des libellés.
 | `no_escpos_renderer` | Transport `usb` ou `network` sans renderer `escpos`. | `noEscposRenderer(type)` |
 | `unsupported_protocol` | `protocol` autre que `usb`, `network` ou `browser`. | `unsupportedProtocol(protocol)` |
 | `network_not_supported` | Toujours en `network` : une PWA ne peut pas ouvrir de connexion TCP brute vers l'imprimante. | `networkNotSupported` |
+| `webusb_not_supported` | Transport `usb` dans un navigateur sans WebUSB. | `webusbNotSupported` |
 
-Les erreurs de WebUSB (navigateur non compatible, choix du périphérique
-annulé, interface introuvable) remontent telles quelles, sans `code`.
+Ces erreurs ne sont pas retentées, pas plus qu'un choix de périphérique
+annulé par l'utilisateur (`NotFoundError`, renvoyée telle quelle). Les
+autres erreurs WebUSB (transfert interrompu, interface introuvable)
+remontent telles quelles après les 3 tentatives.
 
 ### `PRINT_DEFAULT_LABELS`
 

@@ -12,6 +12,7 @@ const { usbInstance, usbConstructorSpy } = vi.hoisted(() => {
     const ctor = vi.fn(function FakeWebUSBPrinter() {
         Object.assign(this, instance);
     });
+    ctor.isSupported = vi.fn(() => true);
     return { usbInstance: instance, usbConstructorSpy: ctor };
 });
 
@@ -49,6 +50,8 @@ beforeEach(() => {
     usbInstance.isConnected.mockReset();
     usbInstance.isConnected.mockImplementation(() => true);
     usbConstructorSpy.mockClear();
+    usbConstructorSpy.isSupported.mockReset();
+    usbConstructorSpy.isSupported.mockImplementation(() => true);
     browserPrintSpy.mockReset();
     browserPrintSpy.mockImplementation(() => Promise.resolve());
 });
@@ -84,7 +87,7 @@ describe("PrintService - registration", () => {
 });
 
 describe("PrintService - unknown job type", () => {
-    it("rejects with code unknown_job_type after exhausting retries", async () => {
+    it("rejects with code unknown_job_type", async () => {
         const service = new PrintService();
         // Speed up retries: shrink the delay.
         service.delay = () => Promise.resolve();
@@ -171,7 +174,7 @@ describe("PrintService - retry behaviour", () => {
 });
 
 describe("PrintService - network protocol", () => {
-    it("rejects with code network_not_supported after retries", async () => {
+    it("rejects with code network_not_supported", async () => {
         const service = new PrintService();
         service.delay = () => Promise.resolve();
         service.registerJobType("ticket", { escpos: () => {} });
@@ -268,5 +271,53 @@ describe("PrintService - pendingCount", () => {
         resolveFirst();
         await Promise.all([p1, p2]);
         expect(service.pendingCount).toBe(0);
+    });
+});
+
+describe("PrintService - definitive errors", () => {
+    it("does not retry a job type that is not registered", async () => {
+        const service = new PrintService();
+        service.delay = vi.fn(() => Promise.resolve());
+
+        await expect(service.enqueue("ghost", {}, usbPrinter)).rejects.toMatchObject({ code: "unknown_job_type" });
+        expect(service.delay).not.toHaveBeenCalled();
+    });
+
+    it("rejects at once with webusb_not_supported and its label when the browser has no WebUSB", async () => {
+        usbConstructorSpy.isSupported.mockReturnValue(false);
+        const service = new PrintService({ labels: { webusbNotSupported: "Pas de WebUSB" } });
+        service.delay = vi.fn(() => Promise.resolve());
+        service.registerJobType("ticket", { escpos: () => {} });
+
+        await expect(service.enqueue("ticket", {}, usbPrinter)).rejects.toMatchObject({
+            code: "webusb_not_supported",
+            message: "Pas de WebUSB",
+        });
+        expect(usbConstructorSpy).not.toHaveBeenCalled();
+        expect(service.delay).not.toHaveBeenCalled();
+    });
+
+    it("does not reopen the device picker after the user closed it", async () => {
+        const service = new PrintService();
+        service.delay = vi.fn(() => Promise.resolve());
+        service.registerJobType("ticket", { escpos: () => {} });
+        const cancelled = Object.assign(new Error("No device selected."), { name: "NotFoundError" });
+        usbInstance.isConnected.mockReturnValue(false);
+        usbInstance.connect.mockImplementation(() => Promise.reject(cancelled));
+
+        await expect(service.enqueue("ticket", {}, usbPrinter)).rejects.toBe(cancelled);
+        expect(usbInstance.connect).toHaveBeenCalledTimes(1);
+    });
+
+    it("still retries a transient send failure", async () => {
+        const service = new PrintService();
+        service.delay = vi.fn(() => Promise.resolve());
+        service.registerJobType("ticket", { escpos: () => {} });
+        usbInstance.send
+            .mockImplementationOnce(() => Promise.reject(new Error("USB transfer stalled")))
+            .mockImplementationOnce(() => Promise.resolve());
+
+        await service.enqueue("ticket", {}, usbPrinter);
+        expect(service.delay).toHaveBeenCalledTimes(1);
     });
 });
