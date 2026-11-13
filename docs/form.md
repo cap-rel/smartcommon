@@ -274,6 +274,12 @@ Le groupe est nommé par le label visible (`aria-labelledby`), sinon par
 `aria-label`. `disabled` retire les options de la tabulation. Un
 `data-testid` passé par `optionProps` arrive sur chaque option.
 
+Une option écrite en objet porte aussi ses propres réglages :
+`{ value, label, disabled, "data-testid": "...", "aria-describedby": "..." }`.
+Une option `disabled` est annoncée (`aria-disabled`), grisée, hors de la
+tabulation et ne se coche ni au clic ni au clavier ; les flèches la
+sautent. Ses attributs `data-*` et `aria-*` arrivent sur son élément.
+
 ## `<Input>` : boutons icônes
 
 Le bouton afficher / masquer du mot de passe (`type="password"`) et les

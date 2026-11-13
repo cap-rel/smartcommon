@@ -144,3 +144,37 @@ describe("Checker - disabled, attributes and props", () => {
         expect(messages).toEqual([]);
     });
 });
+
+describe("Checker - per-option disabled and attributes", () => {
+    const options = [
+        { value: "a", label: "Alpha", "data-testid": "opt-a" },
+        { value: "b", label: "Beta", disabled: true, "data-testid": "opt-b" },
+        { value: "c", label: "Gamma", "aria-describedby": "gamma-help" },
+    ];
+
+    it("forwards data-* and aria-* written on an option", () => {
+        render(<Checker label="Letters" multiple options={options} onChange={() => {}} />);
+        expect(screen.getByTestId("opt-a").getAttribute("role")).toBe("checkbox");
+        expect(screen.getByRole("checkbox", { name: "Gamma" }).getAttribute("aria-describedby")).toBe("gamma-help");
+    });
+
+    it("never toggles a disabled option, by click or keyboard", () => {
+        const onChange = vi.fn();
+        render(<Checker label="Letters" multiple options={options} onChange={onChange} />);
+        const beta = screen.getByRole("checkbox", { name: "Beta" });
+
+        expect(beta.getAttribute("aria-disabled")).toBe("true");
+        expect(beta.getAttribute("tabindex")).toBe("-1");
+        fireEvent.click(beta);
+        fireEvent.keyDown(beta, { key: " " });
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("skips a disabled option with the arrow keys in single choice", () => {
+        const onChange = vi.fn();
+        render(<Checker label="Letters" options={options} value="a" onChange={onChange} />);
+
+        fireEvent.keyDown(screen.getByRole("radio", { name: "Alpha" }), { key: "ArrowDown" });
+        expect(onChange).toHaveBeenLastCalledWith("c", expect.anything());
+    });
+});

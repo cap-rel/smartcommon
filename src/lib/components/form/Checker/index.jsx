@@ -13,7 +13,9 @@ const PREVIOUS_KEYS = ["ArrowLeft", "ArrowUp"];
 const TOGGLE_KEYS = [" ", "Enter"];
 
 // IDEA Add icon to switch like (like / dislike or check / cross, etc)
-// TODO Add attributes to options like disabled, color, maybe props
+
+// data-* and aria-* written on an option object reach its element
+const FORWARDED_ATTRIBUTE = /^(data|aria)-/;
 
 export const Checker = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("Checker", props);
@@ -77,6 +79,10 @@ export const Checker = (props) => {
     const optionList = (options ?? []).map(option => ({
         value: isObject(option) ? option.value : option,
         label: isObject(option) ? option.label : option,
+        disabled: isObject(option) && !!option.disabled,
+        attributes: isObject(option)
+            ? Object.fromEntries(Object.entries(option).filter(([key]) => FORWARDED_ATTRIBUTE.test(key)))
+            : {},
     }));
 
     const isChecked = (optionValue) => multiple ? (currentValue ?? []).includes(optionValue) : currentValue === optionValue;
@@ -84,14 +90,15 @@ export const Checker = (props) => {
     // Single choice: roving tabindex, only the checked option (or the first
     // one) is in the tab order. Multiple choice: every box is tabbable.
     const checkedIndex = multiple ? -1 : optionList.findIndex(option => option.value === currentValue);
-    const tabbableIndex = checkedIndex === -1 ? 0 : checkedIndex;
+    const tabbableIndex = checkedIndex === -1 ? optionList.findIndex(option => !option.disabled) : checkedIndex;
 
     // In single choice, clicking the checked option clears the field unless
     // it is required: a required field cannot be emptied once filled.
-    const handleOnClick = (optionValue) => {
-        if (!isEditable) {
+    const handleOnClick = (option) => {
+        if (!isEditable || option.disabled) {
             return;
         }
+        const optionValue = option.value;
         if (multiple) {
             const safeCurrentValue = currentValue ?? [];
             setValue(safeCurrentValue.includes(optionValue) ? safeCurrentValue.filter(checkedOption => checkedOption !== optionValue) : [...safeCurrentValue, optionValue]);
@@ -109,7 +116,7 @@ export const Checker = (props) => {
     const handleOnKeyDown = (e, optionIndex) => {
         if (TOGGLE_KEYS.includes(e.key)) {
             e.preventDefault();
-            handleOnClick(optionList[optionIndex].value);
+            handleOnClick(optionList[optionIndex]);
             return;
         }
         if (multiple) {
@@ -122,7 +129,17 @@ export const Checker = (props) => {
         }
 
         e.preventDefault();
-        const nextIndex = (optionIndex + step + optionList.length) % optionList.length;
+        // Disabled options are skipped; with none left, the focus stays put
+        let nextIndex = optionIndex;
+        for (let tries = 0; tries < optionList.length; tries++) {
+            nextIndex = (nextIndex + step + optionList.length) % optionList.length;
+            if (!optionList[nextIndex].disabled) {
+                break;
+            }
+        }
+        if (nextIndex === optionIndex || optionList[nextIndex].disabled) {
+            return;
+        }
         optionRefs.current[nextIndex]?.focus();
         if (isEditable) {
             setValue(optionList[nextIndex].value);
@@ -153,25 +170,27 @@ export const Checker = (props) => {
                         const optionValue = option.value;
                         const optionLabel = option.label;
                         const checked = isChecked(optionValue);
-                        const isTabbable = !disabled && (multiple || OI === tabbableIndex);
+                        const optionDisabled = disabled || option.disabled;
+                        const isTabbable = !optionDisabled && (multiple || OI === tabbableIndex);
 
                         return (
                             <div key={`option${OI}`} { ...mergeProps("option", props => ({
                                 role: multiple ? "checkbox" : "radio",
                                 "aria-checked": checked ? "true" : "false",
-                                "aria-disabled": disabled ? "true" : undefined,
+                                "aria-disabled": optionDisabled ? "true" : undefined,
                                 tabIndex: isTabbable ? 0 : -1,
                                 ...props,
+                                ...option.attributes,
                                 ref: el => { optionRefs.current[OI] = el; },
                                 onClick: (e) => {
                                     applyFunctionIfFunction(props.onClick, e);
-                                    handleOnClick(optionValue);
+                                    handleOnClick(option);
                                 },
                                 onKeyDown: (e) => {
                                     handleOnKeyDown(e, OI);
                                     applyFunctionIfFunction(props.onKeyDown, e);
                                 },
-                                className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft duration-(--really-quick) outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary`
+                                className: `first:rounded-t-app-md last:rounded-b-app-md bg-soft-bg flex justify-between items-center gap-app-base p-app-base active:brightness-soft aria-disabled:active:brightness-100 aria-disabled:opacity-60 aria-disabled:cursor-not-allowed duration-(--really-quick) outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary`
                             }))}>
                                 <div { ...mergeProps("optionLabel", props => ({
                                     ...props,
@@ -191,25 +210,25 @@ export const Checker = (props) => {
                                     <Switch
                                         mergeProps={mergeProps}
                                         checked={checked}
-                                        disabled={disabled}
+                                        disabled={optionDisabled}
                                     />
                                 : type === "radio" ?
                                     <Radio
                                         mergeProps={mergeProps}
                                         checked={checked}
-                                        disabled={disabled}
+                                        disabled={optionDisabled}
                                     />
                                 : type === "icon" ?
                                     <Icon
                                         mergeProps={mergeProps}
                                         icon={checkedIcon}
                                         checked={checked}
-                                        disabled={disabled}
+                                        disabled={optionDisabled}
                                     />
                                 :   <Checkbox
                                         mergeProps={mergeProps}
                                         checked={checked}
-                                        disabled={disabled}
+                                        disabled={optionDisabled}
                                     />
                                 }
                             </div>

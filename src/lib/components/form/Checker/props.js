@@ -19,6 +19,7 @@ export const propTypes = {
     exact: PropTypes.number,
     max: PropTypes.number,
     multiple: PropTypes.bool,
+    /** Values, or { value, label, disabled?, data-* / aria-* } objects */
     options: PropTypes.array,
 
     name: PropTypes.string,
