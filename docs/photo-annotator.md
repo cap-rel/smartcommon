@@ -128,7 +128,8 @@ Pour les types qui n'ont pas besoin d'une modale standard (par exemple
 déclencher un file input puis sauver, ou réutiliser une modale qui a
 déjà son propre overlay comme `<ProductCategoryBrowser>`), passer
 `headlessEditor: true`. Le composant monte alors le `renderEditor`
-directement, sans wrapper modal.
+directement, sans wrapper modal. Échap l'annule quand même (`onCancel`),
+sauf si l'événement a déjà été traité (`defaultPrevented`).
 
 ```jsx
 photo: {
@@ -220,6 +221,15 @@ consommatrice ; le composant reste single-image.
 | Drag à un doigt sur le fond quand zoomé > 1 | Pan |
 | Boutons edit/delete dans la liste | Édition / suppression (`window.confirm` pour delete) |
 | Mode `readOnly` | Désactive add/edit/delete/drag ; tap et double-tap restent actifs |
+| Échap dans le TypePicker | Annule, comme son bouton |
+| Échap dans l'éditeur | Annule (`onCancel`), sauf si un élément de l'éditeur a déjà traité la touche |
+
+Le TypePicker et l'éditeur standard sont des dialogues modaux
+(`role="dialog"`, `aria-modal`) : le focus y entre et Tab reste dedans.
+Le TypePicker est nommé par son titre, l'éditeur par le `label` du type.
+Un éditeur qui consomme Échap lui-même (une liste déroulante qui se
+ferme) appelle `event.preventDefault()` : l'éditeur reste alors ouvert,
+une seule pression ne ferme qu'un niveau.
 
 ## Layout
 
