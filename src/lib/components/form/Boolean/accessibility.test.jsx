@@ -61,6 +61,36 @@ describe("Boolean - accessibility", () => {
         expect(onKeyDown).toHaveBeenCalledTimes(1);
     });
 
+    it("toggles when its label text is clicked, like a native label", () => {
+        const onChange = vi.fn();
+        render(<BooleanField type="checkbox" label="Stay signed in" onChange={onChange} />);
+
+        fireEvent.click(screen.getByText("Stay signed in"));
+        expect(onChange).toHaveBeenLastCalledWith(true, expect.anything());
+        expect(screen.getByRole("checkbox", { name: "Stay signed in" }).getAttribute("aria-checked")).toBe("true");
+
+        fireEvent.click(screen.getByText("Stay signed in"));
+        expect(onChange).toHaveBeenLastCalledWith(false, expect.anything());
+    });
+
+    it("ignores a label click when disabled or read only", () => {
+        const onChange = vi.fn();
+        const { rerender } = render(<BooleanField label="Notifications" disabled onChange={onChange} />);
+        fireEvent.click(screen.getByText("Notifications"));
+        rerender(<BooleanField label="Notifications" readOnly onChange={onChange} />);
+        fireEvent.click(screen.getByText("Notifications"));
+        expect(onChange).not.toHaveBeenCalled();
+    });
+
+    it("still calls a consumer onClick passed through the label slot", () => {
+        const onClick = vi.fn();
+        const onChange = vi.fn();
+        render(<BooleanField label="Notifications" labelProps={{ onClick }} onChange={onChange} />);
+        fireEvent.click(screen.getByText("Notifications"));
+        expect(onClick).toHaveBeenCalledTimes(1);
+        expect(onChange).toHaveBeenLastCalledWith(true, expect.anything());
+    });
+
     it("announces a required field", () => {
         render(<BooleanField type="checkbox" label="Accept" required />);
         expect(screen.getByRole("checkbox", { name: "Accept" }).getAttribute("aria-required")).toBe("true");

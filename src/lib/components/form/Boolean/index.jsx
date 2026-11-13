@@ -64,9 +64,22 @@ export const Boolean = (props) => {
 
     // The drawn control is the focusable element: role, state, keyboard,
     // focus ring, and the data-* / aria-* written on <Boolean>.
+    // The label toggles too, as a native <label> does for its box: its
+    // htmlFor points at a div, which the browser does not activate.
     const controlMergeProps = (key, propsFunction, mergeOptions = {}) => {
         if (key === "label") {
-            return mergeProps(key, props => ({ id: labelId, ...propsFunction(props) }), mergeOptions);
+            return mergeProps(key, props => {
+                const built = propsFunction(props);
+                return {
+                    id: labelId,
+                    ...built,
+                    onClick: e => {
+                        applyFunctionIfNotNil(props.onClick, e);
+                        handleOnClick();
+                    },
+                    className: `${built.className ?? ""} ${disabled || readOnly ? "" : "cursor-pointer select-none"}`,
+                };
+            }, mergeOptions);
         }
         if (key !== controlKey) {
             return mergeProps(key, propsFunction, mergeOptions);
