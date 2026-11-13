@@ -1,0 +1,144 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Utils/Stockage" />
+
+# Utils : stockage local et IndexedDB
+
+Trois familles d'outils pour garder des données sur l'appareil :
+
+- `localStorage` et `sessionStorage` avec sérialisation JSON intégrée ;
+- l'état du stockage du navigateur (IndexedDB disponible, quota, stockage
+  persistant), à vérifier avant d'activer un mode hors ligne ;
+- la classe `Db`, une base Dexie (IndexedDB) avec horodatage automatique
+  des enregistrements et versions de schéma.
+
+```js
+import {
+  getLocal,
+  setLocal,
+  removeLocal,
+  getSession,
+  setSession,
+  removeSession,
+  isIndexedDBAvailable,
+  getStorageEstimate,
+  requestPersistentStorage,
+  Db,
+} from "@cap-rel/smartcommon";
+```
+
+## `localStorage` et `sessionStorage`
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `getLocal` | `(key) => any \| null` | Lit et décode le JSON ; `null` si la clé manque ou si la lecture échoue. |
+| `setLocal` | `(key, value) => void` | Encode en JSON et écrit ; une erreur (stockage plein) est ignorée. |
+| `removeLocal` | `(key) => void` | Supprime la clé. |
+| `local` | `{ get, set, unset }` | Mêmes opérations sous forme d'objet, sans protection : une erreur remonte. |
+| `getLocalJSON` | `(key)` | Ancien nom de `getLocal`, gardé pour compatibilité. |
+| `setLocalJSON` | `(key, value)` | Ancien nom de `setLocal`, gardé pour compatibilité. |
+| `getSession`, `setSession`, `removeSession` | comme ci-dessus | Équivalents sur `sessionStorage`. |
+| `session` | `{ get, set, unset }` | Équivalent de `local` sur `sessionStorage`. |
+| `getSessionJSON`, `setSessionJSON` | comme ci-dessus | Anciens noms de `getSession` et `setSession`. |
+| `encodeString` | `(str) => string` | Encode une chaîne UTF-8 en base64 (accents compris, à la différence de `btoa` seul). |
+| `decodeString` | `(base64) => string` | Opération inverse. |
+
+```js
+import { getLocal, setLocal } from "@cap-rel/smartcommon";
+
+const filters = getLocal("interventions.filters") ?? { status: "open" };
+setLocal("interventions.filters", { ...filters, status: "done" });
+```
+
+## État du stockage du navigateur
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `isIndexedDBAvailable` | `() => Promise<boolean>` | Ouvre puis supprime une base de test ; `false` en navigation privée ou stockage bloqué. |
+| `getStorageEstimate` | `() => Promise<object \| null>` | `{ usage, quota, usagePercent, available, usageFormatted, quotaFormatted, availableFormatted }`, `null` si l'API manque. |
+| `requestPersistentStorage` | `() => Promise<boolean>` | Demande au navigateur de ne pas effacer les données de l'application. |
+| `isStoragePersistent` | `() => Promise<boolean>` | Indique si le stockage est déjà persistant. |
+| `formatBytes` | `(bytes) => string` | `1536000` donne `"1.46 MB"` (unités `B`, `KB`, `MB`, `GB`, `TB`). |
+| `STORAGE_CONSTANTS` | `{ LOW_STORAGE_THRESHOLD, TEST_DB_NAME }` | Seuil d'alerte (50 Mo) et nom de la base de test. |
+
+```js
+import {
+  isIndexedDBAvailable,
+  getStorageEstimate,
+  isStoragePersistent,
+  requestPersistentStorage,
+  STORAGE_CONSTANTS,
+} from "@cap-rel/smartcommon";
+
+if (!(await isIndexedDBAvailable())) {
+  showBanner("Mode hors ligne indisponible sur ce navigateur");
+}
+
+const estimate = await getStorageEstimate();
+if (estimate && estimate.available < STORAGE_CONSTANTS.LOW_STORAGE_THRESHOLD) {
+  showBanner(`Espace faible : ${estimate.availableFormatted} libres`);
+}
+
+if (!(await isStoragePersistent())) {
+  await requestPersistentStorage();
+}
+```
+
+Aucune de ces fonctions ne lève d'erreur : en cas d'échec, elles renvoient
+`false` ou `null`.
+
+## La classe `Db`
+
+`Db` crée une base Dexie et lui ajoute deux comportements :
+
+- chaque enregistrement créé reçoit `createdAt` et `updatedAt`, chaque mise
+  à jour rafraîchit `updatedAt` (horodatages en secondes) ;
+- une table `logs` est ajoutée à chaque version du schéma. En mode
+  `debug`, chaque création, mise à jour et suppression y est tracée, et les
+  traces de plus de 7 jours sont purgées à l'ouverture.
+
+| Membre | Rôle |
+|--------|------|
+| `new Db({ name, options, version, stores, versions, debug })` | `name` est obligatoire. `options` est passé à Dexie. |
+| `version`, `stores` | Schéma à version unique (par défaut `1` et `{}`). |
+| `versions` | Tableau `[{ version, stores, upgrade }]` à versions strictement croissantes ; s'il est fourni, `version` et `stores` sont ignorés. |
+| `debug` | Trace les opérations dans `logs`. Par défaut, actif en développement. |
+| `instance` | La base Dexie, pour les requêtes (`db.instance.products.where(...)`). |
+| `name`, `debug`, `db` | Propriétés de l'instance ; `db` est la même base que `instance`. |
+| `LOGS_INDEXES` | Chaîne d'index de la table `logs` (exportée en constante). |
+
+```js
+import { Db } from "@cap-rel/smartcommon";
+
+export const db = new Db({
+  name: "interventions",
+  versions: [
+    { version: 1, stores: { interventions: "id, status, fk_soc" } },
+    {
+      version: 2,
+      stores: { interventions: "id, status, fk_soc, date", photos: "++id, interventionId" },
+      upgrade: (tx) => tx.table("interventions").toCollection().modify((i) => { i.date ??= null; }),
+    },
+  ],
+});
+
+const open = await db.instance.interventions.where("status").equals("open").toArray();
+```
+
+Les hooks `useDb` et `useCachedQuery` attendent cette base (voir
+`Hooks/useDb` et `Hooks/useCachedQuery`).
+
+## Pièges
+
+- `local.get` et `session.get` lèvent une erreur sur un JSON invalide,
+  là où `getLocal` et `getSession` renvoient `null`. Préférer les fonctions.
+- `LOGS_INDEXES` est figé : le modifier changerait le schéma de toutes les
+  bases existantes chez les applications clientes.
+- Pour retirer une table, la déclarer à `null` dans une nouvelle version
+  (`{ photos: null }`), comme dans Dexie.
+- Les champs `createdAt` et `updatedAt` sont écrits par `Db` : ne pas les
+  utiliser pour une autre donnée dans une table gérée par `Db`.
+- `requestPersistentStorage` peut afficher une demande au navigateur :
+  l'appeler après une action de l'utilisateur plutôt qu'au chargement.
+
+Guide complet : `docs/offline.md`.

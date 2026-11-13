@@ -1,0 +1,165 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Compagnons" />
+
+# Constantes, contextes et helpers des composants et hooks
+
+Plusieurs composants et hooks exportent, à côté d'eux, des valeurs qui ne
+sont ni un composant ni un hook : leurs contextes React, leurs constantes
+de configuration et des fonctions pures utilisables hors de React. Cette
+page les regroupe ; le composant ou le hook lui-même a sa propre page.
+
+```js
+import {
+  detectAutoViewport,
+  openInstallPrompt,
+  isAppKnownInstalled,
+  defaultHealthCheckUrl,
+  CACHE_STRATEGIES,
+  createDexieProductCategoryAdapters,
+} from "@cap-rel/smartcommon";
+```
+
+## Contextes React
+
+Chaque contexte est fourni par son composant et lu par son hook. Les lire
+directement par `useContext` n'est utile que pour un test ou un fournisseur
+de remplacement : passer par le hook, qui gère l'absence du fournisseur.
+
+| Contexte | Fourni par | Lu par |
+|----------|------------|--------|
+| `ApiContext` | `ApiProvider` (dans `<Provider>`) | `useApi` |
+| `LibConfigContext` | `LibConfigProvider` (dans `<Provider>`) | `useLibConfig` |
+| `GlobalStatesContext` | `GlobalStatesProvider` (dans `<Provider>`) | `useGlobalStates` |
+| `NavigationContext` | `NavigationProvider` (dans `<Provider>`) | `useNavigation` |
+| `ConfirmContext` | `ConfirmProvider` (à monter soi-même) | `useConfirm` |
+| `ViewportContext` | `ViewportProvider` (à monter soi-même) | `useViewport` |
+| `CalculatorContext` | `CalculatorProvider` | `useCalculator` |
+| `FormContext` | `Form` | les champs de formulaire (`useField`) |
+
+## Type d'écran (`ViewportProvider`)
+
+| Symbole | Valeur ou signature | Rôle |
+|---------|---------------------|------|
+| `detectAutoViewport` | `() => "mobile" \| "tablet" \| "desktop"` | Le calcul fait par `ViewportProvider` en mode `auto`, pour présélectionner un choix dans un écran de réglages. |
+| `DESKTOP_MEDIA_QUERY` | `"(pointer: fine)"` | Pointeur principal précis (souris) : mode desktop. |
+| `TABLET_MEDIA_QUERY` | `"(pointer: coarse) and (min-width: 600px)"` | Équivalent CSS approché du mode tablette. |
+| `MOBILE_MEDIA_QUERY` | `"(pointer: coarse) and (max-width: 599.98px)"` | Équivalent CSS approché du mode mobile. |
+| `MOBILE_MAX_SHORT_SIDE_PX` | `600` | Petit côté de l'écran (px CSS) à partir duquel un écran tactile est une tablette. |
+| `VIEWPORT_PREFERENCE_KEY` | `"smartcommon.viewport.preference"` | Clé `localStorage` du choix de l'utilisateur (`auto`, `mobile`, `tablet`, `desktop`). |
+
+`detectAutoViewport` teste d'abord le pointeur, puis le petit côté de
+l'écran physique (`screen.width` / `screen.height`), pas la taille de la
+fenêtre. Voir `docs/viewport.md`.
+
+## Installation de la PWA (`useInstallPrompt`, `InstallPrompt`)
+
+| Symbole | Valeur ou signature | Rôle |
+|---------|---------------------|------|
+| `openInstallPrompt` | `() => void` | Ouvre l'invitation d'installation tout de suite, pour un bouton "Installer l'application" ; ne compte pas comme un refus. Demande un `InstallPrompt` monté. |
+| `isAppKnownInstalled` | `() => boolean` | L'application a-t-elle déjà été vue installée sur ce profil de navigateur ? Pour masquer ce bouton. |
+| `detectStandalone` | `() => boolean` | La session tourne-t-elle comme application installée ? `false` veut dire "dans un onglet", pas "non installée". |
+| `detectPlatform` | `() => "ios" \| "android" \| "desktop" \| "unknown"` | Famille de plateforme (iPadOS compris dans `ios`). |
+| `detectInstallGuide` | `() => string` | Guide d'installation adapté : `"ios"`, `"in-app"`, `"android"`, `"android-firefox"`, `"android-samsung"`, `"desktop-chromium"`, `"macos-safari"`, `"desktop-firefox"`, `"unknown"`. |
+| `INSTALL_MODE_STANDALONE` | `"standalone"` | Mode signalé au serveur pour une session installée. |
+| `INSTALL_MODE_BROWSER` | `"browser"` | Mode signalé au serveur pour une session dans un onglet. |
+| `INSTALL_STATE_KEY` | `"smartcommon.install.state"` | Clé `localStorage` de l'état connu (installation vue, refus, visites). |
+| `INSTALL_PROMPT_OPEN_EVENT` | `"smartcommon:install-prompt:open"` | Événement `window` envoyé par `openInstallPrompt`. |
+
+```jsx
+import { isAppKnownInstalled, openInstallPrompt } from "@cap-rel/smartcommon";
+
+{!isAppKnownInstalled() && (
+  <button onClick={openInstallPrompt}>Installer l'application</button>
+)}
+```
+
+Voir `docs/provider.md`, section "Invite d'installation".
+
+## Connexion au serveur (`useOnlineStatus`)
+
+| Symbole | Valeur ou signature | Rôle |
+|---------|---------------------|------|
+| `ONLINE_STATUS_DEFAULTS` | `{ HEALTH_CHECK_INTERVAL: 30000, STABILITY_DELAY: 1000, TIMEOUT: 5000 }` | Réglages par défaut du hook, en millisecondes. |
+| `HEALTH_ROUTE` | `"health"` | Route publique de SmartAuth qui répond 204 sans jeton. |
+| `defaultHealthCheckUrl` | `(prefixUrl) => string \| null` | `"/api.php/"` donne `"/api.php/health"` ; `null` sans préfixe. |
+| `resetHealthCheckCache` | `() => void` | Oublie les réponses de test partagées entre instances (tests, déconnexion). |
+
+## Cache (`useCachedQuery`, `useAuthenticatedImage`)
+
+| Symbole | Valeur ou signature | Rôle |
+|---------|---------------------|------|
+| `CACHE_STRATEGIES` | `{ NETWORK_FIRST: "network-first", CACHE_FIRST: "cache-first", STALE_WHILE_REVALIDATE: "swr" }` | Stratégies acceptées par `useCachedQuery`. |
+| `CACHED_QUERY_DEFAULTS` | `{ TTL: 3600000, STALE_TIME: 60000 }` | Durée de vie (1 h) et fraîcheur (1 min) par défaut. |
+| `AUTHENTICATED_IMAGE_DEFAULTS` | `{ TTL: 86400000, STALE_TIME: 3600000 }` | Mêmes réglages pour les images (24 h et 1 h). |
+| `generateCacheKey` | `(url) => string \| null` | Clé de cache courte (`img_...`) calculée à partir d'une URL. |
+
+```js
+import { CACHE_STRATEGIES } from "@cap-rel/smartcommon";
+
+const { data } = useCachedQuery({
+  db: db.instance,
+  store: "cache",
+  key: "thirdparties",
+  fetchFn: () => api.get("thirdparties"),
+  strategy: CACHE_STRATEGIES.STALE_WHILE_REVALIDATE,
+});
+```
+
+## Catalogue produits (`ProductCategoryBrowser`)
+
+| Symbole | Valeur ou signature | Rôle |
+|---------|---------------------|------|
+| `createDexieProductCategoryAdapters` | `(options) => { productsAdapter, categoriesAdapter }` | Construit les deux adaptateurs du composant à partir d'une base Dexie. |
+| `ALL_PRODUCTS_ID` | `"__all_products__"` | Identifiant interne de la tuile "tous les produits". |
+| `UNCATEGORIZED_ID` | `"__uncategorized__"` | Identifiant interne de la tuile "sans catégorie". |
+
+Options de `createDexieProductCategoryAdapters` : `db` (obligatoire),
+`productsTable` (`"products"`), `categoriesTable` (`"categories"`),
+`productDocumentsTable` (`"productDocuments"`), `categoryDocumentsTable`
+(`"categoryDocuments"`), `productImageForeignKey` (`"product_id"`),
+`categoryImageForeignKey` (`"category_id"`), `isProductActive`,
+`matchesCategoryType`, `attachImages` (`true`).
+
+```jsx
+import { ProductCategoryBrowser, createDexieProductCategoryAdapters } from "@cap-rel/smartcommon";
+
+const { productsAdapter, categoriesAdapter } =
+  createDexieProductCategoryAdapters({ db: db.instance, attachImages: false });
+
+<ProductCategoryBrowser
+  open={open}
+  onClose={close}
+  productsAdapter={productsAdapter}
+  categoriesAdapter={categoriesAdapter}
+/>;
+```
+
+Les adaptateurs ne reçoivent jamais `ALL_PRODUCTS_ID` ni
+`UNCATEGORIZED_ID` : le composant les traduit en `categoryId: undefined`
+(tous) et `categoryId: null` (sans catégorie). Voir
+`docs/product-category-browser.md`.
+
+## Libellés de `DataTable`
+
+`DEFAULT_LABELS` est exporté au premier niveau du paquet, mais il s'agit
+des textes anglais de `DataTable` seulement (`empty`, `searchPlaceholder`,
+`page`, `of`, `previous`, `next`, `sortAscending`, `sortDescending`,
+`rowsSelected(count)`). Pour traduire, préférer `locales.fr.DataTable`
+(page Modules/Locales).
+
+## Pièges
+
+- `ConfirmProvider` et `ViewportProvider` ne sont pas montés par
+  `<Provider>` : sans eux, `ConfirmContext` et `ViewportContext` valent
+  `null`.
+- `detectAutoViewport` et les fonctions `detect*` lisent `window` et
+  `navigator` : elles renvoient une valeur par défaut hors navigateur
+  (`"mobile"`, `false`, `"unknown"`).
+- `MOBILE_MAX_SHORT_SIDE_PX` est figé : le modifier changerait la
+  détection chez toutes les applications en même temps.
+- `__resetUploadQueueForTests` est aussi exporté : il remet à zéro la file
+  d'envoi de `useUploadQueue` et n'est destiné qu'aux tests. Ne jamais
+  l'appeler dans une application.
+
+Guides : `docs/viewport.md`, `docs/provider.md`, `docs/product-category-browser.md`.

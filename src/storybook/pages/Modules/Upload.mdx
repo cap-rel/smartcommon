@@ -1,0 +1,195 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Upload" />
+
+# Upload
+
+Les fonctions pour envoyer une photo prise au téléphone sans échec silencieux :
+préparer l'image sous les limites du serveur, lire sa date de prise de vue,
+y écrire un titre et des mots-clés, puis comprendre la vraie cause d'un envoi
+refusé. Tout est sans React : ces fonctions s'appellent depuis un composant,
+un hook ou un service.
+
+L'envoi lui-même passe par les hooks `useUpload` et `useUploadQueue` (voir
+Hooks/useUpload et Hooks/useUploadQueue) : cette page couvre ce qui se passe
+avant et après.
+
+```js
+import {
+  convertImageForUpload,
+  uploadRefusalReason,
+  uploadFailureDetail,
+  isUploadSizeRefusal,
+  readErrorBody,
+  toMegabytes,
+} from "@cap-rel/smartcommon";
+```
+
+## Préparer l'image
+
+| Symbole | Signature | Rôle |
+| --- | --- | --- |
+| `convertImageForUpload` | `(file, options?) => Promise<{ file, width, height, mime, dateTaken }>` | Réencode la photo (orientée, sans métadonnées) en WebP ou JPEG sous les limites du serveur, ou renvoie l'original s'il convient déjà. |
+| `downscaleImage` | `(file, { maxSide?, quality? }?) => Promise<{ file, width, height, mime, resized } \| null>` | Borne seulement les pixels (2000 px par défaut) avant un traitement lourd ; `null` si le navigateur ne sait pas décoder. |
+| `canEncodeWebp` | `() => boolean` | Indique si le navigateur sait encoder du WebP (testé une fois par chargement de page). |
+| `uploadRefusalReason` | `(file, { acceptedMimes?, maxBytes? }?) => "heic" \| "bad-format" \| "too-large" \| null` | Motif pour lequel le serveur refuserait le fichier, vérifié avant l'envoi. |
+| `DEFAULT_ACCEPTED_IMAGE_MIMES` | `["image/jpeg", "image/png", "image/webp"]` | Types acceptés par défaut. |
+| `DEFAULT_MAX_UPLOAD_BYTES` | `10485760` (10 Mo) | Taille maximale par fichier par défaut. |
+| `DEFAULT_TARGET_UPLOAD_BYTES` | `2097152` (2 Mo) | Poids au-delà duquel un original accepté est quand même réduit. |
+
+### Options de `convertImageForUpload`
+
+| Option | Défaut | Rôle |
+| --- | --- | --- |
+| `maxSide` | `2400` | Plus grand côté en pixels. Nouvel essai à 1600 px si le résultat dépasse encore `maxBytes`. |
+| `quality` | `0.9` | Qualité de l'encodeur, de 0 à 1. |
+| `webp` | détecté par `canEncodeWebp()` | Force la réponse sur la capacité WebP du navigateur (tests). |
+| `serverWebp` | | `false` quand le serveur ne sait pas lire le WebP. |
+| `acceptedMimes` | `DEFAULT_ACCEPTED_IMAGE_MIMES` | Types que le serveur accepte. |
+| `maxBytes` | `DEFAULT_MAX_UPLOAD_BYTES` | Limite de taille du serveur par fichier. |
+| `targetBytes` | `DEFAULT_TARGET_UPLOAD_BYTES` | Poids au-delà duquel l'original est réduit, plafonné à `maxBytes`. |
+| `metadata` | | `{ title?, description?, keywords? }` écrit en XMP dans le fichier produit (voir plus bas). |
+
+Le format produit suit cette règle : WebP si le navigateur l'encode et que le
+serveur le lit ; sinon JPEG quand l'original serait refusé (HEIC, type inconnu,
+trop lourd) ou dépasse `targetBytes` ; sinon l'original intact. Un réencodage
+plus lourd qu'un original acceptable est abandonné au profit de l'original.
+
+```js
+const converted = await convertImageForUpload(file, {
+  serverWebp: config.webp_supported,
+  acceptedMimes: config.accepted_mimes,
+  maxBytes: config.max_upload_bytes,
+});
+// converted = { file, width, height, mime, dateTaken }
+
+const refusal = uploadRefusalReason(converted.file, {
+  acceptedMimes: config.accepted_mimes,
+  maxBytes: config.max_upload_bytes,
+});
+if (refusal === "too-large") {
+  // Ne rien envoyer : "Photo de 2.6 Mo, le serveur accepte 2 Mo au plus"
+  showError(t("upload.tooLarge", {
+    size: toMegabytes(converted.file.size),
+    max: toMegabytes(config.max_upload_bytes),
+  }));
+}
+```
+
+Pour un scanner de documents ou un traitement OpenCV, `downscaleImage` évite
+de décoder une photo pleine résolution qui épuise la mémoire du téléphone :
+
+```js
+const bounded = await downscaleImage(file, { maxSide: 1600 });
+if (!bounded) {
+  // HEIC sur Chrome, par exemple : le navigateur ne sait pas le décoder
+  return;
+}
+processDocument(bounded.file); // bounded.resized vaut false si rien n'a changé
+```
+
+## Date de prise de vue
+
+Le réencodage efface toutes les métadonnées, EXIF compris. La date de prise de
+vue est donc lue sur l'original, au format `'YYYY-MM-DD HH:MM:SS'` (heure
+locale, telle que le serveur la stocke). `convertImageForUpload` le fait déjà
+et la renvoie dans `dateTaken`.
+
+| Symbole | Signature | Rôle |
+| --- | --- | --- |
+| `readExifDateTaken` | `(file) => Promise<string \| null>` | Date EXIF d'un fichier (JPEG, HEIC). Ne lève jamais d'erreur. |
+| `parseExifDateTaken` | `(input: ArrayBuffer \| Uint8Array) => string \| null` | Même lecture sur des octets déjà en mémoire. |
+| `formatExifDate` | `(raw) => string \| null` | Convertit `'YYYY:MM:DD HH:MM:SS'` (EXIF) en `'YYYY-MM-DD HH:MM:SS'` ; `null` pour une date nulle ou hors bornes. |
+
+La date vient de `DateTimeOriginal`, puis de `DateTimeDigitized` à défaut.
+
+```js
+const dateTaken = await readExifDateTaken(file); // "2026-03-14 09:42:05" ou null
+```
+
+## Titre, légende et mots-clés (XMP)
+
+Écrit un bloc XMP (Dublin Core : `dc:title`, `dc:description`, `dc:subject`)
+dans un JPEG, un WebP ou un PNG sans réencoder les pixels. Ces champs sont lus
+par Lightroom, digiKam, l'explorateur Windows, exiftool ou Nextcloud. Un bloc
+XMP déjà présent est remplacé, jamais dupliqué.
+
+| Symbole | Signature | Rôle |
+| --- | --- | --- |
+| `writeImageMetadata` | `(file, { title?, description?, keywords? }) => Promise<File>` | Copie du fichier avec ses métadonnées XMP, même nom, type et `lastModified`. Renvoie l'original en cas d'échec. |
+| `buildXmpPacket` | `(metadata?) => string \| null` | Construit le paquet XMP ; valeurs vides ignorées, mots-clés nettoyés et dédoublonnés ; `null` s'il n'y a rien à écrire. |
+| `embedXmp` | `(input: ArrayBuffer \| Uint8Array, packet) => Uint8Array \| null` | Insère un paquet dans les octets d'une image ; `null` pour un format non pris en charge ou un fichier abîmé. |
+
+```js
+const tagged = await writeImageMetadata(photo, {
+  title: "Chaudière - local technique",
+  description: "Fuite au raccord du circuit retour",
+  keywords: ["intervention", "chaufferie"],
+});
+```
+
+Le plus simple reste de passer `metadata` à `convertImageForUpload` : le bloc
+est écrit sur le fichier produit, et abandonné (avec un avertissement dans le
+journal) si le fichier ainsi complété dépassait `maxBytes`.
+
+## Lire un échec d'envoi
+
+| Symbole | Signature | Rôle |
+| --- | --- | --- |
+| `readErrorBody` | `(error) => Promise<object \| null>` | Corps JSON d'une requête rejetée, lu sur un clone pour le laisser intact. |
+| `isUploadSizeRefusal` | `(error, body?) => boolean` | Reconnaît un refus pour taille, quelle que soit la couche qui a répondu. |
+| `uploadFailureDetail` | `(error, timeout?) => { kind: "http", status } \| { kind: "timeout", seconds } \| { kind: "network", message }` | Cause technique à afficher sous le fichier. |
+| `toMegabytes` | `(bytes) => number` | Octets en Mo, arrondi à une décimale. |
+| `UPLOAD_TIMEOUT` | `120000` | Délai par défaut de `useUpload` en ms, au lieu des 10 s de ky. |
+
+`isUploadSizeRefusal` reconnaît un 413 (proxy), `File exceeds server limit`
+(PHP `upload_max_filesize`), `File too large` (limite smartauth) et
+`No file uploaded` (`post_max_size` dépassé, qui vide `$_FILES`).
+
+`uploadFailureDetail` renvoie `kind: "http"` avec le code HTTP quand le serveur
+ou un proxy a répondu, y compris quand le disjoncteur de `useApi` bloque la
+requête (code de l'erreur serveur qui l'a ouvert) ; `kind: "timeout"` après un
+délai dépassé ; `kind: "network"` quand rien n'est revenu.
+
+```js
+try {
+  await uploadFile(file, { silent: true });
+} catch (error) {
+  const body = await readErrorBody(error);
+  if (isUploadSizeRefusal(error, body)) {
+    showError(t("upload.tooLarge"));
+    return;
+  }
+  const detail = uploadFailureDetail(error);
+  if (detail.kind === "http") {
+    showError(t("upload.httpError", { status: detail.status }));
+  } else if (detail.kind === "timeout") {
+    showError(t("upload.timeout", { seconds: detail.seconds }));
+  } else {
+    showError(t("upload.network"));
+  }
+}
+```
+
+## Pièges
+
+- `convertImageForUpload` ne rejette pas sur un échec de décodage ou
+  d'encodage : il renvoie l'original avec son propre type. Toujours vérifier
+  le résultat avec `uploadRefusalReason` avant l'envoi. Il lève en revanche
+  une erreur si `file` est absent.
+- Ne jamais prendre `File.lastModified` comme date de prise de vue : sur
+  mobile, c'est la date du choix du fichier.
+- Safari n'encode pas le WebP : sans `targetBytes`, un iPhone enverrait son
+  JPEG de plusieurs Mo, trop lent en 4G et au-delà d'un `upload_max_filesize`
+  de 2 Mo.
+- `uploadFailureDetail` reçoit le délai réel de la requête en second argument
+  si `useUpload` a été appelé avec un autre `timeout`, sinon le nombre de
+  secondes affiché est faux.
+- Passer `{ silent: true }` à l'envoi quand l'application affiche son propre
+  message, sinon le toast global s'ajoute au sien.
+- Les codes `"heic"`, `"bad-format"` et `"too-large"` ne sont pas traduits :
+  l'application les associe à ses propres textes.
+- Un refus d'Apache, de ModSecurity ou d'un proxy n'atteint jamais le journal
+  du serveur : le code HTTP vu dans l'application est la seule trace.
+
+Guide complet : `docs/upload.md`. File d'attente hors ligne : `docs/upload-queue.md`.

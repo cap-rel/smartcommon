@@ -1,0 +1,93 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Locales" />
+
+# Locales
+
+Les textes de tous les composants, traduits en huit langues. Sans
+traduction, un composant parle anglais ; un bundle de langue fournit,
+composant par composant, l'objet à passer à sa prop `labels`.
+
+```js
+import { locales } from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Forme | Rôle |
+|---------|-------|------|
+| `locales` | `{ en, fr, de, es, it, pl, nl, pt }` | Espace de noms des huit bundles. |
+| `locales.en` | `{ [Composant]: labels }` | Anglais, source de vérité : reprend les `DEFAULT_LABELS` de chaque composant. |
+| `locales.fr`, `de`, `es`, `it`, `pl`, `nl`, `pt` | même forme que `en` | Traductions : mêmes clés, mêmes fonctions avec le même nombre d'arguments. |
+
+Les bundles ne s'importent que par l'espace de noms `locales` : il n'y a
+pas d'export `fr` ou `en` isolé au premier niveau du paquet.
+
+## Contenu d'un bundle
+
+Une clé par composant (ou par service) :
+
+`PhotosUploader`, `AnnotatedPhotosUploader`, `VideosUploader`,
+`AudiosUploader`, `SignaturePad`, `Boolean`, `Checker`, `RadioBar`,
+`Select`, `Gps`, `PlainCalendar`, `NumericPad`, `PinPad`, `Map`, `Stepper`,
+`ProductCategoryBrowser`, `PhotoAnnotator`, `PhotoEditor`,
+`LoginComponent`, `DevicePicker`, `DeviceIdentificationComponent`,
+`DataTable`, `BarcodeScanner`, `AboutModal`, `NotificationToggle`, `Files`,
+`Input`, `Textarea`, `Rater`, `Range`, `Timer`, `SearchableSelect`,
+`ColorPicker`, `AddressInput`, `Array`, `List`, `Page`, `Popup`, `Modal`,
+`ContextMenu`, `UpdatePrompt`, `InstallPrompt`, `ConfirmProvider`,
+`ViewportProvider`, `Print`, `ErrorBoundary`, `Sidebar`, `UserMenu`,
+`DesktopHeader`, `DesktopSidebar`, `Feedback`, `Calculator`.
+
+Deux clés ne portent pas le nom d'un composant : `Print` sert au service
+d'impression (`PrintService`, `usePrintService`, voir la page
+Modules/Print) et `Feedback` à `FeedbackButton` et `FeedbackModal`.
+
+Certaines entrées sont des fonctions, pour les textes qui contiennent une
+valeur (un nombre de lignes, un nom de fichier) :
+
+```js
+locales.en.DataTable.rowsSelected(3);
+```
+
+## Trois façons de traduire
+
+```jsx
+import { LoginComponent, PrintService, locales } from "@cap-rel/smartcommon";
+import { useTranslation } from "react-i18next";
+
+// 1. Une langue, à un composant
+<LoginComponent labels={locales.fr.LoginComponent} onSuccess={goHome} />;
+
+// 2. Le bundle, puis quelques textes propres à l'application
+const { t } = useTranslation();
+<LoginComponent
+  labels={{ ...locales.fr.LoginComponent, emailLabel: t("login.email") }}
+  onSuccess={goHome}
+/>;
+
+// 3. Hors React : le service d'impression
+const printService = new PrintService({ labels: locales.fr.Print });
+```
+
+Pour toute l'application d'un coup, sans passer `labels` à chaque
+composant, donner le bundle de la langue courante dans
+`config.components.themes` du `<Provider>` : la recette est dans
+`docs/provider.md`, section "Libellés de toute l'application". Une prop
+`labels` se pose ensuite par-dessus, clé par clé.
+
+## Pièges
+
+- La langue n'est pas détectée : choisir le bundle selon la langue de
+  l'utilisateur (`locales[lang] ?? locales.en`).
+- `ErrorBoundary` est monté au-dessus du contexte de configuration : il ne
+  lit pas `config.components.themes`. Ses textes passent par la prop
+  `errorLabels` de `<Provider>` (`errorLabels={locales.fr.ErrorBoundary}`).
+- Pour ajouter un texte à un composant, la clé doit exister dans les huit
+  bundles : le test `src/lib/locales/locales.test.js` vérifie que les
+  formes sont identiques et que la ponctuation reste en ASCII.
+- Les bundles sont des objets partagés : les copier (`{ ...bundle }`) avant
+  de les modifier.
+
+Guide complet : `docs/provider.md` (section "Libellés de toute
+l'application").

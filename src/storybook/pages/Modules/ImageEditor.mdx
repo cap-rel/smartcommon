@@ -1,0 +1,202 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/ImageEditor" />
+
+# ImageEditor
+
+Le moteur de retouche d'image sur lequel repose le composant `PhotoEditor`.
+Il travaille sur des canvas du navigateur, sans React : on peut donc
+recadrer, redresser ou passer un document en mode "scan" sans afficher
+l'éditeur, par exemple pour rejouer une retouche enregistrée ou traiter une
+photo avant l'envoi.
+
+Une retouche est une **recette** : une liste d'opérations
+(`{ type, ...paramètres }`) appliquée à l'image source. La recette ne modifie
+jamais la source ; elle est rejouée sur l'image pleine résolution au moment
+de l'export et peut être stockée pour être réappliquée plus tard.
+
+```js
+import {
+  applyImageEdits,
+  applyPipeline,
+  sortOperations,
+  bitmapToCanvas,
+  registerOperation,
+  getOperation,
+  listOperations,
+  loadBitmap,
+  detectDocumentQuad,
+  createCanvas,
+  fitCanvas,
+  canvasToBlob,
+} from "@cap-rel/smartcommon";
+```
+
+## Fonctions exportées
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `applyImageEdits` | `async (source, operations = [], output = {}) => Blob` | Retouche complète : décode la source, applique la recette, réduit la taille puis encode en `Blob`. |
+| `applyPipeline` | `(canvas, operations = []) => canvas` | Applique la recette, triée dans l'ordre canonique, sur un canvas déjà prêt. Synchrone. |
+| `sortOperations` | `(operations) => operations` | Trie les opérations par étape (`stage`), en gardant l'ordre d'origine à étape égale. |
+| `bitmapToCanvas` | `(bitmap) => canvas` | Dessine un bitmap décodé sur un nouveau canvas, point de départ du pipeline. |
+| `registerOperation` | `(type, { stage = 100, apply })` | Ajoute ou remplace une opération dans le registre. |
+| `getOperation` | `(type) => { stage, apply } \| undefined` | Lit la définition d'une opération enregistrée. |
+| `listOperations` | `() => string[]` | Liste les types d'opérations enregistrés. |
+| `loadBitmap` | `async (source) => ImageBitmap` | Décode une image en appliquant l'orientation EXIF. |
+| `detectDocumentQuad` | `(image, options = {}) => corners \| null` | Détecte les 4 coins d'un document posé sur un fond contrasté. |
+| `createCanvas` | `(width, height) => canvas` | Crée une surface de dessin (`OffscreenCanvas` si disponible, sinon un `canvas` détaché). |
+| `fitCanvas` | `(canvas, { maxWidth, maxHeight } = {}) => canvas` | Réduit un canvas pour tenir dans les dimensions maximales, sans jamais l'agrandir. |
+| `canvasToBlob` | `(canvas, { type = "image/jpeg", quality = 0.9 } = {}) => Promise<Blob>` | Encode un canvas en `Blob`. |
+
+### Paramètres
+
+- `source` (`applyImageEdits`, `loadBitmap`) : un `ImageBitmap` (renvoyé tel
+  quel), un `Blob` ou `File`, ou une URL (chaîne) récupérée par `fetch`.
+- `output` (`applyImageEdits`) : `{ type, quality, maxWidth, maxHeight }`.
+  `maxWidth` et `maxHeight` passent à `fitCanvas`, `type` et `quality` à
+  `canvasToBlob` (par défaut `"image/jpeg"` et `0.9`).
+- `image` (`detectDocumentQuad`) : un objet `{ data, width, height }`, la
+  forme d'un `ImageData` de canvas.
+- `options` (`detectDocumentQuad`) :
+  - `minAreaFraction` (défaut `0.02`) : part minimale de l'image occupée par
+    le document, sinon `null` ;
+  - `fullFrameEpsilon` (défaut `0.02`) : si les coins trouvés collent aux
+    bords de l'image à cette tolérance près, il n'y a rien à redresser et la
+    fonction renvoie `null` ;
+  - `step` (défaut `1`) : pas d'échantillonnage en pixels, à augmenter pour
+    aller plus vite sur une grande image.
+- Valeur de retour de `detectDocumentQuad` : 4 coins normalisés entre 0 et 1,
+  dans l'ordre haut gauche, haut droit, bas droit, bas gauche
+  (`[{ x, y }, { x, y }, { x, y }, { x, y }]`), directement utilisables par
+  l'opération `perspective`.
+
+## Opérations fournies
+
+Le registre contient 9 opérations au chargement du module
+(`listOperations()`). Le pipeline les applique toujours par étape croissante,
+quel que soit l'ordre de la recette : la géométrie d'abord, la couleur
+ensuite, le masquage en dernier. Les coordonnées "normalisées" sont des
+fractions (0 à 1) de l'image telle qu'elle est à cette étape.
+
+| Type | Étape | Paramètres | Effet |
+|------|-------|------------|-------|
+| `rotate90` | 10 | `steps` | Rotation par quarts de tour, sens horaire (`steps` est ramené entre 0 et 3). |
+| `straighten` | 20 | `angle` | Redressement libre en degrés, avec recadrage automatique des coins vides. |
+| `flip` | 30 | `flipH`, `flipV` (ou `axis`: `"h"` / `"v"`) | Miroir horizontal et/ou vertical. `axis` reste accepté pour compatibilité. |
+| `perspective` | 35 | `corners`, `outWidth`, `outHeight` | Redresse le quadrilatère `corners` (4 coins normalisés) en rectangle. Sans `outWidth` / `outHeight`, la taille est déduite des côtés du quadrilatère. |
+| `crop` | 40 | `rect` : `{ x, y, w, h }` | Recadre sur un rectangle normalisé. |
+| `autoEnhance` | 45 | `clip` (défaut `0.005`) | Auto-contraste : étire l'histogramme en ignorant la part `clip` des pixels extrêmes. |
+| `adjust` | 50 | `brightness`, `contrast`, `saturation`, `temperature` | Réglages lumière et couleur, chacun autour de 0 (environ -1 à 1, 0 = inchangé), appliqués par le `filter` natif du canvas. |
+| `scan` | 60 | `binarize` (défaut `true`) | Niveaux de gris puis binarisation (seuil d'Otsu) ; `binarize: false` garde les niveaux de gris. |
+| `redact` | 70 | `rects`, `color` (défaut `"#000000"`) | Peint des rectangles opaques (normalisés, rognés au cadre) sur l'image finale, pour masquer une information. |
+
+Une opération dont les paramètres sont absents ou incohérents est ignorée
+avec un avertissement dans la console (`crop` sans `rect`, `perspective`
+sans 4 coins ou avec des coins dégénérés). Un type inconnu du registre est
+lui aussi ignoré par `applyPipeline`.
+
+## Exemples
+
+### Rejouer une recette sans l'éditeur
+
+```js
+import { applyImageEdits } from "@cap-rel/smartcommon";
+
+// Recette renvoyée par PhotoEditor (onSave), stockée avec la photo.
+const recipe = [
+  { type: "rotate90", steps: 1 },
+  { type: "crop", rect: { x: 0.1, y: 0.05, w: 0.8, h: 0.9 } },
+  { type: "scan", binarize: true },
+];
+
+const blob = await applyImageEdits(photoFile, recipe, {
+  type: "image/jpeg",
+  quality: 0.85,
+  maxWidth: 2000,
+  maxHeight: 2000,
+});
+```
+
+### Redresser un document automatiquement
+
+La détection est rapide sur une copie réduite ; les coins étant normalisés,
+ils restent valables pour l'image pleine résolution.
+
+```js
+import {
+  loadBitmap,
+  bitmapToCanvas,
+  fitCanvas,
+  detectDocumentQuad,
+  applyImageEdits,
+} from "@cap-rel/smartcommon";
+
+const bitmap = await loadBitmap(receiptBlob);
+const small = fitCanvas(bitmapToCanvas(bitmap), { maxWidth: 600, maxHeight: 600 });
+const imageData = small.getContext("2d").getImageData(0, 0, small.width, small.height);
+
+const corners = detectDocumentQuad(imageData);
+const operations = corners
+  ? [{ type: "perspective", corners }, { type: "scan" }]
+  : [{ type: "scan" }];
+
+const cleaned = await applyImageEdits(bitmap, operations, { maxWidth: 1600 });
+```
+
+### Ajouter une opération
+
+```js
+import { registerOperation, createCanvas, applyImageEdits } from "@cap-rel/smartcommon";
+
+// Sépia léger, appliqué avec les réglages de couleur (étape 55).
+registerOperation("sepia", {
+  stage: 55,
+  apply: (canvas, { amount = 1 }) => {
+    const out = createCanvas(canvas.width, canvas.height);
+    const ctx = out.getContext("2d");
+    ctx.filter = `sepia(${amount})`;
+    ctx.drawImage(canvas, 0, 0);
+    return out;
+  },
+});
+
+const blob = await applyImageEdits(photo, [{ type: "sepia", amount: 0.6 }]);
+```
+
+`apply(canvas, params)` reçoit l'opération entière (son `type` compris) et
+doit renvoyer un canvas, de préférence un nouveau. Sans fonction `apply`,
+l'enregistrement est refusé avec une erreur dans la console.
+
+## Pièges
+
+- **Ordre imposé par les étapes.** L'ordre de la recette ne compte qu'à étape
+  égale. Les coins d'une `perspective` et le rectangle d'un `crop` sont donc
+  exprimés dans l'image déjà tournée, redressée et retournée : des coins
+  détectés sur l'image brute ne sont justes que si la recette ne contient
+  pas de `rotate90`, `straighten` ou `flip`.
+- **Étape par défaut à 100.** Une opération ajoutée sans `stage` passe après
+  `redact` (70) : si elle doit précéder le masquage, donner une étape plus
+  basse, sinon elle peut révéler ou déplacer ce qui était caché.
+- **Registre global.** `registerOperation` sur un type existant remplace
+  l'opération fournie, y compris pour `PhotoEditor` dans toute l'application.
+- **Coût en pixels.** `applyPipeline` est synchrone et tourne sur le fil
+  principal ; `perspective`, `autoEnhance` et `scan` parcourent chaque
+  pixel. Sur une photo de téléphone en pleine résolution, prévoir
+  `maxWidth` / `maxHeight` ou réduire avec `fitCanvas` avant de traiter.
+- **Canvas hors écran.** `createCanvas` renvoie un `OffscreenCanvas` quand le
+  navigateur le permet : le résultat de `applyPipeline` ne s'insère pas tel
+  quel dans la page, il faut le dessiner sur un canvas visible
+  (`drawImage`) ou l'encoder avec `canvasToBlob`.
+- **URL protégées.** `loadBitmap` récupère une URL par un simple `fetch`, sans
+  jeton d'authentification. Pour une image servie par l'API, passer le
+  `Blob` déjà téléchargé.
+- **Erreurs.** `loadBitmap` rejette si l'URL répond en erreur ou si la source
+  n'est ni un `ImageBitmap`, ni un `Blob`, ni une chaîne ; `canvasToBlob`
+  rejette si le navigateur ne produit pas de `Blob`. Penser au `try` /
+  `catch` autour de `applyImageEdits`.
+- **Détection limitée.** `detectDocumentQuad` vise le cas courant d'un
+  document sur un fond contrasté. Sur un fond encombré ou peu contrasté,
+  elle renvoie souvent `null` : garder un réglage manuel des coins.
+
+Guide complet : `docs/photo-editor.md`

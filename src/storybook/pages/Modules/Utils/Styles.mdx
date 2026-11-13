@@ -1,0 +1,91 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Utils/Styles" />
+
+# Utils : classes Tailwind, variables CSS et badges
+
+Les outils de style que les composants de smartcommon utilisent en
+interne, exportés pour les composants de l'application : fusion de
+classes Tailwind qui connaît les jetons du thème (`p-app-sm`,
+`rounded-app-md`, `text-app-lg`...), lecture et écriture de variables CSS,
+et le badge compteur des boutons et barres de navigation.
+
+```js
+import {
+  twMerge,
+  getVariable,
+  setVariable,
+  formatBadgeCount,
+  BADGE_CLASS_NAME,
+} from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `twMerge` | `(...classLists) => string` | Fusionne des classes Tailwind, la dernière l'emporte en cas de conflit, jetons `app-*` compris. |
+| `mergeClassName` | `(props, defaultClassName = "") => { className }` | Fusionne la classe par défaut et `props.className`. |
+| `mergeStyle` | `(props, defaultStyle = {}) => { style }` | Fusionne le style par défaut et `props.style`. |
+| `resolveProp` | `(prop, params = {})` | Appelle `prop(params)` si c'est une fonction, sinon renvoie `prop`. |
+| `getVariable` | `(key) => string` | Lit une variable CSS calculée sur `<html>` (`"--color-primary"`). |
+| `setVariable` | `(key, value) => void` | Écrit une variable CSS sur `<html>`. |
+| `setGlobalVariables` | `(id, variables) => void` | Écrit chaque `--nom` de `variables` sous `--<id>-nom`. |
+| `convertCSSVar` | `(css) => { vars, newStr }` | Extrait les `var(...)` d'une chaîne et renvoie la chaîne sans elles. |
+| `convertClassName` | `(className, params) => string` | Évalue `className` comme un gabarit JavaScript avec `params`. |
+| `formatBadgeCount` | `(value, max = BADGE_MAX_COUNT) => string \| null` | Texte d'un badge compteur, ou `null` s'il ne faut rien afficher. |
+| `BADGE_MAX_COUNT` | `99` | Au-delà, le badge affiche `99+`. |
+| `BADGE_CLASS_NAME` | chaîne | Classes Tailwind de la pastille, à poser dans un parent `relative`. |
+| `mergeProps`, `mergePropsPlus` | `()` | Fonctions vides, gardées pour compatibilité : ne font rien. |
+
+## Fusionner des classes : `twMerge`
+
+Toute concaténation d'une classe par défaut avec la `className` reçue en
+prop passe par `twMerge`, sinon deux classes en conflit (`gap-4` et
+`gap-6`) restent toutes les deux et le résultat dépend de l'ordre du CSS.
+
+```jsx
+import { twMerge } from "@cap-rel/smartcommon";
+
+export const Card = ({ className, children }) => (
+  <div className={twMerge("p-app-sm rounded-app-md bg-soft-bg", className)}>
+    {children}
+  </div>
+);
+
+// <Card className="p-app-lg" /> donne "rounded-app-md bg-soft-bg p-app-lg"
+```
+
+## Badge compteur
+
+```jsx
+import { formatBadgeCount, BADGE_CLASS_NAME } from "@cap-rel/smartcommon";
+
+const badge = formatBadgeCount(unread); // 0 -> null, 150 -> "99+", "new" -> "new"
+
+<button className="relative">
+  Messages
+  {badge && <span className={BADGE_CLASS_NAME}>{badge}</span>}
+</button>
+```
+
+Un nombre nul ou négatif, `"0"`, `""`, `null` ou `undefined` ne donnent
+pas de badge. Une chaîne de chiffres suit les règles d'un nombre
+(`"150"` donne `"99+"`) ; un autre texte court (`"new"`, `"!"`) est gardé
+tel quel.
+
+## Pièges
+
+- `mergeClassName` s'appuie sur le `twMerge` standard de `tailwind-merge`,
+  qui ne connaît pas les jetons `app-*` : `p-app-sm` et `p-app-lg` restent
+  tous les deux. Préférer `twMerge` exporté ici.
+- `convertClassName` construit une fonction avec `new Function` : ne
+  jamais lui passer un texte venu de l'utilisateur ou du serveur, et il
+  échoue sous une politique CSP qui interdit `unsafe-eval`.
+- `getVariable` et `setVariable` lisent et écrivent sur
+  `document.documentElement` : pas d'appel côté serveur ni dans un
+  service worker.
+
+Aucun guide dédié dans `docs/` : la référence est
+`src/lib/utils/functions/tailwindMerge/index.js`, `variant.js` et
+`badge.js`.

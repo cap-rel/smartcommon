@@ -1,0 +1,225 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Print" />
+
+# Print
+
+L'impression de tickets depuis une PWA : ticket de caisse, bon de cuisine,
+ouverture du tiroir-caisse. Le module construit les commandes ESC/POS des
+imprimantes thermiques, les envoie en USB (WebUSB) ou se replie sur la
+fenêtre d'impression du navigateur, avec une file d'attente et des
+nouvelles tentatives.
+
+Rien n'y est propre à un métier : l'application déclare ses types de
+tickets (`sale`, `kitchen`, `drawer`...) et fournit, pour chacun, la façon
+de le dessiner. Dans un composant React, passer par le hook
+`usePrintService` (voir `Hooks/usePrintService`) qui crée le service, déclare
+les types et le libère au démontage. Les classes ci-dessous servent hors de
+React ou pour un besoin plus fin.
+
+```js
+import {
+  TicketBuilder,
+  WebUSBPrinter,
+  browserPrint,
+  PrintService,
+  PRINT_DEFAULT_LABELS,
+} from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `TicketBuilder` | `new TicketBuilder(charsPerLine = 48)` | Construit un ticket ESC/POS par appels chaînés, puis le renvoie en `Uint8Array`. |
+| `WebUSBPrinter` | `new WebUSBPrinter()` | Pilote d'une imprimante thermique USB par l'API WebUSB. |
+| `browserPrint` | `(htmlContent) => Promise<void>` | Imprime un document HTML complet par la fenêtre d'impression du navigateur. |
+| `PrintService` | `new PrintService({ labels } = {})` | Orchestrateur : types de tickets, file d'attente, choix du transport, nouvelles tentatives. |
+| `PRINT_DEFAULT_LABELS` | objet | Messages d'erreur par défaut (anglais) du service, à compléter ou traduire. |
+
+## `TicketBuilder`
+
+`charsPerLine` : 32 pour du papier de 58 mm, 48 pour du 80 mm. Chaque méthode,
+sauf `build`, renvoie le builder et se chaîne.
+
+| Méthode | Rôle |
+|---------|------|
+| `init()` | Réinitialise l'imprimante (`ESC @`). |
+| `text(str, opts = {})` | Écrit une ligne. `opts` : `bold`, `doubleHeight`, `center` (rétablis après la ligne). |
+| `line(left, right)` | Ligne à deux colonnes : `left` calé à gauche (tronqué si besoin), `right` calé à droite. |
+| `separator()` | Ligne de tirets sur toute la largeur. |
+| `bold(on)` | Active ou coupe le gras. |
+| `doubleHeight(on)` | Active ou coupe la double hauteur. |
+| `alignCenter()` | Centre les lignes suivantes. |
+| `alignLeft()` | Revient à l'alignement à gauche. |
+| `cut()` | Avance de trois lignes puis coupe le papier. |
+| `openDrawer()` | Envoie l'impulsion d'ouverture du tiroir-caisse. |
+| `qrCode(data)` | Imprime un QR code contenant `data`. |
+| `build()` | Renvoie les commandes accumulées en `Uint8Array`. |
+
+```js
+const bytes = new TicketBuilder(32)
+  .init()
+  .text("Boulangerie du Port", { bold: true, center: true, doubleHeight: true })
+  .separator()
+  .line("2 x Pain de campagne", "7,00 EUR")
+  .line("1 x Tarte aux pommes", "12,50 EUR")
+  .separator()
+  .text("Total : 19,50 EUR", { bold: true })
+  .qrCode("https://example.org/ticket/F2024-0042")
+  .cut()
+  .build();
+```
+
+## `WebUSBPrinter`
+
+| Membre | Rôle |
+|--------|------|
+| `WebUSBPrinter.isSupported()` | Statique : `true` si le navigateur expose `navigator.usb`. |
+| `connect()` | Ouvre la fenêtre de choix du périphérique (imprimantes USB), ouvre l'appareil et réserve son interface d'envoi. |
+| `send(data)` | Envoie un `Uint8Array` par blocs de 64 octets. |
+| `disconnect()` | Libère l'interface et ferme l'appareil. |
+| `isConnected()` | `true` si un appareil est ouvert. |
+
+```js
+if (WebUSBPrinter.isSupported()) {
+  const printer = new WebUSBPrinter();
+  await printer.connect(); // dans un gestionnaire de clic
+  await printer.send(bytes);
+  await printer.disconnect();
+}
+```
+
+## `browserPrint`
+
+Écrit `htmlContent` dans une iframe cachée, ouvre la fenêtre d'impression
+puis retire l'iframe. L'iframe est isolée (`sandbox` sans `allow-scripts`) :
+aucun script du document imprimé ne s'exécute. Le document doit donc
+contenir lui-même ses styles.
+
+```js
+await browserPrint(`<!doctype html>
+<html><body style="font-family: monospace; width: 72mm">
+  <h1>Ticket F2024-0042</h1>
+  <p>Total : 19,50 EUR</p>
+</body></html>`);
+```
+
+## `PrintService`
+
+| Membre | Rôle |
+|--------|------|
+| `new PrintService({ labels })` | `labels` est fusionné avec `PRINT_DEFAULT_LABELS`. |
+| `registerJobType(type, { escpos, html })` | Déclare un type de ticket. `escpos(data, builder)` remplit un `TicketBuilder`, `html(data)` renvoie un document HTML complet. Au moins un des deux est obligatoire. Un nouvel appel sur le même type complète les renderers existants. |
+| `enqueue(type, data, printer)` | Ajoute un ticket à la file et renvoie une promesse résolue une fois le ticket imprimé. |
+| `pendingCount` | Accesseur : nombre de tickets dans la file, ticket en cours compris. |
+| `cleanup()` | Déconnecte l'imprimante USB ouverte par le service. |
+| `PrintService.getCharsPerLine(paperWidth)` | Statique : 32 caractères pour `58`, 48 sinon. |
+
+Les autres méthodes (`processQueue`, `executeJob`, `sendViaUsb`,
+`sendViaNetwork`, `delay`) sont internes à la file et ne sont pas à appeler.
+
+L'objet `printer` passé à `enqueue` :
+
+| Champ | Valeurs | Rôle |
+|-------|---------|------|
+| `protocol` | `"usb"`, `"network"`, `"browser"` | Transport. Absent : `"browser"`. |
+| `paper_width` | `58` ou `80` | Largeur du papier en mm. Absent : `80`. |
+| `connection` | `"ip:port"` | Adresse d'une imprimante réseau. |
+
+En `"browser"`, le service utilise le renderer `html` ; en `"usb"` et
+`"network"`, le renderer `escpos`.
+
+```js
+import { PrintService } from "@cap-rel/smartcommon";
+
+const service = new PrintService({
+  labels: {
+    unknownJobType: (type) => `Type de ticket inconnu : ${type}`,
+  },
+});
+
+service.registerJobType("sale", {
+  escpos: (sale, b) => {
+    b.init().text(sale.shopName, { bold: true, center: true }).separator();
+    sale.lines.forEach((l) => b.line(`${l.qty} x ${l.label}`, l.total));
+    b.separator().line("Total", sale.total).cut();
+  },
+  html: (sale) => `<!doctype html><html><body><h1>${sale.shopName}</h1><p>Total : ${sale.total}</p></body></html>`,
+});
+
+service.registerJobType("drawer", {
+  escpos: (_, b) => b.openDrawer(),
+});
+
+try {
+  await service.enqueue("sale", sale, { protocol: "usb", paper_width: 58 });
+  await service.enqueue("drawer", null, { protocol: "usb", paper_width: 58 });
+} catch (err) {
+  if (err.code === "network_not_supported") showToast(err.message);
+}
+```
+
+### Codes d'erreur
+
+Les erreurs rejetées par `enqueue` portent un `code` lisible par le code et
+un `message` tiré des libellés.
+
+| `code` | Cas | Libellé |
+|--------|-----|---------|
+| `unknown_job_type` | Aucun renderer déclaré pour ce type. | `unknownJobType(type)` |
+| `no_escpos_renderer` | Transport `usb` ou `network` sans renderer `escpos`. | `noEscposRenderer(type)` |
+| `unsupported_protocol` | `protocol` autre que `usb`, `network` ou `browser`. | `unsupportedProtocol(protocol)` |
+| `network_not_supported` | Toujours en `network` : une PWA ne peut pas ouvrir de connexion TCP brute vers l'imprimante. | `networkNotSupported` |
+
+Les erreurs de WebUSB (navigateur non compatible, choix du périphérique
+annulé, interface introuvable) remontent telles quelles, sans `code`.
+
+### `PRINT_DEFAULT_LABELS`
+
+| Clé | Type |
+|-----|------|
+| `unknownJobType` | `(type) => string` |
+| `noEscposRenderer` | `(type) => string` |
+| `unsupportedProtocol` | `(protocol) => string` |
+| `networkNotSupported` | chaîne |
+| `webusbNotSupported` | chaîne |
+
+```js
+import { PrintService, PRINT_DEFAULT_LABELS } from "@cap-rel/smartcommon";
+
+const service = new PrintService({
+  labels: {
+    ...PRINT_DEFAULT_LABELS,
+    networkNotSupported: "L'impression réseau demande un relais local. Utilisez l'USB ou le navigateur.",
+  },
+});
+```
+
+## Pièges
+
+- **Geste utilisateur pour l'USB.** Le premier envoi USB ouvre la fenêtre de
+  choix du périphérique : il doit partir d'un clic, sinon le navigateur
+  refuse. Le service garde ensuite l'imprimante connectée.
+- **Nouvelles tentatives pour toute erreur.** Chaque ticket est tenté 3 fois,
+  à 1 seconde d'intervalle, y compris pour une erreur certaine comme
+  `unknown_job_type` : la promesse est rejetée après environ 2 secondes. Les
+  tickets suivants attendent leur tour.
+- **Pas de renderer `html` en mode navigateur.** Le ticket est ignoré avec un
+  avertissement dans la console et la promesse est résolue : un tiroir-caisse
+  ne s'ouvre pas en `"browser"`, sans erreur.
+- **Impression réseau.** `"network"` échoue toujours avec
+  `network_not_supported`, faute de relais d'impression.
+- **`init()` n'est pas automatique.** Ni `build()` ni le service ne
+  l'appellent : l'ajouter en tête du renderer `escpos` si l'imprimante doit
+  repartir d'un état propre.
+- **Accents.** Le texte est encodé en UTF-8 et aucune page de codes n'est
+  envoyée à l'imprimante : le rendu des caractères accentués dépend de sa
+  configuration.
+- **`line` attend des chaînes.** `right` doit être une chaîne (sa longueur sert
+  au calcul) : formater les montants avant l'appel.
+- **HTML et données saisies.** Le renderer `html` assemble souvent du texte
+  venant de l'utilisateur ou du serveur ; l'iframe bloque les scripts, mais
+  échapper les champs reste la règle.
+
+Pas de guide dédié dans `docs/` : la référence est le code de `src/lib/print/`.

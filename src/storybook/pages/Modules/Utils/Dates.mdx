@@ -1,0 +1,120 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Utils/Dates" />
+
+# Utils : dates, heures et durées
+
+Des fonctions pour passer d'un horodatage Dolibarr (en secondes) à une
+date lisible, d'une durée en secondes à `HH:MM`, ou formater selon la
+langue de l'utilisateur avec l'API `Intl` du navigateur.
+
+Pour afficher une date dans un écran, préférer les composants d'affichage
+`Datetime` et `Duration` : ils gèrent la valeur vide et la langue. Les
+fonctions ci-dessous servent dans le code (calculs, exports, libellés
+construits à la main).
+
+```js
+import {
+  formatDate,
+  ISOFormat,
+  datetimeFormat,
+  relativeTimeFormat,
+  timestampToDate,
+  toSTimestamp,
+  minutesToTime,
+} from "@cap-rel/smartcommon";
+```
+
+## Formater une date
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `formatDate` | `(date, format) => string \| number \| Date` | Gabarit `YYYY`, `YY`, `MM`, `DD`, `HH`, `hh`, `mm`, `ss`, ou `"seconds-timestamp"` / `"milliseconds-timestamp"`. Sans `format`, renvoie `date` telle quelle. |
+| `ISOFormat` | `(date, format) => string \| null` | `"date"` : `2024-01-05` ; `"time"` : `14:03` ; sinon `2024-01-05T14:03`, pour les champs `<input type="date">` et voisins. Heure locale. |
+| `datetimeFormat` | `(date, options, locales = "default") => string \| null` | `Intl.DateTimeFormat` en une ligne. `options` par défaut : `{ dateStyle: "medium", timeStyle: "short" }`. |
+| `relativeTimeFormat` | `(value, unit, options = {}, locales = "default") => string \| null` | `Intl.RelativeTimeFormat` : `(-3, "hour", {}, "fr")` donne `il y a 3 heures`. |
+| `durationFormat` | `(duration, options, locales = "default") => string \| null` | `Intl.DurationFormat`, `options` par défaut `{ style: "narrow" }`. |
+| `DateTimeFormatter` | `(locales = "default", options) => formatter` | Formateur réutilisable : `format`, `formatToParts`, `formatRange`, `formatRangeToParts`, `resolvedOptions`. |
+| `DurationFormatter` | `(locales = "default", options) => formatter` | Même interface que `DateTimeFormatter` (voir les pièges). |
+
+`ISOFormat` et `datetimeFormat` renvoient `null` si `date` n'est pas un
+objet `Date`.
+
+```js
+import { formatDate, ISOFormat, datetimeFormat } from "@cap-rel/smartcommon";
+
+const d = new Date(2024, 0, 5, 14, 3, 9);
+
+formatDate(d, "DD/MM/YYYY HH:mm");      // "05/01/2024 14:03"
+formatDate(d, "seconds-timestamp");     // 1704459789 (selon le fuseau)
+ISOFormat(d, "date");                   // "2024-01-05"
+datetimeFormat(d, { dateStyle: "short" }, "fr"); // "05/01/2024"
+```
+
+## Horodatages Dolibarr (secondes)
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `timestampToDate` | `(timestamp) => string \| undefined` | Horodatage en secondes vers `JJ/MM/AAAA`. |
+| `timestampToDateTime` | `(timestamp) => string \| undefined` | Horodatage en secondes vers `JJ/MM/AAAA HH:MM`. |
+| `dateToTimestamp` | `(date) => number` | Toute valeur acceptée par `new Date()` vers des secondes (décimales possibles). |
+| `compareDateToNow` | `(timestamp) => number` | Nombre de jours (décimal) entre maintenant et l'horodatage ; positif dans le futur. |
+| `toSTimestamp` | `(date) => number` | `Date` ou millisecondes vers secondes entières. |
+| `toMsTimestamp` | `(date) => number` | `Date` ou secondes vers millisecondes. |
+
+```js
+import { toSTimestamp, toMsTimestamp, timestampToDateTime } from "@cap-rel/smartcommon";
+
+const payload = { datec: toSTimestamp(new Date()) };       // pour l'API Dolibarr
+const date = new Date(toMsTimestamp(intervention.datec));  // retour de l'API
+const label = timestampToDateTime(String(intervention.datec));
+```
+
+## Heures et durées
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `timeToMinutes` | `("HH:MM") => number` | `"02:15"` donne `135`. |
+| `minutesToTime` | `(minutes, format = "time")` | `"time"` : `"02:15"` ; `"units"` : `{ hours, minutes }`. |
+| `secondsToTime` | `(seconds) => string` | Chronomètre `m:ss` : `125` donne `"2:05"`. |
+| `formatSeconds` | `(seconds, format) => string` | `HH:MM` ; `format` n'est pas lu. |
+| `formatDuration` | `(seconds) => string` | Texte français : `"1 jour(s) 2 h 3 min 4 s"`. |
+| `secsToTime` | `(secs) => string` | Texte français court : `"01 h 30"`, `"01 min"`, `"moins d'une minute"`. |
+| `secondsToDuration` | `(seconds) => { secs, minutes, hours, days }` | Découpe une durée. |
+| `secsToDuration` | `(secs) => { seconds, minutes, hours, days }` | Même découpe, autre nom de champ pour les secondes. |
+| `formatTime` | `(time, format)` | Voir les pièges : ne pas utiliser. |
+
+```js
+import { timeToMinutes, minutesToTime } from "@cap-rel/smartcommon";
+
+const worked = timeToMinutes(end) - timeToMinutes(start);  // "17:30" - "08:15"
+minutesToTime(worked);            // "09:15"
+minutesToTime(worked, "units");   // { hours: 9, minutes: 15 }
+```
+
+## Pièges
+
+- `timestampToDate` et `timestampToDateTime` testent la valeur avec
+  `isEmpty` de lodash, qui tient tout nombre pour vide : un horodatage
+  passé en nombre renvoie `undefined`. Passer une chaîne
+  (`String(timestamp)`) ou utiliser `formatDate(new Date(ts * 1000), ...)`.
+- `toSTimestamp` lit un nombre comme des millisecondes, `toMsTimestamp`
+  comme des secondes : les deux ne sont pas l'inverse l'une de l'autre sur
+  un nombre.
+- `secondsToDuration` renvoie `secs`, `secsToDuration` renvoie `seconds`.
+- `formatSeconds` ignore les jours : `90000` (25 h) donne `"01:00"`.
+- `secsToTime` renvoie un texte cassé pour un nombre d'heures rond ou zéro
+  (`3600` donne `"01 h aN"`, `0` donne `"aN min"`).
+- `formatTime("01:02:03")` concatène au lieu d'additionner (`"372003"`).
+- `formatDuration` et `secsToTime` produisent du français en dur, sans
+  passer par `labels` : à éviter dans une application traduite.
+- `DurationFormatter` est construit sur `Intl.DateTimeFormat` : il formate
+  une date, pas une durée.
+- `durationFormat` s'appuie sur `Intl.DurationFormat`, absent des
+  navigateurs anciens : l'appel lève alors une `TypeError`.
+- `formatDate` remplace chaque jeton une seule fois : `"DD/MM - DD"` ne
+  remplace que le premier `DD`.
+
+Aucun guide dédié dans `docs/` : la référence est
+`src/lib/utils/functions/date.js`, `others.js`, `intl.js` et
+`lodashComplement/position.js`. Pour l'affichage, voir `docs/formats.md`.

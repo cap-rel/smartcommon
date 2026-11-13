@@ -1,0 +1,154 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Utils/Logs" />
+
+# Utils : journal et erreurs réseau
+
+Le journal de smartcommon remplace `console.*` : des badges colorés dans la
+console, un filtrage par niveau et par espace de noms sans recompiler, et
+un tampon des dernières lignes (secrets masqués) joint aux rapports envoyés
+par `FeedbackButton`. Un second tampon garde les dernières erreurs réseau
+vues par `useApi`.
+
+Tout le code de la bibliothèque journalise par ce module, et une
+application peut faire de même pour profiter des mêmes filtres et du même
+rapport.
+
+```js
+import {
+  log,
+  createLogger,
+  LOG_LEVELS,
+  LOG_BADGES,
+  subscribeToLogs,
+  getRecentLogs,
+  setLogBufferEnabled,
+  filterSecrets,
+  recordNetworkError,
+  getRecentNetworkErrors,
+  setNetworkErrorBufferEnabled,
+} from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `createLogger` | `(namespace) => logger` | Crée un journal préfixé par un espace de noms coloré (`[MyModule]`). |
+| `log` | objet `logger` | Journal par défaut, sans espace de noms (`createLogger(null)`). |
+| `LOG_LEVELS` | `{ debug: 0, info: 1, warn: 2, error: 3, none: 4 }` | Niveaux par ordre de gravité. |
+| `LOG_BADGES` | objet | Méthodes du journal : `[libellé, couleur, niveau]` pour chacune. |
+| `subscribeToLogs` | `(callback) => unsubscribe` | Reçoit chaque ligne affichée (utilisé par `DebugConsole`). |
+| `getRecentLogs` | `() => string[]` | Lignes du tampon, de la plus ancienne à la plus récente, secrets déjà masqués. |
+| `setLogBufferEnabled` | `(enabled) => void` | Active ou coupe le tampon ; le couper le vide. |
+| `filterSecrets` | `(text) => string` | Remplace jetons, mots de passe et clés par `[filtré]`. |
+| `recordNetworkError` | `(method, url, status) => void` | Ajoute une erreur réseau au tampon (20 entrées au plus). |
+| `getRecentNetworkErrors` | `() => Array` | Erreurs réseau enregistrées : `{ method, url, status, at }`. |
+| `setNetworkErrorBufferEnabled` | `(value) => void` | Active ou coupe le tampon réseau ; le couper le vide. |
+
+## Le journal : `createLogger` et `log`
+
+Chaque journal expose les méthodes suivantes. Les quatre méthodes `api*`
+prennent leur libellé en premier argument.
+
+| Méthode | Badge | Niveau |
+|---------|-------|--------|
+| `debug(...messages)` | `DEBUG` | `debug` |
+| `info(...messages)` | `INFO` | `info` |
+| `success(...messages)` | `SUCCESS` | `info` |
+| `warning(...messages)`, alias `warn` | `WARNING` | `warn` |
+| `error(...messages)` | `ERROR` | `error` |
+| `state`, `globalState`, `effect`, `location`, `page`, `db` | `STATE`, `GLOBAL STATE`, `EFFECT`, `LOCATION`, `PAGE`, `DB` | `debug` |
+| `apiLoading(label, ...messages)` | `label` | `debug` |
+| `apiSuccess(label, ...messages)` | `label` | `info` |
+| `apiError(label, ...messages)` | `label` | `error` |
+| `custom(label, color, ...messages)` | `label`, couleur libre | `debug` |
+| `group(label)` / `groupEnd()` | groupe repliable de la console | affiché au niveau `debug` seulement |
+
+```js
+import { createLogger } from "@cap-rel/smartcommon";
+
+const mlog = createLogger("Interventions");
+
+mlog.info("synchronisation lancée", { count: 12 });
+mlog.apiSuccess("GET - 200", "/interventions");
+try {
+  await saveIntervention(data);
+} catch (err) {
+  mlog.error("enregistrement impossible", err);
+}
+```
+
+### Filtrer sans recompiler
+
+Le niveau par défaut est `debug` en développement et `warn` en production.
+Deux clés de `localStorage` le changent à chaud, depuis la console du
+navigateur :
+
+```js
+localStorage.setItem("LOG_LEVEL", "warn");               // warn et error seulement
+localStorage.setItem("LOG_FILTER", "useApi,Interventions"); // préfixes d'espaces de noms
+```
+
+`LOG_FILTER` compare le début des noms : `useApi` laisse passer `useApi`
+et `useApiCache`. Les lignes sans espace de noms (journal `log`) passent
+toujours le filtre.
+
+## Le tampon du rapport de retour
+
+Chaque ligne est aussi copiée, horodatée et nettoyée par `filterSecrets`,
+dans un tampon circulaire de 200 lignes et 32 Ko au plus. `FeedbackButton`
+joint ce tampon (`getRecentLogs()`) et les erreurs réseau
+(`getRecentNetworkErrors()`) au rapport.
+
+- Le tampon est alimenté avant les filtres `LOG_LEVEL` et `LOG_FILTER` :
+  une erreur masquée dans la console reste dans le rapport. Seul le niveau
+  de l'environnement s'applique (en production, `warn` et `error`).
+- `setLogBufferEnabled` est appelé par `LibConfigProvider` avec la clé
+  `feedback.logBuffer` de la configuration : passer `false` coupe le
+  tampon pour toute l'application.
+- Le tampon réseau n'est alimenté que par les requêtes de `useApi`, jamais
+  par un `fetch` direct. La chaîne de requête des URL est retirée, car
+  elle peut porter un jeton.
+
+```js
+import { filterSecrets } from "@cap-rel/smartcommon";
+
+filterSecrets('{"login":"anne","password":"s3cret"}');
+// '{"login":"anne",[filtré]}'
+```
+
+## Suivre le journal en direct
+
+```js
+import { subscribeToLogs } from "@cap-rel/smartcommon";
+
+const unsubscribe = subscribeToLogs((entry) => {
+  // entry : { id, timestamp, level, label, labelColor, namespace, namespaceColor, messages }
+  if (entry.level === "error") showErrorBadge();
+});
+
+// plus tard
+unsubscribe();
+```
+
+Les abonnés ne reçoivent que les lignes qui passent `LOG_LEVEL` et
+`LOG_FILTER`. Les lignes sont aussi diffusées sur le `BroadcastChannel`
+`smartcommon-logs`, pour les autres onglets.
+
+## Pièges
+
+- Ne pas écrire `console.log` dans le code d'une bibliothèque ou d'un
+  module partagé : la ligne échappe aux filtres et au rapport de retour.
+- `group(label)` n'ouvre un groupe qu'au niveau `debug`, mais `groupEnd()`
+  ferme toujours : garder les deux appels au même niveau de journal.
+- `filterSecrets` reconnaît des motifs connus (`Bearer`, `Authorization`,
+  jetons JWT, clés `password`, `token`, `secret`, `api_key`, `DOLAPIKEY`).
+  Un secret sous un autre nom passe en clair : ne pas journaliser d'objet
+  d'identification complet.
+- `recordNetworkError` est appelé par `useApi`. Une application ne s'en
+  sert que pour signaler un appel réseau qu'elle fait elle-même hors de
+  `useApi`.
+
+Guide complet : `docs/quality.md` (section "No raw `console` in library
+code") et `docs/provider.md` (clé `feedback.logBuffer`).

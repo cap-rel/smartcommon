@@ -1,0 +1,180 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Utils/Données" />
+
+# Utils : données, tableaux et navigateur
+
+Les outils de manipulation de données : la classe `Mapping` qui traduit
+un objet de l'API Dolibarr en objet de l'application (et retour), des
+tests de valeur pour les formulaires, des tris, la lecture des lots de
+documents ZIP de SmartAuth et quelques informations sur l'appareil.
+
+```js
+import {
+  Mapping,
+  isEmptyValue,
+  formDefaultValues,
+  sortArrayByString,
+  searchBarFilter,
+  downloadBundle,
+  navigatorInfo,
+} from "@cap-rel/smartcommon";
+```
+
+## `Mapping` : objet de l'API vers objet de l'application
+
+`new Mapping({ schema, strict = false })` décrit, champ par champ, comment
+renommer et convertir. La clé du schéma est le nom côté serveur.
+
+| Méthode | Rôle |
+|---------|------|
+| `map(data)` | Objet serveur vers objet de l'application. Une valeur qui n'est pas un objet simple est renvoyée telle quelle. |
+| `reverse(data)` | Objet de l'application vers objet serveur, prêt à envoyer. |
+
+| Option d'un champ | Sens | Rôle |
+|-------------------|------|------|
+| `key` | les deux | Nom du champ côté application. |
+| `type` | les deux | `"int"`, `"float"`, `"number"`, `"string"`, `"bool"` ou `"boolean"`. `"bool"` traite `"0"`, `"false"` et `""` comme faux, à la manière de Dolibarr. |
+| `default` | les deux | Valeur quand le champ manque ; avec `type`, elle est convertie aussi. |
+| `from` | lecture | Fonction `(value) => value` ou valeur fixe. |
+| `to` | écriture | Fonction ou valeur fixe. |
+| `schema` | les deux | Sous-schéma pour un objet imbriqué. |
+| `items` | les deux | Sous-schéma pour chaque élément d'un tableau d'objets (un non-tableau devient `[]`). |
+| `aliases` | lecture | Autres noms serveur possibles : la première valeur ni `undefined` ni `null` l'emporte. |
+| `readOnly` | écriture | Champ calculé par le serveur, jamais renvoyé. |
+| `omitEmpty` | écriture | N'écrit le champ que s'il porte une valeur (ni vide, ni `null`). |
+| `writeFrom` | écriture | Autres champs de l'application où chercher la valeur à envoyer. |
+| `alsoWrite` | écriture | Copie la valeur écrite sous d'autres noms serveur. |
+
+Avec `strict: true`, les champs absents du schéma sont retirés ; sinon ils
+passent sans changement.
+
+```js
+import { Mapping } from "@cap-rel/smartcommon";
+
+const interventionMapping = new Mapping({
+  schema: {
+    rowid: { key: "id", type: "int" },
+    fk_soc: { key: "socid", type: "int", aliases: ["socid"] },
+    note_public: { key: "note", default: "" },
+    date_creation: { key: "createdAt", readOnly: true },
+    lines: { items: { rowid: { key: "id", type: "int" }, qty: { type: "float" } } },
+  },
+});
+
+const intervention = interventionMapping.map(apiRow);
+// { id: 12, socid: 7, note: "", createdAt: ..., lines: [...] }
+
+const payload = interventionMapping.reverse(intervention);
+// { rowid: 12, fk_soc: 7, note_public: "", lines: [...] } (sans date_creation)
+```
+
+## Valeurs et formulaires
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `isEmptyValue` | `(value) => boolean` | "L'utilisateur a-t-il saisi quelque chose ?" : `0` et `false` ne sont pas vides, `NaN`, `""`, `[]`, `{}` et `null` le sont. |
+| `isInvalid` | `(value) => boolean` | `null`, `undefined` ou `NaN`. |
+| `formDefaultValues` | `({ type, multiple }) => any` | Valeur initiale d'un champ selon son type (`"boolean"` donne `false`, `"select"` multiple donne `[]`...) ; `undefined` pour un type inconnu. |
+| `applyFunctionIfFunction` | `(value, ...params)` | Appelle `value(...params)` si c'est une fonction, sinon renvoie `undefined`. |
+| `applyFunctionIfNotNil` | `(value, ...params)` | Même chose (le test `null` est redondant). |
+
+```js
+import { isEmptyValue } from "@cap-rel/smartcommon";
+
+const rules = [
+  { condition: required && isEmptyValue(currentValue), message: labels.required },
+];
+```
+
+`isEmptyValue` remplace `isEmpty` de lodash pour les règles `required` :
+`isEmpty(42)` et `isEmpty(true)` valent `true`.
+
+## Objets et tableaux
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `mergeObj` | `(obj1, obj2) => object` | Fusionne deux objets d'objets sur un niveau : `{ a: { x } }` et `{ a: { y } }` donnent `{ a: { x, y } }`. |
+| `unsetObject` | `(obj) => void` | Remplace chaque valeur par `""`, en place. |
+| `sortArrayByNumber` | `(array, prop, sort = "ascending")` | Trie en place par nombre (`"descending"` pour l'inverse). |
+| `sortArrayByString` | `(array, prop, sort = "ascending")` | Trie en place par texte, sans tenir compte de la casse. |
+| `sortObjectByNumber` | `(object, prop, sort = "ascending")` | Renvoie un nouvel objet dont les entrées sont triées par nombre. |
+| `isArrayOfObjects` | `(array) => boolean` | Voir les pièges. |
+| `isFirst` | `(value, item) => boolean` | `item` est-il le premier élément (tableau, chaîne, valeurs d'un objet, chiffres d'un nombre) ? |
+| `isLast` | `(value, item) => boolean` | Même chose pour le dernier. |
+| `searchBarFilter` | `(searchedValues, search) => boolean` | Une des valeurs contient-elle la recherche ? Sans casse ni espaces. |
+| `cleanForComparison` | `(value) => string` | Majuscules, espaces retirés : `"Le Mans 72"` donne `"LEMANS72"`. |
+
+```js
+import { searchBarFilter, sortArrayByString } from "@cap-rel/smartcommon";
+
+const visible = sortArrayByString(
+  thirdparties.filter((t) => searchBarFilter([t.name, t.town, t.zip], search)),
+  "name"
+);
+```
+
+## Chaînes et nombres
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `generateRandomString` | `(length, { lowercase, uppercase, digits, specials })` | Chaîne aléatoire ; au moins une famille est requise. Utilise `Math.random`. |
+| `splitFileExtension` | `(fileName) => [nom, extension]` | Coupe au premier point et remplace `_` par une espace : `"rapport_final.v2.pdf"` donne `["rapport final", ".v2.pdf"]`. |
+| `toFirstUppercase` | `(string) => string` | Première lettre en majuscule. |
+| `hexToRgb` | `(hex) => string` | `"#1e90ff"` donne `"30, 144, 255"`, à placer dans `rgba(...)`. |
+| `mToKm` | `(meters) => string` | `750` donne `"750 m"`, `2500` donne `"2,5 km"`. |
+
+## Lots de documents (ZIP)
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `downloadBundle` | `(api, shares, { maxFileSize, signal }) => Promise<{ manifest, files }>` | Demande à SmartAuth (`object/documents/bundle`) un ZIP des documents dont on donne les codes de partage ; `files` est une `Map` code vers `Blob`. |
+| `parseZip` | `(arrayBuffer) => Promise<object>` | Lit un ZIP (stocké ou compressé DEFLATE) : nom de fichier vers `ArrayBuffer`. |
+
+`api` est l'instance ky authentifiée de `useApi().private`, pas les
+raccourcis `api.get` / `api.post` qui renvoient déjà du JSON.
+
+```js
+import { downloadBundle } from "@cap-rel/smartcommon";
+
+const { private: http } = useApi();
+const { manifest, files } = await downloadBundle(http, shares, { signal });
+for (const [share, blob] of files) {
+  await db.instance.documents.put({ share, blob });
+}
+```
+
+`useReferenceSync` s'en sert pour remplir le cache de documents (voir
+`Hooks/useReferenceSync` et la page Modules/Sync).
+
+## Appareil et navigateur
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `navigatorInfo` | `{ device: { type }, language, isOnLine }` | Informations lues au chargement ; `isOnLine` suit les événements `online` / `offline`. |
+| `locate` | `(success, error) => void` | Position GPS : `success([lat, lng], position)`, `error(err)`. |
+| `getUserLocation` | `() => Promise<[lat, lng]>` | Même chose en promesse ; rejette avec un message. |
+| `print` | `(value) => void` | Écrit `value` en JSON dans la page par `document.write`. Outil de débogage. |
+
+## Pièges
+
+- `isArrayOfObjects` renvoie `true` pour tout tableau, même `[1, 2]` : le
+  `return false` de la boucle ne sort pas de la fonction.
+- `hexToRgb` affiche `?` pour une composante nulle (`"#000"` donne
+  `"?, ?, ?"`).
+- `mToKm` casse sur un nombre rond de kilomètres (`2000` donne `"2,N km"`).
+- `navigatorInfo.device.type` vaut toujours `"mobile"` et
+  `navigatorInfo.language` toujours `"en"` dans un navigateur : le test de
+  présence de `navigator` est inversé. Pour le type d'écran, utiliser
+  `useViewport` ; pour la langue, `navigator.language`.
+- `print` remplace la page si elle est déjà chargée : jamais en production.
+- `generateRandomString` n'est pas fait pour un secret : utiliser
+  `crypto.getRandomValues`.
+- `position` est exporté mais vide (ne fait rien) : ne pas l'utiliser.
+- `sortArrayByNumber` et `sortArrayByString` modifient le tableau reçu :
+  copier d'abord (`[...list]`) pour un tableau issu d'un état React.
+
+Aucun guide dédié dans `docs/` : la référence est
+`src/lib/utils/class/mapping/index.js`, `src/lib/utils/functions/` et
+`src/lib/utils/constants/navigator.js`. `applyFunctionIfFunction` est
+présenté dans `docs/quality.md`.

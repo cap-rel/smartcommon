@@ -1,0 +1,150 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Dépendances" />
+
+# Dépendances réexportées
+
+smartcommon réexporte quelques briques de ses dépendances pour qu'une
+application les importe au même endroit que les composants : toute la
+bibliothèque lodash, les briques de routage de `react-router-dom`, la
+fonction `toast` de `react-hot-toast` et le composant `Helmet` de
+`react-helmet` sous le nom `Head`.
+
+```js
+import { Routes, Route, Navigate, Outlet, toast, Head, debounce, groupBy } from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Origine | Rôle |
+|---------|---------|------|
+| `Routes`, `Route`, `Outlet`, `Navigate` | `react-router-dom` | Déclarer les routes de l'application sous le `Router` monté par `<Provider>`. |
+| `toast` | `react-hot-toast` | Afficher une notification ; le `<Toaster>` est monté par `<Provider>`. |
+| `Head` | `react-helmet` (`Helmet`) | Modifier le `<title>` et les balises de `<head>` depuis une page. |
+| `_` | `lodash` | L'objet lodash complet (chaînage `_.chain`, `_.mixin`). |
+| 300 fonctions lodash | `lodash` | Chaque fonction de lodash 4 sous son nom, listées ci-dessous. |
+
+## Routage, notifications, titre de page
+
+```jsx
+import { Routes, Route, Navigate, RouteGuard, Head, toast } from "@cap-rel/smartcommon";
+
+export const AppRoutes = () => (
+  <Routes>
+    <Route element={<RouteGuard requireAuth />}>
+      <Route path="/" element={<Home />} />
+    </Route>
+    <Route path="/login" element={<Login />} />
+    <Route path="*" element={<Navigate to="/" replace />} />
+  </Routes>
+);
+
+const Home = () => {
+  const onSave = async () => {
+    await save();
+    toast.success("Intervention enregistrée");
+  };
+  return (
+    <>
+      <Head><title>Interventions</title></Head>
+      <button onClick={onSave}>Enregistrer</button>
+    </>
+  );
+};
+```
+
+`react-router-dom` et `react-hot-toast` restent des dépendances externes
+du paquet (`peerDependencies`) : l'application et smartcommon partagent la
+même instance, donc le même contexte de routage et le même `<Toaster>`.
+Pour les autres exports de `react-router-dom` (`useParams`, `Link`...),
+importer directement depuis `react-router-dom`.
+
+## Fonctions lodash
+
+Toutes les fonctions de lodash 4 sont exportées sous leur nom, ainsi que
+`VERSION` (version de lodash) et `templateSettings`. Par famille :
+
+- **Tableaux** : `chunk`, `compact`, `concat`, `difference`, `differenceBy`,
+  `differenceWith`, `drop`, `dropRight`, `dropRightWhile`, `dropWhile`,
+  `fill`, `findIndex`, `findLastIndex`, `flatten`, `flattenDeep`,
+  `flattenDepth`, `fromPairs`, `head`, `indexOf`, `initial`, `intersection`,
+  `intersectionBy`, `intersectionWith`, `join`, `last`, `lastIndexOf`, `nth`,
+  `pull`, `pullAll`, `pullAllBy`, `pullAllWith`, `pullAt`, `remove`,
+  `reverse`, `slice`, `sortedIndex`, `sortedIndexBy`, `sortedIndexOf`,
+  `sortedLastIndex`, `sortedLastIndexBy`, `sortedLastIndexOf`, `sortedUniq`,
+  `sortedUniqBy`, `tail`, `take`, `takeRight`, `takeRightWhile`,
+  `takeWhile`, `union`, `unionBy`, `unionWith`, `uniq`, `uniqBy`,
+  `uniqWith`, `unzip`, `unzipWith`, `without`, `xor`, `xorBy`, `xorWith`,
+  `zip`, `zipObject`, `zipObjectDeep`, `zipWith`.
+- **Collections** : `countBy`, `every`, `filter`, `find`, `findLast`,
+  `flatMap`, `flatMapDeep`, `flatMapDepth`, `forEach`, `forEachRight`,
+  `groupBy`, `includes`, `invokeMap`, `keyBy`, `map`, `orderBy`,
+  `partition`, `reduce`, `reduceRight`, `reject`, `sample`, `sampleSize`,
+  `shuffle`, `size`, `some`, `sortBy`.
+- **Date** : `now`.
+- **Fonctions** : `after`, `ary`, `before`, `bind`, `bindKey`, `curry`,
+  `curryRight`, `debounce`, `defer`, `delay`, `flip`, `memoize`, `negate`,
+  `once`, `overArgs`, `partial`, `partialRight`, `rearg`, `rest`, `spread`,
+  `throttle`, `unary`, `wrap`.
+- **Types et comparaisons** : `castArray`, `clone`, `cloneDeep`,
+  `cloneDeepWith`, `cloneWith`, `conformsTo`, `eq`, `gt`, `gte`,
+  `isArguments`, `isArray`, `isArrayBuffer`, `isArrayLike`,
+  `isArrayLikeObject`, `isBoolean`, `isBuffer`, `isDate`, `isElement`,
+  `isEmpty`, `isEqual`, `isEqualWith`, `isError`, `isFinite`, `isFunction`,
+  `isInteger`, `isLength`, `isMap`, `isMatch`, `isMatchWith`, `isNaN`,
+  `isNative`, `isNil`, `isNull`, `isNumber`, `isObject`, `isObjectLike`,
+  `isPlainObject`, `isRegExp`, `isSafeInteger`, `isSet`, `isString`,
+  `isSymbol`, `isTypedArray`, `isUndefined`, `isWeakMap`, `isWeakSet`, `lt`,
+  `lte`, `toArray`, `toFinite`, `toInteger`, `toLength`, `toNumber`,
+  `toPlainObject`, `toSafeInteger`, `toString`.
+- **Calcul** : `add`, `ceil`, `divide`, `floor`, `max`, `maxBy`, `mean`,
+  `meanBy`, `min`, `minBy`, `multiply`, `round`, `subtract`, `sum`, `sumBy`.
+- **Nombres** : `clamp`, `inRange`, `random`.
+- **Objets** : `assign`, `assignIn`, `assignInWith`, `assignWith`, `at`,
+  `create`, `defaults`, `defaultsDeep`, `findKey`, `findLastKey`, `forIn`,
+  `forInRight`, `forOwn`, `forOwnRight`, `functions`, `functionsIn`, `get`,
+  `has`, `hasIn`, `invert`, `invertBy`, `invoke`, `keys`, `keysIn`,
+  `mapKeys`, `mapValues`, `merge`, `mergeWith`, `omit`, `omitBy`, `pick`,
+  `pickBy`, `result`, `set`, `setWith`, `toPairs`, `toPairsIn`, `transform`,
+  `unset`, `update`, `updateWith`, `values`, `valuesIn`.
+- **Chaînage** : `chain`, `tap`, `thru`.
+- **Chaînes** : `camelCase`, `capitalize`, `deburr`, `endsWith`, `escape`,
+  `escapeRegExp`, `kebabCase`, `lowerCase`, `lowerFirst`, `pad`, `padEnd`,
+  `padStart`, `parseInt`, `repeat`, `replace`, `snakeCase`, `split`,
+  `startCase`, `startsWith`, `template`, `toLower`, `toUpper`, `trim`,
+  `trimEnd`, `trimStart`, `truncate`, `unescape`, `upperCase`, `upperFirst`,
+  `words`.
+- **Utilitaires** : `attempt`, `bindAll`, `cond`, `conforms`, `constant`,
+  `defaultTo`, `flow`, `flowRight`, `identity`, `iteratee`, `matches`,
+  `matchesProperty`, `method`, `methodOf`, `mixin`, `noConflict`, `noop`,
+  `nthArg`, `over`, `overEvery`, `overSome`, `property`, `propertyOf`,
+  `range`, `rangeRight`, `runInContext`, `stubArray`, `stubFalse`,
+  `stubObject`, `stubString`, `stubTrue`, `times`, `toPath`, `uniqueId`.
+
+```js
+import { debounce, groupBy, orderBy } from "@cap-rel/smartcommon";
+
+const onSearch = debounce((q) => setQuery(q), 300);
+const byStatus = groupBy(orderBy(interventions, ["date"], ["desc"]), "status");
+```
+
+La documentation de chaque fonction est celle de lodash 4.
+
+## Pièges
+
+- Plusieurs noms lodash masquent un global du même nom une fois importés :
+  `isNaN`, `isFinite`, `parseInt`, `toString`, `escape`. `isFinite("3")`
+  de lodash vaut `false`, celui du navigateur `true`. Les importer sous un
+  alias en cas de doute (`import { isNaN as _isNaN }`).
+- `isEmpty` de lodash tient les nombres et les booléens pour vides : pour
+  une règle `required` de formulaire, utiliser `isEmptyValue` (page
+  Modules/Utils/Données).
+- lodash fait partie du paquet : une application qui installe aussi lodash
+  embarque deux copies. Importer depuis smartcommon ou depuis `lodash`,
+  mais pas les deux pour un même usage d'état partagé (`uniqueId`,
+  `templateSettings`, `mixin`).
+- `Head` est `Helmet` de `react-helmet` sous un autre nom : la
+  documentation de `react-helmet` s'applique telle quelle.
+
+Aucun guide dédié dans `docs/` : la référence est `src/lib/deps/`. Le
+routage protégé est décrit dans `docs/route-guard.md`.

@@ -1,0 +1,280 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/Sync" />
+
+# Sync
+
+Le moteur de synchronisation hors ligne des PWA : les données Dolibarr sont
+copiées dans une base IndexedDB, modifiées sans réseau, puis renvoyées au
+serveur par les routes `sync/*` de SmartAuth. Le module repose sur trois
+classes indépendantes de React (stockage, client HTTP, orchestration) et une
+classe d'erreur.
+
+Dans une application, on passe presque toujours par les hooks, qui assemblent
+ces classes et exposent un état réactif :
+
+- `useSyncClient` (voir `Hooks/useSyncClient`) pour lire et modifier des
+  données hors ligne ;
+- `useReferenceSync` (voir `Hooks/useReferenceSync`) pour un référentiel en
+  lecture seule (catalogue, tiers, contacts) ;
+- le composant `ConflictResolver` (sa propre page) pour l'écran de résolution
+  des conflits.
+
+Les classes décrites ici servent quand on a besoin d'aller sous le hook : lire
+directement la base locale, écrire un test, brancher la synchronisation hors
+d'un composant ou diagnostiquer un problème.
+
+```js
+import { SyncStorage, SyncApi, SyncEngine, ForbiddenSyncError } from "@cap-rel/smartcommon";
+```
+
+## Les exports
+
+| Export | Nature | Rôle |
+|--------|--------|------|
+| `SyncStorage` | classe | Base IndexedDB (Dexie) : entités en cache, file des modifications, conflits, métadonnées, suppressions hors ligne. |
+| `SyncApi` | classe | Client HTTP des routes `sync/*` de SmartAuth, branché sur l'instance ky de `useApi().private`. |
+| `SyncEngine` | classe | Orchestration : enregistrement du client, push, pull, identifiants temporaires, conflits. |
+| `ForbiddenSyncError` | classe d'erreur | Levée sur une réponse 403 : la synchronisation s'arrête aussitôt. |
+
+## Assembler les trois classes
+
+C'est exactement ce que fait `useSyncClient` à son montage. Le composant doit
+être sous `<Provider>` pour que `useApi()` fournisse le token et l'en-tête
+`X-DeviceId`.
+
+```jsx
+import { useEffect, useRef } from "react";
+import { useApi, SyncStorage, SyncApi, SyncEngine } from "@cap-rel/smartcommon";
+
+export const useMySyncEngine = () => {
+  const { private: http } = useApi();
+  const httpRef = useRef(http);
+  httpRef.current = http;
+  const engineRef = useRef(null);
+
+  useEffect(() => {
+    const storage = new SyncStorage("smartauth_sync");
+    storage.init().then(() => {
+      engineRef.current = new SyncEngine({
+        storage,
+        // Lu à chaque requête : useApi renvoie une nouvelle instance à chaque rendu.
+        api: new SyncApi({ getHttp: () => httpRef.current }),
+        scope: ["thirdparty", "contact"],
+        appVersion: "1.4.0",
+      });
+    });
+    return () => storage.close();
+  }, []);
+
+  return engineRef;
+};
+```
+
+## SyncStorage
+
+```js
+const storage = new SyncStorage(dbName);   // dbName par défaut : "smartauth_sync"
+await storage.init();                      // obligatoire avant tout appel
+```
+
+La base contient cinq tables : `entities` (clé `[table+id]`),
+`pending_changes` (clé auto `queue_id`), `pending_conflicts` (clé
+`conflict_id`), `sync_meta` (clé-valeur) et `local_tombstones` (clé
+`[table+id]`). Une entité stockée a la forme
+`{ table, id, data, server_tms, local_updated_at }` : `data` est l'objet métier,
+`local_updated_at` vaut `null` tant que l'entité n'a pas été modifiée
+localement.
+
+| Méthode | Rôle |
+|---------|------|
+| `init()` | Ouvre la base (schéma v1) et renvoie l'instance. |
+| `getEntity(table, id)` | Une entité, ou `null`. |
+| `putEntity(table, id, data, serverTms, localUpdatedAt = null)` | Écrit ou remplace une entité. |
+| `deleteEntity(table, id)` | Supprime une entité du cache. |
+| `getEntitiesByTable(table)` | Toutes les entités d'un type d'objet. |
+| `getModifiedEntities()` | Les entités dont `local_updated_at` n'est pas `null`. |
+| `updateEntityLocal(table, id, data)` | Fusionne `data` et marque l'entité modifiée ; `null` si elle n'existe pas. |
+| `addPendingChange(change)` | Ajoute un changement `{ table, id, action, base_tms, data, temp_id }` à la file. |
+| `getPendingChanges()` | La file, triée par date de création. |
+| `getPendingChangesCount()` | Nombre de changements en attente. |
+| `deletePendingChange(queueId)` / `deletePendingChanges(queueIds)` | Retire un ou plusieurs changements. |
+| `clearPendingChanges()` | Vide la file. |
+| `addConflict(conflict)` | Enregistre un conflit. |
+| `getConflicts()` / `getConflictsCount()` / `getConflict(conflictId)` | Lecture des conflits en attente. |
+| `deleteConflict(conflictId)` / `clearConflicts()` | Suppression des conflits. |
+| `getMeta(key)` / `setMeta(key, value)` / `deleteMeta(key)` | Métadonnées libres. |
+| `getLastSyncTime()` / `setLastSyncTime(timestamp)` | Date de la dernière synchronisation complète. |
+| `getClientUuid()` / `setClientUuid(uuid)` | Identifiant du client de synchronisation. |
+| `getSyncScope()` / `setSyncScope(scope)` | Périmètre renvoyé par `sync/register`. |
+| `addTombstone(table, id, deletedAt = null)` | Note une suppression faite hors ligne. |
+| `getTombstones()` / `hasTombstone(table, id)` / `deleteTombstone(table, id)` / `clearTombstones()` | Gestion des suppressions hors ligne. |
+| `clear()` | Vide les cinq tables (la base reste). |
+| `getStats()` | `{ entities, pending_changes, conflicts, tombstones }`. |
+| `getEntitiesCountByTable()` | Nombre d'entités par type, par exemple `{ thirdparty: 120 }`. |
+| `resetOpStats()` / `getOpStats()` | Compteurs d'opérations IndexedDB (`reads`, `writes`, `queries`, `counts`, `cursors`, `total`), pour le diagnostic. |
+| `close()` | Ferme la connexion. |
+| `deleteDatabase()` | Ferme puis supprime toute la base. |
+
+```js
+// Afficher la liste des tiers depuis le cache local, sans réseau
+const rows = await storage.getEntitiesByTable("thirdparty");
+const thirdparties = rows.map((row) => row.data);
+```
+
+## SyncApi
+
+```js
+const api = new SyncApi({ getHttp: () => httpRef.current });
+```
+
+`getHttp` est obligatoire et doit être une fonction : le constructeur lève une
+erreur sinon. Chaque appel passe par l'instance ky renvoyée, qui ajoute déjà le
+token, l'en-tête `X-DeviceId`, le rafraîchissement du token et le disjoncteur
+de `useApi`.
+
+| Méthode | Route | Rôle |
+|---------|-------|------|
+| `setClientUuid(uuid)` | - | Fixe le `client_uuid` envoyé ensuite. |
+| `getObjects()` | `GET sync/objects` | Types d'objets synchronisables et droits de l'utilisateur. |
+| `register(clientUuid, scope, appVersion)` | `POST sync/register` | Enregistre le client (idempotent pour un même UUID) et retient son UUID. |
+| `pull(objectType, { lastSyncAt, limit, cursor })` | `GET sync/pull` | Une page de modifications d'un type d'objet (`limit` 500 par défaut, 1 à 1000). |
+| `push(objectType, changes)` | `POST sync/push` | Envoie les changements d'un type d'objet. |
+| `getConflicts()` | `GET sync/conflicts` | Conflits en attente de ce client. |
+| `resolveConflict(conflictId, resolution, data = null)` | `POST sync/conflicts/{id}/resolve` | Résout un conflit : `"client"`, `"server"` ou `"merged"` (avec `data`). |
+| `getStatus()` | `GET sync/status` | État du client côté serveur. |
+
+`pull`, `push`, `getConflicts` et `getStatus` exigent un `client_uuid` : sans
+`register()` ni `setClientUuid()` préalable, ils lèvent une erreur.
+
+En cas d'échec, l'erreur levée porte `status` (`0` pour une erreur réseau),
+`code` (code machine renvoyé par le serveur, ou `null`), `data` (corps de
+réponse lu en JSON) et `cause` (l'erreur ky d'origine). Son message commence
+par la route, par exemple `sync/pull: ...`.
+
+## SyncEngine
+
+```js
+const engine = new SyncEngine({
+  storage,                // instance de SyncStorage déjà initialisée
+  api,                    // instance de SyncApi
+  scope: ["thirdparty", "contact"],   // types d'objets, parents d'abord
+  pushChunkSize: 50,      // changements au plus par requête push
+  pullPageSize: 500,      // lignes par page de pull (1 à 1000)
+  appVersion: "1.4.0",    // envoyé à sync/register
+});
+```
+
+| Méthode | Retour | Rôle |
+|---------|--------|------|
+| `generateTempId()` | `string` | Identifiant temporaire `local_<horodatage>_<hex>`. |
+| `isTempId(id)` | `boolean` | Vrai si `id` commence par `local_`. |
+| `register()` | `{ client_uuid, sync_scope }` | Enregistre le client, en réutilisant l'UUID stocké s'il existe. |
+| `isRegistered()` | `boolean` | Vrai si un `client_uuid` est stocké. |
+| `ensureRegistered()` | `string` | Renvoie l'UUID, en s'enregistrant au premier appel. |
+| `sync()` | `{ pushed, pulled, conflicts, errors }` | Push puis pull, puis efface les suppressions hors ligne notées. |
+| `push()` | `{ success, conflicts, errors, id_mappings }` | Envoie la file, type par type, par paquets de `pushChunkSize`. |
+| `pull()` | `{ updated, deleted, errors }` | Récupère les modifications serveur, type par type, page par page. |
+| `createLocal(table, data)` | `string` (identifiant temporaire) | Crée une entité hors ligne et met la création en file. |
+| `updateLocal(table, id, data)` | - | Fusionne `data` dans l'entité et met la modification en file. |
+| `upsertLocal(table, id, data, queueChange = false)` | - | Crée ou met à jour une entité ; ne met en file que si `queueChange` est vrai. |
+| `deleteLocal(table, id)` | - | Supprime l'entité et met la suppression en file (ou annule la création d'une entité temporaire). |
+| `getConflicts()` | tableau | Conflits du serveur fusionnés avec les conflits locaux ; hors ligne, les conflits locaux seuls. |
+| `resolveConflict(conflictId, resolution, data = null)` | objet | Résout un conflit (`"client"`, `"server"` ou `"merged"`). |
+| `getStatus()` | `{ isRegistered, clientUuid, lastSyncTime, pendingCount, conflictsCount, stats }` | État local, sans réseau. |
+| `getServerStatus()` | objet | État du client côté serveur (`GET sync/status`). |
+| `reset()` | - | Vide toute la base locale (utile à la déconnexion). |
+
+Les méthodes dont le nom commence par `_` sont internes et peuvent changer.
+
+### Fonctionnement
+
+- **Push** : les changements d'une même entité sont regroupés avant l'envoi
+  (une création suivie de modifications part en une seule création). Les
+  créations partent dans l'ordre de `scope`, les suppressions dans l'ordre
+  inverse. Les identifiants temporaires renvoyés dans `id_mapping` sont
+  remplacés par l'identifiant serveur, dans l'entité comme dans les clés
+  étrangères des autres changements.
+- **Pull** : chaque type a son propre point de reprise, avancé seulement quand
+  toutes ses pages sont appliquées. Une entité modifiée localement n'est jamais
+  écrasée. Un type en erreur n'arrête pas les autres.
+- **Client inconnu** : si le serveur répond 404 "not registered", le moteur
+  s'enregistre à nouveau avec le même UUID et rejoue la requête une fois.
+
+Les entrées de `errors` ont la forme `{ table, id, temp_id, error, message, status }`
+(champs présents selon le cas). Valeurs de `error` produites par le moteur :
+`PUSH_FAILED` et `PULL_FAILED` (requête en échec, changements gardés en file),
+`WAITING_FOR_PARENT` (le parent n'est pas encore créé), sinon le message du
+serveur. Un objet absent côté serveur (`Object not found`) est retiré de la
+file et du cache.
+
+Un conflit renvoyé par `getConflicts()` contient `conflict_id`, `table`,
+`object_id`, `action`, `client_data`, `server_data`, `client_tms`,
+`server_tms`, `field_conflicts` (liste des noms de champs),
+`field_conflict_details` et `created_at` ; les conflits connus du serveur ont
+aussi `table_name`. Un conflit de suppression n'est pas enregistré par le
+serveur : il reste local, avec un identifiant `local:<type>:<id>`, et ne peut
+pas être résolu en `"merged"`.
+
+```js
+const tempId = await engine.createLocal("thirdparty", { name: "Boulangerie Martin" });
+// Un contact peut pointer vers le tiers par son identifiant temporaire.
+await engine.createLocal("contact", { lastname: "Martin", socid: tempId });
+
+const result = await engine.sync();
+const newId = result.pushed.id_mappings[tempId];   // identifiant Dolibarr du tiers
+```
+
+### Diagnostic
+
+Le moteur journalise le détail de chaque phase (durée, pages, opérations
+IndexedDB) quand `window.SMARTCOMMON_SYNC_DEBUG` est vrai ou quand
+`localStorage` contient `SMARTCOMMON_SYNC_DEBUG` à `"1"`. Indépendamment, un
+avertissement est toujours émis quand une phase dépasse 1000 opérations
+IndexedDB ; le seuil se change par `window.SMARTCOMMON_SYNC_ALARM_OPS`.
+
+## ForbiddenSyncError
+
+```js
+new ForbiddenSyncError(message)
+```
+
+Sous-classe de `Error` avec `name` égal à `"ForbiddenSyncError"` et
+`isForbidden` égal à `true`. `SyncEngine` la lève dès qu'une route répond 403
+(`register`, `push`, `pull`, `getConflicts`) ; `useReferenceSync` aussi. La
+synchronisation s'arrête aussitôt pour ne pas se faire bloquer par le pare-feu
+du serveur.
+
+```js
+try {
+  await engine.sync();
+} catch (error) {
+  if (error instanceof ForbiddenSyncError) {
+    // Droits retirés ou appareil révoqué : ne pas relancer en boucle.
+    showAccessDenied();
+    return;
+  }
+  throw error;
+}
+```
+
+## Pièges
+
+- `SyncStorage.init()` doit être attendu avant tout appel : sans lui, la base
+  n'existe pas et chaque méthode échoue.
+- `updateLocal` et `deleteLocal` lèvent `Entity not found: <table>/<id>` si
+  l'entité n'est pas dans le cache local. Vérifier avec `storage.getEntity()`
+  ou passer par `upsertLocal`.
+- `upsertLocal` marque l'entité comme modifiée localement même avec
+  `queueChange` à `false` : les pulls suivants ne la mettent plus à jour.
+- `reset()` efface aussi le `client_uuid` : la synchronisation suivante
+  enregistre un nouveau client. Pour supprimer la base elle-même, utiliser
+  `storage.deleteDatabase()`.
+- L'ordre de `scope` compte : les parents d'abord (`thirdparty` avant
+  `contact`), sinon un enfant attend son parent (`WAITING_FOR_PARENT`).
+- `register` exige un token lié à un appareil : l'utilisateur doit être passé
+  par `<DeviceIdentificationComponent>`.
+- `getHttp` doit renvoyer l'instance courante (via une ref) et non une instance
+  figée au premier rendu.
+
+Guide complet : `docs/offline.md`.

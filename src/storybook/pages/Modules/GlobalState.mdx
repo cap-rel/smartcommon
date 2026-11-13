@@ -1,0 +1,102 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+<Meta title="Modules/GlobalState" />
+
+# GlobalState
+
+Le store Redux (Redux Toolkit) monté par `<Provider>`, à travers
+`ReduxProvider`. smartcommon y range une seule tranche, `global`, qui
+reflète les états globaux gérés par `useGlobalStates` (voir
+`Hooks/useGlobalStates`). Une application y ajoute ses propres tranches
+par la configuration.
+
+```js
+import {
+  reducers,
+  globalReducer,
+  setGlobalStates,
+  userReducer,
+  setUser,
+  updateUser,
+  unsetUser,
+} from "@cap-rel/smartcommon";
+```
+
+## Symboles exportés
+
+| Symbole | Signature | Rôle |
+|---------|-----------|------|
+| `reducers` | `{ global: globalReducer }` | Reducers montés d'office dans le store. |
+| `globalReducer` | reducer | Tranche `global`, état initial `{}`. |
+| `setGlobalStates` | `(payload) => action` | Remplace toute la tranche `global` (type `global/setGlobalStates`). |
+| `userReducer` | reducer | Tranche utilisateur historique, non montée par défaut (voir plus bas). |
+| `setUser` | `(user) => action` | Remplace l'utilisateur et l'enregistre (type `users/setUser`). |
+| `updateUser` | `(partial) => action` | Fusionne `partial` dans l'utilisateur et l'enregistre (type `users/updateUser`). |
+| `unsetUser` | `() => action` | Vide l'utilisateur et l'efface du stockage (type `users/unsetUser`). |
+
+## Ajouter ses propres tranches
+
+`ReduxProvider` crée le store avec `{ ...reducers, ...config.globalState.reducers }`.
+Une application déclare ses tranches dans la configuration de `<Provider>` :
+
+```jsx
+import { createSlice } from "@reduxjs/toolkit";
+import { Provider } from "@cap-rel/smartcommon";
+
+const cartSlice = createSlice({
+  name: "cart",
+  initialState: { lines: [] },
+  reducers: {
+    addLine(state, action) { state.lines.push(action.payload); },
+  },
+});
+
+const config = {
+  api: { prefixUrl: "/api.php/" },
+  globalState: { reducers: { cart: cartSlice.reducer } },
+};
+
+<Provider config={config}>
+  <App />
+</Provider>;
+```
+
+Les composants lisent ensuite `state.cart` avec `useSelector` de
+`react-redux`, comme dans toute application Redux.
+
+## La tranche `global`
+
+`useGlobalStates` garde les états globaux (en mémoire, `localStorage` ou
+`sessionStorage`) et recopie leurs valeurs dans `state.global` par
+`setGlobalStates` à chaque changement. Lire ces valeurs par
+`useGlobalStates` plutôt que par `useSelector(state => state.global)`, et ne
+pas envoyer `setGlobalStates` soi-même : l'appel suivant du hook
+écraserait la valeur.
+
+## La tranche utilisateur
+
+`userReducer` et ses actions viennent de l'ancienne gestion de session.
+Elles ne sont plus utilisées par `useApi` : l'utilisateur connecté est
+dans les états globaux et se lit par `useApi().user` (voir `Hooks/useApi`).
+
+- `userReducer` n'est pas dans `reducers` : `setUser`, `updateUser` et
+  `unsetUser` ne changent l'état Redux que si l'application monte la
+  tranche elle-même (`globalState: { reducers: { user: userReducer } }`).
+- Leurs reducers écrivent directement la clé `user` de `localStorage` (si
+  `rememberMe` est vrai) ou de `sessionStorage`, et `unsetUser` efface les
+  deux. Les mélanger avec la connexion de `useApi` mène à deux sources
+  pour le même utilisateur.
+
+## Pièges
+
+- `globalState.reducers` doit être un objet stable (défini hors du
+  composant, ou mémorisé) : un nouvel objet à chaque rendu recrée le store
+  et perd son état.
+- Une tranche nommée `global` dans `globalState.reducers` remplace celle de
+  smartcommon et casse `useGlobalStates`.
+- `useApi` écrit l'utilisateur connecté sous la clé `user` des états
+  globaux : `updateUser` ne le modifie pas, et `useApi().user` ne voit pas
+  ses changements.
+
+Guide complet : `docs/provider.md` (sections "Schéma de montage" et
+"Forme du `config`").
