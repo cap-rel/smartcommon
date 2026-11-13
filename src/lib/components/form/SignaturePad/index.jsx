@@ -9,6 +9,9 @@ import { useStates, useField, useVariantMerger, useUpload, useUploadQueue } from
 import { applyFunctionIfNotNil, locate } from "lib/utils/functions";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("SignaturePad");
 
 export const SignaturePad = (props) => {
   const { variantProps, mergeProps } = useVariantMerger("SignaturePad", props);
@@ -243,7 +246,7 @@ export const SignaturePad = (props) => {
       try {
         blob = await canvasToBlob();
       } catch (err) {
-        console.error("SignaturePad: canvas.toBlob failed", err);
+        log.error("SignaturePad: canvas.toBlob failed", err);
         toast.error(labels.conversionError);
         // Re-arm drawing so the user can retry.
         padRef.current.on();
@@ -255,7 +258,7 @@ export const SignaturePad = (props) => {
       try {
         uploadResult = await uploadFile(blob, { filename: "signature.png" });
       } catch (err) {
-        console.error("SignaturePad: upload failed", err);
+        log.error("SignaturePad: upload failed", err);
         if (onUploadError) {
           onUploadError(err);
         } else {
@@ -297,12 +300,12 @@ export const SignaturePad = (props) => {
       const { pendingId, uploadId } = currentValue ?? {};
       if (pendingId && uploadQueue) {
         uploadQueue.cancel(pendingId).catch((err) => {
-          console.warn("SignaturePad: queue cancel failed", err);
+          log.warning("SignaturePad: queue cancel failed", err);
         });
       }
       if (uploadId && cancelUpload) {
         cancelUpload(uploadId).catch((err) => {
-          console.warn("SignaturePad: server-side cancel failed", err);
+          log.warning("SignaturePad: server-side cancel failed", err);
         });
       }
       setValue({ ...currentValue, src: "", uploadId: null, pendingId: null });

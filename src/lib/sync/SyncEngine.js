@@ -31,7 +31,7 @@ function syncAlarmThreshold() {
 function syncLog(...args) {
     if (syncDebugEnabled()) {
         // eslint-disable-next-line no-console
-        console.log('[sync]', ...args);
+        logger.info('[sync]', ...args);
     }
 }
 // Captures the caller chain so we can see WHAT triggered a sync/pull/push
@@ -48,7 +48,7 @@ function syncCallStack() {
 function syncAlarm(phase, idbOps, stack, extra) {
     if (idbOps !== null && idbOps >= syncAlarmThreshold()) {
         // eslint-disable-next-line no-console
-        console.warn(
+        logger.warning(
             `[sync][ALARM] ${phase} did ${idbOps} IndexedDB ops (~= transactions) ` +
             `>= threshold ${syncAlarmThreshold()}.`,
             extra || '',

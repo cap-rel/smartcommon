@@ -15,6 +15,9 @@ import { ProductGrid } from "./ProductGrid";
 import { ConfirmStep } from "./ConfirmStep";
 import { Cart } from "./Cart";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("ProductCategoryBrowser");
 
 const SEARCH_DEBOUNCE_MS = 300;
 
@@ -148,7 +151,7 @@ const ProductCategoryBrowserContent = (props) => {
         Promise.resolve(fetcher)
             .then((items) => { if (!cancelled) setSubResult({ key: subKey, items: items || [] }); })
             .catch((err) => {
-                console.error("ProductCategoryBrowser: failed to load categories", err);
+                log.error("ProductCategoryBrowser: failed to load categories", err);
                 // Tag the failure with the key too, otherwise the derived
                 // `subLoading` would stay true forever on an adapter error.
                 if (!cancelled) setSubResult({ key: subKey, items: [] });

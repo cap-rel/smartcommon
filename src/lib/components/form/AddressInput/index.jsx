@@ -6,6 +6,9 @@ import { useStates, useField, useVariantMerger } from 'lib/hooks';
 import { Label, Input } from 'lib/components';
 
 import { propTypes, DEFAULT_LABELS } from "./props";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("AddressInput");
 
 // TODO Find a way to replace input focus condition
 
@@ -111,7 +114,7 @@ export const AddressInput = (props) => {
         return;
       }
       set("suggestions", []);
-      console.error("Address search failed:", error.message);
+      log.error("Address search failed:", error.message);
     } finally {
       set("isSearching", false);
     }

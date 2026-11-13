@@ -7,6 +7,9 @@ import { log, navigatorInfo, throwTypeError, recordNetworkError } from "lib/util
 import { useGlobalStates, useLibConfig } from "lib/hooks";
 import { loginMap } from "lib/hooks/useApiTest2/useLogin";
 import { refreshAccessTokenMap } from "lib/hooks/useApiTest2/useRefreshAccessToken";
+import { createLogger } from "lib/utils";
+
+const logger = createLogger("useApi");
 
 /**
  * Circuit breaker helpers, kept at module scope: they read the clock, which is
@@ -458,7 +461,7 @@ export const useApiContext = () => {
                         latestRefreshTokenRef.current = null;
                         currentGst.unset("user");
                     } else {
-                        console.error("refresh failed without ending the session", status ?? error?.message);
+                        logger.error("refresh failed without ending the session", status ?? error?.message);
                     }
                     throw error;
                 })

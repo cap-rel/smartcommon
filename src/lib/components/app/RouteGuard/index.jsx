@@ -3,6 +3,9 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useApi } from "lib/hooks";
 
 import { defaultProps, propTypes } from "./props";
+import { createLogger } from "lib/utils";
+
+const logger = createLogger("RouteGuard");
 
 const LOGIN_PATH = "/login";
 const HOME_PATH = "/";
@@ -22,12 +25,12 @@ export const RouteGuard = (props) => {
     // restrictive one. We log a console.warn so the dev sees it during
     // development; in production this is essentially silent.
     if (requireAuth && requireGuest) {
-        console.warn(
+        logger.warning(
             "[RouteGuard] requireAuth and requireGuest were both set; falling back to requireAuth."
         );
     }
     if (requireDeviceIdentification && requireDeviceIdentified) {
-        console.warn(
+        logger.warning(
             "[RouteGuard] requireDeviceIdentification and requireDeviceIdentified were both set; falling back to requireDeviceIdentification."
         );
     }

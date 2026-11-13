@@ -1,5 +1,8 @@
 import { useState, useEffect, useLayoutEffect, useCallback, useRef } from 'react';
 import { useOnlineStatus } from '../useOnlineStatus';
+import { createLogger } from "lib/utils";
+
+const log = createLogger("useCachedQuery");
 
 /**
  * Cache strategies for useCachedQuery
@@ -151,7 +154,7 @@ export const useCachedQuery = ({
                 cachedAt: Date.now()
             });
         } catch (error) {
-            console.warn('useCachedQuery: Failed to cache data:', error);
+            log.warning('useCachedQuery: Failed to cache data:', error);
         }
     }, [getStore, key]);
 

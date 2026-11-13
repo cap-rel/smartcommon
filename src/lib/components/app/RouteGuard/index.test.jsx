@@ -13,6 +13,10 @@ vi.mock("lib/hooks/global/useApi", () => ({
 
 import { RouteGuard } from "./index";
 
+// The logger prefixes a styled badge and the namespace: match the message
+// anywhere in the arguments of any call.
+const loggedText = (spy) => spy.mock.calls.map((call) => call.map(String).join(" ")).join("\n");
+
 const renderAt = (initial, ui) =>
     render(
         <MemoryRouter initialEntries={[initial]}>
@@ -132,9 +136,7 @@ describe("RouteGuard", () => {
                 </RouteGuard>
             );
             expect(screen.getByText("login page")).toBeDefined();
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
-                expect.stringMatching(/RouteGuard.*both/i)
-            );
+            expect(loggedText(consoleWarnSpy)).toMatch(/RouteGuard.*both/i);
         });
 
         it("still allows authenticated users when both flags are set (auth wins)", () => {
@@ -253,9 +255,7 @@ describe("RouteGuard", () => {
             // requireDeviceIdentification wins -> with deviceOptions present,
             // the content is rendered.
             expect(screen.getByText("conflicted device content")).toBeDefined();
-            expect(consoleWarnSpy).toHaveBeenCalledWith(
-                expect.stringMatching(/RouteGuard.*device.*both/i)
-            );
+            expect(loggedText(consoleWarnSpy)).toMatch(/RouteGuard.*device.*both/i);
         });
     });
 

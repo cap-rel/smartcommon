@@ -1,6 +1,10 @@
 import { Component } from "react";
 
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
 import { DEFAULT_LABELS, propTypes } from "./props";
+
+const log = createLogger("ErrorBoundary");
 
 export class ErrorBoundary extends Component {
     constructor(props) {
@@ -15,11 +19,11 @@ export class ErrorBoundary extends Component {
     componentDidCatch(error, errorInfo) {
         this.setState({ errorInfo });
 
-        // Log to console with the error's own stack first (more useful than
-        // React's componentStack which is minified in production builds and
-        // requires sourcemaps to be readable). The componentStack is still
-        // dumped after for context.
-        console.error(
+        // Logged with the error's own stack first (more useful than React's
+        // componentStack, minified in production builds), then the
+        // componentStack for context. Through the logger, the crash also
+        // lands in the log extract a feedback report carries.
+        log.error(
             "ErrorBoundary caught an error:",
             error?.message || error,
             "\nStack:", error?.stack,

@@ -8,6 +8,9 @@ import {
     propTypes,
 } from "./props";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("BarcodeScanner");
 
 const SCANNER_ELEMENT_ID = "barcode-scanner-region";
 
@@ -110,7 +113,7 @@ const BarcodeScannerContent = (props) => {
             try {
                 mod = await import("html5-qrcode");
             } catch (err) {
-                console.error("[BarcodeScanner] failed to load html5-qrcode:", err);
+                log.error("[BarcodeScanner] failed to load html5-qrcode:", err);
                 if (!cancelled) {
                     setCameraError(cameraErrorLabelRef.current);
                 }

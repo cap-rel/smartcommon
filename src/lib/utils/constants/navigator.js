@@ -1,4 +1,7 @@
 import { isUndefined } from "lodash";
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
+const logger = createLogger("navigator");
 
 const isNavigatorAvailable = isUndefined(navigator);
 
@@ -25,11 +28,11 @@ const locate = (success = () => {}, error = () => {}) => {
     navigator.geolocation.getCurrentPosition(
         position => {
           const coords = [position.coords.latitude, position.coords.longitude];
-          console.log(`Geolocation success`, coords);
+          logger.info(`Geolocation success`, coords);
           success(coords);
         },
         err => {
-          console.error(`Geolocation error`, err);
+          logger.error(`Geolocation error`, err);
           error(err);
         }
     )

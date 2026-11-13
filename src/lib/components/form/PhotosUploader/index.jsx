@@ -9,6 +9,9 @@ import { Popup, Button, Label, Input, Textarea } from "lib/components";
 import { applyFunctionIfNotNil, locate, splitFileExtension, isEmptyValue } from "lib/utils";
 
 import { DEFAULT_LABELS, propTypes } from "./props";
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
+const logger = createLogger("PhotosUploader");
 
 export const PhotosUploader = (props) => {
     const { variantProps, mergeProps } = useVariantMerger("PhotosUploader", props);
@@ -183,7 +186,7 @@ export const PhotosUploader = (props) => {
             // Failure is non-fatal: the staging directory is GC'd on TTL.
             if (outputFormat === "upload" && photoToDelete?.uploadId) {
                 cancelUpload(photoToDelete.uploadId).catch(err => {
-                    console.warn("PhotosUploader: failed to cancel staged upload", err);
+                    logger.warning("PhotosUploader: failed to cancel staged upload", err);
                 });
             }
 
@@ -265,7 +268,7 @@ export const PhotosUploader = (props) => {
             } catch (err) {
                 URL.revokeObjectURL(previewUrl);
                 // Always log: silent failures hide regressions.
-                console.error("PhotosUploader upload failed:", err);
+                logger.error("PhotosUploader upload failed:", err);
                 if (onUploadError) {
                     onUploadError(err);
                 } else {
@@ -377,7 +380,7 @@ export const PhotosUploader = (props) => {
                         newPhotos.push(photo);
                     }
                 } catch (err) {
-                    console.error("PhotosUploader could not process a photo:", file?.name, err);
+                    logger.error("PhotosUploader could not process a photo:", file?.name, err);
                     toast.error(labels.processingError(file?.name ?? ""));
                 }
             }

@@ -1,3 +1,6 @@
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
+const log = createLogger("zipBundle");
 /**
  * Utilities for downloading and parsing ZIP bundles from SmartAuth's
  * ObjectDocumentController bundle endpoint.
@@ -100,7 +103,7 @@ export const parseZip = async (arrayBuffer) => {
                 // DEFLATE - decompress
                 files[filename] = await decompressDeflateRaw(rawData);
             } else {
-                console.warn(`[parseZip] Unsupported compression method ${compressionMethod} for ${filename}, skipping`);
+                log.warning(`[parseZip] Unsupported compression method ${compressionMethod} for ${filename}, skipping`);
             }
         }
 

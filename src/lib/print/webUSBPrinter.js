@@ -1,3 +1,6 @@
+import { createLogger } from "lib/utils";
+
+const log = createLogger("webUSBPrinter");
 /**
  * WebUSB driver for ESC/POS thermal printers.
  *
@@ -75,7 +78,7 @@ export class WebUSBPrinter {
                 }
                 await this.device.close();
             } catch (err) {
-                console.warn("[WebUSBPrinter] Error during disconnect:", err.message);
+                log.warning("[WebUSBPrinter] Error during disconnect:", err.message);
             }
             this.device = null;
             this.interfaceNumber = -1;

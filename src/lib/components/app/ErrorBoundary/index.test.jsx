@@ -124,7 +124,7 @@ describe("ErrorBoundary", () => {
         );
 
         const wasLoggedByBoundary = consoleErrorSpy.mock.calls.some(
-            (args) => typeof args[0] === "string" && args[0].includes("ErrorBoundary caught an error")
+            (args) => args.some((arg) => typeof arg === "string" && arg.includes("ErrorBoundary caught an error"))
         );
         expect(wasLoggedByBoundary).toBe(true);
     });
@@ -137,10 +137,10 @@ describe("ErrorBoundary", () => {
         );
 
         const boundaryCall = consoleErrorSpy.mock.calls.find(
-            (args) => typeof args[0] === "string" && args[0].includes("ErrorBoundary caught an error")
+            (args) => args.some((arg) => typeof arg === "string" && arg.includes("ErrorBoundary caught an error"))
         );
         expect(boundaryCall).toBeDefined();
-        // Args layout: [prefix, message, "\nStack:", error.stack, "\nComponent stack:", componentStack]
+        // Logger badge first, then [message, error, "\nStack:", stack, "\nComponent stack:", componentStack]
         const flat = boundaryCall.join(" ");
         expect(flat).toMatch(/Stack:/);
         expect(flat).toMatch(/Component stack:/);

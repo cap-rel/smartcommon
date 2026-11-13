@@ -6,6 +6,9 @@ import { formatBadgeCount, BADGE_CLASS_NAME } from "lib/utils";
 import { FormContext, Spinner } from "lib/components";
 
 import { propTypes, defaultProps } from "./props";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("Button");
 
 /** UI button component for user interaction */
 export const Button = (props) => {
@@ -42,7 +45,7 @@ export const Button = (props) => {
 
     if (isLink && type === "submit" && typeof console !== "undefined") {
         // Anchor cannot submit a form; ignore type="submit" when href is set.
-        console.warn("[Button] type=\"submit\" is ignored when href is provided.");
+        log.warning("[Button] type=\"submit\" is ignored when href is provided.");
     }
 
     const isLoading = loading || (isSubmitType && isFormSubmitting);

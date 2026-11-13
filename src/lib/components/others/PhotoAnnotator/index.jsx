@@ -9,6 +9,9 @@ import { TypePicker } from "./TypePicker";
 import { EditorWrapper } from "./EditorWrapper";
 import { AnnotationList } from "./AnnotationList";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("PhotoAnnotator");
 
 export const PhotoAnnotator = (props) => {
     const {
@@ -110,7 +113,7 @@ export const PhotoAnnotator = (props) => {
                         }
                     })
                     .catch((err) => {
-                        console.error("PhotoAnnotator.onCreate failed:", err);
+                        log.error("PhotoAnnotator.onCreate failed:", err);
                         setInternalAnnotations((prev) =>
                             prev.filter((a) => a.id !== staged.id)
                         );
@@ -132,7 +135,7 @@ export const PhotoAnnotator = (props) => {
             );
             if (onUpdate) {
                 Promise.resolve(onUpdate(annotation)).catch((err) => {
-                    console.error("PhotoAnnotator.onUpdate failed:", err);
+                    log.error("PhotoAnnotator.onUpdate failed:", err);
                 });
             }
             return;
@@ -154,11 +157,11 @@ export const PhotoAnnotator = (props) => {
             );
             if (onMove) {
                 Promise.resolve(onMove(moved, pos)).catch((err) => {
-                    console.error("PhotoAnnotator.onMove failed:", err);
+                    log.error("PhotoAnnotator.onMove failed:", err);
                 });
             } else if (onUpdate) {
                 Promise.resolve(onUpdate(moved)).catch((err) => {
-                    console.error("PhotoAnnotator.onUpdate (move) failed:", err);
+                    log.error("PhotoAnnotator.onUpdate (move) failed:", err);
                 });
             }
             return;
@@ -177,7 +180,7 @@ export const PhotoAnnotator = (props) => {
             );
             if (onDelete) {
                 Promise.resolve(onDelete(annotation)).catch((err) => {
-                    console.error("PhotoAnnotator.onDelete failed:", err);
+                    log.error("PhotoAnnotator.onDelete failed:", err);
                 });
             }
             return;

@@ -1,5 +1,8 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { useOnlineStatus } from '../useOnlineStatus';
+import { createLogger } from "lib/utils";
+
+const log = createLogger("useAuthenticatedImage");
 
 /**
  * Default configuration for useAuthenticatedImage
@@ -206,7 +209,7 @@ export const useAuthenticatedImage = ({
                         cachedAt: Date.now()
                     });
                 } catch (cacheError) {
-                    console.warn('useAuthenticatedImage: Failed to cache image:', cacheError);
+                    log.warning('useAuthenticatedImage: Failed to cache image:', cacheError);
                 }
             }
 

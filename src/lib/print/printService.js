@@ -14,6 +14,9 @@ import { TicketBuilder } from "./ticketBuilder";
 import { WebUSBPrinter } from "./webUSBPrinter";
 import { browserPrint } from "./browserPrint";
 import { DEFAULT_LABELS } from "./labels";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("printService");
 
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 1000;
@@ -141,7 +144,7 @@ export class PrintService {
                     this.queue.shift();
                     job.reject(err);
                 } else {
-                    console.warn(
+                    log.warning(
                         `[PrintService] Job failed, retrying (${job.retries} left):`,
                         err.message
                     );
@@ -167,7 +170,7 @@ export class PrintService {
         if (protocol === "browser") {
             if (!renderers.html) {
                 // Some jobs (e.g. cash drawer) have no HTML equivalent: skip with a warning
-                console.warn(`[PrintService] Job type "${type}" has no HTML renderer; skipping in browser mode`);
+                log.warning(`[PrintService] Job type "${type}" has no HTML renderer; skipping in browser mode`);
                 return;
             }
             const html = renderers.html(data);
@@ -202,7 +205,7 @@ export class PrintService {
     async sendViaNetwork(_data, connection) {
         // Network printing requires a proxy or native bridge.
         // PWAs cannot open raw TCP sockets from the browser.
-        console.warn(
+        log.warning(
             `[PrintService] Direct network printing to ${connection} not available in browser context. A print proxy server is needed.`
         );
         throw buildError("network_not_supported", this.labels.networkNotSupported);

@@ -1,4 +1,7 @@
 import { isArray, isEmpty } from "lodash";
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
+const logger = createLogger("others");
   
   export const secondsToTime = (seconds) => {
     const m = Math.floor(seconds / 60);
@@ -236,14 +239,14 @@ export const locate = (success = () => {}, error = () => {}) => {
     navigator.geolocation.getCurrentPosition(
         position => {
           const coords = [position.coords.latitude, position.coords.longitude];
-          console.log(`Geolocation success`, coords);
+          logger.info(`Geolocation success`, coords);
           // The raw position goes second so callers that only want
           // [lat, lng] keep working, while others can read accuracy,
           // altitude or timestamp.
           success(coords, position);
         },
         err => {
-          console.error(`Geolocation error`, err);
+          logger.error(`Geolocation error`, err);
           error(err);
         }
     )

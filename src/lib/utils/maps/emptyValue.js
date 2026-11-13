@@ -1,6 +1,9 @@
 import { isUndefined } from "lodash";
 
 import { isInvalid } from "lib/utils";
+import { createLogger } from "lib/utils/functions/consoleLogs";
+
+const log = createLogger("emptyValue");
 
 export function setEmptyValue(attribute) {
     const { type, default: defaultValue, min, max, ratingMax } = attribute;
@@ -51,7 +54,7 @@ export function setEmptyValue(attribute) {
     };
 
     if (isUndefined(EMPTY_VALUES_MAP[type])) {
-        console.error(`${type} n'est pas un type valide.`);
+        log.error(`${type} n'est pas un type valide.`);
         return;
     }
 

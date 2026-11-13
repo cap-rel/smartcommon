@@ -4,6 +4,9 @@ import { twMerge } from "lib/utils";
 import { useImageUrl } from "lib/hooks";
 
 import { buildDefaultPriceLabel } from "./props";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("ProductGrid");
 
 const GAP = 12;
 const PADDING = 16;
@@ -181,7 +184,7 @@ export const ProductGrid = ({
                 setVisibleCount(INF_INITIAL);
             })
             .catch((err) => {
-                console.error("ProductGrid: failed to load products", err);
+                log.error("ProductGrid: failed to load products", err);
                 // Tagged with the key as well: an untagged failure would leave
                 // the derived `loading` stuck on forever.
                 if (!cancelled) setResult({ key: searchKey, items: [], error: labels.loadError });

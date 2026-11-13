@@ -3,6 +3,10 @@ import { cleanup, renderHook, waitFor } from "@testing-library/react";
 
 import { usePWAUpdate } from "./index";
 
+// The logger prefixes a styled badge and the namespace: match the message
+// anywhere in the arguments of any call.
+const loggedText = (spy) => spy.mock.calls.map((call) => call.map(String).join(" ")).join("\n");
+
 // Minimal Service Worker registration with a worker already waiting, i.e.
 // an update detected on mount.
 const installServiceWorker = () => {
@@ -91,7 +95,7 @@ describe("usePWAUpdate version info", () => {
 
         const { result } = renderHook(() => usePWAUpdate());
 
-        await waitFor(() => expect(warn).toHaveBeenCalledWith(expect.stringContaining("HTTP 404")));
+        await waitFor(() => expect(loggedText(warn)).toContain("HTTP 404"));
         expect(result.current.updateAvailable).toBe(true);
         expect(result.current.newVersion).toBeNull();
     });
@@ -102,10 +106,9 @@ describe("usePWAUpdate version info", () => {
 
         const { result } = renderHook(() => usePWAUpdate());
 
-        await waitFor(() => expect(error).toHaveBeenCalledWith(
-            expect.stringContaining("Could not read version.json"),
-            expect.any(TypeError),
-        ));
+        await waitFor(() => expect(error.mock.calls.some((call) =>
+            call.some((arg) => arg instanceof TypeError) && call.map(String).join(" ").includes("Could not read version.json")
+        )).toBe(true));
         expect(result.current.updateAvailable).toBe(true);
         expect(result.current.newVersion).toBeNull();
     });

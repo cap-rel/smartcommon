@@ -1,4 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { createLogger } from "lib/utils";
+
+const log = createLogger("usePWAUpdate");
 
 /**
  * Hook to detect and manage PWA updates via Service Worker.
@@ -43,7 +46,7 @@ export const usePWAUpdate = (options = {}) => {
                 return true;
             }
         } catch (error) {
-            console.error("[PWA] Update check failed:", error);
+            log.error("[PWA] Update check failed:", error);
         }
         return false;
     }, []);
@@ -61,7 +64,7 @@ export const usePWAUpdate = (options = {}) => {
             url.searchParams.set("_", String(Date.now()));
             const response = await fetch(url, { cache: "no-store" });
             if (!response.ok) {
-                console.warn(`[PWA] ${versionUrl} answered HTTP ${response.status}, new version number unknown`);
+                log.warning(`[PWA] ${versionUrl} answered HTTP ${response.status}, new version number unknown`);
                 return;
             }
 
@@ -69,12 +72,12 @@ export const usePWAUpdate = (options = {}) => {
             const version = data?.version;
             const notes = data?.notes;
             if (typeof version !== "string" && typeof version !== "number") {
-                console.warn(`[PWA] ${versionUrl} has no "version" field`);
+                log.warning(`[PWA] ${versionUrl} has no "version" field`);
             }
             setNewVersion(typeof version === "string" || typeof version === "number" ? String(version) : null);
             setReleaseNotes(typeof notes === "string" && notes.trim() ? notes : null);
         } catch (error) {
-            console.error(`[PWA] Could not read ${versionUrl}:`, error);
+            log.error(`[PWA] Could not read ${versionUrl}:`, error);
         }
     }, [versionUrl]);
 
@@ -165,7 +168,7 @@ export const usePWAUpdate = (options = {}) => {
                     // updatefound listener above, otherwise a fast answer would
                     // fire the event before anything listens for it.
                     reg.update().catch((error) => {
-                        console.error("[PWA] Initial update check failed:", error);
+                        log.error("[PWA] Initial update check failed:", error);
                     });
                 }
 
@@ -177,7 +180,7 @@ export const usePWAUpdate = (options = {}) => {
                     intervalId = setInterval(checkForUpdates, checkInterval);
                 }
             } catch (error) {
-                console.error("[PWA] Init failed:", error);
+                log.error("[PWA] Init failed:", error);
             }
         };
 

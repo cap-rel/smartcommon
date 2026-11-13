@@ -1,3 +1,6 @@
+import { createLogger } from "lib/utils";
+
+const log = createLogger("browserPrint");
 /**
  * Browser-based print fallback using window.print() via a hidden iframe.
  *
@@ -42,7 +45,7 @@ export function browserPrint(htmlContent) {
                         iframe.contentWindow.focus();
                         iframe.contentWindow.print();
                     } catch (err) {
-                        console.warn("[browserPrint] Print failed:", err.message);
+                        log.warning("[browserPrint] Print failed:", err.message);
                     }
 
                     // Clean up iframe after the print dialog closes
