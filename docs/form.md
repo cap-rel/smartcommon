@@ -8,7 +8,8 @@ submit) et expose les flags `isFormSubmitted` / `isFormSubmitting`
 pendant tout le cycle.
 
 Le trio à connaître : **`useForm`** (state), **`<Form>`** (provider),
-**`useField`** (consommé par chaque champ).
+**`useField`** (interne, consommé par chaque champ ; le paquet ne l'exporte
+pas). Un composant maison lit le formulaire par `useContext(FormContext)`.
 
 ## Import
 
@@ -19,7 +20,8 @@ import { Form, useForm } from "@cap-rel/smartcommon";
 ## Exemple complet
 
 ```jsx
-import { Form, useForm, Input, Button, useFormContext } from "@cap-rel/smartcommon";
+import { useContext } from "react";
+import { Form, FormContext, useForm, Input, Button } from "@cap-rel/smartcommon";
 
 const InterventionFormPage = () => {
     const form = useForm({
@@ -54,7 +56,7 @@ const InterventionFormPage = () => {
 
 // Un bouton qui sait quand le formulaire est en cours de submit.
 const SubmitButton = () => {
-    const { submit, isFormSubmitting } = useFormContext();
+    const { submit, isFormSubmitting } = useContext(FormContext);
     return (
         <Button
             onClick={submit}
@@ -102,7 +104,7 @@ la saisie initiale).
 ```
 
 Cycle de submit (déclenché par `form.submit(e)` ou par un descendant qui
-appelle `useFormContext().submit`) :
+appelle `useContext(FormContext).submit`) :
 
 1. `e.preventDefault()` (le caller passe l'event s'il vient d'un
    `<form>` HTML).
