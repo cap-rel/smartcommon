@@ -12,3 +12,25 @@ addons.setConfig({
     colorSecondary: "#f72d40",
   }),
 });
+
+// Home / End in the sidebar search field move the caret, as in any text
+// field. The search box is a Downshift combobox: while its result list is
+// open it cancels these keys to highlight the first / last result, so the
+// caret could not reach the start or end of the query. Stopping the two keys
+// in the capture phase, before React's root listener, leaves the browser
+// default (caret move, Shift selection) and the arrow keys to Downshift.
+if (typeof document !== "undefined") {
+  document.addEventListener(
+    "keydown",
+    (event) => {
+      if (
+        (event.key === "Home" || event.key === "End") &&
+        event.target instanceof HTMLInputElement &&
+        event.target.id === "storybook-explorer-searchfield"
+      ) {
+        event.stopPropagation();
+      }
+    },
+    true,
+  );
+}
