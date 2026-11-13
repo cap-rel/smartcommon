@@ -4,6 +4,8 @@ import { isDate, isNil } from "lodash";
 
 import { secsToDuration } from "lib/utils";
 
+import { DurationFormatter } from "./intl";
+
 // new Date();
 // new Date(value);
 // new Date(dateString);
@@ -90,25 +92,35 @@ export function formatDate(date, format) {
     const minutes   = ("0" +  date.getMinutes()   ).slice(-2);
     const seconds   = ("0" +  date.getSeconds()   ).slice(-2);
   
-    const formattedDate = format
-      .replace("YYYY", year)
-      .replace("YY"  , year.toString().slice(2, 4))
-      .replace("MM"  , month)
-      .replace("DD"  , dayNumber)
-      .replace("HH"  , hours)
-      .replace("hh"  , hours > 12 ? ("0" + (hours - 12)).slice(-2) : hours)
-      .replace("mm"  , minutes)
-      .replace("ss"  , seconds);
-  
-    return formattedDate;
+    // 12-hour clock: midnight and noon are both 12.
+    const hours12   = ("0" + (date.getHours() % 12 || 12)).slice(-2);
+
+    // One pass over every token, so each occurrence is replaced and a
+    // replaced value is never read again as a token.
+    const tokens = {
+      YYYY: year,
+      YY: year.toString().slice(2, 4),
+      MM: month,
+      DD: dayNumber,
+      HH: hours,
+      hh: hours12,
+      mm: minutes,
+      ss: seconds,
+    };
+
+    return format.replace(/YYYY|YY|MM|DD|HH|hh|mm|ss/g, token => tokens[token]);
 };
 
-export function formatTime(time, format) {
-  const [hours, minutes, seconds] = time.split(':');
+// "HH:MM[:SS]" to a number of seconds ("01:02:03" -> 3723), null when the
+// text is not a time.
+export function formatTime(time) {
+  const parts = String(time ?? "").split(":").map(Number);
+  if (parts.length < 2 || parts.length > 3 || parts.some(part => !Number.isFinite(part))) {
+    return null;
+  }
+  const [hours, minutes, seconds = 0] = parts;
 
-  const secondsTotal = hours * 60 * 60 + minutes * 60 + seconds;
- 
-  return secondsTotal;
+  return hours * 60 * 60 + minutes * 60 + seconds;
 }
 
 export function formatDuration(duration) {
@@ -124,8 +136,10 @@ export function formatDuration(duration) {
   return formattedDuration;
 }
 
-export function formatSeconds(seconds, format) {
-  const { hours, minutes } = secsToDuration(seconds);
+// Seconds to "HH:MM"; hours keep counting past a day (90000 -> "25:00").
+export function formatSeconds(seconds) {
+  const { days, hours: hoursOfDay, minutes } = secsToDuration(seconds);
+  const hours = days * 24 + hoursOfDay;
 
   const formattedHours = ("0" +  hours).slice(-2);
   const formattedMinutes = ("0" +  minutes).slice(-2);
@@ -159,14 +173,12 @@ export function minutesToTime(minutes, format = "time") {
 
 /**
  * @param {Date} date
- * @param {object} format
- * 
+ * @param {"date"|"time"} [format] date only, time only, else both
+ *
  * @example
- * const date1 = { };
- * const date2 = { };
- * 
- * durationFormat(duration1, {}, 'en'); // In 2 days 
- * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+ * ISOFormat(new Date(2026, 10, 13, 9, 30));         // "2026-11-13T09:30"
+ * ISOFormat(new Date(2026, 10, 13, 9, 30), "date"); // "2026-11-13"
+ * ISOFormat(new Date(2026, 10, 13, 9, 30), "time"); // "09:30"
 */
 export function ISOFormat(date, format) {
   if (!isDate(date)) {
@@ -194,11 +206,7 @@ export function ISOFormat(date, format) {
  * @see for the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DateTimeFormat/DateTimeFormat
  * 
  * @example
- * const date1 = { };
- * const date2 = { };
- * 
- * durationFormat(duration1, {}, 'en'); // In 2 days 
- * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+ * datetimeFormat(new Date(2026, 10, 13, 9, 30), undefined, "fr-FR"); // "13 nov. 2026, 09:30"
 */
 export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle: 'short' }, locales = "default") {
   if (isNil(date) || !isDate(date)) {
@@ -216,18 +224,15 @@ export function datetimeFormat(date, options = { dateStyle: 'medium', timeStyle:
  * @see For the possible values in options => https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/DurationFormat/DurationFormat
  * 
  * @example
- * const duration1 = { };
- * const duration2 = { };
- * 
- * durationFormat(duration1, {}, 'en'); // In 2 days 
- * durationFormat(duration2, {}, 'fr'); // Il y a 3 heures 
+ * durationFormat({ hours: 1, minutes: 30 }, { style: "long" }, "fr"); // "1 heure et 30 minutes"
+ * durationFormat({ days: 2 }, undefined, "en");                       // "2d"
 */
 export function durationFormat(duration, options = { style: "narrow" }, locales = "default") {
   if (isNil(duration)) {
     return null;
   }
 
-  return new Intl.DurationFormat(locales, options).format(duration);
+  return DurationFormatter(locales, options).format(duration);
 }
 
 /**

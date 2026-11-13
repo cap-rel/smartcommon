@@ -33,9 +33,9 @@ import {
 | `ISOFormat` | `(date, format) => string \| null` | `"date"` : `2024-01-05` ; `"time"` : `14:03` ; sinon `2024-01-05T14:03`, pour les champs `<input type="date">` et voisins. Heure locale. |
 | `datetimeFormat` | `(date, options, locales = "default") => string \| null` | `Intl.DateTimeFormat` en une ligne. `options` par défaut : `{ dateStyle: "medium", timeStyle: "short" }`. |
 | `relativeTimeFormat` | `(value, unit, options = {}, locales = "default") => string \| null` | `Intl.RelativeTimeFormat` : `(-3, "hour", {}, "fr")` donne `il y a 3 heures`. |
-| `durationFormat` | `(duration, options, locales = "default") => string \| null` | `Intl.DurationFormat`, `options` par défaut `{ style: "narrow" }`. |
+| `durationFormat` | `(duration, options, locales = "default") => string \| null` | Formate `{ hours: 1, minutes: 30 }` par `DurationFormatter`, `options` par défaut `{ style: "narrow" }`. |
 | `DateTimeFormatter` | `(locales = "default", options) => formatter` | Formateur réutilisable : `format`, `formatToParts`, `formatRange`, `formatRangeToParts`, `resolvedOptions`. |
-| `DurationFormatter` | `(locales = "default", options) => formatter` | Même interface que `DateTimeFormatter` (voir les pièges). |
+| `DurationFormatter` | `(locales = "default", options) => formatter` | Formateur de durées : `format`, `formatToParts`, `resolvedOptions`. `Intl.DurationFormat` quand le navigateur l'a, sinon chaque unité par `Intl.NumberFormat`. |
 
 `ISOFormat` et `datetimeFormat` renvoient `null` si `date` n'est pas un
 objet `Date`.
@@ -77,12 +77,12 @@ const label = timestampToDateTime(String(intervention.datec));
 | `timeToMinutes` | `("HH:MM") => number` | `"02:15"` donne `135`. |
 | `minutesToTime` | `(minutes, format = "time")` | `"time"` : `"02:15"` ; `"units"` : `{ hours, minutes }`. |
 | `secondsToTime` | `(seconds) => string` | Chronomètre `m:ss` : `125` donne `"2:05"`. |
-| `formatSeconds` | `(seconds, format) => string` | `HH:MM` ; `format` n'est pas lu. |
+| `formatSeconds` | `(seconds) => string` | `HH:MM`, les heures continuent au-delà d'un jour : `90000` donne `"25:00"`. |
 | `formatDuration` | `(seconds) => string` | Texte français : `"1 jour(s) 2 h 3 min 4 s"`. |
 | `secsToTime` | `(secs) => string` | Texte français court : `"01 h 30"`, `"01 min"`, `"moins d'une minute"`. |
 | `secondsToDuration` | `(seconds) => { secs, minutes, hours, days }` | Découpe une durée. |
 | `secsToDuration` | `(secs) => { seconds, minutes, hours, days }` | Même découpe, autre nom de champ pour les secondes. |
-| `formatTime` | `(time, format)` | Voir les pièges : ne pas utiliser. |
+| `formatTime` | `("HH:MM[:SS]") => number \| null` | Nombre de secondes : `"01:02:03"` donne `3723`. `null` si ce n'est pas une heure. |
 
 ```js
 import { timeToMinutes, minutesToTime } from "@cap-rel/smartcommon";
@@ -94,26 +94,19 @@ minutesToTime(worked, "units");   // { hours: 9, minutes: 15 }
 
 ## Pièges
 
-- `timestampToDate` et `timestampToDateTime` testent la valeur avec
-  `isEmpty` de lodash, qui tient tout nombre pour vide : un horodatage
-  passé en nombre renvoie `undefined`. Passer une chaîne
-  (`String(timestamp)`) ou utiliser `formatDate(new Date(ts * 1000), ...)`.
+- `timestampToDate` et `timestampToDateTime` acceptent un nombre ou une
+  chaîne numérique (secondes) ; sans valeur ou avec une valeur qui n'est pas
+  un nombre, ils renvoient `undefined`.
 - `toSTimestamp` lit un nombre comme des millisecondes, `toMsTimestamp`
   comme des secondes : les deux ne sont pas l'inverse l'une de l'autre sur
   un nombre.
 - `secondsToDuration` renvoie `secs`, `secsToDuration` renvoie `seconds`.
-- `formatSeconds` ignore les jours : `90000` (25 h) donne `"01:00"`.
-- `secsToTime` renvoie un texte cassé pour un nombre d'heures rond ou zéro
-  (`3600` donne `"01 h aN"`, `0` donne `"aN min"`).
-- `formatTime("01:02:03")` concatène au lieu d'additionner (`"372003"`).
 - `formatDuration` et `secsToTime` produisent du français en dur, sans
   passer par `labels` : à éviter dans une application traduite.
-- `DurationFormatter` est construit sur `Intl.DateTimeFormat` : il formate
-  une date, pas une durée.
-- `durationFormat` s'appuie sur `Intl.DurationFormat`, absent des
-  navigateurs anciens : l'appel lève alors une `TypeError`.
-- `formatDate` remplace chaque jeton une seule fois : `"DD/MM - DD"` ne
-  remplace que le premier `DD`.
+- Sans `Intl.DurationFormat` (Firefox avant la 136, WebViews anciennes),
+  `DurationFormatter` assemble les unités lui-même : `"1 hour 30 minutes"`
+  au lieu de `"1 hour, 30 minutes"`.
+- `formatDate` : `hh` est l'heure sur 12 (minuit et midi donnent `12`).
 
 Aucun guide dédié dans `docs/` : la référence est
 `src/lib/utils/functions/date.js`, `others.js`, `intl.js` et
