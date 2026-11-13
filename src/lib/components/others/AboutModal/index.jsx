@@ -3,9 +3,12 @@ import { FaArrowsRotate } from "react-icons/fa6";
 import toast from "react-hot-toast";
 
 import { Modal } from "lib/components";
+import { createLogger } from "lib/utils";
 
 import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+
+const log = createLogger("AboutModal");
 
 export const AboutModal = (props) => {
     const {
@@ -46,7 +49,7 @@ export const AboutModal = (props) => {
                 toast(labels.upToDate);
             }
         } catch (err) {
-            console.error("[AboutModal] Error checking for updates:", err);
+            log.error("update check failed", err);
             setUpdateStatus("idle");
             toast.error(labels.checkError);
         }
@@ -77,7 +80,7 @@ export const AboutModal = (props) => {
             labels={{ close: labels.close }}
         >
             <div data-component="AboutModal" className="p-4 flex flex-col gap-4">
-                <div className="flex flex-col gap-2 text-gray-600">
+                <div className="flex flex-col gap-2 text-medium-text">
                     <Row label={labels.application} value={appName} />
                     <Row label={labels.version} value={version || "-"} />
                     {fields.map((field, index) => (
@@ -85,12 +88,12 @@ export const AboutModal = (props) => {
                     ))}
                 </div>
 
-                <div className="pt-3 border-t border-gray-200">
+                <div className="pt-3 border-t border-border">
                     {updateStatus === "available" ? (
                         <button
                             type="button"
                             onClick={applyUpdate}
-                            className="w-full py-2 px-4 bg-green-500 text-white rounded-lg hover:bg-green-600 flex items-center justify-center gap-2"
+                            className="w-full py-2 px-4 bg-success text-white rounded-lg hover:brightness-95 flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                             <FaArrowsRotate />
                             {labels.installUpdate}
@@ -100,7 +103,7 @@ export const AboutModal = (props) => {
                             type="button"
                             onClick={checkForUpdates}
                             disabled={updateStatus === "checking" || updateStatus === "updating"}
-                            className="w-full py-2 px-4 border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-50 flex items-center justify-center gap-2"
+                            className="w-full py-2 px-4 border border-border text-strong-text rounded-lg hover:bg-medium-bg disabled:opacity-50 flex items-center justify-center gap-2 outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         >
                             <FaArrowsRotate className={updateStatus === "checking" ? "animate-spin" : ""} />
                             {buttonLabel}
@@ -111,7 +114,7 @@ export const AboutModal = (props) => {
                 <button
                     type="button"
                     onClick={handleClose}
-                    className="w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary/90"
+                    className="w-full py-2 px-4 bg-primary text-white rounded-lg hover:bg-primary/90 outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-soft-bg"
                 >
                     {labels.close}
                 </button>
@@ -126,6 +129,6 @@ AboutModal.defaultProps = defaultProps;
 const Row = ({ label, value }) => (
     <div className="flex justify-between gap-2">
         <span>{label}</span>
-        <span className="font-medium text-gray-800 text-right truncate">{value}</span>
+        <span className="font-medium text-strong-text text-right truncate">{value}</span>
     </div>
 );

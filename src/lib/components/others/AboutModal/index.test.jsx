@@ -254,3 +254,12 @@ describe("AboutModal", () => {
         });
     });
 });
+
+describe("AboutModal - theme", () => {
+    it("follows the theme tokens instead of fixed light colours", () => {
+        render(<AboutModal open onClose={() => {}} appName="MyApp" version="1.2.3" />);
+        const dialog = screen.getByRole("dialog");
+        expect(dialog.outerHTML).not.toMatch(/text-gray-|border-gray-|bg-gray-|bg-green-|hover:bg-green-/);
+        expect(within(dialog).getByText("1.2.3").className).toContain("text-strong-text");
+    });
+});
