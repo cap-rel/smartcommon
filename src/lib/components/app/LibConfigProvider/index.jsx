@@ -4,6 +4,7 @@ import { I18nextProvider } from "lib/components";
 import { setLogBufferEnabled } from "lib/utils/functions/consoleLogs";
 
 import { LibConfigContext } from "./context";
+import { propTypes } from "./props";
 
 export const LibConfigProvider = (props) => {
   const { children, value } = props;
@@ -21,6 +22,8 @@ export const LibConfigProvider = (props) => {
     </LibConfigContext.Provider>
   );
 };
+
+LibConfigProvider.propTypes = propTypes;
 
 // TODO find an object to manage mergedClass
 // const mergedClass = {

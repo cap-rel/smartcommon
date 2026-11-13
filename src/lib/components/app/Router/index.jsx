@@ -1,5 +1,7 @@
 import { BrowserRouter, HashRouter } from "react-router-dom";
 
+import { propTypes } from "./props";
+
 // `type`: "browser" (default) | "hash".
 //  - "browser" : history API, jolies URLs. `basename` permet de servir l'app
 //    sous un sous-chemin (ex "/custom/module/pwa").
@@ -26,3 +28,5 @@ export const Router = (props) => {
         </BrowserRouter>
     );
 };
+
+Router.propTypes = propTypes;

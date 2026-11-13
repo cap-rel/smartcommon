@@ -1,5 +1,7 @@
 import { useEffect, useSyncExternalStore } from "react";
 
+import { propTypes } from "./props";
+
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
 const matchMediaSupported = () =>
@@ -59,3 +61,5 @@ export const ThemeApplier = ({ mode = "light", target }) => {
 
     return null;
 };
+
+ThemeApplier.propTypes = propTypes;

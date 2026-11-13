@@ -1,6 +1,8 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Meta, ArgTypes } from "@storybook/addon-docs/blocks";
 
 import { UsedIn } from "../../../../../storybook";
+
+import { I18nextProvider } from "../";
 
 <Meta title="Components/App/I18nextProvider" />
 
@@ -27,10 +29,6 @@ passed with their `labels` prop (see the locale bundles on the home page).
 
 ## Props
 
-| Prop | Type | Role |
-|---|---|---|
-| `i18n` | i18next instance | The configured instance. |
-| `language` | string | Language to switch to (`"fr"`, `"en"`...). |
-| `children` | node | The subtree. |
+<ArgTypes of={I18nextProvider} />
 
 <UsedIn title="Components/App/I18nextProvider" />

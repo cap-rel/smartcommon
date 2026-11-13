@@ -20,6 +20,8 @@
 import { I18nextProvider as Provider } from "react-i18next";
 import { useEffect } from "react";
 
+import { propTypes } from "./props";
+
 export const I18nextProvider = (props) => {
   const { i18n, children, language } = props;
 
@@ -33,3 +35,5 @@ export const I18nextProvider = (props) => {
     </Provider>
   );
 };
+
+I18nextProvider.propTypes = propTypes;

@@ -28,8 +28,7 @@ and every non-2xx answer throws an error carrying `response`, `apiMessage` and
 
 ## Props
 
-| Prop | Type | Role |
-|---|---|---|
-| `children` | node | The subtree that calls `useApi()`. |
+It takes no prop besides `children`, the subtree that calls `useApi()`: the
+client is configured by the `api` keys of the `config` of `<Provider>`.
 
 <UsedIn title="Components/App/ApiProvider" />

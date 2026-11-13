@@ -1,6 +1,8 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Meta, ArgTypes } from "@storybook/addon-docs/blocks";
 
 import { UsedIn } from "../../../../../storybook";
+
+import { LibConfigProvider } from "../";
 
 <Meta title="Components/App/LibConfigProvider" />
 
@@ -27,9 +29,6 @@ the Provider page.
 
 ## Props
 
-| Prop | Type | Role |
-|---|---|---|
-| `value` | object | The configuration, returned as is by `useLibConfig()`. |
-| `children` | node | The subtree. |
+<ArgTypes of={LibConfigProvider} />
 
 <UsedIn title="Components/App/LibConfigProvider" />

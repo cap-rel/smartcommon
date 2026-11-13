@@ -1,6 +1,8 @@
-import { Meta } from "@storybook/addon-docs/blocks";
+import { Meta, ArgTypes } from "@storybook/addon-docs/blocks";
 
 import { UsedIn } from "../../../../../storybook";
+
+import { Router } from "../";
 
 <Meta title="Components/App/Router" />
 
@@ -21,10 +23,6 @@ const config = {
 
 ## Props
 
-| Prop | Type | Role |
-|---|---|---|
-| `type` | `"browser"` or `"hash"` | Router kind, default `"browser"`. |
-| `basename` | string | Base path, browser router only. |
-| `children` | node | The routes. |
+<ArgTypes of={Router} />
 
 <UsedIn title="Components/App/Router" />

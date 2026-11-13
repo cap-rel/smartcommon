@@ -2,6 +2,8 @@ import { AnimatePresence } from "framer-motion";
 
 import { ApiProvider, GlobalStatesProvider, LibConfigProvider, ReduxProvider, NavigationProvider, Router, Toaster, ErrorBoundary, UpdatePrompt, DebugConsole, DebugWarnings, ThemeApplier } from "lib/components";
 
+import { propTypes } from "./props";
+
 export const Provider = (props) => {
   const { children, config, onError, errorFallback, ErrorFallbackComponent, errorLabels, pwaUpdate, debug } = props;
   // theme: "light" (default) | "dark" | "auto" (follows the OS).
@@ -37,3 +39,5 @@ export const Provider = (props) => {
   </ErrorBoundary>
   );
 };
+
+Provider.propTypes = propTypes;
