@@ -51,7 +51,7 @@ desktop).
 Implication : la `<Tabbar>` doit être un descendant de `<Page>`, ou
 mountée en dehors avec une structure adaptée. Pour les usages les plus
 courants (Tabbar globale à l'app), c'est plutôt l'inverse (la Tabbar
-englobe les pages), et `<Page>` ne détecte rien — le padding reste
+englobe les pages), et `<Page>` ne détecte rien - le padding reste
 neutre.
 
 ## Animations

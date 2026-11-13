@@ -61,7 +61,7 @@ arbitraire.
 
 > Note : DOMPurify est configuré avec les valeurs par défaut. Si tu
 > veux **autoriser** des balises spécifiques (ex. `<video>`,
-> `<details>`, attributs `data-*`), il faut adapter le composant — pas
+> `<details>`, attributs `data-*`), il faut adapter le composant - pas
 > exposé via les props pour l'instant.
 
 ## Slots de styling

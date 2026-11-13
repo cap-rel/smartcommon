@@ -1,6 +1,6 @@
 # DevicePicker
 
-`<DevicePicker>` est l'UI smartAuth ≥ 2.1 qui permet à un utilisateur
+`<DevicePicker>` est l'UI smartAuth >= 2.1 qui permet à un utilisateur
 de **choisir un appareil logique existant** (sa "voiture", son "iPhone
 perso") ou d'**en créer un nouveau** au moment où il se connecte à
 une PWA cap-rel sur un device qu'il a déjà utilisé pour d'autres

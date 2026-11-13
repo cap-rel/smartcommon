@@ -243,12 +243,12 @@ const newArray = [...safeArray.slice(0, index), ...safeArray.slice(index + 1)];
 
 | File | Issues Fixed |
 |------|--------------|
-| `Button/index.jsx` | `icon()` → `typeof icon === 'function' ? icon() : icon` |
-| `Input/index.jsx` | `inputIcon()` → safe icon rendering |
-| `LowerNavbarItem/index.jsx` | `currentIcon()` → safe icon rendering, `props.onClick()` → `props.onClick` |
-| `TabbarItem/index.jsx` | `currentIcon()` → safe icon rendering |
-| `AudiosUploader/index.jsx` | `isFormSubmitting` → `!isFormSubmitting` (inverted logic fix) |
-| `type/index.js` | `value(params)` → `value(...params)` (spread params) |
+| `Button/index.jsx` | `icon()` -> `typeof icon === 'function' ? icon() : icon` |
+| `Input/index.jsx` | `inputIcon()` -> safe icon rendering |
+| `LowerNavbarItem/index.jsx` | `currentIcon()` -> safe icon rendering, `props.onClick()` -> `props.onClick` |
+| `TabbarItem/index.jsx` | `currentIcon()` -> safe icon rendering |
+| `AudiosUploader/index.jsx` | `isFormSubmitting` -> `!isFormSubmitting` (inverted logic fix) |
+| `type/index.js` | `value(params)` -> `value(...params)` (spread params) |
 
 ## Best Practices
 
@@ -493,7 +493,7 @@ For even stronger guarantees, consider migrating to TypeScript:
    Add `// @ts-check` at the top of `.js` files to enable type checking without renaming.
 
 4. **Rename files progressively:**
-   `.jsx` → `.tsx`, `.js` → `.ts`
+   `.jsx` -> `.tsx`, `.js` -> `.ts`
 
 ### TypeScript Example
 

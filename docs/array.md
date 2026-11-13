@@ -6,7 +6,7 @@ une valeur, presse `Enter`, et chaque entrée devient un "tag" cliquable
 strings.
 
 Cas d'usage : tags, mots-clés, emails, hashtags, listes de tâches
-courtes — toute saisie où l'utilisateur ajoute N items courts.
+courtes - toute saisie où l'utilisateur ajoute N items courts.
 
 ## Import
 
@@ -43,9 +43,9 @@ const Demo = () => {
 
 Workflow utilisateur :
 
-1. Tape "intervention" → presse Enter → tag "intervention" ajouté.
-2. Tape "urgent" → Enter → tag "urgent" ajouté.
-3. Click sur "intervention" → tag supprimé.
+1. Tape "intervention" -> presse Enter -> tag "intervention" ajouté.
+2. Tape "urgent" -> Enter -> tag "urgent" ajouté.
+3. Click sur "intervention" -> tag supprimé.
 
 `tags` aura la forme `["intervention", "urgent"]`.
 

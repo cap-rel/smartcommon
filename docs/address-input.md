@@ -6,7 +6,7 @@ suggestions apparaissent (debounce), il choisit dans la liste, et la
 valeur est stockée sous forme d'objet structuré.
 
 Cas d'usage : adresse de tiers, lieu d'intervention, adresse de
-livraison, etc. — partout où on veut éviter la saisie libre
+livraison, etc. - partout où on veut éviter la saisie libre
 inconsistante.
 
 ## Import
@@ -46,7 +46,7 @@ La valeur sélectionnée est typiquement un objet Nominatim restructuré
 (rue, code postal, ville, pays, lat, lng). Le format exact dépend de
 la version courante du service Nominatim et n'est pas figé dans la
 lib. Vérifier l'objet effectivement reçu via `console.log` pour adapter
-ton modèle de données — souvent quelque chose comme :
+ton modèle de données - souvent quelque chose comme :
 
 ```js
 {
@@ -76,7 +76,7 @@ ton modèle de données — souvent quelque chose comme :
   est annulée (pas de race condition entre suggestions obsolètes et
   nouvelles).
 - **Liste de suggestions** affichée sous l'input. Click sur une
-  suggestion → `onChange(item)` + ferme la liste.
+  suggestion -> `onChange(item)` + ferme la liste.
 - **Pas de validation native** (`errors: () => ({})`).
 
 ## Limites de Nominatim
@@ -126,6 +126,6 @@ Plus les props standards de `<Input>` (`required`, `disabled`,
 ## Voir aussi
 
 - `<Gps>` : pour capturer une coordonnée GPS via le device.
-- `<Map>` : composant cible "carte" — actuellement non fonctionnel
+- `<Map>` : composant cible "carte" - actuellement non fonctionnel
   (cf signal dans son MDX).
 - `formats/Address` : formateur d'affichage d'adresse en lecture seule.

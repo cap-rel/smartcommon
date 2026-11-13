@@ -39,7 +39,7 @@ position relative à `currentStep` :
 | `index === currentStep` | `current` (badge bordé, numéro) |
 | `index > currentStep` | `upcoming` (badge gris, numéro) |
 
-Le status `error` est explicite (à poser via `step.status = "error"` —
+Le status `error` est explicite (à poser via `step.status = "error"` -
 typiquement après une validation échouée). Affiche un badge rouge avec
 icône `!`.
 

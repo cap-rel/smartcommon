@@ -76,7 +76,7 @@ const dateFromIso = new Date(isoString);
   (locale navigateur).
 
 `onMonthChange(month)` et `onYearChange(year)` sont déclenchés à chaque
-navigation — utile pour pré-charger des données contextuelles
+navigation - utile pour pré-charger des données contextuelles
 (événements du mois, jours fériés, etc.).
 
 ## Intervalle d'années
@@ -124,7 +124,7 @@ de validation native** intégrée. Pour valider :
 | `monthProps` / `yearProps` | textes mois et année |
 | `lowerContainerProps` | grille des jours (scrollable horizontalement) |
 | `dayAndWeekDayContainerProps` | cellule (jour + libellé jour de la semaine) |
-| `weekDayProps` | libellé "Lun", "Mar", … |
+| `weekDayProps` | libellé "Lun", "Mar", ... |
 | `dayProps` | numéro du jour |
 
 ## Props
@@ -146,7 +146,7 @@ de validation native** intégrée. Pour valider :
   le code marque cette feature comme envisagée mais pas livrée).
 - **Pas de désactivation de dates** (weekends, jours fériés, dates
   passées) via props. Solution : surcharger `dayProps` avec un
-  callback qui inspecte la date affichée — pas évident, mieux vaut
+  callback qui inspecte la date affichée - pas évident, mieux vaut
   forker pour cet usage.
 - **Pas de minutes / secondes** : c'est un date picker, pas un datetime
   picker. Pour l'heure, mixer avec `<Input type="time">`.

@@ -12,10 +12,10 @@ classique : le caller assemble l'upload lui-même.
 
 Pour les médias spécialisés, voir les composants frères :
 
-- [photos-uploader](#) **`<PhotosUploader>`** — images, avec
-  compression + EXIF preserved + upload mode + queue.
-- **`<AudiosUploader>`** — son.
-- **`<VideosUploader>`** — vidéo.
+- **`<PhotosUploader>`** - images, avec compression, EXIF conservé,
+  mode upload et file d'attente (voir [upload-queue.md](upload-queue.md)).
+- **`<AudiosUploader>`** - son.
+- **`<VideosUploader>`** - vidéo.
 
 Tous suivent une convention similaire (`value` = objet ou tableau,
 `onValueChange`) mais sans uniformité parfaite sur les options.
@@ -65,7 +65,7 @@ const Demo = () => {
 | Champ | Type | Notes |
 |-------|------|-------|
 | `url` | string | typiquement un blob URL local (`blob:...`) créé via `URL.createObjectURL` |
-| `type` | string | MIME du fichier (`application/pdf`, `image/png`, …) |
+| `type` | string | MIME du fichier (`application/pdf`, `image/png`, ...) |
 | `title` | string | initialisé au nom du fichier sans extension, éditable par l'utilisateur |
 | `description` | string | éditable par l'utilisateur via le popup |
 
@@ -79,7 +79,7 @@ caller de :
 
 ## Comportement
 
-- **Importer un fichier** : bouton "Choisir un fichier" → file input
+- **Importer un fichier** : bouton "Choisir un fichier" -> file input
   natif. Après sélection, un `setTimeout(..., 1000)` simule une étape
   de "chargement" (spinner) avant d'ajouter le fichier dans la value.
   Le délai est en dur (voir limites).
@@ -103,7 +103,7 @@ Très nombreux (24+) : tout est slot-able (`containerProps`,
 `labelProps`, `inputProps`, `listProps`, `listItemProps`, `iconProps`,
 `titleProps`, `typeProps`, `deleteButtonProps`, `panelProps`,
 `fileProps`, `titleInputProps`, `descriptionInputProps`,
-`buttonProps`…). Cf [src/lib/components/form/FilesUploader/props.js](../src/lib/components/form/FilesUploader/props.js)
+`buttonProps`...). Cf [src/lib/components/form/FilesUploader/props.js](../src/lib/components/form/FilesUploader/props.js)
 pour la liste complète.
 
 ## Props

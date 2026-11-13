@@ -108,7 +108,7 @@ résultats déclenchés depuis ce point d'entrée.
 - **Operations supportées** : `+`, `-`, `×`, `÷`, `%`, `+/-`,
   `.`. Pas de parenthèses, pas de fonctions trig. Division par zéro
   retourne `0` (pas d'erreur).
-- **Display** : auto-formatting des très grands nombres (≥ 1e12 ->
+- **Display** : auto-formatting des très grands nombres (>= 1e12 ->
   notation exponentielle 6 décimales). Sinon affichage brut.
 - **Historique** : 5 dernières opérations (constante interne
   `MAX_HISTORY=5`, non configurable). Affiché si `showHistory=true`
@@ -202,8 +202,9 @@ le bouton X aussi, et le résultat affiché est annoncé (`aria-live`).
 
 ## Voir aussi
 
-- [fab.md](fab.md) (à venir) : composant FAB standalone si vous voulez
-  un déclencheur plus riche que celui intégré.
+- `<FAB>` (`lib/components/little/FAB`, page "Components/Others/FAB" du
+  site) : bouton flottant autonome, si vous voulez un déclencheur plus riche
+  que celui intégré (`showFab={false}` puis `isOpen` piloté par le FAB).
 - [modal.md](modal.md) : si vous voulez un dialogue qui inclut une
   calculatrice + autres champs, mounter `<Calculator>` dans une
   `<Modal>` avec `showFab=false` et `showOverlay=false`.

@@ -191,7 +191,7 @@ comme l'argument premier d'`Intl.NumberFormat`). Défaut : `"default"`
 (= locale navigateur).
 
 Les formatters actionnables (Email, Phone, Url, Address, Coordinates)
-n'ont pas de locale spécifique — c'est juste un wrapper sémantique
+n'ont pas de locale spécifique - c'est juste un wrapper sémantique
 + un schéma URL.
 
 ## Pièges connus
@@ -200,14 +200,14 @@ n'ont pas de locale spécifique — c'est juste un wrapper sémantique
   pas `[latitude, longitude]` (ordre humain). Vérifier le code source
   ou loguer la valeur si tu as un doute.
 - **`<Number>` et `<String>`** masquent les globaux JS dans le scope
-  du fichier — renommer à l'import si conflit.
+  du fichier - renommer à l'import si conflit.
 - **`<Duration>` style `"digital"`** : la sortie dépend du support
   `Intl.DurationFormat` du browser (Chrome 129+, Safari 18+, Firefox
-  ≥ 134). Sur browsers anciens, fallback browser dépendant.
+  >= 134). Sur browsers anciens, fallback browser dépendant.
 - **`<Datetime>` value `string`** : doit être un ISO 8601
   (`"2026-05-12T10:30:00Z"`) ou parseable par `new Date(value)`.
   Format custom non-standard -> NaN -> sortie vide.
-- **Pas de `formatRelative`** (« il y a 3 jours », « dans 2 heures ») :
+- **Pas de `formatRelative`** ("il y a 3 jours", "dans 2 heures") :
   pour les dates relatives, mixer `Intl.RelativeTimeFormat` côté
   caller. La lib pourrait l'ajouter dans une future version.
 
@@ -218,8 +218,8 @@ n'ont pas de locale spécifique — c'est juste un wrapper sémantique
   (`<Input>`, `<Calendar>`, `<Timer>`, etc.).
 - Pas de **theming centralisé** : chaque formatter porte ses classes
   Tailwind en dur (consistantes mais pas auto-thématisées).
-- Pas de **passage automatique entre formatter ↔ champ** dans un
-  même rendu (mode lecture ↔ édition). Pattern à implémenter côté
+- Pas de **passage automatique entre formatter <-> champ** dans un
+  même rendu (mode lecture <-> édition). Pattern à implémenter côté
   caller via `isReadOnly ? <Datetime value={x} /> : <Calendar value={x} onChange={...} />`.
 
 ## Voir aussi
