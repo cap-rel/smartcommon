@@ -113,6 +113,7 @@ const {
     // Utilitaires
     getStatus,          // état local
     getServerStatus,    // GET sync/status
+    checkNow,           // relance la sonde de connexion
     reset
 } = useSyncClient({
     scope: ['thirdparty', 'contact'],
@@ -222,20 +223,20 @@ const MyComponent = () => {
 
 ### ConflictResolver
 
-Composant UI pour la resolution des conflits.
+Composant UI pour la résolution des conflits.
 
 ```javascript
 const [conflicts, setConflicts] = useState([]);
 
-// Recuperer les conflits
+// Récupérer les conflits
 const loadConflicts = async () => {
     setConflicts(await getConflicts());
 };
 
-// Resolution
+// Résolution
 const handleResolve = async (conflictId, resolution, data) => {
     await resolveConflict(conflictId, resolution, data);
-    loadConflicts(); // Rafraichir
+    loadConflicts(); // Rafraîchir
 };
 
 return (
@@ -244,7 +245,7 @@ return (
         onResolve={handleResolve}
         onCancel={() => setConflicts([])}
         labels={{
-            title: 'Conflit detecte',
+            title: 'Conflit détecté',
             keepClient: 'Garder ma version',
             keepServer: 'Garder version serveur',
             merge: 'Fusionner'
@@ -287,7 +288,7 @@ const {
 } = useOnlineStatus({
     healthCheckUrl: undefined, // défaut : <prefixUrl>/health, null = pas de sonde
     healthCheckInterval: 30000,
-    stabilityDelay: 2000,
+    stabilityDelay: 1000,
     timeout: 5000
 });
 ```
@@ -401,15 +402,15 @@ formatBytes(1536000); // "1.46 MB"
 |                      SmartCommon                            |
 |  (hooks React, composants, utilitaires)                     |
 +-------------------------------------------------------------+
-|  useOnlineStatus     | Detection robuste online/offline     |
-|  useCachedQuery      | Strategies cache (network-first...)  |
+|  useOnlineStatus     | Détection robuste online/offline     |
+|  useCachedQuery      | Stratégies cache (network-first...)  |
 |  useAuthenticatedImage | Cache images avec JWT              |
 |  useSyncClient       | Hook sync offline-first              |
 |  SyncStorage         | IndexedDB pour la sync               |
 |  SyncApi             | Client HTTP endpoints sync           |
 |  SyncEngine          | Orchestration push/pull              |
-|  ConflictResolver    | UI resolution conflits               |
-|  storage utils       | Detection IndexedDB, quotas          |
+|  ConflictResolver    | UI résolution conflits               |
+|  storage utils       | Détection IndexedDB, quotas          |
 +-------------------------------------------------------------+
                               ^
                               | appelle

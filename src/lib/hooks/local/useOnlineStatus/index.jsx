@@ -110,7 +110,7 @@ const probeServer = (url, timeout, maxAgeMs) => {
  *   shared by every instance using the same URL; any answer below 500 counts
  *   as reachable.
  * @param {number} options.healthCheckInterval - Interval between health checks in ms (default: 30000)
- * @param {number} options.stabilityDelay - Delay before declaring online in ms (default: 2000)
+ * @param {number} options.stabilityDelay - Delay before declaring online in ms (default: 1000)
  * @param {number} options.timeout - Health check timeout in ms (default: 5000)
  *
  * @returns {Object} Online status information
