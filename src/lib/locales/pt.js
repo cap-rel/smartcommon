@@ -508,6 +508,28 @@ export const pt = {
         offlineMessage: "Sem ligação. O relato será enviado automaticamente quando a rede voltar.",
         closeLabel: "Fechar",
     },
+    Calculator: {
+        title: "Calculadora",
+        open: "Abrir a calculadora",
+        close: "Fechar",
+        history: "Histórico",
+        memory: "Memória",
+        clear: "Limpar tudo",
+        clearEntry: "Limpar entrada",
+        percent: "Porcentagem",
+        divide: "Dividir",
+        multiply: "Multiplicar",
+        subtract: "Subtrair",
+        add: "Somar",
+        toggleSign: "Trocar o sinal",
+        decimal: "Vírgula decimal",
+        equals: "Igual",
+        backspace: "Apagar",
+        memoryClear: "Limpar memória",
+        memoryRecall: "Recuperar memória",
+        memoryAdd: "Somar à memória",
+        memorySubtract: "Subtrair da memória",
+    },
 };
 
 export default pt;

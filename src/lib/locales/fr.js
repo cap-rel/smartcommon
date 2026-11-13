@@ -501,6 +501,28 @@ export const fr = {
         offlineMessage: "Pas de connexion. Le signalement sera envoyé automatiquement au retour du réseau.",
         closeLabel: "Fermer",
     },
+    Calculator: {
+        title: "Calculatrice",
+        open: "Ouvrir la calculatrice",
+        close: "Fermer",
+        history: "Historique",
+        memory: "Mémoire",
+        clear: "Tout effacer",
+        clearEntry: "Effacer la saisie",
+        percent: "Pourcentage",
+        divide: "Diviser",
+        multiply: "Multiplier",
+        subtract: "Soustraire",
+        add: "Additionner",
+        toggleSign: "Changer de signe",
+        decimal: "Virgule",
+        equals: "Égal",
+        backspace: "Effacer",
+        memoryClear: "Effacer la mémoire",
+        memoryRecall: "Rappeler la mémoire",
+        memoryAdd: "Ajouter à la mémoire",
+        memorySubtract: "Soustraire de la mémoire",
+    },
 };
 
 export default fr;

@@ -506,6 +506,28 @@ export const de = {
         offlineMessage: "Keine Verbindung. Die Meldung wird automatisch gesendet, sobald das Netzwerk zurück ist.",
         closeLabel: "Schließen",
     },
+    Calculator: {
+        title: "Rechner",
+        open: "Rechner öffnen",
+        close: "Schließen",
+        history: "Verlauf",
+        memory: "Speicher",
+        clear: "Alles löschen",
+        clearEntry: "Eingabe löschen",
+        percent: "Prozent",
+        divide: "Teilen",
+        multiply: "Multiplizieren",
+        subtract: "Subtrahieren",
+        add: "Addieren",
+        toggleSign: "Vorzeichen wechseln",
+        decimal: "Dezimalkomma",
+        equals: "Gleich",
+        backspace: "Löschen",
+        memoryClear: "Speicher löschen",
+        memoryRecall: "Speicher abrufen",
+        memoryAdd: "Zum Speicher addieren",
+        memorySubtract: "Vom Speicher abziehen",
+    },
 };
 
 export default de;

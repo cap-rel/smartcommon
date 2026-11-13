@@ -4,9 +4,9 @@ import { RiCloseLargeLine } from "react-icons/ri";
 import { isNil } from "lodash";
 
 import { Button, Overlay } from "lib/components";
-import { useVariantMerger } from "lib/hooks";
+import { useDialog, useVariantMerger } from "lib/hooks";
 
-import { defaultProps, propTypes } from "./props";
+import { DEFAULT_LABELS, defaultProps, propTypes } from "./props";
 import { CalculatorContext } from "./useCalculator";
 import { calculate, computePercent } from "./logic";
 
@@ -149,18 +149,22 @@ const useCalculatorLogic = () => {
 };
 
 // Calculator Button sub-component
-const CalcButton = ({ onClick, children, variant = "default", className = "" }) => {
-    const baseStyles = "flex items-center justify-center text-app-base font-app-medium rounded-app-md transition-colors active:scale-95 min-h-12";
+// `label` is the spoken name of a key whose face is a symbol (÷, M+, ...)
+const CalcButton = ({ onClick, children, label, variant = "default", className = "" }) => {
+    const baseStyles = "flex items-center justify-center text-app-base font-app-medium rounded-app-md transition-colors active:scale-95 min-h-12 outline-none focus-visible:ring-2 focus-visible:ring-primary";
     const variants = {
-        default: "bg-soft-bg-alt hover:bg-soft-bg-alt/80 text-soft-text",
+        default: "bg-medium-bg hover:brightness-95 text-strong-text",
         operator: "bg-primary/10 hover:bg-primary/20 text-primary",
-        action: "bg-primary hover:bg-primary/90 text-primary-text",
-        memory: "bg-soft-bg-alt/50 hover:bg-soft-bg-alt text-soft-text-muted text-app-sm min-h-9",
+        action: "bg-primary hover:bg-primary/90 text-white",
+        memory: "bg-medium-bg/50 hover:bg-medium-bg text-medium-text text-app-sm min-h-9",
     };
 
     return (
         <button
+            type="button"
             onClick={onClick}
+            aria-label={label}
+            title={label}
             className={`${baseStyles} ${variants[variant]} ${className}`}
         >
             {children}
@@ -184,10 +188,14 @@ export const Calculator = (props) => {
         showHistory = true,
         showMemory = true,
         closeOnResult = false,
-        title = "Calculator",
+        title,
         fabIcon: FabIcon = FaCalculator,
         zIndex = 40,
+        labels: userLabels = {},
     } = variantProps;
+
+    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const heading = title ?? labels.title;
 
     const [internalIsOpen, setInternalIsOpen] = useState(false);
     const isControlled = !isNil(controlledIsOpen);
@@ -217,6 +225,10 @@ export const Calculator = (props) => {
         else open();
     }, [isOpen, open, close]);
 
+    // A modal dialog while open: named by its title, Tab kept inside, Escape
+    // closes it (once: the key handler below no longer handles it).
+    const { dialogRef, titleId, onKeyDown } = useDialog({ isOpen, onClose: close });
+
     const handleEquals = () => {
         const result = calc.performCalculation();
         if (result !== null) {
@@ -228,11 +240,6 @@ export const Calculator = (props) => {
     const handleKeyDown = useCallback((e) => {
         if (!isOpen) return;
 
-        if (e.key === "Escape") {
-            close();
-            return;
-        }
-
         if (e.key >= "0" && e.key <= "9") calc.inputDigit(e.key);
         else if (e.key === ".") calc.inputDecimal();
         else if (e.key === "+") calc.handleOperator("+");
@@ -243,7 +250,7 @@ export const Calculator = (props) => {
         else if (e.key === "Backspace") calc.backspace();
         else if (e.key === "Delete") calc.clearAll();
         else if (e.key === "%") calc.inputPercent();
-    }, [isOpen, calc, close]);
+    }, [isOpen, calc]);
 
     useEffect(() => {
         // Only listen while open: no point intercepting keydown on the whole
@@ -290,7 +297,8 @@ export const Calculator = (props) => {
                         onClick: toggle,
                         style: { "--z-index": zIndex - 1 },
                         className: `fixed z-(--z-index) w-14 h-14 bg-primary hover:bg-primary/90 text-primary-text rounded-full shadow-lg flex items-center justify-center transition-all active:scale-95 hover:shadow-xl ${fabPositionClasses[position]}`,
-                        "aria-label": "Open calculator",
+                        "aria-label": labels.open,
+                        title: labels.open,
                     }))}
                 >
                     <FabIcon className="text-app-lg" />
@@ -325,8 +333,17 @@ export const Calculator = (props) => {
                     {...mergeProps("calculator", (p) => ({
                         ...p,
                         "data-component": "Calculator",
+                        ref: dialogRef,
+                        role: "dialog",
+                        "aria-modal": "true",
+                        "aria-labelledby": titleId,
+                        tabIndex: -1,
+                        onKeyDown,
+                        // Faded out but still in the page: inert keeps its keys
+                        // out of the tab order and away from screen readers.
+                        ...(isOpen ? {} : { inert: true, "aria-hidden": "true" }),
                         className: `
-                            w-full max-w-xs bg-soft-bg rounded-app-lg shadow-xl overflow-hidden
+                            w-full max-w-xs bg-soft-bg rounded-app-lg shadow-xl overflow-hidden outline-none
                             duration-(--really-quick)
                             ${isOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}
                         `,
@@ -336,20 +353,22 @@ export const Calculator = (props) => {
                     <div
                         {...mergeProps("header", (p) => ({
                             ...p,
-                            className: "flex items-center justify-between px-4 py-3 bg-soft-bg-alt border-b border-soft-border",
+                            className: "flex items-center justify-between px-4 py-3 bg-medium-bg border-b border-soft-border",
                         }))}
                     >
-                        <h3 className="text-app-base font-app-semibold text-soft-text">
-                            {title}
+                        <h3 id={titleId} className="text-app-base font-app-semibold text-strong-text">
+                            {heading}
                         </h3>
                         <Button
                             {...mergeProps("Button", (p) => ({
                                 icon: RiCloseLargeLine,
+                                "aria-label": labels.close,
+                                title: labels.close,
                                 ...p,
                                 onClick: close,
                                 buttonProps: {
                                     ...p.buttonProps,
-                                    className: "text-app-base text-soft-text-muted hover:text-soft-text p-1",
+                                    className: "text-app-base text-medium-text hover:text-strong-text p-1",
                                 },
                             }))}
                         />
@@ -365,11 +384,11 @@ export const Calculator = (props) => {
                         <div className="text-gray-400 text-app-xs h-4 overflow-hidden">
                             {calc.expression}
                         </div>
-                        <div className="text-white text-3xl font-light tracking-wide overflow-x-auto">
+                        <div className="text-white text-3xl font-light tracking-wide overflow-x-auto" aria-live="polite">
                             {formatDisplay(calc.display)}
                         </div>
                         {calc.memory !== 0 && (
-                            <div className="text-gray-500 text-app-xs mt-1">M: {calc.memory}</div>
+                            <div className="text-gray-500 text-app-xs mt-1">{labels.memory}: {calc.memory}</div>
                         )}
                     </div>
 
@@ -378,12 +397,12 @@ export const Calculator = (props) => {
                         <div
                             {...mergeProps("history", (p) => ({
                                 ...p,
-                                className: "px-4 py-2 bg-soft-bg-alt border-b border-soft-border max-h-20 overflow-y-auto",
+                                className: "px-4 py-2 bg-medium-bg border-b border-soft-border max-h-20 overflow-y-auto",
                             }))}
                         >
-                            <div className="text-app-xs text-soft-text-muted mb-1">History</div>
+                            <div className="text-app-xs text-medium-text mb-1">{labels.history}</div>
                             {calc.history.map((item, i) => (
-                                <div key={i} className="text-app-xs text-soft-text truncate">
+                                <div key={i} className="text-app-xs text-strong-text truncate">
                                     {item.expression} = {item.result}
                                 </div>
                             ))}
@@ -395,13 +414,13 @@ export const Calculator = (props) => {
                         <div
                             {...mergeProps("memoryButtons", (p) => ({
                                 ...p,
-                                className: "grid grid-cols-4 gap-1 p-2 bg-soft-bg-alt",
+                                className: "grid grid-cols-4 gap-1 p-2 bg-medium-bg",
                             }))}
                         >
-                            <CalcButton variant="memory" onClick={calc.memoryClear}>MC</CalcButton>
-                            <CalcButton variant="memory" onClick={calc.memoryRecall}>MR</CalcButton>
-                            <CalcButton variant="memory" onClick={calc.memoryAdd}>M+</CalcButton>
-                            <CalcButton variant="memory" onClick={calc.memorySubtract}>M-</CalcButton>
+                            <CalcButton variant="memory" label={labels.memoryClear} onClick={calc.memoryClear}>MC</CalcButton>
+                            <CalcButton variant="memory" label={labels.memoryRecall} onClick={calc.memoryRecall}>MR</CalcButton>
+                            <CalcButton variant="memory" label={labels.memoryAdd} onClick={calc.memoryAdd}>M+</CalcButton>
+                            <CalcButton variant="memory" label={labels.memorySubtract} onClick={calc.memorySubtract}>M-</CalcButton>
                         </div>
                     )}
 
@@ -412,30 +431,30 @@ export const Calculator = (props) => {
                             className: "grid grid-cols-4 gap-2 p-3",
                         }))}
                     >
-                        <CalcButton variant="operator" onClick={calc.clearAll}>C</CalcButton>
-                        <CalcButton variant="operator" onClick={calc.clearEntry}>CE</CalcButton>
-                        <CalcButton variant="operator" onClick={calc.inputPercent}>%</CalcButton>
-                        <CalcButton variant="operator" onClick={() => calc.handleOperator("÷")}>÷</CalcButton>
+                        <CalcButton variant="operator" label={labels.clear} onClick={calc.clearAll}>C</CalcButton>
+                        <CalcButton variant="operator" label={labels.clearEntry} onClick={calc.clearEntry}>CE</CalcButton>
+                        <CalcButton variant="operator" label={labels.percent} onClick={calc.inputPercent}>%</CalcButton>
+                        <CalcButton variant="operator" label={labels.divide} onClick={() => calc.handleOperator("÷")}>÷</CalcButton>
 
                         <CalcButton onClick={() => calc.inputDigit("7")}>7</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("8")}>8</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("9")}>9</CalcButton>
-                        <CalcButton variant="operator" onClick={() => calc.handleOperator("×")}>×</CalcButton>
+                        <CalcButton variant="operator" label={labels.multiply} onClick={() => calc.handleOperator("×")}>×</CalcButton>
 
                         <CalcButton onClick={() => calc.inputDigit("4")}>4</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("5")}>5</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("6")}>6</CalcButton>
-                        <CalcButton variant="operator" onClick={() => calc.handleOperator("-")}>-</CalcButton>
+                        <CalcButton variant="operator" label={labels.subtract} onClick={() => calc.handleOperator("-")}>-</CalcButton>
 
                         <CalcButton onClick={() => calc.inputDigit("1")}>1</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("2")}>2</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("3")}>3</CalcButton>
-                        <CalcButton variant="operator" onClick={() => calc.handleOperator("+")}>+</CalcButton>
+                        <CalcButton variant="operator" label={labels.add} onClick={() => calc.handleOperator("+")}>+</CalcButton>
 
-                        <CalcButton onClick={calc.toggleSign}>+/-</CalcButton>
+                        <CalcButton label={labels.toggleSign} onClick={calc.toggleSign}>+/-</CalcButton>
                         <CalcButton onClick={() => calc.inputDigit("0")}>0</CalcButton>
-                        <CalcButton onClick={calc.inputDecimal}>.</CalcButton>
-                        <CalcButton variant="action" onClick={handleEquals}>=</CalcButton>
+                        <CalcButton label={labels.decimal} onClick={calc.inputDecimal}>.</CalcButton>
+                        <CalcButton variant="action" label={labels.equals} onClick={handleEquals}>=</CalcButton>
                     </div>
 
                     {/* Backspace */}
@@ -445,8 +464,8 @@ export const Calculator = (props) => {
                             variant="operator"
                             onClick={calc.backspace}
                         >
-                            <FaBackspace className="mr-2" />
-                            Delete
+                            <FaBackspace className="mr-2" aria-hidden="true" />
+                            {labels.backspace}
                         </CalcButton>
                     </div>
                 </div>

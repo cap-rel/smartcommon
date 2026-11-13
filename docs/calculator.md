@@ -114,7 +114,8 @@ résultats déclenchés depuis ce point d'entrée.
   `MAX_HISTORY=5`, non configurable). Affiché si `showHistory=true`
   (défaut).
 - **Mémoire** : `MC` (clear), `MR` (recall), `M+` (ajouter au display),
-  `M-` (soustraire du display). Indicateur "M: <valeur>" si non-zéro.
+  `M-` (soustraire du display). Indicateur "<labels.memory>: <valeur>"
+  si non-zéro.
   Désactivable via `showMemory={false}`.
 - **Backspace** : effacement du dernier digit du display.
 
@@ -132,6 +133,15 @@ Actifs uniquement quand `isOpen=true` (listener global avec garde) :
 | `Delete` | clear all |
 | `%` | percent |
 | `Escape` | ferme la calculatrice |
+
+## Accessibilité
+
+Ouverte, la calculatrice est un dialogue modal (`role="dialog"`) nommé
+par son titre : le focus y entre, Tab reste dedans, Échap la ferme et
+rend le focus. Fermée, elle reste dans la page pour son fondu mais
+`inert` et `aria-hidden` : ses touches sortent de la tabulation. Chaque
+touche à symbole (÷, ×, M+, +/-...) porte un nom parlé tiré de `labels`,
+le bouton X aussi, et le résultat affiché est annoncé (`aria-live`).
 
 ## Positions (`position`)
 
@@ -170,7 +180,8 @@ Actifs uniquement quand `isOpen=true` (listener global avec garde) :
 | `onResult` | func | - | `(result: number) => void`, déclenché sur `=` |
 | `onClose` | func | - | déclenché à toute fermeture |
 | `position` | enum | `"bottom-right"` | voir tableau positions |
-| `title` | string | `"Calculator"` | header |
+| `title` | string | `labels.title` | titre du header, remplace `labels.title` |
+| `labels` | object | anglais | `locales.<lang>.Calculator`, ou un seul réglage pour toute l'app (`provider.md`) |
 | `zIndex` | number | `40` | overlay z-index |
 | `showFab` | bool | `true` | bouton flottant d'ouverture |
 | `showOverlay` | bool | `true` | overlay sombre derrière |
@@ -183,9 +194,6 @@ Actifs uniquement quand `isOpen=true` (listener global avec garde) :
 ## Limites connues
 
 - `MAX_HISTORY=5` non configurable (constante dans le composant).
-- Pas de support i18n des labels (header `Calculator`, `M:`, `History`,
-  `Delete` en dur). Renommer le titre via `title`, mais les labels
-  internes ne sont pas extraits.
 - Pas de parenthèses, pas de notation scientifique en entrée, pas de
   conversion d'unités.
 - `closeOnResult` ne suspend pas le callback `onResult` qui est déjà

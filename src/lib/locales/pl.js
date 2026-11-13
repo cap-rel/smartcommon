@@ -514,6 +514,28 @@ export const pl = {
         offlineMessage: "Brak połączenia. Zgłoszenie zostanie wysłane automatycznie po powrocie sieci.",
         closeLabel: "Zamknij",
     },
+    Calculator: {
+        title: "Kalkulator",
+        open: "Otwórz kalkulator",
+        close: "Zamknij",
+        history: "Historia",
+        memory: "Pamięć",
+        clear: "Wyczyść wszystko",
+        clearEntry: "Wyczyść wpis",
+        percent: "Procent",
+        divide: "Dziel",
+        multiply: "Mnóż",
+        subtract: "Odejmij",
+        add: "Dodaj",
+        toggleSign: "Zmień znak",
+        decimal: "Przecinek dziesiętny",
+        equals: "Równa się",
+        backspace: "Usuń",
+        memoryClear: "Wyczyść pamięć",
+        memoryRecall: "Przywołaj pamięć",
+        memoryAdd: "Dodaj do pamięci",
+        memorySubtract: "Odejmij od pamięci",
+    },
 };
 
 export default pl;

@@ -506,6 +506,28 @@ export const it = {
         offlineMessage: "Nessuna connessione. La segnalazione verrà inviata automaticamente al ritorno della rete.",
         closeLabel: "Chiudi",
     },
+    Calculator: {
+        title: "Calcolatrice",
+        open: "Apri la calcolatrice",
+        close: "Chiudi",
+        history: "Cronologia",
+        memory: "Memoria",
+        clear: "Cancella tutto",
+        clearEntry: "Cancella voce",
+        percent: "Percentuale",
+        divide: "Dividi",
+        multiply: "Moltiplica",
+        subtract: "Sottrai",
+        add: "Somma",
+        toggleSign: "Cambia segno",
+        decimal: "Virgola decimale",
+        equals: "Uguale",
+        backspace: "Cancella",
+        memoryClear: "Cancella memoria",
+        memoryRecall: "Richiama memoria",
+        memoryAdd: "Aggiungi alla memoria",
+        memorySubtract: "Sottrai dalla memoria",
+    },
 };
 
 export default it;

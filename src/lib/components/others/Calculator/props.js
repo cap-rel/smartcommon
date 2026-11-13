@@ -17,7 +17,9 @@ export const propTypes = {
         "top-right",
         "top-left",
     ]),
+    /** Overrides labels.title */
     title: PropTypes.string,
+    labels: PropTypes.objectOf(PropTypes.string),
     zIndex: PropTypes.number,
     showFab: PropTypes.bool,
     showOverlay: PropTypes.bool,
@@ -43,11 +45,33 @@ export const propTypes = {
 
 export const defaultProps = {
     position: "bottom-right",
-    title: "Calculator",
     zIndex: 40,
     showFab: true,
     showOverlay: true,
     showHistory: true,
     showMemory: true,
     closeOnResult: false,
+};
+
+export const DEFAULT_LABELS = {
+    title: "Calculator",
+    open: "Open calculator",
+    close: "Close",
+    history: "History",
+    memory: "Memory",
+    clear: "Clear all",
+    clearEntry: "Clear entry",
+    percent: "Percent",
+    divide: "Divide",
+    multiply: "Multiply",
+    subtract: "Subtract",
+    add: "Add",
+    toggleSign: "Change sign",
+    decimal: "Decimal point",
+    equals: "Equals",
+    backspace: "Delete",
+    memoryClear: "Clear memory",
+    memoryRecall: "Recall memory",
+    memoryAdd: "Add to memory",
+    memorySubtract: "Subtract from memory",
 };

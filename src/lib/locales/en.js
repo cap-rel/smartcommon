@@ -61,6 +61,7 @@ import { DEFAULT_LABELS as UserMenu } from "lib/components/navigation/UserMenu/p
 import { DEFAULT_LABELS as DesktopHeader } from "lib/components/navigation/DesktopHeader/props";
 import { DEFAULT_LABELS as DesktopSidebar } from "lib/components/navigation/DesktopSidebar/props";
 import { DEFAULT_LABELS as Feedback } from "lib/components/others/Feedback/props";
+import { DEFAULT_LABELS as Calculator } from "lib/components/others/Calculator/props";
 
 export const en = {
     PhotosUploader,
@@ -114,6 +115,7 @@ export const en = {
     DesktopHeader,
     DesktopSidebar,
     Feedback,
+    Calculator,
 };
 
 export default en;

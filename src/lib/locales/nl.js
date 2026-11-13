@@ -505,6 +505,28 @@ export const nl = {
         offlineMessage: "Geen verbinding. De melding wordt automatisch verzonden wanneer het netwerk terug is.",
         closeLabel: "Sluiten",
     },
+    Calculator: {
+        title: "Rekenmachine",
+        open: "Rekenmachine openen",
+        close: "Sluiten",
+        history: "Geschiedenis",
+        memory: "Geheugen",
+        clear: "Alles wissen",
+        clearEntry: "Invoer wissen",
+        percent: "Procent",
+        divide: "Delen",
+        multiply: "Vermenigvuldigen",
+        subtract: "Aftrekken",
+        add: "Optellen",
+        toggleSign: "Teken omkeren",
+        decimal: "Decimaalteken",
+        equals: "Is gelijk aan",
+        backspace: "Wissen",
+        memoryClear: "Geheugen wissen",
+        memoryRecall: "Geheugen oproepen",
+        memoryAdd: "Bij geheugen optellen",
+        memorySubtract: "Van geheugen aftrekken",
+    },
 };
 
 export default nl;
