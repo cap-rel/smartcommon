@@ -55,6 +55,7 @@ vi.mock('lib/components', () => ({
 vi.mock('lib/utils', async () => ({
   // Real implementation: the null-safety cases are exactly what it handles.
   isEmptyValue: (await vi.importActual('lib/utils/functions/lodashComplement/emptiness')).isEmptyValue,
+  twMerge: (await vi.importActual('lib/utils/functions/tailwindMerge')).twMerge,
   applyFunctionIfNotNil: vi.fn(),
   applyFunctionIfFunction: vi.fn(),
   locate: vi.fn(),
