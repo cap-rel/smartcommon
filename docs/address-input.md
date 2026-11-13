@@ -127,7 +127,6 @@ n'étaient lus par aucun élément et ne sont plus déclarés : utiliser
 | `label` | string | - | label |
 | `labelRow` | bool | `false` | label sur la même ligne |
 | `help` | string | - | aide |
-| `onValueChange` | func | - | alias de `onChange` (compat) |
 
 | `disabled` | bool | `false` | champ grisé, pas de recherche ni de suggestions |
 | `readOnly` | bool | `false` | champ non modifiable, pas de recherche ni de suggestions |

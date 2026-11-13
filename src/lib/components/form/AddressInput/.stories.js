@@ -24,7 +24,7 @@ export default {
     help: {
       table: { category: 'Appearance' },
     },
-    onValueChange: {
+    onChange: {
       table: { category: 'Events' },
     },
     containerProps: {
@@ -56,7 +56,7 @@ export default {
       table: { category: 'Elements' },
     },
   },
-  args: { onValueChange: fn() },
+  args: { onChange: fn() },
 };
 
 import { Default as Def } from "./stories";
