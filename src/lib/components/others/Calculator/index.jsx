@@ -482,8 +482,10 @@ export const CalculatorProvider = ({ children, ...calculatorProps }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [resultCallback, setResultCallback] = useState(null);
 
+    // Each opening gets its own callback: open() without one must not send
+    // the result to whoever opened the calculator before.
     const open = useCallback((onResult) => {
-        if (onResult) setResultCallback(() => onResult);
+        setResultCallback(onResult ? () => onResult : null);
         setIsOpen(true);
     }, []);
 
@@ -493,8 +495,12 @@ export const CalculatorProvider = ({ children, ...calculatorProps }) => {
     }, []);
 
     const toggle = useCallback(() => {
-        setIsOpen(prev => !prev);
-    }, []);
+        if (isOpen) {
+            close();
+        } else {
+            open();
+        }
+    }, [isOpen, open, close]);
 
     const handleResult = useCallback((result) => {
         resultCallback?.(result);

@@ -61,7 +61,7 @@ export const PriceField = () => {
 - `<CalculatorProvider>` transmet ses props à `<Calculator>` (`position`,
   `closeOnResult`, `showFab`, `labels`...) : pour un bouton d'ouverture propre à
   l'écran, passer `showFab={false}`.
-- `open()` sans argument garde le dernier `onResult` reçu ; seul `close()`
-  l'oublie.
+- Chaque ouverture a son propre `onResult` : `open()` sans argument, ou une
+  ouverture par `toggle()`, n'envoie le résultat à personne.
 
 Guide complet : `docs/calculator.md`.
