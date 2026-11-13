@@ -252,7 +252,9 @@ focalisable : `role="switch"` pour l'apparence par défaut (`switch`),
 `aria-checked`. Il est nommé par le label visible (`aria-labelledby`),
 sinon par `aria-label`, et reçoit `id`, `aria-required` et
 `aria-disabled`. Espace coche et décoche ; `disabled` le retire de la
-tabulation. Un test cible donc `getByRole("switch", { name: "Notifications" })`.
+tabulation. Un clic sur le libellé bascule aussi la valeur, comme un
+`<label>` natif, sauf avec `disabled` ou `readOnly` ; un `onClick` posé
+sur le libellé par les props est appelé avant. Un test cible donc `getByRole("switch", { name: "Notifications" })`.
 
 ## `<Checker>`
 
