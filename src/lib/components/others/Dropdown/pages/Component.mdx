@@ -1,0 +1,74 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# Dropdown
+
+Menu ouvert au clic pour les écrans desktop : menu utilisateur, menu kebab
+d'une ligne ou d'une carte. Utilisable entièrement au clavier.
+
+```jsx
+<Dropdown
+    trigger={<button type="button" aria-label="Actions"><FaEllipsisVertical /></button>}
+    align="right"
+    items={[
+        { label: "Modifier", icon: <FaPen />, onClick: edit },
+        { label: "Archiver", disabled: !canArchive, onClick: archive },
+        { divider: true },
+        { label: "Supprimer", danger: true, onClick: remove },
+    ]}
+/>
+```
+
+## Entrées
+
+`items` : `{ label, icon?, onClick?, danger?, disabled?, divider?, key?, testId? }`.
+Une entrée `divider: true` trace un séparateur (`role="separator"`), une
+entrée `danger` s'affiche en rouge, une entrée `disabled` est sautée par
+les flèches et ignore le clic.
+
+## Déclencheur
+
+- un élément (un `<button>` en général) : il reçoit `aria-haspopup`,
+  `aria-expanded`, `aria-controls` et le clic qui ouvre et ferme le menu ;
+  son propre `onClick` est conservé ;
+- une fonction `({ open, toggle, triggerProps }) => node` : l'appelant
+  branche `toggle` et étale `triggerProps` (attributs ARIA, id, flèches)
+  sur son bouton ;
+- tout autre contenu (texte) : enveloppé dans un `<button>`.
+
+## Position et fermeture
+
+Le menu est en `position: fixed`, placé sous le déclencheur (aligné à
+droite ou à gauche selon `align`) : il échappe au rognage des conteneurs
+scrollables, sans portail. Il se ferme au clic extérieur, sur Échap, Tab,
+scroll et redimensionnement. C'est un élément flottant : il porte une
+ombre, contrairement au reste des briques desktop.
+
+## Clavier
+
+- Entrée, Espace ou clic ouvrent le menu sur la première entrée ; Flèche
+  bas et Flèche haut sur le déclencheur fermé l'ouvrent sur la première
+  ou la dernière entrée ;
+- dans le menu (`role="menu"`, entrées `role="menuitem"`), les flèches
+  passent d'une entrée à l'autre en bouclant et en sautant les entrées
+  désactivées, Début et Fin vont aux extrémités ;
+- Échap ferme le menu et rend le focus au déclencheur. L'événement est
+  marqué traité : une `<Modal>` qui contient le menu reste ouverte ;
+- Tab ferme le menu et laisse le focus avancer.
+
+## Dans un DataTable
+
+Envelopper le menu d'une ligne dans `<span data-row-action>` pour que son
+clic n'ouvre pas la ligne.
+
+## Voir aussi
+
+`ContextMenu` (même menu, ouvert au clic droit) et la doc transverse
+`docs/desktop.md` du repo smartcommon.
+
+<PropsPage of={stories} />

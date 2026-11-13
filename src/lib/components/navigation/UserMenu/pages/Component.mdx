@@ -1,0 +1,57 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# UserMenu
+
+Menu utilisateur des écrans desktop, épinglé en haut à droite par
+`DesktopHeader` : avatar (initiales) et nom, puis un `Dropdown` avec
+Réglages et Déconnexion.
+
+```jsx
+<UserMenu labels={locales.fr.UserMenu} />
+```
+
+## Sans prop, dans le `<Provider>` racine
+
+- l'utilisateur vient de l'état global (`gst.get("user")`), affiché par
+  son `username`, sinon son `email` ;
+- Réglages navigue vers `settingsPath` (`"/settings"`) par
+  `useNavigation().replace().to()` ;
+- Déconnexion appelle `useApi().logout()` avec un `AbortSignal` de
+  `logoutTimeoutMs` ms (15 s). L'entrée est désactivée pendant l'appel
+  (`labels.loggingOut`), une erreur est journalisée.
+
+Les exemples de cette page tournent sur une session factice (état global,
+API et navigation simulés) : Déconnexion montre l'état "Logging out...",
+Réglages trace la route dans le panneau Actions.
+
+## Remplacer un comportement
+
+Chaque comportement se remplace : `user`, `onSettings`, `onLogout` (peut
+renvoyer une promesse). `items` ajoute des entrées entre Réglages et
+Déconnexion, au format des entrées de `Dropdown` ; `showSettings={false}`
+retire Réglages.
+
+## Accessibilité et tests
+
+Le nom visible est le nom accessible du bouton ; sans nom d'utilisateur,
+le bouton est nommé par `labels.account`. Les `data-testid` reprennent
+ceux de smartInterventions : `user-menu-trigger`, `user-menu-menu`,
+`user-menu-settings`, `user-menu-logout` (préfixe réglable par `testId`).
+
+## i18n
+
+`labels` : `settings`, `logout`, `loggingOut`, `account`, en anglais par
+défaut. Bundle prêt à l'emploi : `locales.fr.UserMenu`.
+
+## Voir aussi
+
+`DesktopHeader` (qui l'intègre, réglable par son slot `UserMenu`) et la
+doc transverse `docs/desktop.md` du repo smartcommon.
+
+<PropsPage of={stories} />

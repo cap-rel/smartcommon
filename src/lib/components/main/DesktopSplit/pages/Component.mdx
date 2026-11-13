@@ -1,0 +1,63 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# DesktopSplit
+
+Maître-détail desktop, toujours côte à côte : un écran desktop est large,
+il n'y a pas de bascule d'orientation (contrairement au maître-détail
+tablette). Le maître (un `DataTable` en général) garde sa largeur, le
+détail prend le reste et affiche `placeholder` tant que rien n'est
+sélectionné. Chaque volet défile seul.
+
+```jsx
+<div className="flex flex-col h-full">
+    <DesktopHeader title="Interventions" />
+    <div className="flex-1 min-h-0">
+        <DesktopSplit
+            master={<DataTable ... onRowClick={(row) => setSelected(row)} />}
+            detail={<InterventionDetail intervention={selected} />}
+            hasSelection={!!selected}
+            placeholder={<p className="p-4 text-soft-text">Choisir une intervention</p>}
+            masterProps={{ "aria-label": "Interventions" }}
+        />
+    </div>
+</div>
+```
+
+## Hauteur
+
+`DesktopSplit` prend toute la hauteur (`h-full`) : l'envelopper dans un
+conteneur `flex-1 min-h-0` sous le `DesktopHeader`. Les exemples de cette
+page tournent dans un cadre de hauteur fixe.
+
+## Sélection
+
+Le composant ne garde aucun état : le parent tient la sélection et passe
+`hasSelection` ; `detail` n'est rendu que lorsqu'il vaut `true`, sinon
+`placeholder` (`null` par défaut) occupe le volet droit.
+
+## Largeur du maître
+
+`masterWidth`, `"w-[56%] max-w-[860px]"` par défaut, sans préfixe `lg:` :
+les deux volets restent côte à côte même dans une fenêtre desktop
+étroite. `masterClassName` et `detailClassName` ajoutent des classes aux
+volets (fusion `twMerge`).
+
+## Accessibilité et tests
+
+Les volets sont des `<section>` : un `aria-label` passé par `masterProps`
+/ `detailProps` en fait des régions nommées pour les lecteurs d'écran.
+`data-testid` : `testId` (`"desktop-split"`) sur le conteneur, suffixé
+`-master` et `-detail` sur les volets.
+
+## Voir aussi
+
+Doc transverse (assemblage de la coquille desktop) : `docs/desktop.md` du
+repo smartcommon.
+
+<PropsPage of={stories} />

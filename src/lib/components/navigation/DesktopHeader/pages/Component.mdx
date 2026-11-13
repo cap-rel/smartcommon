@@ -1,0 +1,65 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# DesktopHeader
+
+Barre du haut standard d'une page desktop : bouton retour éventuel, titre
+(`<h1>`) avec sous-titre et fil d'Ariane à gauche, recherche au centre,
+actions de la page puis `UserMenu` à droite.
+
+```jsx
+<div className="flex flex-col h-full">
+    <DesktopHeader
+        title="Interventions"
+        subtitle={`${count} en cours`}
+        onBack={() => navigate(-1)}
+        search={<Input type="search" placeholder="Rechercher" ... />}
+        actions={<Button label="Nouvelle" onClick={create} />}
+        labels={locales.fr.DesktopHeader}
+        UserMenu={{ labels: locales.fr.UserMenu }}
+    />
+    <div className="flex-1 min-h-0">...</div>
+</div>
+```
+
+## Mise en page
+
+Séparée du contenu par une bordure basse, sans ombre, `shrink-0` : la
+placer au-dessus d'un corps `flex-1 min-h-0`. Sans `title`, aucun titre
+vide n'est rendu. `titleAs="p"` quand l'écran porte déjà son `<h1>`.
+
+## Bouton retour
+
+Affiché dès que `onBack` est fourni. Sans texte visible, il est nommé par
+`labels.back` (aussi en infobulle) et garde le
+`data-testid="desktop-header-back"` de smartInterventions.
+
+## UserMenu intégré
+
+Rendu à droite des `actions` tant que `showUserMenu` vaut `true`
+(`false` sur un écran sans chrome). Ses props passent par le slot
+`UserMenu` (`labels`, `onLogout`...). Dans les exemples de cette page, il
+tourne sur la même session factice que la page `UserMenu`.
+
+## Slots et attributs
+
+Slots : `headerProps`, `backButtonProps`, `titleProps`, `subtitleProps`,
+`searchProps`, `actionsProps`, `UserMenu`. Les attributs `data-*` /
+`aria-*` posés sur `<DesktopHeader>` arrivent sur le `<header>`.
+
+## i18n
+
+`labels` : `{ back }`, en anglais par défaut. Bundle prêt à l'emploi :
+`locales.fr.DesktopHeader`.
+
+## Voir aussi
+
+`DesktopSplit` pour le corps maître-détail sous l'en-tête, et la doc
+transverse `docs/desktop.md` du repo smartcommon.
+
+<PropsPage of={stories} />

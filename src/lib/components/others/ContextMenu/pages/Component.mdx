@@ -1,0 +1,65 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# ContextMenu
+
+Menu au clic droit, le réflexe "appli native" qui paie dans un outil de
+données dense : agir sur une ligne sans chercher son bouton kebab. L'état
+vient du hook `useContextMenu()`, le composant `<ContextMenu>` est rendu
+une seule fois dans la page.
+
+```jsx
+const ctx = useContextMenu();
+
+<tr onContextMenu={(e) => ctx.open(e, [
+    { label: "Ouvrir", onClick: () => openInvoice(row) },
+    { divider: true },
+    { label: "Supprimer", danger: true, onClick: () => remove(row) },
+])}>
+    ...
+</tr>
+
+// une seule fois dans la page :
+<ContextMenu state={ctx} labels={locales.fr.ContextMenu} />
+```
+
+## `useContextMenu()`
+
+Renvoie `{ isOpen, x, y, items, returnFocusTo, open, close }`, à passer
+tel quel dans `state`.
+
+- `open(event, items)` annule le menu du navigateur et ouvre celui-ci au
+  pointeur, gardé dans la fenêtre. Ouvert au clavier (touche menu,
+  Maj+F10 : pas de position de pointeur), il s'ouvre sous la cible.
+- `close()` le ferme.
+- `items` a la forme de ceux de `Dropdown` :
+  `{ label, icon?, onClick?, danger?, disabled?, divider?, key?, testId? }`.
+  Chaque cible passe ses propres entrées (désactiver "Relancer" sur une
+  facture payée, par exemple).
+- `returnFocusTo` est l'élément qui avait le focus à l'ouverture.
+
+## Clavier et focus
+
+Même menu et même clavier que `Dropdown` (flèches, Début, Fin, Tab). Le
+menu prend le focus sur sa première entrée. Échap, ou une entrée choisie,
+le ferment et rendent le focus à l'élément qui l'avait à l'ouverture (la
+ligne, si elle est focalisable : lui donner `tabIndex={0}`). Un clic
+extérieur, un scroll ou un redimensionnement le ferment aussi. L'Échap est
+marqué traité : une `<Modal>` ou un raccourci `useHotkeys` n'y réagit pas.
+
+## i18n
+
+`labels` : `{ menu }`, nom accessible du menu ("Actions" par défaut).
+Bundle prêt à l'emploi : `locales.fr.ContextMenu`.
+
+## Voir aussi
+
+`Dropdown` pour le menu ouvert au clic, et la doc transverse
+`docs/desktop.md` du repo smartcommon.
+
+<PropsPage of={stories} />

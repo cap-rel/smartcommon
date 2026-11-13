@@ -1,0 +1,91 @@
+import { Meta } from "@storybook/addon-docs/blocks";
+
+import { PropsPage } from "../../../../../storybook";
+
+import * as stories from "../.stories";
+
+<Meta of={stories} />
+
+# DesktopSidebar
+
+Sidebar gauche persistante des écrans desktop : navigation primaire (les
+mêmes entrées que la `Tabbar` mobile), repliable en rail d'icônes. L'état
+replié est gardé dans `localStorage` et survit à un rechargement.
+
+```jsx
+<DesktopSidebar
+    brand={({ collapsed }) => (collapsed ? <Logo small /> : <Logo />)}
+    links={[
+        { id: "home", label: "Accueil", icon: FaHouse, to: "/" },
+        { id: "ints", label: "Interventions", icon: FaRocket, to: "/interventions", badge: late },
+        { id: "clients", label: "Clients", icon: FaUsers, to: "/clients" },
+    ]}
+    labels={locales.fr.DesktopSidebar}
+/>
+```
+
+## Entrées
+
+`links` : `{ id?, label, icon, to?, onClick?, active?, badge?, disabled? }`.
+Avec `to`, l'entrée est un lien du routeur ; sans `to`, un bouton qui
+appelle `onClick`. `icon` est un composant react-icons ou un élément.
+`badge` est un compteur (masqué à 0, "99+" au-delà de 99), accroché au
+coin de l'icône. `id` donne le `data-testid="sidebar-nav-<id>"` de
+smartInterventions.
+
+`brand` et `footer` acceptent un node ou une fonction
+`({ collapsed }) => node`, pour adapter le logo ou masquer une information
+dans le rail.
+
+## Entrée active
+
+`active` si fourni, sinon `isActive(link, pathname)` si fourni, sinon la
+route : `"/"` est active sur `/` seulement, une autre route sur elle-même
+et ses sous-routes (`/clients` sur `/clients/42`). Le chemin vient de
+`useNavigation().location` (`<Provider>`), à défaut de `window.location`.
+Les exemples de cette page démarrent sur `/interventions/42` et suivent
+les clics.
+
+## Repli
+
+- non contrôlé (défaut) : état initial lu dans `localStorage[storageKey]`
+  (`"1"` replié, `"0"` déplié), sinon `defaultCollapsed` ; chaque bascule
+  y est écrite. `storageKey={null}` désactive la persistance. Un stockage
+  inaccessible (navigation privée) est journalisé et l'état par défaut
+  s'applique ;
+- contrôlé : `collapsed` + `onCollapsedChange(next)`, le parent garde (et
+  persiste) l'état.
+
+## Hauteur
+
+La sidebar occupe toute la hauteur de l'écran (`h-screen`, `sticky`). Dans
+un conteneur de hauteur bornée, comme les exemples de cette page, passer
+`asideProps={{ className: "h-full" }}`.
+
+## Accessibilité
+
+Un landmark `<nav>` nommé par `labels.navigation`, contenant une liste ;
+l'entrée de la route courante porte `aria-current="page"`. Repliée, chaque
+entrée garde son nom (`aria-label` et infobulle). Le bouton de repli porte
+`aria-expanded` et `aria-controls` ; déplié il affiche `labels.collapse`,
+replié il est nommé par `labels.expand`.
+
+## Conventions desktop
+
+Bordure droite, pas d'ombre, `transition-colors` sur les entrées, pas
+d'état `active:`. Le menu utilisateur n'est pas dans le pied de la sidebar
+mais en haut à droite (`UserMenu` dans `DesktopHeader`) ; `footer` reste
+disponible pour une information secondaire (version, statut de
+synchronisation).
+
+## i18n
+
+`labels` : `navigation`, `collapse`, `expand`, en anglais par défaut.
+Bundle prêt à l'emploi : `locales.fr.DesktopSidebar`.
+
+## Voir aussi
+
+Doc transverse (assemblage de la coquille desktop) : `docs/desktop.md` du
+repo smartcommon.
+
+<PropsPage of={stories} />
