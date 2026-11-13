@@ -31,6 +31,7 @@ import { CropOverlay } from "./CropOverlay";
 import { PerspectiveTool } from "./PerspectiveTool";
 import { RedactOverlay } from "./RedactOverlay";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
+import { useDialog } from "lib/hooks/local/useDialog";
 
 const log = createLogger("PhotoEditor");
 
@@ -130,6 +131,11 @@ const PhotoEditorContent = (props) => {
 
     const workingRef = useRef(null);
     const displayCanvasRef = useRef(null);
+
+    // A modal dialog named by its title, Tab kept inside. Escape does not
+    // close it: that would throw the edits away without asking, the X stays
+    // the explicit way out.
+    const { dialogRef, titleId, onKeyDown: onDialogKeyDown } = useDialog({ isOpen: true, closeOnEscape: false });
 
     const setField = (patch) => {
         // A geometry patch with masks present clears them (with a notice):
@@ -349,9 +355,23 @@ const PhotoEditorContent = (props) => {
     return (
         <div
             data-component="PhotoEditor"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            tabIndex={-1}
             {...containerProps}
+            ref={(el) => {
+                dialogRef.current = el;
+                const consumerRef = containerProps?.ref;
+                if (typeof consumerRef === "function") consumerRef(el);
+                else if (consumerRef) consumerRef.current = el;
+            }}
+            onKeyDown={(e) => {
+                onDialogKeyDown(e);
+                containerProps?.onKeyDown?.(e);
+            }}
             className={twMerge(
-                "fixed inset-0 z-50 flex flex-col bg-black text-white",
+                "fixed inset-0 z-50 flex flex-col bg-black text-white outline-none",
                 containerProps?.className
             )}
         >
@@ -371,12 +391,13 @@ const PhotoEditorContent = (props) => {
                 >
                     <FaXmark />
                 </button>
-                <div
+                <h2
+                    id={titleId}
                     {...titleProps}
                     className={twMerge("font-app-semibold", titleProps?.className)}
                 >
                     {labels.title}
-                </div>
+                </h2>
                 <button
                     type="button"
                     aria-label={labels.save}

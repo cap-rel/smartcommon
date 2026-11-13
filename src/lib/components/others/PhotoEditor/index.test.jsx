@@ -419,3 +419,22 @@ describe("PhotoEditor", () => {
         expect(applyImageEdits.mock.calls[0][1]).toEqual([]);
     });
 });
+
+describe("PhotoEditor - dialog", () => {
+    it("is a modal dialog named by its title", async () => {
+        render(<PhotoEditor open src="blob:x" labels={{ title: "Retoucher la photo" }} />);
+        const dialog = await screen.findByRole("dialog", { name: "Retoucher la photo" });
+        expect(dialog.getAttribute("aria-modal")).toBe("true");
+        expect(screen.getByRole("heading", { name: "Retoucher la photo" })).toBeTruthy();
+    });
+
+    it("does not throw the edits away on Escape", async () => {
+        const onCancel = vi.fn();
+        render(<PhotoEditor open src="blob:x" onCancel={onCancel} />);
+        const dialog = await screen.findByRole("dialog");
+
+        fireEvent.keyDown(dialog, { key: "Escape" });
+
+        expect(onCancel).not.toHaveBeenCalled();
+    });
+});
