@@ -1,11 +1,10 @@
 import { useRef, useEffect, useCallback } from "react";
 import { FaFile } from "react-icons/fa6";
-import { twMerge } from "tailwind-merge";
 import { RiCloseLargeFill } from "react-icons/ri";
 import { isNil, isEmpty } from "lodash";
 
 import { Button, Spinner, Label } from "lib/components";
-import { splitFileExtension } from "lib/utils";
+import { splitFileExtension, twMerge } from "lib/utils";
 import { useStates } from "lib/hooks";
 
 import { propTypes } from "./props";
@@ -16,7 +15,8 @@ import { propTypes } from "./props";
 
 export const FilesUploader = ({
     label,
-    labelRow = false,
+    // Accepted for compatibility but without effect: Label has no row layout.
+    labelRow: _labelRow,
     help,
     multiple = false,
     onValueChange = () => {},
@@ -24,6 +24,8 @@ export const FilesUploader = ({
     containerProps,
     labelContainerProps,
     labelProps,
+    // Star slot: Label reads `starProps`; `requiredStarProps` is its former name.
+    starProps,
     requiredStarProps,
     helpProps,
     inputProps,
@@ -52,7 +54,7 @@ export const FilesUploader = ({
     const { required, readOnly, disabled, id, defaultValue, value, name } = inputPs;
   
     const inputPsForLabel = { required, readOnly, disabled, id };
-    const allLabelPs = { label, labelRow, help, containerProps, labelProps, requiredStarProps, helpProps, ...inputPsForLabel };
+    const allLabelPs = { label, help, containerProps, labelContainerProps, labelProps, starProps: starProps ?? requiredStarProps, helpProps, ...inputPsForLabel };
     
     const inputRef = useRef(null);
 

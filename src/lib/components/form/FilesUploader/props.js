@@ -15,6 +15,8 @@ export const propTypes = {
     containerProps: PropTypes.object,
     labelContainerProps: PropTypes.object,
     labelProps: PropTypes.object,
+    starProps: PropTypes.object,
+    // Former name of starProps, still applied when starProps is absent.
     requiredStarProps: PropTypes.object,
     helpProps: PropTypes.object,
     inputProps: PropTypes.object,

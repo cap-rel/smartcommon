@@ -111,7 +111,6 @@ pour la liste complète.
 | Prop | Type | Défaut | Notes |
 |------|------|--------|-------|
 | `label` | string | - | label du champ |
-| `labelRow` | bool | `false` | label sur la même ligne |
 | `help` | string | - | aide affichée sous le label |
 | `multiple` | bool | `false` | tableau de fichiers vs fichier unique |
 | `value` | object \| array | - | controlled |
