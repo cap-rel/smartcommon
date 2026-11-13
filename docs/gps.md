@@ -100,11 +100,21 @@ de langue).
 
 ## Slots de styling
 
-22 slots dont `containerProps`, `inputContainerProps`,
-`latitudeProps`, `longitudeProps`, `locationButtonProps`,
-`mapButtonProps` (préfiguration UI map qui n'est pas câblée),
-`multipleGpsContainerProps`, `gpsPointsContainerProps`, etc. Liste
-complète dans
+| Slot | Cible |
+|------|-------|
+| `containerProps` / `labelContainerProps` / `iconProps` / `labelProps` / `starProps` / `helpProps` / `errorProps` / ... | header label, étoile "requis", aide et erreurs (via `<Label>`) |
+| `buttonContainerProps` | ligne qui contient le bouton et l'état de la position |
+| `LocateButton` | bouton "Localiser" (`<Button>` : `buttonProps`, `iconProps`, `labelProps`, `Spinner`) |
+| `locationProps` | texte d'état ("Saved" / "No location saved" par défaut) |
+
+L'étoile "requis" se style via `starProps`. Les anciens slots
+`requiredStarProps`, `inputContainerProps`, `multipleGpsContainerProps`,
+`gpsPointsContainerProps`, `inputProps`, `locationTypeIconProps`,
+`latitudeProps`, `longitudeProps`, `deleteIconProps`,
+`locationButton*Props` et `mapButton*Props` venaient d'une ancienne
+interface (liste de points, bouton carte) qui n'est plus rendue : ils
+ne sont plus déclarés. Pour le bouton de localisation, passer par
+`LocateButton`. Liste complète dans
 [src/lib/components/form/Gps/props.js](../src/lib/components/form/Gps/props.js).
 
 ## Voir aussi

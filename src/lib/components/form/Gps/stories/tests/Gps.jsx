@@ -6,5 +6,5 @@ export const Gps = setTestStory({
         label: "Location",
     },
     props: propTypes,
-    hidden: ["onLocate", "containerProps", "labelContainerProps", "labelProps", "requiredStarProps", "helpProps", "inputContainerProps", "multipleGpsContainerProps", "gpsPointsContainerProps", "inputProps", "locationTypeIconProps", "latitudeProps", "longitudeProps", "deleteIconProps", "buttonContainerProps", "locationButtonProps", "locationButtonIconProps", "locationButtonSpinnerProps", "locationButtonLabelProps", "mapButtonProps", "mapButtonIconProps", "mapButtonSpinnerProps", "mapButtonLabelProps"]
+    hidden: ["onLocate", "containerProps", "labelContainerProps", "labelProps", "starProps", "helpProps", "buttonContainerProps", "LocateButton", "locationProps"]
 });

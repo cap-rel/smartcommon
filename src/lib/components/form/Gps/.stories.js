@@ -48,61 +48,20 @@ export default {
     labelProps: {
       table: { category: 'Elements' },
     },
-    requiredStarProps: {
+    starProps: {
       table: { category: 'Elements' },
     },
     helpProps: {
       table: { category: 'Elements' },
     },
-    inputContainerProps: {
-      table: { category: 'Elements' },
-    },
-    multipleGpsContainerProps: {
-      table: { category: 'Elements' },
-    },
-    gpsPointsContainerProps: {
-      table: { category: 'Elements' },
-    },
-    inputProps: {
-      table: { category: 'Elements' },
-    },
-    locationTypeIconProps: {
-      table: { category: 'Elements' },
-    },
-    latitudeProps: {
-      table: { category: 'Elements' },
-    },
-    longitudeProps: {
-      table: { category: 'Elements' },
-    },
-    deleteIconProps: {
-      table: { category: 'Elements' },
-    },
     buttonContainerProps: {
       table: { category: 'Elements' },
     },
-    locationButtonProps: {
+    LocateButton: {
+      description: "Props of the locate Button (buttonProps, iconProps, labelProps, Spinner).",
       table: { category: 'Elements' },
     },
-    locationButtonIconProps: {
-      table: { category: 'Elements' },
-    },
-    locationButtonSpinnerProps: {
-      table: { category: 'Elements' },
-    },
-    locationButtonLabelProps: {
-      table: { category: 'Elements' },
-    },
-    mapButtonProps: {
-      table: { category: 'Elements' },
-    },
-    mapButtonIconProps: {
-      table: { category: 'Elements' },
-    },
-    mapButtonSpinnerProps: {
-      table: { category: 'Elements' },
-    },
-    mapButtonLabelProps: {
+    locationProps: {
       table: { category: 'Elements' },
     },
   },

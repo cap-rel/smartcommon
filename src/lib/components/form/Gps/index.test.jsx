@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, fireEvent, screen, act } from "@testing-library/react";
 
 import { Gps } from "./";
+import { propTypes } from "./props";
 
 const position = {
     coords: { latitude: 45.75, longitude: 4.85, accuracy: 12 },
@@ -95,5 +96,32 @@ describe("Gps - hidden inputs", () => {
         expect([...hidden].map(input => input.value)).toEqual(["", ""]);
         expect(consoleError).not.toHaveBeenCalled();
         consoleError.mockRestore();
+    });
+});
+
+describe("Gps - styling slots", () => {
+    it("declares only the slots the component reads", () => {
+        const dead = [
+            "requiredStarProps", "inputContainerProps", "multipleGpsContainerProps", "gpsPointsContainerProps",
+            "inputProps", "locationTypeIconProps", "latitudeProps", "longitudeProps", "deleteIconProps",
+            "locationButtonProps", "locationButtonIconProps", "locationButtonSpinnerProps", "locationButtonLabelProps",
+            "mapButtonProps", "mapButtonIconProps", "mapButtonSpinnerProps", "mapButtonLabelProps",
+        ];
+        expect(Object.keys(propTypes).filter(key => dead.includes(key))).toEqual([]);
+    });
+
+    it("styles the locate button through LocateButton and the star through starProps", () => {
+        render(
+            <Gps
+                label="Position"
+                required
+                value={null}
+                onChange={vi.fn()}
+                LocateButton={{ buttonProps: { "data-testid": "locate" } }}
+                starProps={{ "data-testid": "star" }}
+            />
+        );
+        expect(screen.getByTestId("locate").tagName).toBe("BUTTON");
+        expect(screen.getByTestId("star").textContent).toBe("*");
     });
 });

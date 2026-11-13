@@ -40,26 +40,13 @@ export const propTypes = {
     helpAndErrorsContainerProps: PropTypes.object,
     helpProps: PropTypes.object,
     errorProps: PropTypes.object,
-    LocateButton: PropTypes.object,
-    locationProps: PropTypes.object,
-    requiredStarProps: PropTypes.object,
-    inputContainerProps: PropTypes.object,
-    multipleGpsContainerProps: PropTypes.object,
-    gpsPointsContainerProps: PropTypes.object,
-    inputProps: PropTypes.object,
-    locationTypeIconProps: PropTypes.object,
-    latitudeProps: PropTypes.object,
-    longitudeProps: PropTypes.object,
-    deleteIconProps: PropTypes.object,
+    // Row holding the locate button and the saved / empty state.
     buttonContainerProps: PropTypes.object,
-    locationButtonProps: PropTypes.object,
-    locationButtonIconProps: PropTypes.object,
-    locationButtonSpinnerProps: PropTypes.object,
-    locationButtonLabelProps: PropTypes.object,
-    mapButtonProps: PropTypes.object,
-    mapButtonIconProps: PropTypes.object,
-    mapButtonSpinnerProps: PropTypes.object,
-    mapButtonLabelProps: PropTypes.object,
+    // Locate button: a Button, styled through buttonProps, iconProps,
+    // labelProps and Spinner.
+    LocateButton: PropTypes.object,
+    // Saved / empty state text next to the button.
+    locationProps: PropTypes.object,
 
     // i18n: merged shallowly over DEFAULT_LABELS.
     labels: PropTypes.object,
