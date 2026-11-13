@@ -31,7 +31,7 @@
  * the bug.
  */
 
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeAll } from "vitest";
 import { render } from "@testing-library/react";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
@@ -180,20 +180,28 @@ describe("Global-shadowing render smoke", () => {
         // Load the component once per outer describe. We can't import
         // them statically at the top because vitest's vi.mock from
         // other files in the same project could otherwise interfere.
-        let Component;
-        const loadComponent = async () => {
-            if (!Component) {
+        //
+        // The import is started once and shared: under the load of the
+        // full suite, the first transform can outlast a test timeout, and
+        // a second import() issued meanwhile would receive the module
+        // still being evaluated inside the lib/components <-> lib/hooks
+        // cycle (export undefined, stale bindings).
+        let componentPromise;
+        const loadComponent = () => {
+            if (!componentPromise) {
                 // sourcePath -> module path under `lib/`
                 const moduleSubpath = sourcePath
                     .replace(/^src\/lib\//, "lib/")
                     .replace(/\/index\.jsx$/, "");
-                const mod = await import(/* @vite-ignore */ moduleSubpath);
-                Component = mod[name];
+                componentPromise = import(/* @vite-ignore */ moduleSubpath).then((mod) => mod[name]);
             }
-            return Component;
+            return componentPromise;
         };
 
         describe(`${name} (${sourcePath})`, () => {
+            // The cold transform happens here, outside the per-test timeout.
+            beforeAll(() => loadComponent(), 60000);
+
             renderCases.forEach((props, i) => {
                 const label = JSON.stringify(props);
                 it(`case ${i + 1} renders without recursing into itself: ${label}`, async () => {
