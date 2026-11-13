@@ -38,6 +38,9 @@ vi.mock("lib/upload", () => ({
     convertImageForUpload: mocks.convertImageForUpload,
 }));
 
+import { LibConfigProvider } from "lib/components/app/LibConfigProvider";
+import { fr } from "lib/locales/fr";
+
 import { FeedbackModal } from "./FeedbackModal";
 
 const BODY_PLACEHOLDER = "What happened? What were you trying to do?";
@@ -338,5 +341,25 @@ describe("FeedbackModal redaction keyboard", () => {
 
         expect(onClose).not.toHaveBeenCalled();
         expect(screen.getByPlaceholderText(BODY_PLACEHOLDER).value).toBe("Still typing.");
+    });
+});
+
+describe("FeedbackModal labels", () => {
+    const withFrenchTheme = (ui) => render(
+        <LibConfigProvider value={{ components: { theme: "app", themes: { app: { Feedback: { labels: fr.Feedback } } } } }}>
+            {ui}
+        </LibConfigProvider>
+    );
+
+    it("reads the labels the app gives once on the Provider theme", () => {
+        withFrenchTheme(<FeedbackModal isOpen onClose={() => {}} relayPath="feedback/report" />);
+        expect(screen.getByPlaceholderText(fr.Feedback.bodyPlaceholder)).toBeTruthy();
+        expect(screen.getByRole("button", { name: fr.Feedback.submitLabel })).toBeTruthy();
+    });
+
+    it("keeps the theme labels that a partial labels prop does not override", () => {
+        withFrenchTheme(<FeedbackModal isOpen onClose={() => {}} relayPath="feedback/report" labels={{ submitLabel: "Transmettre" }} />);
+        expect(screen.getByRole("button", { name: "Transmettre" })).toBeTruthy();
+        expect(screen.getByPlaceholderText(fr.Feedback.bodyPlaceholder)).toBeTruthy();
     });
 });

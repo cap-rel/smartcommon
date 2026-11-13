@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 
 import { Modal, Button, Input, Textarea, Select, PhotoEditor } from "lib/components";
 import { useApi } from "lib/hooks";
+import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { createLogger, navigatorInfo } from "lib/utils";
 
 import { DEFAULT_LABELS } from "./props";
@@ -30,7 +31,7 @@ export const FeedbackModal = (props) => {
         photoEditorLabels = {},
     } = props;
 
-    const labels = { ...DEFAULT_LABELS, ...userLabels };
+    const labels = { ...DEFAULT_LABELS, ...useComponentLabels("Feedback", userLabels) };
     const api = useApi();
 
     // Register the api with the offline queue singleton and install the
