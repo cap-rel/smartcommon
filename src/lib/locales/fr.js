@@ -56,6 +56,7 @@ export const fr = {
         titleField: "Titre",
         descriptionField: "Description",
         saveButton: "Enregistrer",
+        deleteButton: "Supprimer la photo",
         emptyState: "Aucune photo enregistrée",
     },
     AnnotatedPhotosUploader: {

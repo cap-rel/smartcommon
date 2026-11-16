@@ -195,6 +195,10 @@ export default {
       control: false,
       table: { category: 'Elements' },
     },
+    popupActionsProps: {
+      control: false,
+      table: { category: 'Elements' },
+    },
     DeleteButton: {
       control: false,
       table: { category: 'Elements' },

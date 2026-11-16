@@ -510,6 +510,15 @@ export const PhotosUploader = (props) => {
                 title: multiple ? labels.photoPopupTitle(index) : labels.photoPopupTitleSingle,
                 zIndex: 60,
                 ...props,
+                // On a wide screen Popup caps its height at 3/5 of the
+                // screen, which leaves the photo a strip once the form is
+                // laid out: this popup takes the height of its content, up
+                // to the whole screen. A className from Popup.popupProps
+                // still wins (twMerge).
+                popupProps: {
+                    ...props.popupProps,
+                    className: "lg:h-auto lg:max-h-full",
+                },
                 close: () => {
                     if (multiple) {
                         set("selectedPhotoIndex", null);
@@ -520,33 +529,10 @@ export const PhotosUploader = (props) => {
                 },
                 isOpen: multiple ? selectedPhotoIndex === index : isPhotoSelected,
             }))}>
-                {/* The image is the part of the popup that shrinks: a tall
-                    photo used to overflow it, cut with no hint that it
-                    scrolls, and pushed the title, description and save
-                    button out of sight. It now takes the room the form
-                    leaves, whole (object-contain). */}
-                <div className="relative w-full flex justify-center min-h-20 shrink">
-                    {/* Delete is hidden in read-only mode: consulting a photo
-                        must never offer a destructive action. */}
-                    {!readOnly && (
-                    <Button { ...mergeProps("DeleteButton", props => ({
-                        icon: FaTrashCan,
-                        ...props,
-                        onClick: e => {
-                            e.preventDefault();
-                            deletePhoto(index);
-                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
-                        },
-                        buttonProps: {
-                            ...props.buttonProps,
-                            className: `absolute bottom-1 right-1 bg-soft-bg text-white bg-primary p-app-sm rounded-app-xl`
-                        },
-                        iconProps: {
-                            ...props.iconProps,
-                            className: "text-app-lg "
-                        }
-                    }))} />
-                    )}
+                {/* The photo is the part of the popup that shrinks, down to
+                    80px: it takes the room the title, description and action
+                    buttons leave, and is shown whole (object-contain). */}
+                <div className="w-full flex min-h-20">
                     {(photo?.previewUrl || photo?.src)
                     ? <img { ...mergeProps("popupImg", props => ({
                         ...props,
@@ -576,11 +562,35 @@ export const PhotosUploader = (props) => {
                         applyFunctionIfNotNil(props.onChange, value);
                     }
                 }))} />
-                {/* <div className="flex gap-app-xs items-center"> */}
-                    {/* Save makes no sense in read-only mode: the title/desc
-                        inputs are no-ops (updatePhotoInfo guards on readOnly).
-                        The popup is dismissed via its built-in close button. */}
-                    {!readOnly && (
+                {/* No action in read-only mode: consulting a photo must never
+                    offer a destructive action, and save would be a no-op
+                    (updatePhotoInfo guards on readOnly). Same order as the
+                    other dialogs of the library: the destructive action on
+                    the left, the main one on the right. */}
+                {!readOnly && (
+                <div { ...mergeProps("popupActions", props => ({
+                    ...props,
+                    className: `flex gap-app-sm`
+                }))}>
+                    <Button { ...mergeProps("DeleteButton", props => ({
+                        icon: FaTrashCan,
+                        ...props,
+                        onClick: e => {
+                            e.preventDefault();
+                            deletePhoto(index);
+                            applyFunctionIfNotNil(props.onClick ?? props.buttonProps?.onClick, e);
+                        },
+                        buttonProps: {
+                            "aria-label": labels.deleteButton,
+                            title: labels.deleteButton,
+                            ...props.buttonProps,
+                            className: `shrink-0 bg-soft-bg text-error border border-error`
+                        },
+                        iconProps: {
+                            ...props.iconProps,
+                            className: "text-app-xl"
+                        }
+                    }))} />
                     <Button { ...mergeProps("SaveButton", props => ({
                         label: labels.saveButton,
                         icon: GiSaveArrow,
@@ -596,15 +606,15 @@ export const PhotosUploader = (props) => {
                         },
                         buttonProps: {
                             ...props.buttonProps,
-                            className: `bg-success`,
+                            className: `flex-1 bg-success`,
                         },
                         iconProps: {
                             ...props.iconProps,
                             className: "text-app-xl"
                         }
                     }))} />
-                    )}
-                {/* </div> */}
+                </div>
+                )}
             </Popup>
         );
     }

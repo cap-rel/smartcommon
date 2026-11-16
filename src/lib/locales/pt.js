@@ -62,6 +62,7 @@ export const pt = {
         titleField: "Título",
         descriptionField: "Descrição",
         saveButton: "Guardar",
+        deleteButton: "Apagar a foto",
         emptyState: "Nenhuma foto guardada",
     },
     AnnotatedPhotosUploader: {

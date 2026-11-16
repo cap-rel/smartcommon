@@ -91,6 +91,7 @@ export const propTypes = {
     popupImgProps: PropTypes.object,
     TitleInput: PropTypes.object,
     DescriptionTextarea: PropTypes.object,
+    popupActionsProps: PropTypes.object,
     DeleteButton: PropTypes.object,
     SaveButton: PropTypes.object,
 
@@ -115,5 +116,6 @@ export const DEFAULT_LABELS = {
     titleField: "Title",
     descriptionField: "Description",
     saveButton: "Save",
+    deleteButton: "Delete photo",
     emptyState: "No photo saved",
 };

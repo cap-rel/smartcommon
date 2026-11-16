@@ -47,6 +47,7 @@ vi.mock("lib/components", async () => {
                 disabled={disabled}
                 onClick={onClick}
                 className={buttonProps.className}
+                aria-label={buttonProps["aria-label"]}
                 data-badge={badge}
             >
                 {Icon ? <Icon /> : null}
@@ -492,6 +493,27 @@ describe("PhotosUploader - photo info edit (multiple)", () => {
         expect(onChange).toHaveBeenCalledTimes(1);
         expect(onChange.mock.calls[0][0][0].title).toBe("renamed");
         expect(value[0].title).toBe("a");
+    });
+});
+
+describe("PhotosUploader - photo popup actions (multiple)", () => {
+    const value = [{ uploadId: "U1", previewUrl: "blob:a", title: "a" }, { uploadId: "U2", previewUrl: "blob:b", title: "b" }];
+
+    it("puts delete on the left of save, in one row, and deletes the photo", () => {
+        const onChange = vi.fn();
+        const { container, getByTestId } = render(
+            <PhotosUploader name="photos" outputFormat="upload" multiple value={value} onChange={onChange} />
+        );
+        fireEvent.click(container.querySelector("img").parentElement);
+        const [deleteButton, saveButton] = getByTestId("popup").querySelectorAll("button");
+
+        expect(deleteButton.getAttribute("aria-label")).toBe("Delete photo");
+        expect(saveButton.textContent).toBe("Save");
+        expect(deleteButton.parentElement).toBe(saveButton.parentElement);
+
+        fireEvent.click(deleteButton);
+        expect(onChange).toHaveBeenCalledTimes(1);
+        expect(onChange.mock.calls[0][0].map(photo => photo.uploadId)).toEqual(["U2"]);
     });
 });
 

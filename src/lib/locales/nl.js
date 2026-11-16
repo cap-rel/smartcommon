@@ -59,6 +59,7 @@ export const nl = {
         titleField: "Titel",
         descriptionField: "Beschrijving",
         saveButton: "Opslaan",
+        deleteButton: "Foto verwijderen",
         emptyState: "Geen foto opgeslagen",
     },
     AnnotatedPhotosUploader: {
