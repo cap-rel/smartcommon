@@ -1164,4 +1164,59 @@ describe("LoginComponent - device-pick post-login flow", () => {
         // No picker rendered.
         expect(screen.queryByText(/Which device are you using/i)).toBeNull();
     });
+
+    describe("resuming an unfinished pick (page reloaded on the picker)", () => {
+        afterEach(() => {
+            fakeApi.user = undefined;
+        });
+
+        it("renders the picker from the persisted user instead of the password form", async () => {
+            fakeApi.login = vi.fn();
+            fakeApi.user = {
+                id: 42,
+                accessToken: "AT",
+                needsDevicePick: true,
+                existingUserDevices: [
+                    { id: 12, label: "mon iPhone", icon: "phone", session_count: 3 },
+                ],
+            };
+
+            const onSuccess = vi.fn();
+            const { container } = render(
+                <LoginComponent
+                    onSuccess={onSuccess}
+                    showEntities={false}
+                    enableQrPair={false}
+                />
+            );
+
+            expect(screen.getByText(/Which device are you using/i)).toBeDefined();
+            expect(screen.getByText("mon iPhone")).toBeDefined();
+            expect(passwordInput(container)).toBeNull();
+
+            fireEvent.click(screen.getByText("mon iPhone"));
+            await waitFor(() => {
+                expect(fakeApi.linkUserDevice).toHaveBeenCalledWith(12);
+            });
+            await waitFor(() => {
+                expect(onSuccess).toHaveBeenCalled();
+            });
+            expect(fakeApi.login).not.toHaveBeenCalled();
+        });
+
+        it("shows the password form when the persisted user has no pending pick", () => {
+            fakeApi.user = { id: 42, accessToken: "AT", needsDevicePick: false };
+
+            const { container } = render(
+                <LoginComponent
+                    onSuccess={vi.fn()}
+                    showEntities={false}
+                    enableQrPair={false}
+                />
+            );
+
+            expect(passwordInput(container)).not.toBeNull();
+            expect(screen.queryByText(/Which device are you using/i)).toBeNull();
+        });
+    });
 });

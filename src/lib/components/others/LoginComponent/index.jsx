@@ -83,14 +83,24 @@ export const LoginComponent = (props) => {
     // attachment to a logical user-device is a separate side-effect),
     // and we render <DevicePicker> instead of `onSuccess` until the
     // user has picked / created a logical device.
-    const [mode, setMode] = useState("password");
+    // A device pick left unfinished (page reloaded on the picker) survives in
+    // the persisted user: RouteGuard keeps the guest route open for it, so
+    // resume the picker instead of showing the password form to a user who
+    // already holds valid tokens.
+    const resumedDevicePick = api?.user?.needsDevicePick === true
+        ? {
+            response: api.user,
+            existingDevices: Array.isArray(api.user.existingUserDevices) ? api.user.existingUserDevices : [],
+        }
+        : null;
+    const [mode, setMode] = useState(resumedDevicePick ? "device-pick" : "password");
     const [qrError, setQrError] = useState(null);
 
     // Pending login response captured during password / QR success when
     // the backend signals `needs_device_pick: true`. We keep it here so
     // we can hand it to `onSuccess` once the user has chosen a device.
     // null when no device-pick is in flight.
-    const [pendingDevicePick, setPendingDevicePick] = useState(null);
+    const [pendingDevicePick, setPendingDevicePick] = useState(resumedDevicePick);
     const [devicePickError, setDevicePickError] = useState(null);
     const [devicePickLoading, setDevicePickLoading] = useState(false);
 

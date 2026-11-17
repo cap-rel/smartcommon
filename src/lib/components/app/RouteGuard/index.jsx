@@ -38,12 +38,18 @@ export const RouteGuard = (props) => {
     const api = useApi();
     const isAuthenticated = Boolean(api?.user);
     const hasDeviceOptions = Boolean(api?.user?.deviceOptions);
+    // useApi.login() persists the user BEFORE <LoginComponent> renders its
+    // device picker (needs_device_pick from smartAuth). Sending that user away
+    // from the guest route at that point unmounts the picker before it shows,
+    // so the technical device is never attached and every later login asks
+    // again. The guest route stays open until the pick is done.
+    const isPickingDevice = api?.user?.needsDevicePick === true;
 
     // Auth modes (mutually exclusive after the warn above)
     if (requireAuth && !isAuthenticated) {
         return <Navigate to={redirectTo ?? LOGIN_PATH} replace />;
     }
-    if (!requireAuth && requireGuest && isAuthenticated) {
+    if (!requireAuth && requireGuest && isAuthenticated && !isPickingDevice) {
         return <Navigate to={redirectTo ?? HOME_PATH} replace />;
     }
 

@@ -124,6 +124,29 @@ describe("RouteGuard", () => {
             );
             expect(screen.getByText("custom destination")).toBeDefined();
         });
+
+        it("keeps the guest route while the logged-in user still has to pick a device", () => {
+            fakeApi.user = { id: 1, needsDevicePick: true };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireGuest>
+                    <p>guest-only content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("guest-only content")).toBeDefined();
+            expect(screen.queryByText("home page")).toBeNull();
+        });
+
+        it("redirects once the device pick is done", () => {
+            fakeApi.user = { id: 1, needsDevicePick: false };
+            renderAt(
+                "/dashboard",
+                <RouteGuard requireGuest>
+                    <p>guest-only content</p>
+                </RouteGuard>
+            );
+            expect(screen.getByText("home page")).toBeDefined();
+        });
     });
 
     describe("conflict (both requireAuth and requireGuest)", () => {
