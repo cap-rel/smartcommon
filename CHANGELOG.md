@@ -8,6 +8,40 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.401] - 2026-11-18
+
+Pick your device after login: the login page no longer closes before the device picker shows
+Get the feedback form in the language the app sets once on the Provider
+Find errors in the log extract of a feedback report even when LOG_LEVEL silences the console
+Get desktop and the browser language from navigatorInfo instead of always mobile and en
+Read correct timestamps, durations, distances and colours from the date and format helpers
+Format durations as durations with DurationFormatter, even where Intl.DurationFormat is missing
+Replace every token of a formatDate pattern, and read 12 at midnight in 12-hour hours
+See entities cached with the sync upsert refreshed by the next pull
+Keep updatedAt current on database updates and stop database logs from piling up
+Activate a focused button with Enter while the barcode scanner hook listens
+Stop usePWAUpdate from adding service worker listeners when its callbacks change
+Get print errors a retry cannot fix at once, the missing WebUSB one translated
+Read the visited locations from useNavigation().history
+Seed global states with initialStates, store updater results and unset only the given path
+Send the calculator result only to the screen that opened it
+Log form state changes when useForm debug is on
+Turn off the network errors joined to feedback reports with config.feedback.networkErrors
+Dictate feedback with the system keyboard: the feedback form dictation button is gone
+Lock AddressInput with disabled or readOnly and see the required star on Array
+Read the SearchableSelect, List and Editor texts in the app language
+Style the required star of FilesUploader and Array through starProps
+Style the SearchableSelect field box with selectContainerProps, containerProps as on Select
+Import the DataTable labels as DATATABLE_DEFAULT_LABELS, the bare DEFAULT_LABELS export is gone
+Stop importing SearchBar, mergeProps, mergePropsPlus, position and the user slice: removed
+Override app-* spacing and radius classes through className on mergeClassName
+Read a synced entity with getEntity(table, 1) even when it was stored under the id '1'
+See the server values next to yours in ConflictResolver right after a push conflict
+Resolve sync conflicts in a styled, translated ConflictResolver (English by default)
+Browse every hook, util, service module, guide and desktop component in the documentation site
+Move the caret with Home and End in the documentation site search field
+See a whole photo in its popup on any screen, with delete next to save
+
 ## [1.0.400] - 2026-11-13
 
 Tick a Boolean by tapping its label, like a native check box
