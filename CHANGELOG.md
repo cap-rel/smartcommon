@@ -8,6 +8,10 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.402] - 2026-11-19
+
+See one device screen after login with api.deviceIdentificationPage on your own device page
+
 ## [1.0.401] - 2026-11-18
 
 Pick your device after login: the login page no longer closes before the device picker shows
