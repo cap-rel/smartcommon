@@ -1,10 +1,11 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useContext } from "react";
 import { motion } from "framer-motion";
 import { RiArrowLeftSLine } from "react-icons/ri";
 
 import { useLibConfig, useStates, useVariantMerger, useIsDesktop } from "lib/hooks";
 import { log, navigatorInfo, twMerge, applyFunctionIfNotNil } from "lib/utils";
 import { Button } from "lib/components";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 
 import { defaultProps, propTypes, DEFAULT_LABELS } from "./props";
 
@@ -58,7 +59,13 @@ export const Page = (props) => {
     const labels = { ...DEFAULT_LABELS, ...userLabels };
 
     const libConfig = useLibConfig();
-    const isDesktop = useIsDesktop();
+    // Under a ViewportProvider the layout is the one it froze for the session
+    // (pointer type): a landscape tablet is at least 1024px wide, so the width
+    // alone took it for a desktop, and the page grew in min-h-screen inside a
+    // mobile/tablet shell pinned to the screen, with no way to scroll.
+    const viewportContext = useContext(ViewportContext);
+    const isWideScreen = useIsDesktop();
+    const isDesktop = viewportContext ? viewportContext.viewport === "desktop" : isWideScreen;
 
     const { debug } = libConfig;
 

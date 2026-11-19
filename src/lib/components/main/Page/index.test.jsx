@@ -64,3 +64,42 @@ describe("Page - compact header", () => {
         expect(page.className).not.toContain("bg-medium-bg");
     });
 });
+
+describe("Page - layout of the frozen viewport", () => {
+    const wideScreen = () => vi.spyOn(window, "matchMedia").mockImplementation((query) => ({
+        matches: true,
+        media: query,
+        addEventListener: () => {},
+        removeEventListener: () => {},
+        addListener: () => {},
+        removeListener: () => {},
+    }));
+
+    afterEach(() => {
+        vi.restoreAllMocks();
+    });
+
+    it("scrolls inside the screen on a landscape tablet, however wide", async () => {
+        const { ViewportContext } = await import("lib/components/app/ViewportProvider/context");
+        wideScreen();
+
+        const { container } = render(
+            <ViewportContext.Provider value={{ preference: "auto", viewport: "tablet", setPreference: vi.fn() }}>
+                <Page location={location}>content</Page>
+            </ViewportContext.Provider>
+        );
+        const page = container.querySelector('[data-component="Page"]');
+
+        expect(page.className).toContain("h-dvh");
+        expect(page.className).toContain("overflow-y-auto");
+        expect(page.className).not.toContain("min-h-screen");
+    });
+
+    it("keeps the width rule without a ViewportProvider", () => {
+        wideScreen();
+
+        const { container } = render(<Page location={location}>content</Page>);
+
+        expect(container.querySelector('[data-component="Page"]').className).toContain("min-h-screen");
+    });
+});
