@@ -28,7 +28,6 @@ Aucun paramètre. Le client se règle dans `config.api` du `<Provider>` :
 | `onApiError` | `(message) => void` | Appelé avec `error.apiMessage` à chaque erreur d'API, sauf `silent: true`. |
 | `onSessionExpired` | `() => void` | Appelé une seule fois quand la session est perdue. |
 | `onLoginPersist` | `async (baseUser) => object` | Complète l'utilisateur avant son enregistrement, à la connexion. |
-| `deviceIdentificationPage` | bool | `true` quand l'app nomme un nouvel appareil sur sa propre page (`DeviceIdentificationComponent`) : `login()` ne signale plus `needsDevicePick` quand la réponse porte `deviceOptions`, pour un seul écran d'appareil. |
 | `debug` | bool | Journal des requêtes. À défaut, `config.debug`. |
 
 ## Valeur retournée

@@ -1,7 +1,9 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, useContext } from "react";
 import { MdSmartphone, MdTablet, MdLaptop, MdDesktopWindows } from "react-icons/md";
 
-import { Input, Button, Select } from "lib/components";
+import { Input, Button, Select, Checker } from "lib/components";
+import { detectAutoViewport } from "lib/components/app/ViewportProvider";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { twMerge } from "lib/utils";
 
 import {
@@ -11,6 +13,7 @@ import {
     SUPPORTED_DEVICE_ICONS,
     defaultProps,
     formatSessionCount,
+    iconForViewportMode,
     normaliseDeviceIcon,
     propTypes,
 } from "./props";
@@ -64,6 +67,9 @@ export const DevicePicker = (props) => {
         formProps = {},
         labelInputProps = {},
         iconSelectProps = {},
+        enableViewportMode = true,
+        defaultViewportMode,
+        viewportModeCheckerProps = {},
         submitButtonProps = {},
         cancelButtonProps = {},
         errorAlertProps = {},
@@ -71,6 +77,17 @@ export const DevicePicker = (props) => {
     } = props;
 
     const labels = { ...DEFAULT_LABELS, ...useComponentLabels("DevicePicker", userLabels) };
+
+    // Under a ViewportProvider the new device form asks which layout the
+    // app takes on this device (smartphone, tablet, desktop, auto): the
+    // answer is stored with the device (viewport_mode) and replaces the
+    // icon question, the icon being derived from it. Read through the
+    // context, not useViewport(), which throws without a provider.
+    const viewport = useContext(ViewportContext);
+    const showViewportMode = enableViewportMode && viewport != null;
+    const [viewportMode, setViewportMode] = useState(
+        () => defaultViewportMode ?? detectAutoViewport(),
+    );
 
     const hasExistingDevices = existingDevices.length > 0;
 
@@ -112,6 +129,18 @@ export const DevicePicker = (props) => {
         { value: "desktop", label: labels.iconDesktop },
     ], [labels.iconPhone, labels.iconTablet, labels.iconLaptop, labels.iconDesktop]);
 
+    const viewportModeOptions = useMemo(() => [
+        { label: labels.viewportModeOptionAuto, value: "auto" },
+        { label: labels.viewportModeOptionMobile, value: "mobile" },
+        { label: labels.viewportModeOptionTablet, value: "tablet" },
+        { label: labels.viewportModeOptionDesktop, value: "desktop" },
+    ], [
+        labels.viewportModeOptionAuto,
+        labels.viewportModeOptionMobile,
+        labels.viewportModeOptionTablet,
+        labels.viewportModeOptionDesktop,
+    ]);
+
     const handlePick = useCallback(async (deviceId) => {
         if (isLocked) return;
         setLocalError(null);
@@ -141,14 +170,19 @@ export const DevicePicker = (props) => {
             return;
         }
 
-        const safeIcon = SUPPORTED_DEVICE_ICONS.includes(icon)
-            ? icon
+        const chosenIcon = showViewportMode ? iconForViewportMode(viewportMode) : icon;
+        const safeIcon = SUPPORTED_DEVICE_ICONS.includes(chosenIcon)
+            ? chosenIcon
             : DEFAULT_DEVICE_ICON;
 
         setLocalError(null);
         setLocalSubmitting(true);
         try {
-            await onCreateRef.current?.(trimmed, safeIcon);
+            if (showViewportMode) {
+                await onCreateRef.current?.(trimmed, safeIcon, viewportMode);
+            } else {
+                await onCreateRef.current?.(trimmed, safeIcon);
+            }
         } catch {
             // See handlePick comment.
         } finally {
@@ -158,6 +192,8 @@ export const DevicePicker = (props) => {
         isLocked,
         label,
         icon,
+        showViewportMode,
+        viewportMode,
         labels.validationLabelRequired,
         labels.validationLabelTooLong,
     ]);
@@ -316,16 +352,32 @@ export const DevicePicker = (props) => {
                         {...labelInputProps}
                     />
 
-                    <Select
-                        id="device-picker-icon"
-                        name="icon"
-                        label={labels.iconSelectLabel}
-                        value={icon}
-                        onChange={setIcon}
-                        readOnly={isLocked}
-                        options={iconOptions}
-                        {...iconSelectProps}
-                    />
+                    {showViewportMode ? (
+                        <Checker
+                            id="device-picker-viewport-mode"
+                            name="viewport_mode"
+                            type="radio"
+                            label={labels.viewportModeLabel}
+                            help={labels.viewportModeHelp}
+                            options={viewportModeOptions}
+                            value={viewportMode}
+                            onChange={setViewportMode}
+                            readOnly={isLocked}
+                            required
+                            {...viewportModeCheckerProps}
+                        />
+                    ) : (
+                        <Select
+                            id="device-picker-icon"
+                            name="icon"
+                            label={labels.iconSelectLabel}
+                            value={icon}
+                            onChange={setIcon}
+                            readOnly={isLocked}
+                            options={iconOptions}
+                            {...iconSelectProps}
+                        />
+                    )}
 
                     <Button
                         type="submit"

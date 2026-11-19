@@ -89,7 +89,7 @@ export const useApiContext = () => {
 
     const { debug: libDebug, api } = libConfig;
 
-    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist, onSessionExpired, deviceIdentificationPage } = api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist, onSessionExpired } = api ?? {};
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
@@ -158,8 +158,7 @@ export const useApiContext = () => {
         timeout,
         onApiError,
         onLoginPersist,
-        onSessionExpired,
-        deviceIdentificationPage
+        onSessionExpired
     });
 
     // Refreshed at COMMIT time, not during render: everything downstream (ky
@@ -182,8 +181,7 @@ export const useApiContext = () => {
             timeout,
             onApiError,
             onLoginPersist,
-            onSessionExpired,
-            deviceIdentificationPage
+            onSessionExpired
         };
     });
 
@@ -529,7 +527,6 @@ export const useApiContext = () => {
                 const {
                     gst: currentGst,
                     onLoginPersist: currentOnLoginPersist,
-                    deviceIdentificationPage: currentDeviceIdentificationPage,
                 } = valuesRef.current;
 
                 // Source of truth for `rememberMe` is the request body we
@@ -556,17 +553,7 @@ export const useApiContext = () => {
                 // The tokens are valid as-is: we persist them right away
                 // so the post-login UX (the picker, hitting the JWT-
                 // protected /account/user-devices endpoint) works.
-                //
-                // An app with its own device identification page
-                // (api.deviceIdentificationPage, RouteGuard
-                // requireDeviceIdentification) names a new device there when
-                // the response carries deviceOptions, and the POST /device of
-                // that page also links the logical user-device on the
-                // smartAuth side: the picker first would be a second device
-                // screen in a row. Without deviceOptions that page is not
-                // shown, so the picker stays.
-                const needsDevicePick = data?.needs_device_pick === true
-                    && !(currentDeviceIdentificationPage === true && Boolean(mappedData?.deviceOptions));
+                const needsDevicePick = data?.needs_device_pick === true;
                 const existingUserDevices = Array.isArray(data?.existing_user_devices)
                     ? data.existing_user_devices
                     : [];
@@ -678,12 +665,17 @@ export const useApiContext = () => {
                     // gap must present this token, not a stale valuesRef one.
                     latestRefreshTokenRef.current = data.refresh_token ?? null;
 
+                    // Same device pick as /login: RouteGuard keeps the guest
+                    // route while needsDevicePick holds, so the picker of
+                    // LoginComponent shows instead of being unmounted.
                     currentGst.local.set("user", {
                         accessToken: data.access_token,
                         refreshToken: data.refresh_token,
                         expiresIn,
                         deviceUuid: data.device_uuid,
                         deviceOptions: data.devices_choice,
+                        needsDevicePick: data.needs_device_pick === true,
+                        existingUserDevices: Array.isArray(data.existing_user_devices) ? data.existing_user_devices : [],
                         rememberMe: true,
                         tokenExpiry: floor(Date.now() / 1000) + expiresIn,
                     });
@@ -910,12 +902,16 @@ export const useApiContext = () => {
     //
     // After a successful create/link, we clear the `needsDevicePick`
     // flag stashed by the login flow so subsequent reads of the user
-    // state from RouteGuard / consumers see a fully-resolved auth.
+    // state from RouteGuard / consumers see a fully-resolved auth. The
+    // legacy `deviceOptions` go too: linking names the technical device
+    // after its logical parent on the smartAuth side, so the legacy
+    // device identification page (RouteGuard requireDeviceIdentification)
+    // has nothing left to ask, and would be a second device screen.
 
     const clearNeedsDevicePick = () => {
         const { user: currentUser, rememberMe: currentRememberMe, gst: currentGst } = valuesRef.current;
         if (!currentUser) return;
-        const updated = { ...currentUser, needsDevicePick: false, existingUserDevices: [] };
+        const updated = { ...currentUser, needsDevicePick: false, existingUserDevices: [], deviceOptions: undefined };
         currentGst[currentRememberMe ? "local" : "session"].set("user", updated);
     };
 

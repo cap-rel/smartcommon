@@ -242,51 +242,49 @@ describe("useApi.login - with onLoginPersist (Bug 2 fix)", () => {
     });
 });
 
-describe("useApi.login - device pick with an app device identification page", () => {
-    const newDevicePayload = {
-        ...minimalLoginPayload,
-        deviceOptions: [{ uuid: "known", label: "Old phone" }],
-        needs_device_pick: true,
-        existing_user_devices: [{ id: 12, label: "mon iPhone" }],
-    };
+describe("useApi - one device screen after login", () => {
+    it("drops the legacy deviceOptions once the device is linked, no device page after the picker", async () => {
+        gstState.values.user = {
+            id: 42,
+            accessToken: "AT",
+            rememberMe: true,
+            deviceOptions: [{ uuid: "known", label: "Old phone" }],
+            needsDevicePick: true,
+            existingUserDevices: [{ id: 12, label: "mon iPhone" }],
+        };
+        kyState.post.mockReturnValue(fakeJsonResponse({ id: 12, linked: true }));
 
-    const loginAs = async () => {
         const { result } = renderHook(() => useApiContext());
-        let resolved;
         await act(async () => {
-            resolved = await result.current.login({ login: "u@example.com", password: "x", rememberMe: true });
+            await result.current.linkUserDevice(12);
         });
-        const [, payload] = gstState.local.set.mock.calls[0];
-        return { resolved, persisted: payload };
-    };
 
-    it("keeps the picker by default, the only device screen of an app without such a page", async () => {
-        kyState.post.mockReturnValue(fakeJsonResponse(newDevicePayload));
-
-        const { resolved, persisted } = await loginAs();
-
-        expect(resolved.needsDevicePick).toBe(true);
-        expect(persisted.needsDevicePick).toBe(true);
+        const [key, payload] = gstState.local.set.mock.calls.at(-1);
+        expect(key).toBe("user");
+        expect(payload.needsDevicePick).toBe(false);
+        expect(payload.deviceOptions).toBeUndefined();
+        expect(payload.accessToken).toBe("AT");
     });
 
-    it("leaves a device to name to the page of the app, no picker before it", async () => {
-        libConfigState.api = { ...libConfigState.api, deviceIdentificationPage: true };
-        kyState.post.mockReturnValue(fakeJsonResponse(newDevicePayload));
+    it("keeps the device pick of a QR pairing, as for a password login", async () => {
+        kyState.post.mockReturnValue(fakeJsonResponse({
+            status: "consumed",
+            access_token: "AT",
+            refresh_token: "RT",
+            expires_in: 3600,
+            devices_choice: null,
+            needs_device_pick: true,
+            existing_user_devices: [{ id: 12, label: "mon iPhone" }],
+        }));
 
-        const { resolved, persisted } = await loginAs();
+        const { result } = renderHook(() => useApiContext());
+        await act(async () => {
+            await result.current.pollQrPair("pairing-1", "claim-1");
+        });
 
-        expect(resolved.needsDevicePick).toBe(false);
-        expect(persisted.needsDevicePick).toBe(false);
-        expect(persisted.deviceOptions).toEqual(newDevicePayload.deviceOptions);
-    });
-
-    it("keeps the picker for a named device not yet linked, which the page of the app never shows", async () => {
-        libConfigState.api = { ...libConfigState.api, deviceIdentificationPage: true };
-        kyState.post.mockReturnValue(fakeJsonResponse({ ...newDevicePayload, deviceOptions: null }));
-
-        const { resolved, persisted } = await loginAs();
-
-        expect(resolved.needsDevicePick).toBe(true);
-        expect(persisted.needsDevicePick).toBe(true);
+        const [key, payload] = gstState.local.set.mock.calls.at(-1);
+        expect(key).toBe("user");
+        expect(payload.needsDevicePick).toBe(true);
+        expect(payload.existingUserDevices).toEqual([{ id: 12, label: "mon iPhone" }]);
     });
 });

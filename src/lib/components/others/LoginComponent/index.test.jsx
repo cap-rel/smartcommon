@@ -88,9 +88,27 @@ vi.mock("lib/components", async () => {
                 {label || children}
             </button>
         ),
+        Checker: ({ name, value, onChange, options = [], label }) => (
+            <fieldset>
+                <legend>{label}</legend>
+                {options.map((o) => (
+                    <label key={o.value}>
+                        <input
+                            type="radio"
+                            name={name}
+                            value={o.value}
+                            checked={value === o.value}
+                            onChange={() => onChange?.(o.value)}
+                        />
+                        {o.label}
+                    </label>
+                ))}
+            </fieldset>
+        ),
     };
 });
 
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { LoginComponent } from "./index";
 
 describe("extractPairingId", () => {
@@ -1218,5 +1236,93 @@ describe("LoginComponent - device-pick post-login flow", () => {
             expect(passwordInput(container)).not.toBeNull();
             expect(screen.queryByText(/Which device are you using/i)).toBeNull();
         });
+    });
+});
+
+describe("LoginComponent - layout of the picked device under a ViewportProvider", () => {
+    let viewportValue;
+
+    beforeEach(() => {
+        fakeApi.getEntities = vi.fn().mockResolvedValue({ entities: [] });
+        fakeApi.linkUserDevice = vi.fn().mockResolvedValue({ id: 12, linked: true });
+        fakeApi.createUserDevice = vi.fn().mockResolvedValue({ id: 18, linked: true });
+        viewportValue = { preference: "auto", viewport: "mobile", setPreference: vi.fn().mockResolvedValue(undefined) };
+    });
+
+    afterEach(() => {
+        vi.clearAllMocks();
+    });
+
+    const renderAndLogin = (loginPayload, onSuccess) => {
+        fakeApi.login = vi.fn().mockResolvedValue(loginPayload);
+        const view = render(
+            <ViewportContext.Provider value={viewportValue}>
+                <LoginComponent onSuccess={onSuccess} showEntities={false} enableQrPair={false} />
+            </ViewportContext.Provider>
+        );
+        fireEvent.change(view.container.querySelector('input[name="email"]'), { target: { value: "u@x.com" } });
+        fireEvent.change(view.container.querySelector('input[name="password"]'), { target: { value: "secret" } });
+        fireEvent.click(screen.getByRole("button", { name: /Sign in/i }));
+        return view;
+    };
+
+    it("stores the layout chosen for a new device and applies it", async () => {
+        const loginPayload = { id: 42, accessToken: "AT", needsDevicePick: true, existingUserDevices: [] };
+        const onSuccess = vi.fn();
+        const { container } = renderAndLogin(loginPayload, onSuccess);
+
+        await waitFor(() => {
+            expect(screen.getByText("New device")).toBeDefined();
+        });
+        const form = container.querySelector("form");
+        fireEvent.change(form.querySelector('input[type="text"]'), { target: { value: "Tablette atelier" } });
+        fireEvent.click(form.querySelector('input[name="viewport_mode"][value="tablet"]'));
+        fireEvent.submit(form);
+
+        await waitFor(() => {
+            expect(fakeApi.createUserDevice).toHaveBeenCalledWith({ label: "Tablette atelier", icon: "tablet", viewport_mode: "tablet" });
+        });
+        await waitFor(() => {
+            expect(viewportValue.setPreference).toHaveBeenCalledWith("tablet", { silent: true });
+        });
+        expect(onSuccess).toHaveBeenCalledWith(loginPayload);
+    });
+
+    it("applies the layout stored with the existing device picked", async () => {
+        renderAndLogin({
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [{ id: 12, label: "PC atelier", icon: "desktop", viewport_mode: "desktop", session_count: 1 }],
+        }, vi.fn());
+
+        await waitFor(() => {
+            expect(screen.getByText("PC atelier")).toBeDefined();
+        });
+        fireEvent.click(screen.getByText("PC atelier"));
+
+        await waitFor(() => {
+            expect(viewportValue.setPreference).toHaveBeenCalledWith("desktop", { silent: true });
+        });
+    });
+
+    it("does not reload when the device keeps the current layout", async () => {
+        const onSuccess = vi.fn();
+        renderAndLogin({
+            id: 42,
+            accessToken: "AT",
+            needsDevicePick: true,
+            existingUserDevices: [{ id: 12, label: "Mon mobile", icon: "phone", viewport_mode: "auto", session_count: 1 }],
+        }, onSuccess);
+
+        await waitFor(() => {
+            expect(screen.getByText("Mon mobile")).toBeDefined();
+        });
+        fireEvent.click(screen.getByText("Mon mobile"));
+
+        await waitFor(() => {
+            expect(onSuccess).toHaveBeenCalled();
+        });
+        expect(viewportValue.setPreference).not.toHaveBeenCalled();
     });
 });

@@ -88,6 +88,13 @@ cas, `<LoginComponent>` bascule automatiquement sur `<DevicePicker>` :
   sélectionne un appareil existant ;
 - `<LoginComponent>` appelle `api.createUserDevice` ou
   `api.linkUserDevice` puis appelle `onSuccess` ;
+- sous un `<ViewportProvider>`, le type d'appareil choisi (l'interface de
+  l'app) part avec l'appareil créé (`viewport_mode`), celui d'un appareil
+  existant est repris, et `setPreference()` l'applique en rechargeant la
+  page après `onSuccess` ;
+- `useApi` efface ensuite `deviceOptions` : la page de
+  `<DeviceIdentificationComponent>` ne s'affiche pas après le picker ;
+- la connexion par QR code passe par le même picker ;
 - `devicePickerProps` / `devicePickerLabels` permettent d'injecter du
   styling et des labels custom au picker.
 

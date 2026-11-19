@@ -107,7 +107,6 @@ réellement lues par smartcommon :
 |-----|---------|-------------|
 | `api.prefixUrl`, `api.timeout` | `ApiProvider` (`useApi`) | URL de base et délai du client API |
 | `api.onApiError`, `api.onSessionExpired`, `api.onLoginPersist` | `ApiProvider` | toast d'erreur, session expirée, enrichissement de l'utilisateur à la connexion |
-| `api.deviceIdentificationPage` | `ApiProvider` | `true` quand l'app nomme ses appareils sur sa page `DeviceIdentificationComponent` : pas de sélecteur d'appareil de `LoginComponent` avant elle (cf [device-identification-component.md](device-identification-component.md)) |
 | `theme` | `ThemeApplier` | `"light"` (défaut), `"dark"` ou `"auto"` (suit le système) |
 | `router`, `basename` | `Router` | `"browser"` (défaut) ou `"hash"` ; chemin de base du routeur navigateur |
 | `components.theme`, `components.themes`, `components.variants` | `useVariantMerger`, `useComponentLabels` | thème et variantes par composant, libellés compris |

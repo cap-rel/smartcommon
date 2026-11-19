@@ -49,14 +49,12 @@ Sans `ViewportProvider`, le composant continue de fonctionner mais le
 choix de mode UI est ignoré localement (le backend stocke quand même la
 valeur pour les prochains démarrages).
 
-Une app qui monte cette page déclare `api.deviceIdentificationPage: true`
-dans la config du `<Provider>`. Quand la connexion renvoie `deviceOptions`,
-`useApi().login()` ne signale alors plus `needsDevicePick` : le
-`<DevicePicker>` de `<LoginComponent>` ne s'affiche pas avant cette page,
-dont le `POST /device` rattache aussi l'appareil logique côté smartAuth.
-Sans cette option, l'utilisateur voit les deux écrans d'appareil à la
-suite. Sans `deviceOptions` (appareil déjà nommé mais pas encore rattaché),
-cette page ne s'affiche pas et le sélecteur reste.
+Avec un smartAuth qui envoie `needs_device_pick` (2.1 et plus), c'est le
+`<DevicePicker>` de `<LoginComponent>` qui pose la question, type
+d'appareil compris. Rattacher l'appareil nomme aussi l'appareil technique
+côté smartAuth : `useApi` efface alors `deviceOptions` et cette page ne
+s'affiche plus. Elle ne sert qu'avec un smartAuth plus ancien, qui ne
+renvoie que `devices_choice`.
 
 ## Comportement
 
@@ -197,9 +195,8 @@ Bundles traduits dans `locales.{fr,de,es,it,pl,nl,pt}.DeviceIdentificationCompon
   et l'intégration avec ce composant.
 - [login-component.md](login-component.md) : étape précédente. Quand le
   backend renvoie `needs_device_pick: true`, `<LoginComponent>` bascule
-  directement sur son `<DevicePicker>` interne, sauf quand l'app déclare
-  `api.deviceIdentificationPage` et que la réponse porte `deviceOptions` :
-  ce composant-ci est alors le seul écran d'appareil.
+  directement sur son `<DevicePicker>` interne, seul écran d'appareil :
+  ce composant-ci ne s'affiche plus ensuite.
 - [route-guard.md](route-guard.md) : pour mounter cette page derrière
   `requireDeviceIdentification`.
 - Backend : `~/dev/smartauth/api/AuthController.php` (endpoint legacy

@@ -51,9 +51,27 @@ vi.mock("lib/components", async () => {
                 {label || children}
             </button>
         ),
+        Checker: ({ name, value, onChange, options = [], label }) => (
+            <fieldset>
+                <legend>{label}</legend>
+                {options.map((o) => (
+                    <label key={o.value}>
+                        <input
+                            type="radio"
+                            name={name}
+                            value={o.value}
+                            checked={value === o.value}
+                            onChange={() => onChange?.(o.value)}
+                        />
+                        {o.label}
+                    </label>
+                ))}
+            </fieldset>
+        ),
     };
 });
 
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { DevicePicker } from "./index";
 
 describe("normaliseDeviceIcon", () => {
@@ -383,5 +401,45 @@ describe("DevicePicker - with existingDevices", () => {
 
         fireEvent.click(cancelButtons[0]);
         expect(onCancel).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("DevicePicker - layout of the app under a ViewportProvider", () => {
+    const viewportValue = { preference: "auto", viewport: "mobile", setPreference: vi.fn() };
+
+    it("asks the layout instead of the icon and derives the icon from it", async () => {
+        const onCreate = vi.fn().mockResolvedValue({});
+        const { container } = render(
+            <ViewportContext.Provider value={viewportValue}>
+                <DevicePicker existingDevices={[]} onPick={vi.fn()} onCreate={onCreate} />
+            </ViewportContext.Provider>
+        );
+
+        expect(container.querySelector('select[name="icon"]')).toBeNull();
+        fireEvent.change(container.querySelector('input[name="label"]'), { target: { value: "Tablette atelier" } });
+        fireEvent.click(container.querySelector('input[name="viewport_mode"][value="tablet"]'));
+        fireEvent.click(screen.getByRole("button", { name: DEFAULT_LABELS.submitNew }));
+
+        await waitFor(() => {
+            expect(onCreate).toHaveBeenCalledWith("Tablette atelier", "tablet", "tablet");
+        });
+    });
+
+    it("keeps the icon question when the layout question is turned off", async () => {
+        const onCreate = vi.fn().mockResolvedValue({});
+        const { container } = render(
+            <ViewportContext.Provider value={viewportValue}>
+                <DevicePicker existingDevices={[]} onPick={vi.fn()} onCreate={onCreate} enableViewportMode={false} />
+            </ViewportContext.Provider>
+        );
+
+        expect(container.querySelector('input[name="viewport_mode"]')).toBeNull();
+        fireEvent.change(container.querySelector('input[name="label"]'), { target: { value: "PC bureau" } });
+        fireEvent.change(container.querySelector('select[name="icon"]'), { target: { value: "laptop" } });
+        fireEvent.click(screen.getByRole("button", { name: DEFAULT_LABELS.submitNew }));
+
+        await waitFor(() => {
+            expect(onCreate).toHaveBeenCalledWith("PC bureau", "laptop");
+        });
     });
 });

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import { FaQrcode } from "react-icons/fa6";
 
@@ -6,6 +6,7 @@ import { useApi } from "lib/hooks";
 import { useComponentLabels } from "lib/hooks/local/useComponentLabels";
 import { useDialog } from "lib/hooks/local/useDialog";
 import { Input, Button, Select, BarcodeScanner, DevicePicker } from "lib/components";
+import { ViewportContext } from "lib/components/app/ViewportProvider/context";
 import { twMerge } from "lib/utils";
 
 import {
@@ -15,6 +16,8 @@ import {
     extractPairingId,
     propTypes,
 } from "./props";
+
+const VIEWPORT_MODES = ["auto", "mobile", "tablet", "desktop"];
 
 export const LoginComponent = (props) => {
     const {
@@ -313,6 +316,18 @@ export const LoginComponent = (props) => {
         onSuccessRef.current?.(response);
     }, [pendingDevicePick]);
 
+    // Under a ViewportProvider the device carries the layout of the app
+    // (viewport_mode): the one chosen for a new device, the one stored with
+    // an existing device. setPreference() reloads the page, so the login is
+    // handed to the parent first; the tokens are already persisted.
+    const viewport = useContext(ViewportContext);
+    const finaliseWithViewportMode = useCallback(async (mode) => {
+        finaliseDevicePick();
+        if (viewport && VIEWPORT_MODES.includes(mode) && mode !== viewport.preference) {
+            await viewport.setPreference(mode, { silent: true });
+        }
+    }, [viewport, finaliseDevicePick]);
+
     const handleDevicePickExisting = useCallback(async (userDeviceId) => {
         if (!api?.linkUserDevice) {
             setDevicePickError(labels.devicePickMissingApiError);
@@ -322,7 +337,8 @@ export const LoginComponent = (props) => {
         setDevicePickError(null);
         try {
             await api.linkUserDevice(userDeviceId);
-            finaliseDevicePick();
+            const picked = (pendingDevicePick?.existingDevices ?? []).find((d) => d.id === userDeviceId);
+            await finaliseWithViewportMode(picked?.viewport_mode);
         } catch (err) {
             // Prefer the backend-provided machine code/message when
             // available (set by useApi.beforeError) over the generic
@@ -334,9 +350,9 @@ export const LoginComponent = (props) => {
         } finally {
             setDevicePickLoading(false);
         }
-    }, [api, labels.devicePickError, labels.devicePickMissingApiError, finaliseDevicePick]);
+    }, [api, labels.devicePickError, labels.devicePickMissingApiError, pendingDevicePick, finaliseWithViewportMode]);
 
-    const handleDevicePickCreate = useCallback(async (label, icon) => {
+    const handleDevicePickCreate = useCallback(async (label, icon, viewportMode) => {
         if (!api?.createUserDevice) {
             setDevicePickError(labels.devicePickMissingApiError);
             return;
@@ -344,8 +360,12 @@ export const LoginComponent = (props) => {
         setDevicePickLoading(true);
         setDevicePickError(null);
         try {
-            await api.createUserDevice({ label, icon });
-            finaliseDevicePick();
+            const body = { label, icon };
+            if (VIEWPORT_MODES.includes(viewportMode)) {
+                body.viewport_mode = viewportMode;
+            }
+            await api.createUserDevice(body);
+            await finaliseWithViewportMode(viewportMode);
         } catch (err) {
             const fallback = labels.devicePickError;
             const message = err?.apiMessage ?? fallback;
@@ -354,7 +374,7 @@ export const LoginComponent = (props) => {
         } finally {
             setDevicePickLoading(false);
         }
-    }, [api, labels.devicePickError, labels.devicePickMissingApiError, finaliseDevicePick]);
+    }, [api, labels.devicePickError, labels.devicePickMissingApiError, finaliseWithViewportMode]);
 
     // ---------------------- render ----------------------
 

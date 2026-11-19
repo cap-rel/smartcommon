@@ -56,17 +56,33 @@ import { DevicePicker } from "@cap-rel/smartcommon";
 - **`list`** (par défaut si `existingDevices.length > 0`) : grille des
   appareils existants + bouton "Nouvel appareil" en bas.
 - **`form`** (par défaut si liste vide ; accessible aussi via le
-  bouton) : champ "Nom de l'appareil" + choix de l'icône parmi phone /
-  tablet / laptop / desktop (slot `iconSelectProps`) + bouton "Créer cet appareil".
+  bouton) : champ "Nom de l'appareil", type d'appareil, bouton "Créer cet
+  appareil".
+
+### Type d'appareil : l'interface de l'app
+
+Sous un `<ViewportProvider>`, le formulaire demande l'interface que l'app
+prend sur cet appareil : détection automatique, smartphone, tablette ou
+ordinateur (slot `viewportModeCheckerProps`, présélection
+`defaultViewportMode`, sinon celle que détecte `ViewportProvider`). Ce
+choix remplace celui de l'icône, qui en est déduite (`iconForViewportMode`).
+`<LoginComponent>` l'enregistre avec l'appareil (`viewport_mode`) et
+l'applique par `setPreference()`, qui recharge la page ; pour un appareil
+existant, il applique le `viewport_mode` enregistré. Sans
+`ViewportProvider`, ou avec `enableViewportMode={false}`, le formulaire
+propose l'icône parmi phone / tablet / laptop / desktop (slot
+`iconSelectProps`).
 
 ### Callbacks
 
 - `onPick(deviceId)` : numérique. Le composant attend le résolveur (le
   bouton est désactivé pendant l'await). Pas de redirection auto -
   le caller décide.
-- `onCreate(label, icon)` : `icon ∈ ["phone", "tablet", "laptop",
-  "desktop"]` (toute autre valeur fallback vers `"phone"`, normalisée
-  par le helper exporté `normaliseDeviceIcon`).
+- `onCreate(label, icon[, viewportMode])` : `icon ∈ ["phone", "tablet",
+  "laptop", "desktop"]` (toute autre valeur fallback vers `"phone"`,
+  normalisée par le helper exporté `normaliseDeviceIcon`) ; `viewportMode`
+  (`auto`, `mobile`, `tablet`, `desktop`) n'est passé que quand le type
+  d'appareil est demandé.
 - `onCancel` : optionnel, affiche un bouton "Annuler". La plupart
   des intégrations le laissent `undefined` (le picker est obligatoire
   dans le flow login).
@@ -113,22 +129,26 @@ Helpers exportés :
 - `DEVICE_LABEL_MAX_LENGTH` : 100.
 - `normaliseDeviceIcon(icon)` : ramène toute string à une valeur de la
   whitelist.
+- `iconForViewportMode(mode)` : icône d'un appareil créé avec cette
+  interface (`auto` suit la détection de `ViewportProvider`).
 - `formatSessionCount(count, labels)` : gère le singulier/pluriel.
 
 ## Slots de styling
 
 13 slots (`containerProps`, `titleProps`, `descriptionProps`,
 `listProps`, `itemProps`, `newDeviceButtonProps`, `formProps`,
-`labelInputProps`, `iconSelectProps`, `submitButtonProps`,
-`cancelButtonProps`, `errorAlertProps`).
+`labelInputProps`, `iconSelectProps`, `viewportModeCheckerProps`,
+`submitButtonProps`, `cancelButtonProps`, `errorAlertProps`).
 
 ## Props
 
 | Prop | Type | Défaut | Notes |
 |------|------|--------|-------|
-| `existingDevices` | array | `[]` | `[{ id, label, icon?, date_lastseen?, session_count? }]` |
+| `existingDevices` | array | `[]` | `[{ id, label, icon?, viewport_mode?, date_lastseen?, session_count? }]` |
 | `onPick` | func | requis | `async (deviceId) => void` |
-| `onCreate` | func | requis | `async (label, icon) => void` |
+| `onCreate` | func | requis | `async (label, icon, viewportMode?) => void` |
+| `enableViewportMode` | bool | `true` | demande le type d'appareil (interface) sous un `ViewportProvider` |
+| `defaultViewportMode` | string | détection | `auto`, `mobile`, `tablet` ou `desktop` |
 | `onCancel` | func | - | affiche un bouton "Annuler" si défini |
 | `loading` | bool | `false` | lock externe |
 | `error` | string | - | bloc d'erreur (parent-driven) |
@@ -139,7 +159,7 @@ Helpers exportés :
 - [login-component.md](login-component.md) : flow principal qui
   utilise `<DevicePicker>` en interne.
 - [device-identification-component.md](device-identification-component.md) :
-  l'autre brique de la chaîne d'identification (smartAuth 2.0,
-  `user.deviceOptions`).
+  l'écran d'identification des smartAuth qui n'envoient pas
+  `needs_device_pick` (`user.deviceOptions`).
 - Backend : `~/dev/smartauth/api/UserDeviceController.php`
   (endpoints `account/user-devices/*`).
