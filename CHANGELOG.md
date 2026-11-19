@@ -8,6 +8,15 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.403] - 2026-11-19
+
+See one device screen after login: the device picker no longer leads to DeviceIdentificationComponent
+Pick the app layout of a new device in the login device picker, applied and stored with it
+Get the layout stored with the existing device you pick at login
+Pick your device after a QR code login too, the picker no longer closes before showing
+Stop setting api.deviceIdentificationPage: removed, the picker is now the only device screen
+Scroll a tall page on a landscape tablet: Page follows the ViewportProvider, not the width
+
 ## [1.0.402] - 2026-11-19
 
 See one device screen after login with api.deviceIdentificationPage on your own device page
