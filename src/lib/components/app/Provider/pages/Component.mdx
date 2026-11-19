@@ -62,6 +62,7 @@ wrap them yourself under `<Provider>` when the app needs them.
 |---|---|---|
 | `api.prefixUrl`, `api.timeout` | ApiProvider (`useApi`) | Base URL and timeout of the API client. |
 | `api.onApiError`, `api.onSessionExpired`, `api.onLoginPersist` | ApiProvider | Error toast, expired session, user enrichment at login. |
+| `api.deviceIdentificationPage` | ApiProvider | `true` when the app names its devices on its own `DeviceIdentificationComponent` page: no `LoginComponent` device picker before it. |
 | `theme` | ThemeApplier | `"light"` (default), `"dark"` or `"auto"`. |
 | `router`, `basename` | Router | `"browser"` (default) or `"hash"`; base path of the browser router. |
 | `components.theme`, `components.themes`, `components.variants` | every component | Theme and variants per component. |

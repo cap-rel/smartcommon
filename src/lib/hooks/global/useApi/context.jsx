@@ -89,7 +89,7 @@ export const useApiContext = () => {
 
     const { debug: libDebug, api } = libConfig;
 
-    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist, onSessionExpired } = api ?? {};
+    const { prefixUrl, timeout, debug: apiDebug, onApiError, onLoginPersist, onSessionExpired, deviceIdentificationPage } = api ?? {};
 
     const debug = isUndefined(apiDebug) ? libDebug : apiDebug;
 
@@ -158,7 +158,8 @@ export const useApiContext = () => {
         timeout,
         onApiError,
         onLoginPersist,
-        onSessionExpired
+        onSessionExpired,
+        deviceIdentificationPage
     });
 
     // Refreshed at COMMIT time, not during render: everything downstream (ky
@@ -181,7 +182,8 @@ export const useApiContext = () => {
             timeout,
             onApiError,
             onLoginPersist,
-            onSessionExpired
+            onSessionExpired,
+            deviceIdentificationPage
         };
     });
 
@@ -527,6 +529,7 @@ export const useApiContext = () => {
                 const {
                     gst: currentGst,
                     onLoginPersist: currentOnLoginPersist,
+                    deviceIdentificationPage: currentDeviceIdentificationPage,
                 } = valuesRef.current;
 
                 // Source of truth for `rememberMe` is the request body we
@@ -553,7 +556,17 @@ export const useApiContext = () => {
                 // The tokens are valid as-is: we persist them right away
                 // so the post-login UX (the picker, hitting the JWT-
                 // protected /account/user-devices endpoint) works.
-                const needsDevicePick = data?.needs_device_pick === true;
+                //
+                // An app with its own device identification page
+                // (api.deviceIdentificationPage, RouteGuard
+                // requireDeviceIdentification) names a new device there when
+                // the response carries deviceOptions, and the POST /device of
+                // that page also links the logical user-device on the
+                // smartAuth side: the picker first would be a second device
+                // screen in a row. Without deviceOptions that page is not
+                // shown, so the picker stays.
+                const needsDevicePick = data?.needs_device_pick === true
+                    && !(currentDeviceIdentificationPage === true && Boolean(mappedData?.deviceOptions));
                 const existingUserDevices = Array.isArray(data?.existing_user_devices)
                     ? data.existing_user_devices
                     : [];

@@ -241,3 +241,52 @@ describe("useApi.login - with onLoginPersist (Bug 2 fix)", () => {
         expect(payload).toMatchObject({ id: 42, accessToken: "AT" });
     });
 });
+
+describe("useApi.login - device pick with an app device identification page", () => {
+    const newDevicePayload = {
+        ...minimalLoginPayload,
+        deviceOptions: [{ uuid: "known", label: "Old phone" }],
+        needs_device_pick: true,
+        existing_user_devices: [{ id: 12, label: "mon iPhone" }],
+    };
+
+    const loginAs = async () => {
+        const { result } = renderHook(() => useApiContext());
+        let resolved;
+        await act(async () => {
+            resolved = await result.current.login({ login: "u@example.com", password: "x", rememberMe: true });
+        });
+        const [, payload] = gstState.local.set.mock.calls[0];
+        return { resolved, persisted: payload };
+    };
+
+    it("keeps the picker by default, the only device screen of an app without such a page", async () => {
+        kyState.post.mockReturnValue(fakeJsonResponse(newDevicePayload));
+
+        const { resolved, persisted } = await loginAs();
+
+        expect(resolved.needsDevicePick).toBe(true);
+        expect(persisted.needsDevicePick).toBe(true);
+    });
+
+    it("leaves a device to name to the page of the app, no picker before it", async () => {
+        libConfigState.api = { ...libConfigState.api, deviceIdentificationPage: true };
+        kyState.post.mockReturnValue(fakeJsonResponse(newDevicePayload));
+
+        const { resolved, persisted } = await loginAs();
+
+        expect(resolved.needsDevicePick).toBe(false);
+        expect(persisted.needsDevicePick).toBe(false);
+        expect(persisted.deviceOptions).toEqual(newDevicePayload.deviceOptions);
+    });
+
+    it("keeps the picker for a named device not yet linked, which the page of the app never shows", async () => {
+        libConfigState.api = { ...libConfigState.api, deviceIdentificationPage: true };
+        kyState.post.mockReturnValue(fakeJsonResponse({ ...newDevicePayload, deviceOptions: null }));
+
+        const { resolved, persisted } = await loginAs();
+
+        expect(resolved.needsDevicePick).toBe(true);
+        expect(persisted.needsDevicePick).toBe(true);
+    });
+});
