@@ -28,6 +28,7 @@ export const LoginComponent = (props) => {
         showEntities = true,
         showSharedDevice = true,
         enableQrPair = true,
+        initialQrCode,
         qrPollIntervalMs = 2000,
         qrTimeoutMs = 120000,
         deviceLabel,
@@ -288,6 +289,19 @@ export const LoginComponent = (props) => {
             onErrorRef.current?.(err);
         }
     }, [api, deviceLabel, deviceUuid, startPolling, labels.invalidQrError]);
+
+    // A QR code already read outside the app (the phone camera opened the
+    // /qr-pair/<id> address of the PWA): claim it once on mount, as if the
+    // in-app scanner had just read it. A device pick resumed after a reload
+    // keeps its own mode, the QR is not replayed over it.
+    const initialQrHandledRef = useRef(false);
+    useEffect(() => {
+        if (!enableQrPair || !initialQrCode || initialQrHandledRef.current) return;
+        if (mode !== "password") return;
+        initialQrHandledRef.current = true;
+        // Out of the effect body: handleQrScan switches the mode right away
+        queueMicrotask(() => handleQrScan(initialQrCode));
+    }, [enableQrPair, initialQrCode, mode, handleQrScan]);
 
     const handleQrClose = useCallback(() => {
         cleanupPolling();

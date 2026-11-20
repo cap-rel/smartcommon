@@ -25,6 +25,10 @@ export const propTypes = {
     showSharedDevice: PropTypes.bool,
 
     enableQrPair: PropTypes.bool,
+    // Content of a login QR code read outside the app, typically the
+    // <pwa>/qr-pair/<pairing_id> address the phone camera opened. Claimed
+    // once on mount, exactly like a QR read by the in-app scanner.
+    initialQrCode: PropTypes.string,
     qrPollIntervalMs: PropTypes.number,
     qrTimeoutMs: PropTypes.number,
     deviceLabel: PropTypes.string,

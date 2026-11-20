@@ -66,6 +66,15 @@ détection `rememberMe` / `sharedDevice`. Pas d'appel manuel à
   annule comme le bouton "Annuler". Une erreur QR se referme par un bouton
   nommé `labels.qrErrorDismiss`, qui ramène au formulaire.
 
+- **QR lu par l'appareil photo** (`initialQrCode`) : le QR de smartAuth
+  contient l'adresse `<pwa>/qr-pair/<pairing_id>`. Scanné avec l'appareil
+  photo du téléphone, il ouvre directement la PWA sur cette adresse. L'app
+  déclare une route publique `/qr-pair/:pairingId` qui monte
+  `<LoginComponent initialQrCode={window.location.href} />` : le composant
+  lance alors claim et poll dès le montage, sans passer par le scanner,
+  avec le même overlay d'attente et les mêmes erreurs. Le QR n'est traité
+  qu'une fois ; une erreur ramène au formulaire sans le rejouer.
+
 ### Garde-fous
 
 - **Idempotence claim** : un double scan rapide (cas Android où le focus
@@ -142,6 +151,7 @@ laisse jouer le mapping par défaut.
 | `showEntities` | bool | `true` | cache le Select si `false` ou si 1 seule entité |
 | `showSharedDevice` | bool | `true` | masque la case "Accès partagé" |
 | `enableQrPair` | bool | `true` | masque le bouton "Scanner QR" si `false` |
+| `initialQrCode` | string | - | contenu d'un QR de connexion déjà lu (adresse `/qr-pair/<id>` ou identifiant), réclamé au montage |
 | `qrPollIntervalMs` | number | `2000` | intervalle entre 2 polls |
 | `qrTimeoutMs` | number | `120000` | timeout global de la séquence claim+poll |
 | `deviceLabel` | string | - | envoyé au backend dans `device_label` |

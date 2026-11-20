@@ -541,6 +541,66 @@ describe("LoginComponent - QR pair mode", () => {
         expect(bodyArg).toEqual({ device_label: "iPhone Eric", device_uuid: "u-1" });
     });
 
+    it("claims the QR code passed in initialQrCode on mount, without the scanner", async () => {
+        const id = "cafebabe".repeat(4);
+        fakeApi.claimQrPair = vi.fn().mockResolvedValue({ status: "claimed", claim_token: "tok-2" });
+        fakeApi.pollQrPair = vi.fn().mockResolvedValue({ status: "consumed", access_token: "AT", refresh_token: "RT" });
+        const onSuccess = vi.fn();
+
+        await act(async () => {
+            render(
+                <LoginComponent
+                    onSuccess={onSuccess}
+                    showEntities={false}
+                    initialQrCode={`https://todo.example.org/qr-pair/${id}`}
+                    deviceLabel="Phone"
+                    qrPollIntervalMs={1000}
+                />
+            );
+        });
+
+        expect(screen.queryByTestId("scanner-stub")).toBeNull();
+        expect(fakeApi.claimQrPair).toHaveBeenCalledTimes(1);
+        expect(fakeApi.claimQrPair.mock.calls[0][0]).toBe(id);
+        expect(fakeApi.claimQrPair.mock.calls[0][1]).toEqual({ device_label: "Phone", device_uuid: undefined });
+
+        await act(async () => {
+            vi.advanceTimersByTime(1000);
+        });
+        await act(async () => {
+            await Promise.resolve();
+        });
+        expect(fakeApi.pollQrPair).toHaveBeenCalledWith(id, "tok-2");
+        expect(onSuccess).toHaveBeenCalledTimes(1);
+    });
+
+    it("shows the invalid QR error once for a bad initialQrCode", async () => {
+        await act(async () => {
+            render(<LoginComponent onSuccess={() => {}} showEntities={false} initialQrCode="https://todo.example.org/qr-pair/nope" />);
+        });
+
+        expect(fakeApi.claimQrPair).not.toHaveBeenCalled();
+        expect(screen.getByRole("alert").textContent).toMatch(/QR code/);
+
+        // Dismissing the error goes back to the form, the QR is not replayed
+        fireEvent.click(screen.getByRole("button", { name: DEFAULT_LABELS.qrErrorDismiss }));
+        expect(screen.queryByRole("alert")).toBeNull();
+    });
+
+    it("ignores initialQrCode when enableQrPair is false", async () => {
+        await act(async () => {
+            render(
+                <LoginComponent
+                    onSuccess={() => {}}
+                    showEntities={false}
+                    enableQrPair={false}
+                    initialQrCode={"cafebabe".repeat(4)}
+                />
+            );
+        });
+        expect(fakeApi.claimQrPair).not.toHaveBeenCalled();
+    });
+
     it("polls and calls onSuccess when pollQrPair returns status=consumed", async () => {
         const id = "deadbeef".repeat(4);
         fakeApi.claimQrPair = vi.fn().mockResolvedValue({
