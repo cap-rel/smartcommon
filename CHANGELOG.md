@@ -8,6 +8,10 @@ Consumer projects (smartInterventions, dolipocket, capTodo, ...) should
 read this file when their pinned version differs from the latest, to
 understand what may have changed at the API surface.
 
+## [1.0.404] - 2026-11-20
+
+Log in by opening the QR code address with the phone camera, through LoginComponent initialQrCode
+
 ## [1.0.403] - 2026-11-19
 
 See one device screen after login: the device picker no longer leads to DeviceIdentificationComponent
